@@ -1,6 +1,8 @@
 #include <cmath>
 #include <string>
 
+/** @class Vec3 */
+
 class Vec3 {
 public:
 	/*
@@ -115,6 +117,8 @@ Vec3 Vec3::operator*(Vec3 b) {
 	
 	return c;
 }
+
+/** @endclass Vec3 */
 
 Vec3 getZeroVec3() {
 	/* 

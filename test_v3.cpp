@@ -19,7 +19,5 @@ int main() {
 	a = c - b;
 	std::cout << a.x << " " << a.y << " " << a.z << std::endl;
 	
-	Vec3 d, e;
-	
-	
+	return 0;
 }
