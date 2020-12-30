@@ -17,6 +17,8 @@ public:
 	Vec3 normalised();
 	Vec3 scaled(float);
 	Vec3 negated();
+	float distance(Vec3);
+	float dot(Vec3);
 	void set(float, float, float);
 	Vec3 operator+(Vec3);
 	Vec3 operator-(Vec3);
@@ -75,7 +77,39 @@ Vec3 Vec3::negated() {
 	return v;
 }
 
+float Vec3::distance(Vec3 a) {
+	/*
+	 * Computes the distance between two vectors (a and this) and returns it.
+	 */
+	Vec3 b;
+	
+	b.x = a.x - x;
+	b.y = a.y - y;
+	b.z = a.z - z;
+	
+	float r = magnitude(b);
+	
+	return r;
+}
+
+float Vec3::dot(Vec3 a) {
+	/*
+	 * Computes the dot product of the current vector with the given vector.
+	 */
+	return a.x * x + b.y * y + b.z * z;
+}
+
+float angle(Vec3 a) {
+	/*
+	 * Computes the angle between two vectors.
+	 */
+	return acos(dot(a) / (magnitude() * a.magnitude()));
+}
+
 void Vec3::set(float dx, float dy, float dz) {
+	/*
+	 * Sets this vector to a value.
+	 */
 	x = dx;
 	y = dy;
 	z = dz;

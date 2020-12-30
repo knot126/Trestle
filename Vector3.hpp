@@ -12,6 +12,8 @@ public:
 	Vec3 normalised();
 	Vec3 scaled(float);
 	Vec3 negated();
+	float distance(Vec3);
+	float dot(Vec3);
 	void set(float, float, float);
 	Vec3 operator+(Vec3);
 	Vec3 operator-(Vec3);
