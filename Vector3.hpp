@@ -16,6 +16,8 @@ public:
 	Vec3 operator+(Vec3);
 	Vec3 operator-(Vec3);
 	Vec3 operator*(Vec3);
+	Vec3 operator*(float);
+	Vec3 operator/(float a);
 };
 
 Vec3 getZeroVec3();

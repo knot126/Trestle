@@ -21,6 +21,8 @@ public:
 	Vec3 operator+(Vec3);
 	Vec3 operator-(Vec3);
 	Vec3 operator*(Vec3);
+	Vec3 operator*(float);
+	Vec3 operator/(float a);
 };
 
 float Vec3::magnitude() {
@@ -116,6 +118,26 @@ Vec3 Vec3::operator*(Vec3 b) {
 	c.z = z * b.z;
 	
 	return c;
+}
+
+Vec3 Vec3::operator*(float a) {
+	Vec3 v;
+	
+	v.x = x * a;
+	v.y = y * a;
+	v.z = z * a;
+	
+	return v;
+}
+
+Vec3 Vec3::operator/(float a) {
+	Vec3 v;
+	
+	v.x = x / a;
+	v.y = y / a;
+	v.z = z / a;
+	
+	return v;
 }
 
 /** @endclass Vec3 */
