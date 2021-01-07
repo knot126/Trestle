@@ -19,10 +19,11 @@ public:
 	Vec3 negated();
 	float distance(Vec3);
 	float dot(Vec3);
+	Vec3 cross(Vec3);
 	void set(float, float, float);
 	Vec3 operator+(Vec3);
 	Vec3 operator-(Vec3);
-	Vec3 operator*(Vec3);
+//	Vec3 operator*(Vec3);
 	Vec3 operator*(float);
 	Vec3 operator/(float a);
 };
@@ -99,6 +100,18 @@ float Vec3::dot(Vec3 a) {
 	return a.x * x + b.y * y + b.z * z;
 }
 
+Vec3 Vec3::cross(Vec3 i) {
+	/* 
+	 * NOTE: not implemented
+	 * Computes the cross product of the current vector with the given vector.
+	 */
+	Vec3 o;
+	
+	// ...
+	
+	return o;
+}
+
 float angle(Vec3 a) {
 	/*
 	 * Computes the angle between two vectors.
@@ -141,18 +154,18 @@ Vec3 Vec3::operator-(Vec3 b) {
 	return c;
 }
 
-Vec3 Vec3::operator*(Vec3 b) {
-	/*
-	 * Multiplies two 3D vectors and returns the result.
-	 */
-	Vec3 c;
-	
-	c.x = x * b.x;
-	c.y = y * b.y;
-	c.z = z * b.z;
-	
-	return c;
-}
+// Vec3 Vec3::operator*(Vec3 b) {
+// 	/*
+// 	 * Multiplies two 3D vectors and returns the result.
+// 	 */
+// 	Vec3 c;
+// 	
+// 	c.x = x * b.x;
+// 	c.y = y * b.y;
+// 	c.z = z * b.z;
+// 	
+// 	return c;
+// }
 
 Vec3 Vec3::operator*(float a) {
 	Vec3 v;
