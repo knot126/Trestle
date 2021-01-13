@@ -7,9 +7,9 @@
  */
 
 #include <unistd.h>
-#include <cstdio>
+#include <stdio.h>
 
-#include "plat/game.hpp"
+#include "plat/game.h"
 
 int platform_main(int argc, char* argv[]) {
 	printf("Using Linux platform_main\n");

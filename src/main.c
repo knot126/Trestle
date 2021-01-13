@@ -16,8 +16,7 @@
 
 // Platform_main will define the correct main for this platform
 #ifdef __linux__
-	#include "linux_main.hpp"
-	const int platform = 1;
+	#include "linux/main.h"
 #endif
 
 // Go to platform_main()

@@ -5,8 +5,10 @@
  * This file contains the graphics core.
  */
 
-struct Surface {
+#include "math/vector2.h"
+
+typedef struct {
 	/* This class is responsible for holding the data for the window/surface. */
-	DgString title;
 	DgVec2U size;
-};
+	char* title;
+} DgSurfaceInfo;

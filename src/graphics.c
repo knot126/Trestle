@@ -5,7 +5,7 @@
  * This file contains the graphics core.
  */
 
-#include "graphics.hpp"
+#include "graphics.h"
 
 /** For @struct Surface */
 

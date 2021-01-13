@@ -2,30 +2,28 @@
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
- * This file contains the implementation of Vector3.
+ * This file contains the implementation of DgVec3.
  */
 
-#include <cmath>
-#include <string>
+#include <math.h>
+#include "math/vector3.h"
 
-/** @class Vector3 */
+/** @class DgVec3 */
 
-#include "math/vector3.hpp"
-
-float Vector3::magnitude() {
+float DgVec3_mag(DgVec3 this) {
 	/*
 	 * Computes the magnitude of this vector and returns it.
 	 */
 	return sqrt((x * x) + (y * y) + (z * z));
 }
 
-Vector3 Vector3::normalised() {
+DgVec3 DgVec3_nor(DgVec3 this) {
 	/*
 	 * Returns the current vector as a normalised vector.
 	 */
-	Vector3 v;
+	DgVec3 v;
 	
-	float m = magnitude();
+	float m = DgVec3_mag(this);
 	
 	if (x && y && z) {
 		v.x = x / m;
@@ -36,11 +34,11 @@ Vector3 Vector3::normalised() {
 	return v;
 }
 
-Vector3 Vector3::scaled(float s) {
+DgVec3 DgVec3_scaled(DgVec3 this, float s) {
 	/*
 	 * Returns the current vector as a scaled vector.
 	 */
-	Vector3 v;
+	DgVec3 v;
 	
 	v.x = x * s;
 	v.y = y * s;
@@ -49,11 +47,11 @@ Vector3 Vector3::scaled(float s) {
 	return v;
 }
 
-Vector3 Vector3::negated() {
+DgVec3 DgVec3_negated(DgVec3 this) {
 	/*
 	 * Negates the given Vector and returns the result.
 	 */
-	Vector3 v;
+	DgVec3 v;
 	
 	v.x = -x;
 	v.y = -y;
@@ -62,11 +60,11 @@ Vector3 Vector3::negated() {
 	return v;
 }
 
-float Vector3::distance(Vector3 a) {
+float DgVec3_distance(DgVec3 this, DgVec3 a) {
 	/*
 	 * Computes the distance between two vectors (a and this) and returns it.
 	 */
-	Vector3 b;
+	DgVec3 b;
 	
 	b.x = a.x - x;
 	b.y = a.y - y;
@@ -77,33 +75,33 @@ float Vector3::distance(Vector3 a) {
 	return r;
 }
 
-float Vector3::dot(Vector3 a) {
+float DgVec3_dot(DgVec3 this, DgVec3 a) {
 	/*
 	 * Computes the dot product of the current vector with the given vector.
 	 */
 	return a.x * x + b.y * y + b.z * z;
 }
 
-Vector3 Vector3::cross(Vector3 i) {
+DgVec3 DgVec3_cross(DgVec3 this, DgVec3 i) {
 	/* 
 	 * NOTE: not implemented
 	 * Computes the cross product of the current vector with the given vector.
 	 */
-	Vector3 o;
+	DgVec3 o;
 	
 	// ...
 	
 	return o;
 }
 
-float angle(Vector3 a) {
+float angle(DgVec3 this, DgVec3 a) {
 	/*
 	 * Computes the angle between two vectors.
 	 */
 	return acos(dot(a) / (magnitude() * a.magnitude()));
 }
 
-void Vector3::set(float dx, float dy, float dz) {
+void DgVec3_set(DgVec3 this, float dx, float dy, float dz) {
 	/*
 	 * Sets this vector to a value.
 	 */
@@ -112,11 +110,11 @@ void Vector3::set(float dx, float dy, float dz) {
 	z = dz;
 }
 
-Vector3 Vector3::operator+(Vector3 b) {
+inline DgVec3 DgVec3_add(DgVec3 this, DgVec3 b) {
 	/*
 	 * Adds two 3D vectors and returns the result.
 	 */
-	Vector3 c;
+	DgVec3 c;
 	
 	c.x = x + b.x;
 	c.y = y + b.y;
@@ -125,11 +123,11 @@ Vector3 Vector3::operator+(Vector3 b) {
 	return c;
 }
 
-Vector3 Vector3::operator-(Vector3 b) {
+inline DgVec3 DgVec3_sub(DgVec3 this, DgVec3 b) {
 	/*
 	 * Subtracts two 3D vectors and returns the result.
 	 */
-	Vector3 c;
+	DgVec3 c;
 	
 	c.x = x - b.x;
 	c.y = y - b.y;
@@ -138,8 +136,8 @@ Vector3 Vector3::operator-(Vector3 b) {
 	return c;
 }
 
-Vector3 Vector3::operator*(float a) {
-	Vector3 v;
+inline DgVec3 DgVec3_mul(DgVec3 this, float a) {
+	DgVec3 v;
 	
 	v.x = x * a;
 	v.y = y * a;
@@ -148,27 +146,12 @@ Vector3 Vector3::operator*(float a) {
 	return v;
 }
 
-Vector3 Vector3::operator/(float a) {
-	Vector3 v;
+inline DgVec3 DgVec3_div(DgVec3 this, float a) {
+	DgVec3 v;
 	
 	v.x = x / a;
 	v.y = y / a;
 	v.z = z / a;
-	
-	return v;
-}
-
-/** @endclass Vector3 */
-
-Vector3 getZeroVector3() {
-	/* 
-	 * Returns a zero vector
-	 */
-	Vector3 v;
-	
-	v.x = 0;
-	v.y = 0;
-	v.z = 0;
 	
 	return v;
 }
