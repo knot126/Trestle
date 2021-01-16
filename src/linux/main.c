@@ -9,20 +9,8 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#include "plat/game.h"
-
 int platform_main(int argc, char* argv[]) {
 	printf("Using Linux platform_main\n");
 	
-	Game* game_instance = DgCreateGame();
-	
-	// ...
-	
-	if (!game_instance->init()) {
-		return -1;
-	}
-	
-	if (!game_instance->play()) {
-		return 1;
-	}
+	return 0;
 }

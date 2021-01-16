@@ -6,15 +6,14 @@
  */
 
 #include <math.h>
-#include "math/vector3.h"
 
-/** @class DgVec3 */
+#include "vector3.h"
 
 float DgVec3_mag(DgVec3 this) {
 	/*
 	 * Computes the magnitude of this vector and returns it.
 	 */
-	return sqrt((x * x) + (y * y) + (z * z));
+	return sqrt((this.x * this.x) + (this.y * this.y) + (this.z * this.z));
 }
 
 DgVec3 DgVec3_nor(DgVec3 this) {
@@ -25,10 +24,10 @@ DgVec3 DgVec3_nor(DgVec3 this) {
 	
 	float m = DgVec3_mag(this);
 	
-	if (x && y && z) {
-		v.x = x / m;
-		v.y = y / m;
-		v.z = z / m;
+	if (this.x && this.y && this.z) {
+		v.x = this.x / m;
+		v.y = this.y / m;
+		v.z = this.z / m;
 	}
 	
 	return v;
@@ -40,9 +39,9 @@ DgVec3 DgVec3_scaled(DgVec3 this, float s) {
 	 */
 	DgVec3 v;
 	
-	v.x = x * s;
-	v.y = y * s;
-	v.z = z * s;
+	v.x = this.x * s;
+	v.y = this.y * s;
+	v.z = this.z * s;
 	
 	return v;
 }
@@ -53,9 +52,9 @@ DgVec3 DgVec3_negated(DgVec3 this) {
 	 */
 	DgVec3 v;
 	
-	v.x = -x;
-	v.y = -y;
-	v.z = -z;
+	v.x = -this.x;
+	v.y = -this.y;
+	v.z = -this.z;
 	
 	return v;
 }
@@ -66,11 +65,11 @@ float DgVec3_distance(DgVec3 this, DgVec3 a) {
 	 */
 	DgVec3 b;
 	
-	b.x = a.x - x;
-	b.y = a.y - y;
-	b.z = a.z - z;
+	b.x = a.x - this.x;
+	b.y = a.y - this.y;
+	b.z = a.z - this.z;
 	
-	float r = magnitude(b);
+	float r = DgVec3_mag(b);
 	
 	return r;
 }
@@ -79,12 +78,12 @@ float DgVec3_dot(DgVec3 this, DgVec3 a) {
 	/*
 	 * Computes the dot product of the current vector with the given vector.
 	 */
-	return a.x * x + b.y * y + b.z * z;
+	return (a.x * this.x) + (a.y * this.y) + (a.z * this.z);
 }
 
 DgVec3 DgVec3_cross(DgVec3 this, DgVec3 i) {
 	/* 
-	 * NOTE: not implemented
+	 * NOTE: not implemented, because I don't yet need it
 	 * Computes the cross product of the current vector with the given vector.
 	 */
 	DgVec3 o;
@@ -94,20 +93,11 @@ DgVec3 DgVec3_cross(DgVec3 this, DgVec3 i) {
 	return o;
 }
 
-float angle(DgVec3 this, DgVec3 a) {
+float DgVec3_angle(DgVec3 this, DgVec3 a) {
 	/*
 	 * Computes the angle between two vectors.
 	 */
-	return acos(dot(a) / (magnitude() * a.magnitude()));
-}
-
-void DgVec3_set(DgVec3 this, float dx, float dy, float dz) {
-	/*
-	 * Sets this vector to a value.
-	 */
-	x = dx;
-	y = dy;
-	z = dz;
+	return acos(DgVec3_dot(this, a) / (DgVec3_mag(this) * DgVec3_mag(a)));
 }
 
 inline DgVec3 DgVec3_add(DgVec3 this, DgVec3 b) {
@@ -116,9 +106,9 @@ inline DgVec3 DgVec3_add(DgVec3 this, DgVec3 b) {
 	 */
 	DgVec3 c;
 	
-	c.x = x + b.x;
-	c.y = y + b.y;
-	c.z = z + b.z;
+	c.x = this.x + b.x;
+	c.y = this.y + b.y;
+	c.z = this.z + b.z;
 	
 	return c;
 }
@@ -129,9 +119,9 @@ inline DgVec3 DgVec3_sub(DgVec3 this, DgVec3 b) {
 	 */
 	DgVec3 c;
 	
-	c.x = x - b.x;
-	c.y = y - b.y;
-	c.z = z - b.z;
+	c.x = this.x - b.x;
+	c.y = this.y - b.y;
+	c.z = this.z - b.z;
 	
 	return c;
 }
@@ -139,9 +129,9 @@ inline DgVec3 DgVec3_sub(DgVec3 this, DgVec3 b) {
 inline DgVec3 DgVec3_mul(DgVec3 this, float a) {
 	DgVec3 v;
 	
-	v.x = x * a;
-	v.y = y * a;
-	v.z = z * a;
+	v.x = this.x * a;
+	v.y = this.y * a;
+	v.z = this.z * a;
 	
 	return v;
 }
@@ -149,9 +139,9 @@ inline DgVec3 DgVec3_mul(DgVec3 this, float a) {
 inline DgVec3 DgVec3_div(DgVec3 this, float a) {
 	DgVec3 v;
 	
-	v.x = x / a;
-	v.y = y / a;
-	v.z = z / a;
+	v.x = this.x / a;
+	v.y = this.y / a;
+	v.z = this.z / a;
 	
 	return v;
 }

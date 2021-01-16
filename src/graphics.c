@@ -7,5 +7,3 @@
 
 #include "graphics.h"
 
-/** For @struct Surface */
-
