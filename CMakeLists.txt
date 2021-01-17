@@ -4,4 +4,4 @@ project(Engine VERSION 0.0.0)
 
 add_subdirectory(src)
 
-target_link_libraries(PRIVATE m)
+target_link_libraries(Engine m)
