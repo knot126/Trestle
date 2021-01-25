@@ -9,8 +9,12 @@
 #include <unistd.h>
 #include <stdio.h>
 
-int platform_main(int argc, char* argv[]) {
+#include "game.h"
+
+int main(int argc, char* argv[]) {
 	printf("Using Linux platform_main\n");
+	
+	game_main();
 	
 	return 0;
 }
