@@ -17,6 +17,7 @@
 #include <stdio.h>
 
 #include "graphics/graphics.h"
+#include "util/alloc.h"
 
 void print_info() {
 	printf("Engine compiled on %s at %s.\n", __DATE__, __TIME__);
@@ -26,9 +27,13 @@ int game_main() {
 	/* The first real main game function, called from the main() function of the
 	 * OS. */
 	
+	uint16_t mp = DgMakePool(1024*1024);
+	
 	graphics_init();
 	
 	graphics_free();
+	
+	DgFreePool(mp);
 	
 	return 0;
 }

@@ -1,23 +1,15 @@
 #include <inttypes.h>
 
-/*
-typedef enum {
-	// Use modes
-	DG_ALLOC_PREPARE = 0x00,
-	DG_ALLOC_ALLOC = 0x01,
-	
-	// Allocator modes
-	DG_ALLOC_POOL = 0x10,
-	DG_ALLOC_LINEAR = 0x11,
-	DG_ALLOC_FREELIST = 0x12,
-	DG_ALLOC_STACK = 0x13
-} DgAllocMode;
-*/
-
-typedef struct {
+typedef struct DgPoolInfo {
 	void* memory;
-	uint32_t size;
-	uint32_t properties;
+	void* next;
+	size_t size;
+	// size_t free;
 } DgPoolInfo;
 
-void *DgAlloc(/*DgAllocMode mode,*/ size_t size);
+typedef struct DgBlockInfo {
+	size_t size; // TODO: Is this really needed?
+	void* next;
+} DgBlockInfo;
+
+void *DgAlloc(size_t size);
