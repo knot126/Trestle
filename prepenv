@@ -1,21 +1,21 @@
 # Copyright (C) 2021 Decent Games
-echo Warning: This is will modify your \$PATH until next restart.
-echo Press ctrl+c to quit this process within the next three seconds...
-sleep 3
+echo "Warning: This is will modify your \$PATH until next restart."
+echo "Press ctrl+c to quit this process within the next 2 seconds..."
+sleep 2
 
 # Vulkan SDK
-echo \-> Vulkan SDK
-export VULKAN_SDK_VERSION = 1.2.162.1
-export VULKAN_SDK = ~/Development/vulkan-sdk/$VULKAN_SDK_VERSION/x86_64
-export PATH = $VULKAN_SDK/bin:$PATH
-export LD_LIBRARY_PATH = $VULKAN_SDK/lib:$LD_LIBRARY_PATH
-export VK_LAYER_PATH = $VULKAN_SDK/etc/vulkan/explicit_layer.d
+echo "-> Vulkan SDK"
+export VULKAN_SDK_VERSION=1.2.162.1
+export VULKAN_SDK=~/Development/vulkan-sdk/$VULKAN_SDK_VERSION/x86_64
+export PATH=$VULKAN_SDK/bin:$PATH
+export LD_LIBRARY_PATH=$VULKAN_SDK/lib:$LD_LIBRARY_PATH
+export VK_LAYER_PATH=$VULKAN_SDK/etc/vulkan/explicit_layer.d
 
 # Decent Games Specific
-echo \-> Decent Games
-export COM_DECENTGAMES_ENV_SET = 1
-export COM_DECENTGAMES_QUICKRUN_ENV_SET = 1
-export COM_DECENTGAMES_QUICKRUN_DEBUG = 1
+echo "-> Decent Games"
+export COM_DECENTGAMES_ENV_SET=1
+export COM_DECENTGAMES_QUICKRUN_ENV_SET=1
+export COM_DECENTGAMES_QUICKRUN_DEBUG=1
 
 # Done
-echo Done!
+echo "Done!"

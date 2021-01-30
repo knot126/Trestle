@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "alloc.h"
 
@@ -29,9 +30,9 @@ uint16_t DgMakePool(size_t size) {
 		return 0;
 	}
 	
-	dg_pool_info[dg_alloc_pools_count - 1].memory = pool;
-	dg_pool_info[dg_alloc_pools_count - 1].next = pool;
-	dg_pool_info[dg_alloc_pools_count - 1].size = size;
+	dg_alloc_pools[dg_alloc_pools_count - 1].memory = pool;
+	dg_alloc_pools[dg_alloc_pools_count - 1].next = pool;
+	dg_alloc_pools[dg_alloc_pools_count - 1].size = size;
 	
 	return dg_alloc_pools_count;
 }
@@ -42,9 +43,9 @@ void DgFreePool(uint16_t index) {
 	dg_alloc_active_pools_count--;
 	free(dg_alloc_pools[index].memory);
 	
-	dg_pool_info[index].memory = NULL;
-	dg_pool_info[index].next = NULL;
-	// dg_pool_info[index].size = 0;
+	dg_alloc_pools[index].memory = NULL;
+	dg_alloc_pools[index].next = NULL;
+	// dg_alloc_pools[index].size = 0;
 	
 	if (dg_alloc_active_pools_count == 0) {
 		free(dg_alloc_pools);
@@ -66,7 +67,7 @@ uint16_t DgBestPoolIndex(size_t size) {
 
 void *DgAlloc(size_t size) {
 	/* Allocate a block of memory in the first best fitting pool. */
-	DgPoolInfo pool = dg_alloc_pools[DgBestPoolIndex(size)];
+	DgPoolInfo* pool = &dg_alloc_pools[DgBestPoolIndex(size)];
 	
 	void *block = pool->next;
 	pool->next = pool->next + size + sizeof(DgBlockInfo);

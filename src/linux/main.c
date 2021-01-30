@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#include "game.h"
+#include "../game.h"
 
 int main(int argc, char* argv[]) {
 	printf("Using Linux platform_main\n");

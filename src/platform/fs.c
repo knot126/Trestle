@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "platform/fs.h"
-#include "util/alloc.h"
+#include "fs.h"
+#include "../util/alloc.h"
 
 char* DgEvalPath(char* path) {
 	/* 

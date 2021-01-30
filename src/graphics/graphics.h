@@ -5,11 +5,12 @@
  * This file contains the graphics core.
  */
 
-#include "math/vector2.h"
-#include "math/vector3.h"
+#include "../math/vector2.h"
+#include "../math/vector3.h"
 
 typedef struct DgVulkanInstaceData {
 	
 } DgVulkanInstaceData;
 
-void DgVulkanInit();
+void graphics_init();
+void graphics_free();

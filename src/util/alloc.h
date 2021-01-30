@@ -12,4 +12,8 @@ typedef struct DgBlockInfo {
 	void* next;
 } DgBlockInfo;
 
+uint16_t DgMakePool(size_t size);
+void DgFreePool(uint16_t index);
+uint16_t DgBestPoolIndex(size_t size);
 void *DgAlloc(size_t size);
+void DgFree(void *block);
