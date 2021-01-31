@@ -16,7 +16,10 @@
 
 #include "../graphics/graphics.h"
 
+// TODO: Move these to their own struct...
 static VkInstance vk_instance;
+static VkApplicationInfo app_info;
+static VkInstanceCreateInfo inst_info;
 
 void graphics_init() {
 	VkResult vk_status;
@@ -27,9 +30,7 @@ void graphics_init() {
 	memset(&vk_instance, 0, sizeof(VkInstance));
 	
 	// Create app info structure
-	VkApplicationInfo app_info;
 	memset(&app_info, 0, sizeof(VkApplicationInfo));
-	
 	app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	app_info.pNext = NULL;
 	app_info.pApplicationName = "Quick Run";
@@ -39,12 +40,12 @@ void graphics_init() {
 	app_info.apiVersion = VK_API_VERSION_1_0;
 	
 	// Create instance info structure
-	VkInstanceCreateInfo inst_info;
-	memset(&inst_info, 0, sizeof(VkInstanceCreateInfo));
 	
+	memset(&inst_info, 0, sizeof(VkInstanceCreateInfo));
 	inst_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-	inst_info.pApplicationInfo = &app_info;
 	inst_info.pNext = NULL;
+	inst_info.flags = 0;
+	inst_info.pApplicationInfo = &app_info;
 	inst_info.enabledLayerCount = 0;
 	inst_info.ppEnabledLayerNames = NULL;
 	inst_info.enabledExtensionCount = 0;
@@ -81,6 +82,5 @@ void graphics_init() {
 }
 
 void graphics_free() {
-	printf("Destroying graphics subsystem...\n");
-	vkDestroyInstance(&vk_instance, NULL);
+	vkDestroyInstance(vk_instance, NULL);
 }

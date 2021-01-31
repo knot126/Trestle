@@ -21,7 +21,13 @@ uint16_t DgMakePool(size_t size) {
 		}
 	}
 	
+	// Because of this, I think this alloc actually preform worse :)
+	// Should just make enough space in the list in the first place.
 	dg_alloc_pools = realloc(dg_alloc_pools, sizeof(DgPoolInfo) * dg_alloc_pools_count);
+	
+	if (!dg_alloc_pools) {
+		printf("Warning: Realloc array of pools has failed!\n");
+	}
 	
 	void *pool = malloc(size);
 	
@@ -34,7 +40,9 @@ uint16_t DgMakePool(size_t size) {
 	dg_alloc_pools[dg_alloc_pools_count - 1].next = pool;
 	dg_alloc_pools[dg_alloc_pools_count - 1].size = size;
 	
-	return dg_alloc_pools_count;
+	// Always remember to subtract one from this number! (Of course, this has 
+	// been done for you here...)
+	return dg_alloc_pools_count - 1;
 }
 
 void DgFreePool(uint16_t index) {
@@ -45,7 +53,6 @@ void DgFreePool(uint16_t index) {
 	
 	dg_alloc_pools[index].memory = NULL;
 	dg_alloc_pools[index].next = NULL;
-	// dg_alloc_pools[index].size = 0;
 	
 	if (dg_alloc_active_pools_count == 0) {
 		free(dg_alloc_pools);

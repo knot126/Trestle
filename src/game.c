@@ -27,12 +27,16 @@ int game_main() {
 	/* The first real main game function, called from the main() function of the
 	 * OS. */
 	
+	printf("Making initial memory pool (1 MiB)...\n");
 	uint16_t mp = DgMakePool(1024*1024);
 	
+	printf("Init graphics subsystem...\n");
 	graphics_init();
 	
+	printf("Destroying graphics subsystem...\n");
 	graphics_free();
 	
+	printf("Free memory pool...\n");
 	DgFreePool(mp);
 	
 	return 0;
