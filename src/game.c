@@ -28,7 +28,7 @@ int game_main() {
 	 * OS. */
 	
 	printf("Making initial memory pool (1 MiB)...\n");
-	uint16_t mp = DgMakePool(1024*1024);
+	uint16_t mp = DgMakePool(1024 * 1024);
 	
 	printf("Init graphics subsystem...\n");
 	graphics_init();

@@ -9,6 +9,7 @@
 #include <inttypes.h>
 #include <vulkan/vulkan.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "../math/vector2.h"
 #include "../math/vector3.h"
@@ -20,11 +21,14 @@
 static VkInstance vk_instance;
 static VkApplicationInfo app_info;
 static VkInstanceCreateInfo inst_info;
+static VkDeviceQueueCreateInfo queue_info;
 
 void graphics_init() {
 	VkResult vk_status;
 	uint32_t device_count = 0;
+	uint32_t queue_count = 0;
 	VkPhysicalDevice *devices;
+	VkQueueFamilyProperties *queues;
 	
 	// Clear instance
 	memset(&vk_instance, 0, sizeof(VkInstance));
@@ -76,8 +80,50 @@ void graphics_init() {
 	
 	vk_status = vkEnumeratePhysicalDevices(vk_instance, &device_count, devices);
 	
-	// Initialise the device
+	// Initialise device
+	vkGetPhysicalDeviceQueueFamilyProperties(devices[0], &queue_count, NULL);
 	
+	if (queue_count < 1) {
+		printf("Error: Less than one queue on selected device(s).\n");
+	} else {
+		printf("Info: Have %d vulkan queues.\n", queue_count);
+	}
+	
+	queues = (VkQueueFamilyProperties *) DgAlloc(sizeof(VkQueueFamilyProperties) * queue_count);
+	
+	if (!queues) {
+		printf("Error: Failed to allocate memory for queues table.\n");
+	}
+	
+	vkGetPhysicalDeviceQueueFamilyProperties(devices[0], &queue_count, queues);
+	
+	// Check that at least some queues are for graphics
+	bool found_graphics = false;
+	uint32_t graphics_queue_index = 0;
+	
+	for (uint32_t i = 0; i < queue_count; i++) {
+		if (queues[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+			found_graphics = true;
+			graphics_queue_index = i;
+			break;
+		}
+	}
+	
+	if (!found_graphics) {
+		printf("Error: Graphics not found.\n");
+	} else {
+		printf("Found queue capable of graphics at index %d.\n", graphics_queue_index);
+	}
+	
+	memset(&queue_info, 0, sizeof(VkDeviceQueueCreateInfo));
+	float queue_priority[1] = {0.0};
+	queue_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+	queue_info.pNext = NULL;
+	queue_info.queueCount = 1;
+	queue_info.pQueuePriorities = queue_priority;
+	
+	// Free temporary tables/arrays
+	DgFree(queues);
 	DgFree(devices);
 }
 
