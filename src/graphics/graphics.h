@@ -31,10 +31,10 @@ typedef struct DgVulkanInfo {
 	uint32_t graphics_queue_index;
 	
 	// Command Buffers
-	VkCommandPool cmdpool;
-	VkCommandBuffer* cmdbufs;
-	VkCommandPoolCreateInfo cmdpool_info;
-	VkCommandBufferAllocateInfo cmdbuf;
+	VkCommandPool cmd_pool;
+	VkCommandBuffer* cmd_buffers;
+	VkCommandPoolCreateInfo cmd_pool_info;
+	VkCommandBufferAllocateInfo cmd_buffer_info;
 } DgVulkanInfo;
 
 DgVulkanInfo* graphics_init();

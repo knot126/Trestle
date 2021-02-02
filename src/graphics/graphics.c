@@ -56,9 +56,9 @@ static void DgCreateVkInstance(DgVulkanInfo* vk) {
 }
 
 static void DgEnumerateVulkanDevices(DgVulkanInfo* vk) {
+	// Enumerate devices
 	VkResult vk_status;
 	
-	// Enumerate devices
 	vk_status = vkEnumeratePhysicalDevices(vk->instance, &vk->device_count, NULL);
 	
 	if (vk->device_count < 1) {
@@ -75,9 +75,9 @@ static void DgEnumerateVulkanDevices(DgVulkanInfo* vk) {
 }
 
 static void DgInitialiseVulkanDevice(DgVulkanInfo* vk) {
+	// Initialise device
 	VkResult vk_status;
 	
-	// Initialise device
 	vkGetPhysicalDeviceQueueFamilyProperties(vk->devices[0], &vk->queue_count, NULL);
 	
 	if (vk->queue_count < 1) {
@@ -96,10 +96,10 @@ static void DgInitialiseVulkanDevice(DgVulkanInfo* vk) {
 }
 
 static void DgCheckForGraphicsOnDevice(DgVulkanInfo* vk) {
+	// Check that at least some queues are for graphics
+	
 	VkResult vk_status;
 	bool found_graphics;
-	
-	// Check that at least some queues are for graphics
 	
 	for (uint32_t i = 0; i < vk->queue_count; i++) {
 		if (vk->queues[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
@@ -117,6 +117,7 @@ static void DgCheckForGraphicsOnDevice(DgVulkanInfo* vk) {
 }
 
 static void DgCreateVulkanDevice(DgVulkanInfo* vk) {
+	// Creates a vulkan device
 	VkResult vk_status;
 	
 	memset(&vk->queue_info, 0, sizeof(VkDeviceQueueCreateInfo));
@@ -148,13 +149,13 @@ static void DgCreateVulkanCommandPool(DgVulkanInfo* vk) {
 	// Create a command pool
 	VkResult vk_status;
 	
-	memset(&vk->cmdpool_info, 0, sizeof(VkCommandPoolCreateInfo));
-	vk->cmdpool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	vk->cmdpool_info.pNext = NULL;
-	vk->cmdpool_info.queueFamilyIndex = vk->graphics_queue_index;
-	vk->cmdpool_info.flags = 0;
+	memset(&vk->cmd_pool_info, 0, sizeof(VkCommandPoolCreateInfo));
+	vk->cmd_pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+	vk->cmd_pool_info.pNext = NULL;
+	vk->cmd_pool_info.queueFamilyIndex = vk->graphics_queue_index;
+	vk->cmd_pool_info.flags = 0;
 	
-	vk_status = vkCreateCommandPool(vk->device, &vk->cmdpool_info, NULL, &vk->cmdpool);
+	vk_status = vkCreateCommandPool(vk->device, &vk->cmd_pool_info, NULL, &vk->cmd_pool);
 	
 	if (vk_status) {
 		printf("Error: Failed to create command pool.\n");
@@ -165,20 +166,20 @@ static void DgCreateVulkanCommandBuffer(DgVulkanInfo* vk) {
 	// Create a command buffer
 	VkResult vk_status;
 	
-	memset(&vk->cmdbuf, 0, sizeof(VkCommandBufferAllocateInfo));
-	vk->cmdbuf.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	vk->cmdbuf.pNext = NULL;
-	vk->cmdbuf.commandPool = vk->cmdpool;
-	vk->cmdbuf.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	vk->cmdbuf.commandBufferCount = 1;
+	memset(&vk->cmd_buffer_info, 0, sizeof(VkCommandBufferAllocateInfo));
+	vk->cmd_buffer_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	vk->cmd_buffer_info.pNext = NULL;
+	vk->cmd_buffer_info.commandPool = vk->cmd_pool;
+	vk->cmd_buffer_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	vk->cmd_buffer_info.commandBufferCount = 1;
 	
-	vk->cmdbufs = DgAlloc(sizeof(VkCommandBuffer) * 1);
+	vk->cmd_buffers = DgAlloc(sizeof(VkCommandBuffer) * 1);
 	
-	if (!vk->cmdbufs) {
+	if (!vk->cmd_buffers) {
 		printf("Failed to allocate memory for command buffer.\n");
 	}
 	
-	vk_status = vkAllocateCommandBuffers(vk->device, &vk->cmdbuf, vk->cmdbufs);
+	vk_status = vkAllocateCommandBuffers(vk->device, &vk->cmd_buffer_info, vk->cmd_buffers);
 }
 
 DgVulkanInfo* graphics_init() {
@@ -200,14 +201,14 @@ DgVulkanInfo* graphics_init() {
 }
 
 void graphics_free(DgVulkanInfo* vk) {
-	// TODO: Look here, maybe this cause segfault. I mean function refrence.
-	// Also learn how to vulkan...
-	vkFreeCommandBuffers(vk->device, vk->cmdpool, 1, vk->cmdbufs);
-	vkDestroyCommandPool(vk->device, vk->cmdpool, NULL);
+	// Free vulkan-related things
+	vkFreeCommandBuffers(vk->device, vk->cmd_pool, 1, vk->cmd_buffers);
+	vkDestroyCommandPool(vk->device, vk->cmd_pool, NULL);
+	vkDestroyDevice(vk->device, NULL);
 	vkDestroyInstance(vk->instance, NULL);
 	
 	// Free temporary tables/arrays
 	DgFree(vk->queues);
 	DgFree(vk->devices);
-	DgFree(vk->cmdbufs);
+	DgFree(vk->cmd_buffers);
 }
