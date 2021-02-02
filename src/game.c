@@ -31,10 +31,11 @@ int game_main() {
 	uint16_t mp = DgMakePool(1024 * 1024);
 	
 	printf("Init graphics subsystem...\n");
-	graphics_init();
+	DgVulkanInfo* vk = graphics_init();
 	
 	printf("Destroying graphics subsystem...\n");
-	graphics_free();
+	graphics_free(vk);
+	printf("Freed graphics subsystem.\n");
 	
 	printf("Free memory pool...\n");
 	DgFreePool(mp);
