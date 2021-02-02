@@ -13,21 +13,28 @@
 #include "../math/vector3.h"
 
 typedef struct DgVulkanInfo {
+	// Vulkan instance
 	VkInstance instance;
 	VkApplicationInfo app_info;
 	VkInstanceCreateInfo inst_info;
-	VkDeviceQueueCreateInfo queue_info;
+	
+	// Devices
 	VkDevice device;
+	VkPhysicalDevice *devices;
+	uint32_t device_count;
+	VkDeviceCreateInfo device_info;
+	
+	// Queues
+	VkDeviceQueueCreateInfo queue_info;
+	VkQueueFamilyProperties *queues;
+	uint32_t queue_count;
+	uint32_t graphics_queue_index;
+	
+	// Command Buffers
 	VkCommandPool cmdpool;
 	VkCommandBuffer* cmdbufs;
 	VkCommandPoolCreateInfo cmdpool_info;
 	VkCommandBufferAllocateInfo cmdbuf;
-	VkPhysicalDevice *devices;
-	VkQueueFamilyProperties *queues;
-	VkDeviceCreateInfo device_info;
-	uint32_t device_count;
-	uint32_t queue_count;
-	uint32_t graphics_queue_index;
 } DgVulkanInfo;
 
 DgVulkanInfo* graphics_init();

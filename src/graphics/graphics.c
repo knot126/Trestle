@@ -196,16 +196,18 @@ DgVulkanInfo* graphics_init() {
 	DgCreateVulkanCommandPool(vk);
 	DgCreateVulkanCommandBuffer(vk);
 	
-	// Free temporary tables/arrays
-	DgFree(vk->queues);
-	DgFree(vk->devices);
+	return vk;
 }
 
 void graphics_free(DgVulkanInfo* vk) {
-	DgFree(vk->cmdbufs);
-	
+	// TODO: Look here, maybe this cause segfault. I mean function refrence.
+	// Also learn how to vulkan...
 	vkFreeCommandBuffers(vk->device, vk->cmdpool, 1, vk->cmdbufs);
-	//vkDestroyCommandPool(vk->device, vk->cmdpool, NULL);
+	vkDestroyCommandPool(vk->device, vk->cmdpool, NULL);
+	vkDestroyInstance(vk->instance, NULL);
 	
-	//vkDestroyInstance(vk->instance, NULL);
+	// Free temporary tables/arrays
+	DgFree(vk->queues);
+	DgFree(vk->devices);
+	DgFree(vk->cmdbufs);
 }

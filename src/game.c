@@ -15,6 +15,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "graphics/graphics.h"
 #include "util/alloc.h"
@@ -33,9 +34,14 @@ int game_main() {
 	printf("Init graphics subsystem...\n");
 	DgVulkanInfo* vk = graphics_init();
 	
-	printf("Destroying graphics subsystem...\n");
+	if (!vk) {
+		printf("Error: Pointer to vulkan info is noll.\n");
+		exit(1);
+	}
+	
+	printf("Destroying graphics subsystem...");
 	graphics_free(vk);
-	printf("Freed graphics subsystem.\n");
+	printf("  Done\n");
 	
 	printf("Free memory pool...\n");
 	DgFreePool(mp);
