@@ -6,6 +6,8 @@ project(Engine VERSION 0.0.0)
 # Source files
 set(FILES 
 	src/graphics/graphics.c
+	src/graphics/vulkan.c
+	src/graphics/opengl.c
 	src/linux/main.c
 	src/math/vector2.c
 	src/math/vector3.c
