@@ -14,7 +14,7 @@
 #include "../graphics/opengl.h"
 #include "../util/alloc.h"
 
-DgVulkanInfo* graphics_init() {
+DgVulkanInfo* graphics_init(void) {
 	DgVulkanInfo* vk = (DgVulkanInfo *) DgAlloc(sizeof(DgVulkanInfo));
 	
 	if (!vk) {
@@ -43,4 +43,14 @@ void graphics_free(DgVulkanInfo* vk) {
 	DgFree(vk->queues);
 	DgFree(vk->devices);
 	DgFree(vk->cmd_buffers);
+}
+
+DgOpenGLContext* gl_graphics_init(void) {
+	glfwInit();
+	
+	return 1;
+}
+
+void gl_graphics_free(DgOpenGLContext* gl) {
+	glfwTerminate();
 }

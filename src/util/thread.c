@@ -2,8 +2,8 @@
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
- * OpenGL-related graphics stuff
+ * Thread abstraction
  */
 
-#include <GLFW/glfw3.h>
+#include "thread.h"
 

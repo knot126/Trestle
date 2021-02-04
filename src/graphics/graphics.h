@@ -13,5 +13,8 @@
 // #include "../math/vector3.h"
 #include "../graphics/vulkan.h"
 
-DgVulkanInfo* graphics_init();
-void graphics_free();
+DgVulkanInfo* graphics_init(void);
+void graphics_free(DgVulkanInfo*);
+
+DgOpenGLContext* gl_graphics_init(void);
+void gl_graphics_free(DgOpenGLContext*);

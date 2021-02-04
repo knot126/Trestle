@@ -12,9 +12,6 @@
 #include "../game.h"
 
 int main(int argc, char* argv[]) {
-	printf("Using Linux platform_main\n");
-	
-	game_main();
-	
-	return 0;
+	//printf("Using Linux platform_main\n");
+	return game_main(argc, argv);
 }
