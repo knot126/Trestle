@@ -7,6 +7,8 @@
 
 #include <inttypes.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 #include <vulkan/vulkan.h>
 
@@ -46,11 +48,32 @@ void graphics_free(DgVulkanInfo* vk) {
 }
 
 DgOpenGLContext* gl_graphics_init(void) {
+	DgOpenGLContext* gl = DgAlloc(sizeof(DgOpenGLContext));
+	memset(gl, 0, sizeof(DgOpenGLContext));
+	
 	glfwInit();
 	
-	return 1;
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	
+	gl->window = glfwCreateWindow(800, 600, "Decent Games Engine", NULL, NULL);
+	
+	if (!gl->window) {
+		printf("Failed to create glfw window.\n");
+		exit(-1);
+	}
+	
+	glfwMakeContextCurrent(gl->window);
+	
+	return gl;
 }
 
 void gl_graphics_free(DgOpenGLContext* gl) {
 	glfwTerminate();
+	
+	DgFree(gl);
 }

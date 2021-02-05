@@ -19,6 +19,8 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include <GLFW/glfw3.h>
+
 #include "graphics/vulkan.h"
 #include "graphics/opengl.h"
 #include "graphics/graphics.h"
@@ -31,9 +33,43 @@ static void print_info(void) {
 	printf("Engine compiled on %s at %s.\n", __DATE__, __TIME__);
 }
 
-static int game_loop(void) {
+static int game_loop(void* pGInfo) {
 	/* The main loop. */
-	should_keep_open = false;
+	DgVulkanInfo* vk = NULL;
+	DgOpenGLContext* gl = NULL;
+	bool should_keep_open = true;
+	
+	if (!pGInfo) {
+		printf("Graphics pointer is null.\n");
+	}
+	
+	// Set the proper value based on being GraphicsGL or not
+	if (!graphics_gl) {
+		vk = (DgVulkanInfo *) pGInfo;
+	}
+	else if (graphics_gl) {
+		gl = (DgOpenGLContext *) pGInfo;
+	}
+	
+	while (should_keep_open) {
+		
+		// TODO: Make a function that does all of the graphics stuff
+		if (!graphics_gl) {
+			should_keep_open = false;
+		}
+		else if (graphics_gl) {
+			should_keep_open = !glfwWindowShouldClose(gl->window);
+			glfwSwapBuffers(gl->window);
+			glfwPollEvents();
+			
+			if (glfwGetKey(gl->window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+				glfwSetWindowShouldClose(gl->window, GL_TRUE);
+			}
+		}
+		
+	} // while (should_keep_open)
+	
+	return 0;
 }
 
 int game_main(int argc, char* argv[]) {
@@ -49,15 +85,10 @@ int game_main(int argc, char* argv[]) {
 	printf("Making initial memory pool (1 MiB)...\n");
 	uint16_t mp = DgMakePool(1024 * 1024);
 	
-	// Main loop
-	while (should_keep_open) {
-		game_loop();
-	}
-	
 	// Graphics initialisation
 	printf("Init graphics subsystem...\n");
 	if (!graphics_gl) {
-		DgVulkanInfo* vk = graphics_init();
+		vk = graphics_init();
 		
 		if (!vk) {
 			printf("Error: Pointer to vulkan info is noll.\n");
@@ -65,12 +96,21 @@ int game_main(int argc, char* argv[]) {
 		}
 	}
 	else if (graphics_gl) {
-		DgOpenGLContext* gl = gl_graphics_init();
+		gl = gl_graphics_init();
 		
 		if (!gl) {
 			printf("Error: Pointer to OpenGL info is noll.\n");
 			exit(1);
 		}
+	}
+	
+	// Main loop
+	printf("Main loop\n");
+	if (!graphics_gl) {
+		game_loop(vk);
+	}
+	else if (graphics_gl) {
+		game_loop(gl);
 	}
 	
 	// Graphics destruction

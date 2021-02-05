@@ -14,13 +14,10 @@
  * This file holds the main function and therefore the call to platform_main.
  */
 
-#ifdef __cplusplus__
-	#warning A C++ compiler has been detected. Please note that Decent Games \
-	engine will compile as C.
-#endif
+// Any "global" defines
+#define GLEW_STATIC
 
 // Platform_main will define the correct main for this platform
-// Or perhaps we should define main in the platforms?
 #ifdef __linux__
 	#include "linux/main.h"
 #endif

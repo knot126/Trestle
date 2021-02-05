@@ -8,6 +8,7 @@ set(FILES
 	src/graphics/graphics.c
 	src/graphics/vulkan.c
 	src/graphics/opengl.c
+	src/glew/glew.c
 	src/linux/main.c
 	src/math/vector2.c
 	src/math/vector3.c
