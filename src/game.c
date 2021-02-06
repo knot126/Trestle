@@ -83,7 +83,7 @@ int game_main(int argc, char* argv[]) {
 	// Create a basic memory pool
 	// NOTE that this should be refactored for preformance!
 	printf("Making initial memory pool (1 MiB)...\n");
-	uint16_t mp = DgMakePool(1024 * 1024);
+	alloch_t mp = DgMakePool(1024 * 1024);
 	
 	// Graphics initialisation
 	printf("Init graphics subsystem...\n");

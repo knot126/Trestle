@@ -5,6 +5,7 @@
 
 #include "alloc.h"
 
+// DEPRECATED: Try to avoid using these variables
 static uint32_t dg_alloc_pools_count;
 static uint32_t dg_alloc_active_pools_count;
 
@@ -13,8 +14,8 @@ static uint32_t dg_alloc_active_pools_count;
 // TODO: It may also be worthwhile to consider storing the freeness with each 
 // pool, but believe that would take more memory.
 DgPoolInfo  *dg_alloc_pools;
-size_t       dg_alloc_pools_size; // false = free, true = allocated
-bool        *dg_alloc_pools_frees;
+size_t       dg_alloc_pools_size;
+bool        *dg_alloc_pools_frees; // false = free, true = allocated
 
 int32_t DgMakePool(size_t size) {
 	/* 
@@ -23,8 +24,6 @@ int32_t DgMakePool(size_t size) {
 	 * Returns a handle (index) of the memory pool information. Positive means
 	 * a successful run, negitive number means an error occured.
 	 */
-	dg_alloc_pools_count++;
-	dg_alloc_active_pools_count++;
 	
 	// This will be done the first time that pools are allocated
 	if (!dg_alloc_pools) {
@@ -50,16 +49,16 @@ int32_t DgMakePool(size_t size) {
 	
 	// Reallocate if no pool slots are free
 	if (got == -1) {
-		dg_alloc_pools_count += 8;
+		dg_alloc_pools_size += 8;
 		dg_alloc_pools = realloc(dg_alloc_pools, sizeof(DgPoolInfo) * dg_alloc_pools_size);
 		dg_alloc_pools_frees = realloc(dg_alloc_pools_frees, sizeof(bool) * dg_alloc_pools_size);
 		
 		// NOTE: What this should do is set the last eight (new) bools in the
 		// array to zero, so we know they are all set to false and there will be
 		// one free.
-		memset(dg_alloc_pools_frees + (dg_alloc_pools_count * sizeof(bool) - 8),
+		memset(dg_alloc_pools_frees + (dg_alloc_pools_size * sizeof(bool) - 8),
 			   0,
-			   dg_alloc_pools_count);
+			   dg_alloc_pools_size);
 		
 		if (!dg_alloc_pools || !dg_alloc_pools_frees) {
 			printf("__FILE__:__LINE__ System alloc failed!\n");
@@ -72,7 +71,7 @@ int32_t DgMakePool(size_t size) {
 	void *pool = malloc(size);
 	
 	if (!pool) {
-		printf("Failed to allocate %d bytes of memory.\n", (uint64_t) size);
+		printf("Warning: Failed to allocate %d bytes of memory.\n", (uint64_t) size);
 		return -1;
 	}
 	
@@ -84,26 +83,40 @@ int32_t DgMakePool(size_t size) {
 	return got;
 }
 
-void DgFreePool(uint16_t index) {
+void DgFreePool(int32_t index) {
 	/* Frees a memory pool, and the pools info array if there are no pools are
 	 * left. */
-	dg_alloc_active_pools_count--;
+	
+	// Refuse to free a failed pool
+	if (index < 0) {
+		printf("Warning: Tried to free a failed pool.\n");
+		return;
+	}
+	
 	free(dg_alloc_pools[index].memory);
 	
 	dg_alloc_pools[index].memory = NULL;
 	dg_alloc_pools[index].next = NULL;
+	dg_alloc_pools[index].size = 0;
 	
-	if (dg_alloc_active_pools_count == 0) {
-		free(dg_alloc_pools);
-	}
+	dg_alloc_pools_frees[index] = false;
 }
 
-uint16_t DgBestPoolIndex(size_t size) {
-	/* Returns best pool's index */
-	uint32_t i;
+int32_t DgBestPoolIndex(size_t size) {
+	/* Returns best pool's index.
+	 *
+	 * Currently, best pool is defined as the first with enough space to hold
+	 * the data.
+	 */
+	int32_t i;
 	
-	for (i = 0; i < dg_alloc_pools_count; i++) {
-		if (dg_alloc_pools[i].size - (uint32_t)(dg_alloc_pools[i].next - dg_alloc_pools[i].memory) > size) {
+	for (i = 0; i < dg_alloc_pools_size; i++) {
+		if (
+			dg_alloc_pools_frees[i] == true // Check that the pool is allocated
+			&& dg_alloc_pools[i].size 
+				- (int32_t)(dg_alloc_pools[i].next - dg_alloc_pools[i].memory) 
+					> size
+		) {
 			break;
 		}
 	}
