@@ -11,6 +11,7 @@
 #include <stdlib.h>
 
 #include <vulkan/vulkan.h>
+#include "../glew/glew.h"
 
 #include "../graphics/vulkan.h"
 #include "../graphics/opengl.h"
@@ -68,6 +69,22 @@ DgOpenGLContext* gl_graphics_init(void) {
 	}
 	
 	glfwMakeContextCurrent(gl->window);
+	
+	glewExperimental = GL_TRUE;
+	glewInit();
+	
+	// Vertex datas
+	const float g_Triangle[] = {
+		 0.0f,  0.5f,
+		 0.5f, -0.5f,
+		-0.5f, -0.5f,
+	};
+	
+	// Making a buffer
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_Triangle), g_Triangle, GL_STATIC_DRAW);
 	
 	return gl;
 }
