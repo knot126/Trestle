@@ -25,6 +25,7 @@
 #include "graphics/opengl.h"
 #include "graphics/graphics.h"
 #include "util/alloc.h"
+#include "util/bag.h"
 
 const bool graphics_gl = true;
 bool should_keep_open = true;
@@ -81,7 +82,7 @@ int game_main(int argc, char* argv[]) {
 	print_info();
 	
 	// Create a basic memory pool
-	// NOTE that this should be refactored for preformance!
+	// NOTE: This should be refactored for preformance!
 	printf("Making initial memory pool (1 MiB)...\n");
 	alloch_t mp = DgMakePool(1024 * 1024);
 	

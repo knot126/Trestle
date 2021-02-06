@@ -11,3 +11,5 @@ typedef struct DgPropertyBag {
 } DgPropertyBag;
 
 DgPropertyBag DgPropertyBagInit(size_t size);
+char *DgPropertyBagGet(DgPropertyBag pb, char* name);
+void DgPropertyBagSet(DgPropertyBag pb, char* key, char* value);
