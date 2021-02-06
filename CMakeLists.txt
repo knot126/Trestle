@@ -15,6 +15,7 @@ set(FILES
 	src/platform/fs.c
 	src/util/alloc.c
 	src/game.c
+	src/types.c
 	src/main.c)
 
 # Force compiler to high warning levels

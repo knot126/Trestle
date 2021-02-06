@@ -3,6 +3,7 @@
 
 #include "fs.h"
 #include "../util/alloc.h"
+#include "../types.h"
 
 char* DgEvalPath(char* path) {
 	/* 
@@ -63,7 +64,11 @@ DgFileStream* DgMoveFileStream(DgFileStream* stream, char* path) {
 }
 
 void DgMoveFile(char* src, char* dest) {
-	
+	int status;
+	status = rename(src, dest);
+	if (status) {
+		printf("Failed to rename file %s.", src);
+	}
 }
 
 DgFileStream* DgCopyFileStream(DgFileStream* stream, char* path) {
