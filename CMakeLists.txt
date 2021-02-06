@@ -12,8 +12,11 @@ set(FILES
 	src/linux/main.c
 	src/math/vector2.c
 	src/math/vector3.c
-	src/platform/fs.c
+	src/io/fs.c
 	src/util/alloc.c
+	src/util/bag.c
+#	src/util/dictionary.c
+#	src/util/generic.c
 	src/game.c
 	src/types.c
 	src/main.c)
