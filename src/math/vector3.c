@@ -2,7 +2,7 @@
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
- * This file contains the implementation of DgVec3.
+ * Vector3 implementation
  */
 
 #include <math.h>

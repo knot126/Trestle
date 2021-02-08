@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2021 Decent Games
+ * ===============================
+ * 
+ * OpenGL-related graphics stuff
+ */
+
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>

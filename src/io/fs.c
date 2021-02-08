@@ -40,6 +40,11 @@ void DgInitPaths() {
 		}
 	}
 	
+	if (!dg_special_directory_paths[0]) {
+		printf("Couldn't initialise paths.\n");
+		exit(EXIT_FAILURE);
+	}
+	
 	// Index 1: User config path ** NOT IMPLEMENTED **
 	
 }

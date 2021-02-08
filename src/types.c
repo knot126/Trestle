@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2021 Decent Games
+ * ===============================
+ * 
+ * Common types and global variables
+ */
+
 #include "types.h"
 
 const char* ASSETS_LOOK_PATH[2] = {

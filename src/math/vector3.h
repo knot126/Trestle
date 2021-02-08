@@ -1,11 +1,11 @@
-#pragma once
-
 /*
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
- * This file contains the implementation of vector3.
+ * Vector3 implementation
  */
+
+#pragma once
 
 typedef struct DgVec3 {
 	/*

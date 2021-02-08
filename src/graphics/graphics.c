@@ -2,7 +2,7 @@
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
- * This file contains the graphics core.
+ * Basic Graphics Functions, to be called funcs in src/game.c
  */
 
 #include <inttypes.h>
@@ -89,8 +89,6 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	char *vs_path = DgEvalPath("assets://shaders/vertex.glsl");
 	char *fs_path = DgEvalPath("assets://shaders/frag.glsl");
-	
-	printf("yeet\n");
 	
 	DgLoadBinaryFileInfo* vertex_shader_file = DgLoadBinaryFile(vs_path);
 	

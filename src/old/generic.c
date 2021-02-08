@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2021 Decent Games
+ * ===============================
+ * 
+ * Old generic type
+ */
+
 #include <inttypes.h>
 
 #include "alloc.h"

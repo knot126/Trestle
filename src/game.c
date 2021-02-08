@@ -8,10 +8,7 @@
  * Contributours:
  *  - cdde <cddepppp256@protonmail.com>
  * 
- * Main File
- * =========
- * 
- * This file holds the main function and therefore the call to platform_main.
+ * Main game loop and startup functions
  */
 
 #include <stdio.h>

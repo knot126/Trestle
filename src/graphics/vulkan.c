@@ -2,7 +2,7 @@
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
- * This file contains all of the main things needed for Vulkan graphics.
+ * Vulkan-related graphics stuff
  */
 
 #include <string.h>

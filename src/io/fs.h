@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2021 Decent Games
+ * ===============================
+ * 
+ * File System Utilites
+ */
+
 #pragma once
 
 #include <stdio.h>

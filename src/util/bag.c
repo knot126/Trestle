@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2021 Decent Games
+ * ===============================
+ * 
+ * PropertyBag implementation
+ */
+
 #include <string.h>
 #include <stdlib.h>
 
