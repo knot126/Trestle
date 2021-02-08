@@ -16,6 +16,7 @@
 #include "../graphics/vulkan.h"
 #include "../graphics/opengl.h"
 #include "../util/alloc.h"
+#include "../io/load.h"
 
 DgVulkanInfo* graphics_init(void) {
 	DgVulkanInfo* vk = (DgVulkanInfo *) DgAlloc(sizeof(DgVulkanInfo));
@@ -85,6 +86,10 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_Triangle), g_Triangle, GL_STATIC_DRAW);
+	
+	DgLoadBinaryFileInfo vertex_shader_file = DgLoadBinaryFile("../Engine/assets/vertex.glsl");
+	
+	GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 	
 	return gl;
 }

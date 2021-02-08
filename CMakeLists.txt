@@ -13,6 +13,7 @@ set(FILES
 	src/math/vector2.c
 	src/math/vector3.c
 	src/io/fs.c
+	src/io/load.c
 	src/util/alloc.c
 	src/util/bag.c
 #	src/util/dictionary.c
