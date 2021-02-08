@@ -87,9 +87,17 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_Triangle), g_Triangle, GL_STATIC_DRAW);
 	
-	DgLoadBinaryFileInfo vertex_shader_file = DgLoadBinaryFile("../Engine/assets/vertex.glsl");
+	char *vs_path = DgEvalPath("assets://shaders/vertex.glsl");
+	char *fs_path = DgEvalPath("assets://shaders/frag.glsl");
+	
+	printf("yeet\n");
+	
+	DgLoadBinaryFileInfo* vertex_shader_file = DgLoadBinaryFile(vs_path);
 	
 	GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+	
+	DgFree(vs_path);
+	DgFree(fs_path);
 	
 	return gl;
 }

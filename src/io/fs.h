@@ -3,11 +3,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
+#include <stdbool.h>
 
 typedef struct DgFileStream {
 	FILE* _c_file_stream;
 } DgFileStream;
 
+void DgInitPaths();
 char* DgEvalPath(char* path);
 DgFileStream* DgFileStreamOpen(char* path, char* permissions);
 DgFileStream* DgFileStreamReopen(DgFileStream* stream, char* path, char* permissions);
@@ -17,6 +19,8 @@ void DgFileStreamRead(DgFileStream* stream, size_t size, void* data);
 void DgFileStreamWrite(DgFileStream* stream, size_t size, void* data);
 size_t DgFileStreamLength(DgFileStream* stream);
 void DgMkdir(char* path);
+bool DgIsDir(const char* dir);
+char *DgGetUserDir();
 void DgDeleteFile(char* path);
 void DgMoveFile(char* src, char* dest);
 void DgCopyFile(char* src, char* dest);

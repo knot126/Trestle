@@ -18,6 +18,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#if defined(__linux__)
+	#include <unistd.h>
+#endif
 
 #include <GLFW/glfw3.h>
 
@@ -26,12 +29,18 @@
 #include "graphics/graphics.h"
 #include "util/alloc.h"
 #include "util/bag.h"
+#include "io/fs.h"
 
 const bool graphics_gl = true;
 bool should_keep_open = true;
 
 static void print_info(void) {
 	printf("Engine compiled on %s at %s.\n", __DATE__, __TIME__);
+// #if defined(__linux__)
+// 	char cwd[200];
+// 	getcwd(cwd, 200);
+// 	printf("Current working directory is %s.\n", cwd);
+// #endif
 }
 
 static int game_loop(void* pGInfo) {
@@ -85,6 +94,9 @@ int game_main(int argc, char* argv[]) {
 	// NOTE: This should be refactored for preformance!
 	printf("Making initial memory pool (6 MiB)...\n");
 	alloch_t mp = DgMakePool(1024 * 1024 * 6);
+	
+	// File system module init
+	DgInitPaths();
 	
 	// Graphics initialisation
 	printf("Init graphics subsystem...\n");

@@ -8,4 +8,5 @@ typedef struct DgLoadBinaryFileInfo {
 	size_t size;
 } DgLoadBinaryFileInfo;
 
-DgLoadBinaryFileInfo DgLoadBinaryFile(char* path);
+DgLoadBinaryFileInfo *DgLoadBinaryFile(char* path);
+void DgUnloadBinaryFile(DgLoadBinaryFileInfo *);

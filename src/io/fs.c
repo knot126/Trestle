@@ -1,9 +1,19 @@
+/*
+ * Copyright (C) 2021 Decent Games
+ * ===============================
+ * 
+ * File System Utilites
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <inttypes.h>
+#include <stdbool.h>
 #if defined(__linux__)
 	#include <sys/stat.h>
+	#include <dirent.h>
+	#include <errno.h>
 #endif
 
 #include "../util/alloc.h"
@@ -11,9 +21,32 @@
 
 #include "fs.h"
 
+const char *dg_special_directory_paths[3] = {
+	NULL,
+	NULL,
+	".",
+};
+
+void DgInitPaths() {
+	/* This will initialise the paths in dg_special_directory_paths. */
+	
+	// Index 0: Assets path
+	for (int i = 0; i < sizeof(ASSETS_LOOK_PATH); i++) {
+		bool d = DgIsDir(ASSETS_LOOK_PATH[i]);
+		
+		if (d) {
+			dg_special_directory_paths[0] = ASSETS_LOOK_PATH[i];
+			break;
+		}
+	}
+	
+	// Index 1: User config path ** NOT IMPLEMENTED **
+	
+}
+
 char* DgEvalPath(char* path) {
 	/* 
-	 * Expands/evaluates a DGFS path
+	 * Expands/evaluates a DGFS path. Remember to free the allocated memory.
 	 * 
 	 * DGFS DESCRIPTION
 	 * ================
@@ -21,13 +54,42 @@ char* DgEvalPath(char* path) {
 	 * DGFS allows using a single, standard file path for all platforms. It 
 	 * (tries to) abstracts the normal file system without going too far.
 	 * 
-	 *   * asset://            - Access to the game's main asset folder.
-	 *   * data://             - Access to the user's save directory.
-	 *   * user://             - Access to the user's home directory.
-	 *   * logs://             - Access to the program logs directory.
+	 *   * asset://            - Access to the game's main asset bundle.
+	 *   * config://           - Access to the user's save directory.
 	 *   * bin://              - Access to the binaries directory.
-	 *   * <any relivate path> - Prepends the asset directory.
 	 */
+	
+	// Check for a path that does not need evaluation
+	if (!strstr(path, "://")) {
+		return path;
+	}
+	
+	uint8_t i; // For the path to use
+	
+	// Note we only check the first two bytes
+	if (!memcmp(path, "as", 2)) {
+		i = 0;
+	}
+	else if (!memcmp(path, "co", 2)) {
+		i = 1;
+	}
+	else if (!memcmp(path, "bi", 2)) {
+		i = 2;
+	}
+	else {
+		return NULL;
+	}
+	
+	// Here, we account for: old len + added "/" len + special len + null term
+	size_t size = strlen(path) + strlen(dg_special_directory_paths[i]) + (sizeof(char) * 2);
+	char *new_path = (char *) DgAlloc(size);
+	char *rel_path = strstr(path, "://") + (sizeof(char) * 3);
+	
+	strcpy(new_path, dg_special_directory_paths[i]);
+	strcat(new_path, "/");
+	strcat(new_path, rel_path);
+	
+	return new_path;
 }
 
 DgFileStream* DgFileStreamOpen(char* path, char* permissions) {
@@ -93,6 +155,20 @@ void DgMkdir(char* path) {
 #else
 	printf("Warning: Function DgMkdir() is not implemented for this platform.\n");
 #endif
+}
+
+bool DgIsDir(const char* dir) {
+#if defined(__linux__)
+	DIR* d = opendir(dir);
+	if (d) {
+		return true;
+	}
+#endif
+	return false;
+}
+
+char *DgGetUserDir() {
+	return NULL;
 }
 
 void DgDeleteFile(char* path) {
