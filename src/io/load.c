@@ -19,9 +19,18 @@ DgLoadBinaryFileInfo DgLoadBinaryFile(char* path) {
 	size_t length;
 	
 	file = DgFileStreamOpen(path, "rb");
+	
+	if (!file) {
+		exit(-1);
+	}
+	
 	length = DgFileStreamLength(file);
 	
 	content = (byte *) DgAlloc((sizeof(char) * length));
+	
+	if (!content) {
+		printf("Failed to allocate memory for loading binfile.\n");
+	}
 	
 	DgFileStreamRead(file, length, content);
 	

@@ -35,7 +35,8 @@ DgFileStream* DgFileStreamOpen(char* path, char* permissions) {
 	FILE *f;
 	f = fopen(path, permissions);
 	if (!f) {
-		printf("Failed to open file stream at %s.", path);
+		printf("Failed to open file stream at %s.\n", path);
+		return 0;
 	}
 	DgFileStream *s = (DgFileStream *) DgAlloc(sizeof(DgFileStream));
 	s->_c_file_stream = f;
@@ -75,6 +76,8 @@ size_t DgFileStreamLength(DgFileStream* stream) {
 	 * Get the length of the file in stream
 	 */
 	size_t size;
+	
+	// printf("<0x%X>\n", stream->_c_file_stream);
 	
 	fseek(stream->_c_file_stream, 0, SEEK_END);
 	size = ftell(stream->_c_file_stream);
