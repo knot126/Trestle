@@ -65,9 +65,15 @@ static int game_loop(void* pGInfo) {
 			should_keep_open = false;
 		}
 		else if (graphics_gl) {
+			// Normal OpenGL events
 			should_keep_open = !glfwWindowShouldClose(gl->window);
 			glfwSwapBuffers(gl->window);
 			glfwPollEvents();
+			
+			// OpenGL clear and draw
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT);
+			glDrawArrays(GL_TRIANGLES, 0, 3);
 			
 			if (glfwGetKey(gl->window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 				glfwSetWindowShouldClose(gl->window, GL_TRUE);

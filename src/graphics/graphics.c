@@ -78,6 +78,12 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glewExperimental = GL_TRUE;
 	glewInit();
 	
+	// Create a VAO
+	glGenVertexArrays(1, &gl->vao);
+	glBindVertexArray(gl->vao);
+	
+	gl_error_check(__FILE__, __LINE__);
+	
 	// Vertex datas
 	const float g_Triangle[] = {
 		 0.0f,  0.5f,
@@ -86,26 +92,41 @@ DgOpenGLContext* gl_graphics_init(void) {
 	};
 	
 	// Making a buffer
-	GLuint vbo;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glGenBuffers(1, &gl->vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, gl->vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_Triangle), g_Triangle, GL_STATIC_DRAW);
+	
+	gl_error_check(__FILE__, __LINE__);
+	
+	// Load shaders
+	gl->shaders = DgAlloc(sizeof(GLuint *) * 2);
 	
 	GLuint vertex_shader = gl_load_shader("assets://shaders/vertex.glsl", GL_VERTEX_SHADER);
 	if (!vertex_shader) { exit(EXIT_FAILURE); }
+	gl->shaders[0] = vertex_shader;
 	
 	GLuint fragment_shader = gl_load_shader("assets://shaders/frag.glsl", GL_FRAGMENT_SHADER);
 	if (!fragment_shader) { exit(EXIT_FAILURE); }
+	gl->shaders[1] = fragment_shader;
 	
-	GLuint program = glCreateProgram();
+	gl->shader_count = 2;
 	
-	glAttachShader(program, vertex_shader);
-	glAttachShader(program, fragment_shader);
+	// Create program and add shaders to it
+	gl->program = glCreateProgram();
+	glAttachShader(gl->program, vertex_shader);
+	glAttachShader(gl->program, fragment_shader);
+	glBindFragDataLocation(gl->program, 0, "outColor");
+	glLinkProgram(gl->program);
+	glUseProgram(gl->program);
 	
-	glBindFragDataLocation(program, 0, "colour");
+	gl_error_check(__FILE__, __LINE__);
 	
-	glLinkProgram(program);
-	glUseProgram(program);
+	// Tell OpenGL about this vertex data
+	GLint attr_Position = glGetAttribLocation(gl->program, "position");
+	glVertexAttribPointer(attr_Position, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(attr_Position);
+	
+	gl_error_check(__FILE__, __LINE__);
 	
 	return gl;
 }
@@ -113,5 +134,15 @@ DgOpenGLContext* gl_graphics_init(void) {
 void gl_graphics_free(DgOpenGLContext* gl) {
 	glfwTerminate();
 	
+	glDeleteProgram(gl->program);
+	
+	for (int i = 0; i < gl->shader_count; i++) {
+		glDeleteShader(gl->shaders[i]);
+	}
+	
+	glDeleteBuffers(1, &gl->vbo);
+	glDeleteVertexArrays(1, &gl->vao);
+	
+	DgFree(gl->shaders);
 	DgFree(gl);
 }
