@@ -39,6 +39,24 @@ GLuint gl_load_shader(char* filename, GLenum type) {
 	DgUnloadBinaryFile(shader_source);
 	DgFree(path);
 	
+	// Compile the shader
+	glCompileShader(shader);
+	
+	// Check that the shader was compiled successfully
+	GLint status;
+	char mesg[512];
+	
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+	glGetShaderInfoLog(shader, 512, NULL, mesg);
+	
+	if (mesg[0]) {
+		printf("%s\n", mesg);
+	}
+	
+	if (status != GL_TRUE) {
+		return 0;
+	}
+	
 	printf("Loaded shader at '%s'.\n", filename);
 	
 	return shader;

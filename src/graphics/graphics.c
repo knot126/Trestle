@@ -93,11 +93,19 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	GLuint vertex_shader = gl_load_shader("assets://shaders/vertex.glsl", GL_VERTEX_SHADER);
 	if (!vertex_shader) { exit(EXIT_FAILURE); }
-	glCompileShader(vertex_shader);
 	
 	GLuint fragment_shader = gl_load_shader("assets://shaders/frag.glsl", GL_FRAGMENT_SHADER);
 	if (!fragment_shader) { exit(EXIT_FAILURE); }
-	glCompileShader(fragment_shader);
+	
+	GLuint program = glCreateProgram();
+	
+	glAttachShader(program, vertex_shader);
+	glAttachShader(program, fragment_shader);
+	
+	glBindFragDataLocation(program, 0, "colour");
+	
+	glLinkProgram(program);
+	glUseProgram(program);
 	
 	return gl;
 }
