@@ -11,7 +11,11 @@
 #include <stdlib.h>
 
 #include <vulkan/vulkan.h>
-#include "../glew/glew.h"
+#if !defined(DG_GLEW_INCLUDED_OK)
+	#include "../glew/glew.h"
+	#define DG_GLEW_INCLUDED_OK
+#endif
+#include <GLFW/glfw3.h>
 
 #include "../graphics/vulkan.h"
 #include "../graphics/opengl.h"
@@ -87,15 +91,13 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_Triangle), g_Triangle, GL_STATIC_DRAW);
 	
-	char *vs_path = DgEvalPath("assets://shaders/vertex.glsl");
-	char *fs_path = DgEvalPath("assets://shaders/frag.glsl");
+	GLuint vertex_shader = gl_load_shader("assets://shaders/vertex.glsl", GL_VERTEX_SHADER);
+	if (!vertex_shader) { exit(EXIT_FAILURE); }
+	glCompileShader(vertex_shader);
 	
-	DgLoadBinaryFileInfo* vertex_shader_file = DgLoadBinaryFile(vs_path);
-	
-	GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	
-	DgFree(vs_path);
-	DgFree(fs_path);
+	GLuint fragment_shader = gl_load_shader("assets://shaders/frag.glsl", GL_FRAGMENT_SHADER);
+	if (!fragment_shader) { exit(EXIT_FAILURE); }
+	glCompileShader(fragment_shader);
 	
 	return gl;
 }

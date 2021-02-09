@@ -5,6 +5,8 @@ This doesn't list the obvious things like physics, graphics, etc. More about bac
  * Better memory alloctor, one that can actually free stuff :-)
    * Test the idea of a frame allocator: small initial alloc forgotten each frame (`DgFrameAlloc`)
      * And make sure its not patented.
+ * Const variant of `DgBinaryFile` (name: `DgBinaryFileView`?)
+ * Text file reading and writing
  * Serialisation to and from the following formats:
    * XML
    * JSON

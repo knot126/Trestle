@@ -6,8 +6,10 @@
  */
 #pragma once
 
-#include <GLFW/glfw3.h>
+//#include "../glew/glew.h"
 
 typedef struct DgOpenGLContext {
 	GLFWwindow* window;
 } DgOpenGLContext;
+
+GLuint gl_load_shader(char* filename, GLenum type);
