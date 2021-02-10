@@ -11,6 +11,6 @@
 
 typedef struct DgThread {
 #if defined(__linux__)
-	
+	pthread_t info;
 #endif
 };

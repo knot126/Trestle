@@ -59,12 +59,11 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	glfwInit();
 	
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 	
 	gl->window = glfwCreateWindow(800, 600, "Decent Games Engine", NULL, NULL);
 	
@@ -86,9 +85,10 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	// Vertex datas
 	const float g_Triangle[] = {
-		 0.0f,  0.5f,
-		 0.5f, -0.5f,
-		-0.5f, -0.5f,
+		 0.0f,  0.5f, 0.0f,
+		 0.5f, -0.5f, 0.0f,
+		-0.5f, -0.5f, 0.0f,
+		 1.0f, -1.0f, 0.0f,
 	};
 	
 	// Making a buffer
@@ -123,7 +123,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	// Tell OpenGL about this vertex data
 	GLint attr_Position = glGetAttribLocation(gl->program, "position");
-	glVertexAttribPointer(attr_Position, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(attr_Position, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(attr_Position);
 	
 	gl_error_check(__FILE__, __LINE__);

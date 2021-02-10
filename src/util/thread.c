@@ -7,3 +7,6 @@
 
 #include "thread.h"
 
+int DgThreadCreate() {
+	
+}

@@ -5,19 +5,18 @@ project(Engine VERSION 0.0.0)
 
 # Source files
 set(FILES 
+	src/glew/glew.c
 	src/graphics/graphics.c
 	src/graphics/vulkan.c
 	src/graphics/opengl.c
-	src/glew/glew.c
+	src/io/fs.c
+	src/io/load.c
 	src/linux/main.c
 	src/math/vector2.c
 	src/math/vector3.c
-	src/io/fs.c
-	src/io/load.c
 	src/util/alloc.c
 	src/util/bag.c
-#	src/util/dictionary.c
-#	src/util/generic.c
+	src/util/thread.c
 	src/game.c
 	src/types.c
 	src/main.c)
