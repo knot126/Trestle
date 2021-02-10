@@ -17,6 +17,7 @@ set(FILES
 	src/util/alloc.c
 	src/util/bag.c
 	src/util/thread.c
+	src/util/flag.c
 	src/game.c
 	src/types.c
 	src/main.c)
@@ -42,3 +43,4 @@ target_link_libraries(${EXEC_NAME} m)
 target_link_libraries(${EXEC_NAME} vulkan)
 target_link_libraries(${EXEC_NAME} GL)
 target_link_libraries(${EXEC_NAME} glfw)
+target_link_libraries(${EXEC_NAME} pthread)

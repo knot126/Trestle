@@ -26,6 +26,7 @@
 #include "graphics/graphics.h"
 #include "util/alloc.h"
 #include "util/bag.h"
+#include "util/flag.h"
 #include "io/fs.h"
 
 const bool graphics_gl = true;
@@ -85,6 +86,11 @@ static int game_loop(void* pGInfo) {
 	return 0;
 }
 
+// testing events
+static void myfunctest(const char* event, void* params) {
+	printf("its okay\n");
+}
+
 int game_main(int argc, char* argv[]) {
 	/* The first real main game function, called from the main() function of the
 	 * OS. */
@@ -100,6 +106,11 @@ int game_main(int argc, char* argv[]) {
 	
 	// File system module init
 	DgInitPaths();
+	
+	// Event centre startup
+	DgFlagCreateEvent("_Init_ok");
+	DgFlagRegisterCallback("_Init_ok", &myfunctest);
+	DgFlagRaise("_Init_ok", NULL);
 	
 	// Graphics initialisation
 	printf("Init graphics subsystem...\n");
@@ -138,6 +149,9 @@ int game_main(int argc, char* argv[]) {
 		gl_graphics_free(gl);
 	}
 	printf("  Done\n");
+	
+	// Global flags cleanup
+	DgFlagGlobalCleanup();
 	
 	// Free pool
 	printf("Free memory pool...\n");

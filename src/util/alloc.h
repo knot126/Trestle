@@ -27,3 +27,4 @@ void DgFreePool(int32_t index);
 int32_t DgBestPoolIndex(size_t size);
 void *DgAlloc(size_t size);
 void DgFree(void *block);
+void *DgRealloc(void *block, size_t size);

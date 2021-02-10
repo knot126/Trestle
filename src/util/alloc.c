@@ -159,3 +159,8 @@ void *DgAlloc(size_t size) {
 void DgFree(void *block) {
 	
 }
+
+void *DgRealloc(void *block, size_t size) {
+	printf("DgRealloc is not implemented. Exiting so nothing bad happens.\n");
+	exit(-1);
+}
