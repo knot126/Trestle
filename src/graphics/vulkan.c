@@ -181,3 +181,34 @@ void DgCreateVulkanCommandBuffer(DgVulkanInfo* vk) {
 	
 	vk_status = vkAllocateCommandBuffers(vk->device, &vk->cmd_buffer_info, vk->cmd_buffers);
 }
+
+DgVulkanInfo* vk_graphics_init(void) {
+	DgVulkanInfo* vk = (DgVulkanInfo *) DgAlloc(sizeof(DgVulkanInfo));
+	
+	if (!vk) {
+		printf("Failed to allocate memory for vulkan information.\n");
+	}
+	
+	DgCreateVkInstance(vk);
+	DgEnumerateVulkanDevices(vk);
+	DgInitialiseVulkanDevice(vk);
+	DgCheckForGraphicsOnDevice(vk);
+	DgCreateVulkanDevice(vk);
+	DgCreateVulkanCommandPool(vk);
+	DgCreateVulkanCommandBuffer(vk);
+	
+	return vk;
+}
+
+void vk_graphics_free(DgVulkanInfo* vk) {
+	// Free vulkan-related things
+	vkFreeCommandBuffers(vk->device, vk->cmd_pool, 1, vk->cmd_buffers);
+	vkDestroyCommandPool(vk->device, vk->cmd_pool, NULL);
+	vkDestroyDevice(vk->device, NULL);
+	vkDestroyInstance(vk->instance, NULL);
+	
+	// Free temporary tables/arrays
+	DgFree(vk->queues);
+	DgFree(vk->devices);
+	DgFree(vk->cmd_buffers);
+}

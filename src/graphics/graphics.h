@@ -7,14 +7,17 @@
 
 #pragma once
 
-#include <vulkan/vulkan.h>
+typedef enum GraphicsType {
+	DG_GRAPHICS_TYPE_OPENGL = 1,
+	DG_GRAPHICS_TYPE_VULKAN = 2,
+} GraphicsType;
 
-// #include "../math/vector2.h"
-// #include "../math/vector3.h"
-#include "../graphics/vulkan.h"
+typedef struct GraphicsInitInfo {
+	void* info;
+	GraphicsType type;
+} GraphicsInitInfo;
 
-DgVulkanInfo* graphics_init(void);
-void graphics_free(DgVulkanInfo*);
-
-DgOpenGLContext* gl_graphics_init(void);
-void gl_graphics_free(DgOpenGLContext*);
+GraphicsInitInfo graphics_init(GraphicsType type);
+void graphics_update(GraphicsInitInfo info);
+bool get_should_keep_open(GraphicsInitInfo info);
+void graphics_free(GraphicsInitInfo info);

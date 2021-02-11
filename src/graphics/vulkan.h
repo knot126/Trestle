@@ -41,3 +41,6 @@ void DgCheckForGraphicsOnDevice(DgVulkanInfo* vk);
 void DgCreateVulkanDevice(DgVulkanInfo* vk);
 void DgCreateVulkanCommandPool(DgVulkanInfo* vk);
 void DgCreateVulkanCommandBuffer(DgVulkanInfo* vk);
+
+DgVulkanInfo* vk_graphics_init(void);
+void vk_graphics_free(DgVulkanInfo* vk);

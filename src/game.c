@@ -19,62 +19,33 @@
 	#include <unistd.h>
 #endif
 
-#include <GLFW/glfw3.h>
-
-#include "graphics/vulkan.h"
-#include "graphics/opengl.h"
+//#include "graphics/vulkan.h"
+//#include "graphics/opengl.h"
 #include "graphics/graphics.h"
 #include "util/alloc.h"
 #include "util/bag.h"
 #include "util/flag.h"
 #include "io/fs.h"
 
-const bool graphics_gl = true;
-bool should_keep_open = true;
-
 static void print_info(void) {
 	printf("Engine compiled on %s at %s.\n", __DATE__, __TIME__);
 }
 
-static int game_loop(void* pGInfo) {
-	/* The main loop. */
-	DgVulkanInfo* vk = NULL;
-	DgOpenGLContext* gl = NULL;
+static int game_loop(GraphicsInitInfo graphics_info) {
+	/* 
+	 * The main loop.
+	 */
 	bool should_keep_open = true;
 	
-	if (!pGInfo) {
+	if (!should_keep_open) {
 		printf("Graphics pointer is null.\n");
 	}
 	
-	// Set the proper value based on being GraphicsGL or not
-	if (!graphics_gl) {
-		vk = (DgVulkanInfo *) pGInfo;
-	}
-	else if (graphics_gl) {
-		gl = (DgOpenGLContext *) pGInfo;
-	}
-	
 	while (should_keep_open) {
+		// Check if we should still be open
+		should_keep_open = get_should_keep_open(graphics_info);
 		
-		// TODO: Make a function that does all of the graphics stuff
-		if (!graphics_gl) {
-			should_keep_open = false;
-		}
-		else if (graphics_gl) {
-			// Normal OpenGL events
-			should_keep_open = !glfwWindowShouldClose(gl->window);
-			glfwSwapBuffers(gl->window);
-			glfwPollEvents();
-			
-			// OpenGL clear and draw
-			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
-			glDrawArrays(GL_TRIANGLES, 0, 3);
-			
-			if (glfwGetKey(gl->window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-				glfwSetWindowShouldClose(gl->window, GL_TRUE);
-			}
-		}
+		graphics_update(graphics_info);
 		
 	} // while (should_keep_open)
 	
@@ -89,13 +60,9 @@ static void on_init_okay(const char* event, void* params) {
 int game_main(int argc, char* argv[]) {
 	/* The first real main game function, called from the main() function of the
 	 * OS. */
-	DgVulkanInfo* vk;
-	DgOpenGLContext* gl;
-	
 	print_info();
 	
 	// Create a basic memory pool
-	// NOTE: This should be refactored for preformance!
 	printf("Making the initial memory pool...\n");
 	alloch_t mempool = DgAllocPoolInit(1024 * 1024 * 8);
 	
@@ -103,55 +70,29 @@ int game_main(int argc, char* argv[]) {
 	printf("Initialising file system paths...\n");
 	DgInitPaths();
 	
-	// Event centre startup
+	// Event centre startup (global events)
 	DgFlagCreateEvent("game_init_ok");
 	DgFlagRegisterCallback("game_init_ok", &on_init_okay);
 	
 	// Graphics initialisation
 	printf("Init graphics subsystem...\n");
-	GraphicsInitInfo graphics_info = graphics_init();
-	if (!graphics_gl) {
-		vk = graphics_init();
-		
-		if (!vk) {
-			printf("Error: Pointer to vulkan info is noll.\n");
-			exit(1);
-		}
-	}
-	else if (graphics_gl) {
-		gl = gl_graphics_init();
-		
-		if (!gl) {
-			printf("Error: Pointer to OpenGL info is noll.\n");
-			exit(1);
-		}
-	}
+	GraphicsInitInfo graphics_info = graphics_init(DG_GRAPHICS_TYPE_OPENGL);
 	
 	// Main loop
+	printf("Starting the main loop...\n");
 	DgFlagRaise("game_init_ok", NULL);
-	if (!graphics_gl) {
-		game_loop(vk);
-	}
-	else if (graphics_gl) {
-		game_loop(gl);
-	}
+	game_loop(graphics_info);
 	
 	// Graphics destruction
-	printf("Destroying graphics subsystem...");
-	if (!graphics_gl) {
-		graphics_free(vk);
-	}
-	else if (graphics_gl) {
-		gl_graphics_free(gl);
-	}
-	printf("  Done\n");
+	printf("Destroying graphics subsystem...\n");
+	graphics_free(graphics_info);
 	
 	// Global flags cleanup
+	printf("Cleaning up memory used by flags...\n");
 	DgFlagGlobalCleanup();
 	
 	// Free pool
 	printf("Free memory pool...\n");
-	//DgFreePool(mp);
 	DgAllocPoolFree(mempool);
 	
 	return 0;
