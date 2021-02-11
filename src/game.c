@@ -34,11 +34,6 @@ bool should_keep_open = true;
 
 static void print_info(void) {
 	printf("Engine compiled on %s at %s.\n", __DATE__, __TIME__);
-// #if defined(__linux__)
-// 	char cwd[200];
-// 	getcwd(cwd, 200);
-// 	printf("Current working directory is %s.\n", cwd);
-// #endif
 }
 
 static int game_loop(void* pGInfo) {
@@ -101,10 +96,13 @@ int game_main(int argc, char* argv[]) {
 	
 	// Create a basic memory pool
 	// NOTE: This should be refactored for preformance!
-	printf("Making initial memory pool (6 MiB)...\n");
-	alloch_t mp = DgMakePool(1024 * 1024 * 6);
+	//printf("Making initial memory pool (6 MiB)...\n");
+	//alloch_t mp = DgMakePool(1024 * 1024 * 6);
+	printf("Making the initial memory pool...\n");
+	alloch_t mempool = DgAllocPoolInit(1024 * 1024 * 8);
 	
 	// File system module init
+	printf("Initialising file system paths...\n");
 	DgInitPaths();
 	
 	// Event centre startup
@@ -155,7 +153,8 @@ int game_main(int argc, char* argv[]) {
 	
 	// Free pool
 	printf("Free memory pool...\n");
-	DgFreePool(mp);
+	//DgFreePool(mp);
+	DgAllocPoolFree(mempool);
 	
 	return 0;
 }

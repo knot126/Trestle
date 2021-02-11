@@ -18,7 +18,7 @@
 DgLoadBinaryFileInfo* DgLoadBinaryFile(char* path) {
 	/* 
 	 * Loads a binary file into memory and returns information about the loaded
-	 * file.
+	 * file. Note that this file can't be edited as is.
 	 */
 	DgLoadBinaryFileInfo* info;
 	DgFileStream* file;
@@ -52,13 +52,13 @@ DgLoadBinaryFileInfo* DgLoadBinaryFile(char* path) {
 		return 0;
 	}
 	
-	info->data = content;
+	info->data = (const byte *) content;
 	info->size = length;
 	
 	return info;
 }
 
 void DgUnloadBinaryFile(DgLoadBinaryFileInfo* info) {
-	DgFree(info->data);
+	DgFree((byte *) info->data);
 	DgFree(info);
 }

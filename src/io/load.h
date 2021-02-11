@@ -4,7 +4,7 @@
 #include "fs.h"
 
 typedef struct DgLoadBinaryFileInfo {
-	byte* data;
+	const byte* data;
 	size_t size;
 } DgLoadBinaryFileInfo;
 

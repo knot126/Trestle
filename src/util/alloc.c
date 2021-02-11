@@ -12,156 +12,222 @@
 
 #include "alloc.h"
 
-// DEPRECATED: Try to avoid using these variables
-static uint32_t dg_alloc_pools_count;
-static uint32_t dg_alloc_active_pools_count;
+struct {
+	DgPoolInfo pool_info;
+} dg_alloc;
 
-// Pointer to pool information, the size of the array of pools and an array of 
-// if the pools are free or not
-// TODO: It may also be worthwhile to consider storing the freeness with each 
-// pool, but believe that would take more memory.
-DgPoolInfo  *dg_alloc_pools;
-DgPoolInfo2 *dg_alloc_pools2;
-size_t       dg_alloc_pools_size;
-bool        *dg_alloc_pools_frees; // false = free, true = allocated
-
-int32_t DgMakePool(size_t size) {
-	/* 
-	 * Requests a new memory pool from the system.
-	 * 
-	 * Returns a handle (index) of the memory pool information. Positive means
-	 * a successful run, negitive number means an error occured.
-	 */
+int32_t DgAllocPoolInit(size_t size) {
+	/* Initialises a memory pool, adding to the list is if there is not one. */
 	
-	// This will be done the first time that pools are allocated
-	if (!dg_alloc_pools) {
-		// Pre-allocate for 16 new pools
-		dg_alloc_pools = malloc(sizeof(DgPoolInfo) * 16);
-		dg_alloc_pools_frees = calloc(sizeof(bool) * 16, 1);
-		dg_alloc_pools_size = 16;
-		
-		if (!dg_alloc_pools || !dg_alloc_pools_frees) {
-			printf("Failed to allocate alloc pools memory.\n");
-			exit(EXIT_FAILURE);
-		}
-	}
-	
-	// Find the next free pool
-	int32_t got = -1;
-	
-	for (int32_t i = 0; got < 0 && i < dg_alloc_pools_size; i++) {
-		if (dg_alloc_pools_frees[i] == false) {
-			got = i;
-		}
-	}
-	
-	// Reallocate if no pool slots are free
-	if (got == -1) {
-		dg_alloc_pools_size += 8;
-		dg_alloc_pools = realloc(dg_alloc_pools, sizeof(DgPoolInfo) * dg_alloc_pools_size);
-		dg_alloc_pools_frees = realloc(dg_alloc_pools_frees, sizeof(bool) * dg_alloc_pools_size);
-		
-		// NOTE: What this should do is set the last eight (new) bools in the
-		// array to zero, so we know they are all set to false and there will be
-		// one free.
-		memset(dg_alloc_pools_frees + (dg_alloc_pools_size * sizeof(bool) - 8),
-			   0,
-			   dg_alloc_pools_size);
-		
-		if (!dg_alloc_pools || !dg_alloc_pools_frees) {
-			printf("__FILE__:__LINE__ System alloc failed!\n");
-			exit(EXIT_FAILURE);
-		}
-	}
-	
-	// Before you swear: Remember this is the pool alloc function, NOT the
-	// actual alloc function.
-	void *pool = malloc(size);
-	
-	if (!pool) {
-		printf("Warning: Failed to allocate %d bytes of memory.\n", (uint64_t) size);
+	if (dg_alloc.pool_info.block) {
+		printf("Memory pool already initialised.");
 		return -1;
 	}
 	
-	dg_alloc_pools[got].memory = pool;
-	dg_alloc_pools[got].next = pool;
-	dg_alloc_pools[got].size = size;
-	dg_alloc_pools_frees[got] = true;
+	dg_alloc.pool_info.block = malloc(size);
 	
-	return got;
-}
-
-void DgFreePool(int32_t index) {
-	/* Frees a memory pool, and the pools info array if there are no pools are
-	 * left. */
-	
-	// Refuse to free a failed pool
-	if (index < 0) {
-		printf("Warning: Tried to free a failed pool.\n");
-		return;
+	if (!dg_alloc.pool_info.block) {
+		printf("Failed to allocate memory pool of size %d bytes.\n", size);
+		return -1;
 	}
 	
-	free(dg_alloc_pools[index].memory);
+	dg_alloc.pool_info.block_size = size;
+	dg_alloc.pool_info.next = (DgFreeBlockInfo *) dg_alloc.pool_info.block;
 	
-	dg_alloc_pools[index].memory = NULL;
-	dg_alloc_pools[index].next = NULL;
-	dg_alloc_pools[index].size = 0;
+	dg_alloc.pool_info.next->size = size;
+	dg_alloc.pool_info.next->next = NULL;
 	
-	dg_alloc_pools_frees[index] = false;
+	return 0;
 }
 
-int32_t DgBestPoolIndex(size_t size) {
-	/* Returns best pool's index.
-	 *
-	 * Currently, best pool is defined as the first with enough space to hold
-	 * the data.
-	 */
-	int32_t i;
+void DgAllocPoolFree(int32_t handle) {
+	/* Frees a memory pool assocatied with the allocator given the handle. */
+	if (handle > -1) {
+		free(dg_alloc.pool_info.block);
+	}
+}
+
+static void DgAllocPrintChain() {
+	DgFreeBlockInfo *p = dg_alloc.pool_info.next;
 	
-	for (i = 0; i < dg_alloc_pools_size; i++) {
-		if (
-			dg_alloc_pools_frees[i] == true // Check that the pool is allocated
-			&& dg_alloc_pools[i].size 
-				- (int32_t)(dg_alloc_pools[i].next - dg_alloc_pools[i].memory) 
-					> size
-		) {
-			break;
+	int i = 0;
+	
+	while (p != NULL) {
+		if (p) {
+			printf("At node %d: addr = <%X>; size = %d; next = <%X>\n", i, p, p->size, p->next);
+			i++;
+			p = p->next;
 		}
 	}
-	
-	return i;
 }
 
 void *DgAlloc(size_t size) {
-	/* Allocate a block of memory in the first best fitting pool. */
-	DgPoolInfo* pool = &dg_alloc_pools[DgBestPoolIndex(size)];
+	/* 
+	 * Allocates some memory
+	 * This function assumes that the memory alloctor has been set up properly.
+	 */
 	
-	void *block = pool->next;
-	pool->next = pool->next + size + sizeof(DgBlockInfo);
+	printf("Allocating %d bytes of memory...\n", size);
 	
-	// Check that enough memory is available
-	if (pool->next >= pool->memory + pool->size) {
-		printf("Not enough memory left in pool allocate %d bytes.\n", (uint64_t)size);
-		pool->next = block;
+	DgAllocPrintChain();
+	
+	// Make sure our size is at least the size of a free node
+	if (size < sizeof(DgFreeBlockInfo) - sizeof(DgBlockHeader)) {
+		size = sizeof(DgFreeBlockInfo) - sizeof(DgBlockHeader);
+	}
+	
+	// Find the next chunk that will fit
+	DgFreeBlockInfo *lnode = NULL;
+	DgFreeBlockInfo *cnode = dg_alloc.pool_info.next;
+	
+	while (cnode != NULL) {
+		if (cnode->size >= size) {
+			break;
+		}
+		lnode = cnode;
+		cnode = cnode->next;
+	}
+	
+	if (!cnode) {
+		printf("DgAlloc: Failed to allocate %d bytes of memory.\n", size);
 		return NULL;
 	}
 	
-	// Set up block info
-	DgBlockInfo *info = block;
-	info->size = size;
-	info->next = pool->next;
+	// The pointer to cnode is where the new memory will be.
+	void* memory = (void *) cnode;
 	
-	// Move the block pointer to account for the header
-	block = block + sizeof(DgBlockInfo);
+	// Handle the case where there is not enough memory to store a new node
+	// by just making this allocation aligned to handle for it.
+	if (sizeof(DgFreeBlockInfo) > cnode->size - size) {
+		DgFreeBlockInfo *nnode = cnode->next;
+		
+		size = cnode->size - sizeof(DgBlockHeader);
+		if (lnode) {
+			lnode->next = nnode;
+		}
+		else {
+			dg_alloc.pool_info.next = nnode;
+		}
+	}
+	// Else if there is enough room, handle this normally and move the node up
+	// to account for the new allocation.
+	else {
+		// Create a node according to the size of the memory to be allocated
+		DgFreeBlockInfo *tnode = (DgFreeBlockInfo *) (memory + size + sizeof(DgBlockHeader));
+		
+		// Copy next attribute, calulate and store node size
+		tnode->next = cnode->next;
+		tnode->size = cnode->size - (size + sizeof(DgBlockHeader));
+		
+		// Update last node
+		if (lnode) {
+			lnode->next = tnode;
+		}
+		else {
+			dg_alloc.pool_info.next = tnode;
+		}
+	}
 	
-	return block;
+	// Now we actually prepare the memory block!
+	DgBlockHeader *block_info = (DgBlockHeader *) memory;
+	memory = memory + sizeof(DgBlockHeader);
+	block_info->size = size;
+	
+	DgAllocPrintChain();
+	
+	// Return pointer to new block of memory
+	return memory;
 }
 
 void DgFree(void *block) {
+	/* 
+	 * Frees a block of memory, assuming this is a valid pointer to memory
+	 * that we have allocated. 
+	 */
+	
+	printf("Freeing block of memory at <0x%X>...\n", block);
+	
+	DgAllocPrintChain();
+	
+	// Get back to memory address and its size
+	void *memory = (void *) (block - sizeof(DgBlockHeader));
+	size_t size = ((DgBlockHeader *) memory)->size + sizeof(DgBlockHeader);
+	
+	// Find first node that is greater and last node that is less in memory 
+	// address than the area where we want to free is.
+	DgFreeBlockInfo *lnode = NULL;
+	DgFreeBlockInfo *nnode = dg_alloc.pool_info.next;
+	
+	while (nnode != NULL) {
+		// We don't use nnode->next here; we would need to increment one more time
+		// since lnode and nnode would still be less and only the next is actually
+		// higher.
+		if ((void *) nnode > memory) {
+			break;
+		}
+		lnode = nnode;
+		nnode = nnode->next;
+	}
+	
+	// Make node and insert; remember that if this is a valid alloc, we will
+	// be okay in terms of space.
+	DgFreeBlockInfo *tnode = (DgFreeBlockInfo *) memory;
+	
+	tnode->size = size;  // Set size
+	
+	// Are we last?
+	if (nnode) {
+		// If NOT:
+		tnode->next = nnode;
+	}
+	else {
+		// If SO:
+		tnode->next = NULL;
+	}
+	
+	// Are we first?
+	if (lnode) {
+		// If NOT:
+		lnode->next = tnode;
+	}
+	else {
+		// If SO:
+		dg_alloc.pool_info.next = tnode;
+	}
+	
+	DgAllocPrintChain();
+	
+	// Now we need to optimise the list
+	
+	tnode = dg_alloc.pool_info.next;
+	nnode = dg_alloc.pool_info.next->next;
+	
+	while (nnode != NULL) {
+		if ((tnode + tnode->size) == nnode) {
+			// Merge these nodes
+			tnode->size = tnode->size + nnode->size;
+// 			printf("tnode->size : %d\n", tnode->size);
+			tnode->next = nnode->next;
+// 			printf("tnode->next : %d\n", tnode->next);
+// 			printf("nnode (before) : <%X>\n", nnode);
+			nnode = nnode->next;
+// 			printf("nnode : <%X>\n", nnode);
+// 			printf("tnode : <%X>\n", tnode);
+		}
+		else if ((tnode + tnode->size) > nnode) {
+			// This should never be true.
+			printf("Warning: Corrupted data structure in allocator. Not continuing optimisation operation. Values: <%X, %X>.\n", (tnode + tnode->size), nnode);
+			break;
+		}
+		else {
+			printf("Node area cannot be optimised, next...\n");
+			tnode = nnode;
+			nnode = nnode->next;
+		}
+	}
 	
 }
 
 void *DgRealloc(void *block, size_t size) {
-	printf("DgRealloc is not implemented. Exiting so nothing bad happens.\n");
-	exit(-1);
+	return NULL;
 }
