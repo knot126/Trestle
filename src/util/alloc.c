@@ -12,6 +12,8 @@
 
 #include "alloc.h"
 
+const bool DG_MEMORY_ALLOC_DEBUG = false;
+
 struct {
 	DgPoolInfo pool_info;
 } dg_alloc;
@@ -48,13 +50,16 @@ void DgAllocPoolFree(int32_t handle) {
 }
 
 static void DgAllocPrintChain() {
+	if (!DG_MEMORY_ALLOC_DEBUG) {
+		return;
+	}
 	DgFreeBlockInfo *p = dg_alloc.pool_info.next;
 	
 	int i = 0;
 	
 	while (p != NULL) {
 		if (p) {
-			printf("At node %d: addr = <%X>; size = %d; next = <%X>\n", i, p, p->size, p->next);
+			printf("At node %d: addr = <%X>; size = 0x%X; next = <%X>\n", i, p, p->size, p->next);
 			i++;
 			p = p->next;
 		}
@@ -67,9 +72,7 @@ void *DgAlloc(size_t size) {
 	 * This function assumes that the memory alloctor has been set up properly.
 	 */
 	
-	printf("Allocating %d bytes of memory...\n", size);
-	
-	DgAllocPrintChain();
+	if (DG_MEMORY_ALLOC_DEBUG) printf("Allocating %d bytes of memory...\n", size);
 	
 	// Make sure our size is at least the size of a free node
 	if (size < sizeof(DgFreeBlockInfo) - sizeof(DgBlockHeader)) {
@@ -133,8 +136,6 @@ void *DgAlloc(size_t size) {
 	memory = memory + sizeof(DgBlockHeader);
 	block_info->size = size;
 	
-	DgAllocPrintChain();
-	
 	// Return pointer to new block of memory
 	return memory;
 }
@@ -145,9 +146,9 @@ void DgFree(void *block) {
 	 * that we have allocated. 
 	 */
 	
-	printf("Freeing block of memory at <0x%X>...\n", block);
-	
-	DgAllocPrintChain();
+	if (DG_MEMORY_ALLOC_DEBUG) {
+		printf("Freeing block of memory at <0x%X>...\n", block);
+	}
 	
 	// Get back to memory address and its size
 	void *memory = (void *) (block - sizeof(DgBlockHeader));
@@ -195,37 +196,37 @@ void DgFree(void *block) {
 		dg_alloc.pool_info.next = tnode;
 	}
 	
-	DgAllocPrintChain();
-	
 	// Now we need to optimise the list
 	
 	tnode = dg_alloc.pool_info.next;
 	nnode = dg_alloc.pool_info.next->next;
 	
 	while (nnode != NULL) {
-		if ((tnode + tnode->size) == nnode) {
-			// Merge these nodes
+		// If the size of a node and its pointer add to another close node, then
+		// they can be merged together
+		if (((void *) tnode) + tnode->size == (void *) nnode) {
+			if (DG_MEMORY_ALLOC_DEBUG) {
+				printf("Optimise memory sections <0x%x> and <0x%x>.\n", tnode, nnode);
+			}
+			
 			tnode->size = tnode->size + nnode->size;
-// 			printf("tnode->size : %d\n", tnode->size);
 			tnode->next = nnode->next;
-// 			printf("tnode->next : %d\n", tnode->next);
-// 			printf("nnode (before) : <%X>\n", nnode);
 			nnode = nnode->next;
-// 			printf("nnode : <%X>\n", nnode);
-// 			printf("tnode : <%X>\n", tnode);
 		}
-		else if ((tnode + tnode->size) > nnode) {
-			// This should never be true.
-			printf("Warning: Corrupted data structure in allocator. Not continuing optimisation operation. Values: <%X, %X>.\n", (tnode + tnode->size), nnode);
+		else if (((void *) tnode) + tnode->size > (void *) nnode) {
+			printf("Warning: Corrupted data structure in allocator. Values: <0x%x, 0x%x>.\n", (((void *) tnode) + tnode->size), (void *) nnode);
 			break;
 		}
 		else {
-			printf("Node area cannot be optimised, next...\n");
+			// Cannot be optimised.
+			if (DG_MEMORY_ALLOC_DEBUG) {
+				printf("Node area cannot be optimised, next...\n");
+			}
+			
 			tnode = nnode;
 			nnode = nnode->next;
 		}
 	}
-	
 }
 
 void *DgRealloc(void *block, size_t size) {

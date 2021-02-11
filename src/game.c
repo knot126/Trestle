@@ -151,6 +151,12 @@ int game_main(int argc, char* argv[]) {
 	// Global flags cleanup
 	DgFlagGlobalCleanup();
 	
+	// testing memory pool
+	char *chars1 = DgAlloc(16 * sizeof(char));
+	char *chars2 = DgAlloc(16 * sizeof(char));
+	DgFree(chars1);
+	DgFree(chars2);
+	
 	// Free pool
 	printf("Free memory pool...\n");
 	//DgFreePool(mp);
