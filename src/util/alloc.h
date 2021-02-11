@@ -5,6 +5,8 @@
  * Memory Allocation
  */
 
+#pragma once
+
 #include <stdlib.h>
 #include <inttypes.h>
 
@@ -12,13 +14,31 @@ typedef struct DgPoolInfo {
 	void* memory;
 	void* next;
 	size_t size;
-	// size_t free;
 } DgPoolInfo;
 
 typedef struct DgBlockInfo {
 	size_t size; // TODO: Is this really needed?
 	void* next;
 } DgBlockInfo;
+
+typedef struct DgFreeBlockInfo {
+	size_t size;
+	void* block;
+	struct DgFreeBlockInfo *next;
+} DgFreeBlockInfo;
+
+typedef struct DgPoolInfo2 {
+	// Information about the main block
+	void* block;
+	size_t block_size;
+	
+	// The head, points to first free space
+	DgFreeBlockInfo* next;
+} DgPoolInfo2;
+
+typedef struct DgBlockHeader {
+	size_t size;
+} DgBlockHeader;
 
 typedef int32_t alloch_t;
 

@@ -21,6 +21,7 @@ static uint32_t dg_alloc_active_pools_count;
 // TODO: It may also be worthwhile to consider storing the freeness with each 
 // pool, but believe that would take more memory.
 DgPoolInfo  *dg_alloc_pools;
+DgPoolInfo2 *dg_alloc_pools2;
 size_t       dg_alloc_pools_size;
 bool        *dg_alloc_pools_frees; // false = free, true = allocated
 
