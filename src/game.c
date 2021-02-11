@@ -82,8 +82,8 @@ static int game_loop(void* pGInfo) {
 }
 
 // testing events
-static void myfunctest(const char* event, void* params) {
-	printf("its okay\n");
+static void on_init_okay(const char* event, void* params) {
+	printf("The game has initialised successfully.\n");
 }
 
 int game_main(int argc, char* argv[]) {
@@ -96,8 +96,6 @@ int game_main(int argc, char* argv[]) {
 	
 	// Create a basic memory pool
 	// NOTE: This should be refactored for preformance!
-	//printf("Making initial memory pool (6 MiB)...\n");
-	//alloch_t mp = DgMakePool(1024 * 1024 * 6);
 	printf("Making the initial memory pool...\n");
 	alloch_t mempool = DgAllocPoolInit(1024 * 1024 * 8);
 	
@@ -106,12 +104,12 @@ int game_main(int argc, char* argv[]) {
 	DgInitPaths();
 	
 	// Event centre startup
-	DgFlagCreateEvent("_Init_ok");
-	DgFlagRegisterCallback("_Init_ok", &myfunctest);
-	DgFlagRaise("_Init_ok", NULL);
+	DgFlagCreateEvent("game_init_ok");
+	DgFlagRegisterCallback("game_init_ok", &on_init_okay);
 	
 	// Graphics initialisation
 	printf("Init graphics subsystem...\n");
+	GraphicsInitInfo graphics_info = graphics_init();
 	if (!graphics_gl) {
 		vk = graphics_init();
 		
@@ -130,7 +128,7 @@ int game_main(int argc, char* argv[]) {
 	}
 	
 	// Main loop
-	printf("Main loop\n");
+	DgFlagRaise("game_init_ok", NULL);
 	if (!graphics_gl) {
 		game_loop(vk);
 	}
@@ -150,12 +148,6 @@ int game_main(int argc, char* argv[]) {
 	
 	// Global flags cleanup
 	DgFlagGlobalCleanup();
-	
-	// testing memory pool
-	char *chars1 = DgAlloc(16 * sizeof(char));
-	char *chars2 = DgAlloc(16 * sizeof(char));
-	DgFree(chars1);
-	DgFree(chars2);
 	
 	// Free pool
 	printf("Free memory pool...\n");
