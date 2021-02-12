@@ -92,6 +92,10 @@ GLenum gl_error_check(char* file, int line) {
 	}
 }
 
+void gl_set_window_size(GLFWwindow* window, int w, int h) {
+	glViewport(0, 0, w, h);
+}
+
 DgOpenGLContext* gl_graphics_init(void) {
 	DgOpenGLContext* gl = DgAlloc(sizeof(DgOpenGLContext));
 	memset(gl, 0, sizeof(DgOpenGLContext));
@@ -104,7 +108,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 	
-	gl->window = glfwCreateWindow(800, 600, "Decent Games Engine", NULL, NULL);
+	gl->window = glfwCreateWindow(1280, 720, "Decent Games Engine", NULL, NULL);
 	
 	if (!gl->window) {
 		printf("Failed to create glfw window.\n");
@@ -115,6 +119,9 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	glewExperimental = GL_TRUE;
 	glewInit();
+	
+	glfwSetFramebufferSizeCallback(gl->window, gl_set_window_size);
+	glViewport(0, 0, 1280, 720);
 	
 	// Create a VAO
 	glGenVertexArrays(1, &gl->vao);
@@ -193,7 +200,7 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	glfwPollEvents();
 	
 	// OpenGL clear and draw
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	

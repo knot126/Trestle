@@ -4,9 +4,23 @@
 
 The main alloctor in the Decent Games Engine is based on the tree free-list model, and uses the functions named `DgAlloc()` and `DgFree()`, which have the same API has `malloc()` and `free()`, respectively. This alloctor can be used by including `"util/alloc.h"`.
 
-The engine also provides other memory allocators: `DgFrameAlloc` (linear, forgotten every frame), `DgConstAlloc` (linear, never deleted) and `DgFixedSizeBytePool` (pool allocator with fixed size). These should be used sparsingly compared to the general purpose `DgAlloc`.
+The engine also provides other memory allocators: `DgFrameAlloc` (linear, forgotten every frame), `DgConstAlloc` (linear, never deleted), `DgFixedSizeBytePool` (pool allocator with fixed size) and `DgStackAlloc` (stack-based allocator). These should be used sparsingly compared to the general purpose `DgAlloc`.
 
 **Note**: Not all memory allocators are properly implemented at this time.
+
+## Comparason
+
+This list does not cover attributes of each type of allocator in the first place; those can be found elsewhere.
+
+| Allocator name      | Allocator type      | Freeable | Size | Header file       |
+| ------------------- | ------------------- | -------- | ---- | ----------------- |
+| `DgAlloc`           | Free-list (linked)  | Yes      | Any  | `util/alloc.h`    |
+| `DgFrameAlloc`      | Linear (forgotten)  | At Once  | Any  | `util/falloc.h`   |
+| `DgConstAlloc`      | Linear              | No       | Any  | `util/calloc.h`   |
+| `DgPoolAlloc`       | Pool                | Yes      | Same | `util/palloc.h`   |
+| `DgStackAlloc`      | Stack               | Yes (1)  | Any  | `util/salloc.h`   |
+
+ 1. All frees must be in reverse order of the allocations.
 
 ## API
 
