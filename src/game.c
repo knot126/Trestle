@@ -22,11 +22,14 @@
 //#include "graphics/vulkan.h"
 //#include "graphics/opengl.h"
 #include "graphics/graphics.h"
+#include "phys/phys.h"
 #include "util/alloc.h"
 #include "util/bag.h"
 #include "util/flag.h"
 #include "util/time.h"
 #include "io/fs.h"
+
+const float phys_delta_time = 1.0f / 180.0f;
 
 static void print_info(void) {
 	printf("Engine compiled on %s at %s.\n", __DATE__, __TIME__);
@@ -43,6 +46,8 @@ static int game_loop(GraphicsInitInfo graphics_info) {
 	}
 	
 	float show_fps = 0.0;
+	// We will accumulate and update physics when time is right.
+	float accumulate = 0.0f;
 	
 	while (should_keep_open) {
 		float frame_time = DgTime();
@@ -52,9 +57,18 @@ static int game_loop(GraphicsInitInfo graphics_info) {
 		
 		graphics_update(graphics_info);
 		
-		frame_time = DgTime() - frame_time;
-		show_fps = show_fps + frame_time;
+		if (accumulate > phys_delta_time) {
+			phys_update();
+			accumulate = 0.0f;
+		}
 		
+		// Update frame time
+		frame_time = DgTime() - frame_time;
+		
+		// Update accumulator
+		accumulate += frame_time;
+		
+		show_fps = show_fps + frame_time;
 		if (show_fps > 1.0f) {
 			printf("FPS: %d\n", (int) (1 / frame_time));
 			show_fps = 0.0f;

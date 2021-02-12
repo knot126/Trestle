@@ -14,6 +14,7 @@ set(FILES
 	src/linux/main.c
 	src/math/vector2.c
 	src/math/vector3.c
+	src/phys/phys.c
 	src/util/alloc.c
 	src/util/bag.c
 	src/util/thread.c
