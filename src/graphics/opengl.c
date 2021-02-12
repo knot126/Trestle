@@ -120,6 +120,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glewExperimental = GL_TRUE;
 	glewInit();
 	
+	glfwSwapInterval(0);
 	glfwSetFramebufferSizeCallback(gl->window, gl_set_window_size);
 	glViewport(0, 0, 1280, 720);
 	
@@ -148,11 +149,15 @@ DgOpenGLContext* gl_graphics_init(void) {
 	gl->shaders = DgAlloc(sizeof(GLuint *) * 2);
 	
 	GLuint vertex_shader = gl_load_shader("assets://shaders/vertex.glsl", GL_VERTEX_SHADER);
-	if (!vertex_shader) { exit(EXIT_FAILURE); }
+	if (!vertex_shader) {
+		exit(EXIT_FAILURE);
+	}
 	gl->shaders[0] = vertex_shader;
 	
 	GLuint fragment_shader = gl_load_shader("assets://shaders/frag.glsl", GL_FRAGMENT_SHADER);
-	if (!fragment_shader) { exit(EXIT_FAILURE); }
+	if (!fragment_shader) {
+		exit(EXIT_FAILURE);
+	}
 	gl->shaders[1] = fragment_shader;
 	
 	gl->shader_count = 2;

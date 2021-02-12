@@ -25,6 +25,7 @@
 #include "util/alloc.h"
 #include "util/bag.h"
 #include "util/flag.h"
+#include "util/time.h"
 #include "io/fs.h"
 
 static void print_info(void) {
@@ -41,12 +42,23 @@ static int game_loop(GraphicsInitInfo graphics_info) {
 		printf("Graphics pointer is null.\n");
 	}
 	
+	float show_fps = 0.0;
+	
 	while (should_keep_open) {
+		float frame_time = DgTime();
+		
 		// Check if we should still be open
 		should_keep_open = get_should_keep_open(graphics_info);
 		
 		graphics_update(graphics_info);
 		
+		frame_time = DgTime() - frame_time;
+		show_fps = show_fps + frame_time;
+		
+		if (show_fps > 1.0f) {
+			printf("FPS: %d\n", (int) (1 / frame_time));
+			show_fps = 0.0f;
+		}
 	} // while (should_keep_open)
 	
 	return 0;
@@ -61,6 +73,9 @@ int game_main(int argc, char* argv[]) {
 	/* The first real main game function, called from the main() function of the
 	 * OS. */
 	print_info();
+	
+	// Initialise the clock
+	DgInitTime();
 	
 	// Create a basic memory pool
 	printf("Making the initial memory pool...\n");

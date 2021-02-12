@@ -18,6 +18,7 @@ set(FILES
 	src/util/bag.c
 	src/util/thread.c
 	src/util/flag.c
+	src/util/time.c
 	src/game.c
 	src/types.c
 	src/main.c)
