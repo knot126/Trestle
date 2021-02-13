@@ -96,6 +96,7 @@ int game_main(int argc, char* argv[]) {
 	// Create a basic memory pool
 	printf("Making the initial memory pool...\n");
 	alloch_t mempool = DgAllocPoolInit(1024 * 1024 * 8);
+	DgAllocPrintChain();
 	
 	// File system module init
 	printf("Initialising file system paths...\n");
@@ -106,8 +107,8 @@ int game_main(int argc, char* argv[]) {
 	DgBagSet(&g_gameProperties, "deploy", "0");
 	DgBagSet(&g_gameProperties, "graphicsDriver", "OpenGL");
 	
-	const char* somevalue = DgBagGet(&g_gameProperties, "deploy");
-	printf("Is deploy: %s.\n", somevalue);
+	const char* test = DgBagGet(&g_gameProperties, "graphicsDriver");
+	printf("graphicsDriver = %s\n", test);
 	
 	DgBagPrint(&g_gameProperties);
 	

@@ -5,6 +5,8 @@
  * PropertyBag implementation
  */
 
+#pragma once
+
 #include <stdlib.h>
 
 typedef struct __DgBagPair {
@@ -13,9 +15,9 @@ typedef struct __DgBagPair {
 } __DgBagPair;
 
 typedef struct DgBag {
-	const char** key;
-	const char** value;
 	size_t size;
+	const char **key;
+	const char **value;
 } DgBag;
 
 DgBag DgBagInit(void);

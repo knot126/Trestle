@@ -12,7 +12,6 @@
 
 typedef struct DgFreeBlockInfo {
 	size_t size;
-	void* block;
 	struct DgFreeBlockInfo *next;
 } DgFreeBlockInfo;
 
