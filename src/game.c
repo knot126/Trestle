@@ -103,8 +103,13 @@ int game_main(int argc, char* argv[]) {
 	
 	// Create a global property bag
 	g_gameProperties = DgBagInit();
-	DgBagSet(g_gameProperties, "deploy", "0");
-	DgBagSet(g_gameProperties, "graphicsDriver", "OpenGL");
+	DgBagSet(&g_gameProperties, "deploy", "0");
+	DgBagSet(&g_gameProperties, "graphicsDriver", "OpenGL");
+	
+	const char* somevalue = DgBagGet(&g_gameProperties, "deploy");
+	printf("Is deploy: %s.\n", somevalue);
+	
+	DgBagPrint(&g_gameProperties);
 	
 	// Event centre startup (global events)
 	DgFlagCreateEvent("game_init_ok");

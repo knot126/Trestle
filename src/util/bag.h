@@ -18,7 +18,8 @@ typedef struct DgBag {
 	size_t size;
 } DgBag;
 
-DgBag DgBagInit();
-void DgBagFree();
-const char *DgBagGet(DgBag pb, const char* key);
-void DgBagSet(DgBag pb, const char* key, const char* value);
+DgBag DgBagInit(void);
+void DgBagFree(DgBag* pb);
+void DgBagPrint(DgBag* pb);
+const char *DgBagGet(DgBag* pb, const char* key);
+void DgBagSet(DgBag* pb, const char* key, const char* value);

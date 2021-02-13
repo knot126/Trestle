@@ -12,7 +12,7 @@
 
 #include "alloc.h"
 
-const bool DG_MEMORY_ALLOC_DEBUG = true;
+const bool DG_MEMORY_ALLOC_DEBUG = false;
 
 struct {
 	DgPoolInfo pool_info;
