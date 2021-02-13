@@ -7,30 +7,52 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <stdbool.h>
 
 #include "alloc.h"
+
 #include "bag.h"
 
-DgPropertyBag DgPropertyBagInit(size_t size) {
+DgBag DgBagInit() {
 	/* Create a new property bag with size elements already initialised. */
-	DgPropertyBag pb;
+	DgBag pb;
 	
-	pb.pairs = (DgPropertyBagPair *) DgAlloc(sizeof(DgPropertyBagPair) * size);
-	memset(&pb.pairs, 0, sizeof(DgPropertyBagPair) * size);
+	pb.key = (const char **) DgAlloc(sizeof(const char *));
+	
+	if (!pb.key) {
+		printf("Failed to allocate memory for bag keys.\n");
+		return pb;
+	}
+	
+	pb.value = (const char **) DgAlloc(sizeof(const char *));
+	
+	if (!pb.value) {
+		printf("Failed to allocate memory for bag values.\n");
+		return pb;
+	}
+	
+	memset(pb.key, 0, sizeof(const char *));
+	
+	pb.size = 1;
 	
 	return pb;
 }
 
-char *DgPropertyBagGet(DgPropertyBag pb, char* name) {
-	/* Takes a PropertyBag and key and returns the value if found.
-	 * 
+void DgBagFree() {
+	
+}
+
+const char *DgBagGet(DgBag pb, const char* key) {
+	/* 
+	 * Takes a PropertyBag and key and returns the value if found.
 	 * Returns the value string location.
 	 */
 	char* value = "";
 	
 	for (size_t i = 0; i < pb.size; i++) {
-		if (pb.pairs[i].key && !strcmp(pb.pairs[i].key, name)) {
-			value = pb.pairs[i].value;
+		if (pb.key[i] && !strcmp(pb.key[i], key)) {
+			pb.value[i] = value;
 			break;
 		}
 	}
@@ -38,6 +60,33 @@ char *DgPropertyBagGet(DgPropertyBag pb, char* name) {
 	return value;
 }
 
-void DgPropertyBagSet(DgPropertyBag pb, char* key, char* value) {
+void DgBagSet(DgBag pb, const char* key, const char* value) {
+	/* 
+	 * Adds (or reassigns the key if found) the key by the name key to the value
+	 * value.
+	 */
+	bool have = false;
 	
+	for (size_t i = 0; i < pb.size; i++) {
+		if (pb.key[i] && !strcmp(pb.key[i], key)) {
+			have = true;
+			pb.value[i] = value;
+			break;
+		}
+	}
+	
+	if (!have) {
+		pb.size++;
+		
+		pb.key = (const char **) DgRealloc(pb.key, sizeof(const char *) * pb.size);
+		pb.value = (const char **) DgRealloc(pb.value, sizeof(const char *) * pb.size);
+		
+		if (!pb.key || !pb.value) {
+			printf("Failed to allocate memory to make new pair in bag.\n");
+			return;
+		}
+		
+		pb.key[pb.size - 1] = key;
+		pb.value[pb.size - 1] = value;
+	}
 }

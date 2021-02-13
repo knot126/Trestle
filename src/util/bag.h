@@ -7,16 +7,18 @@
 
 #include <stdlib.h>
 
-typedef struct DgPropertyBagPair {
+typedef struct __DgBagPair {
 	char* key;
 	char* value;
-} DgPropertyBagPair;
+} __DgBagPair;
 
-typedef struct DgPropertyBag {
-	DgPropertyBagPair* pairs;
+typedef struct DgBag {
+	const char** key;
+	const char** value;
 	size_t size;
-} DgPropertyBag;
+} DgBag;
 
-DgPropertyBag DgPropertyBagInit(size_t size);
-char *DgPropertyBagGet(DgPropertyBag pb, char* name);
-void DgPropertyBagSet(DgPropertyBag pb, char* key, char* value);
+DgBag DgBagInit();
+void DgBagFree();
+const char *DgBagGet(DgBag pb, const char* key);
+void DgBagSet(DgBag pb, const char* key, const char* value);
