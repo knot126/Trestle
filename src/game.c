@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <assert.h>
 #if defined(__linux__)
 	#include <unistd.h>
 #endif
@@ -30,6 +31,7 @@
 #include "io/fs.h"
 
 const float phys_delta_time = 1.0f / 180.0f;
+static DgBag g_gameProperties;
 
 static void print_info(void) {
 	printf("Engine compiled on %s at %s.\n", __DATE__, __TIME__);
@@ -98,6 +100,11 @@ int game_main(int argc, char* argv[]) {
 	// File system module init
 	printf("Initialising file system paths...\n");
 	DgInitPaths();
+	
+	// Create a global property bag
+	g_gameProperties = DgBagInit();
+	DgBagSet(g_gameProperties, "deploy", "0");
+	DgBagSet(g_gameProperties, "graphicsDriver", "OpenGL");
 	
 	// Event centre startup (global events)
 	DgFlagCreateEvent("game_init_ok");

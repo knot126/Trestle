@@ -10,19 +10,6 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
-/*
-typedef struct DgPoolInfo {
-	void* memory;
-	void* next;
-	size_t size;
-} DgPoolInfo;
-*/
-
-typedef struct DgBlockInfo {
-	size_t size; // TODO: Is this really needed?
-	void* next;
-} DgBlockInfo;
-
 typedef struct DgFreeBlockInfo {
 	size_t size;
 	void* block;
@@ -44,13 +31,6 @@ typedef struct DgBlockHeader {
 
 typedef int32_t alloch_t;
 
-// These top two are on the edge of being obsolete, but they may be brought back
-// int32_t DgMakePool(size_t size);
-// void DgFreePool(int32_t index);
-
-// There is only one pool right now, so no need to get best index...
-// int32_t DgBestPoolIndex(size_t size);
-
 // Init and destroy main allocator
 int32_t DgAllocPoolInit(size_t size);
 void DgAllocPoolFree(int32_t handle);
@@ -59,3 +39,6 @@ void DgAllocPoolFree(int32_t handle);
 void *DgAlloc(size_t size);
 void DgFree(void *block);
 void *DgRealloc(void *block, size_t size);
+
+// Debugging functions
+void DgAllocPrintChain();

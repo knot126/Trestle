@@ -15,7 +15,7 @@
 #include "bag.h"
 
 DgBag DgBagInit() {
-	/* Create a new property bag with size elements already initialised. */
+	/* Create a new property bag with one element already initialised. */
 	DgBag pb;
 	
 	pb.key = (const char **) DgAlloc(sizeof(const char *));
