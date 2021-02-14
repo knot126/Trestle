@@ -10,9 +10,11 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "../io/fs.h"
+
 #include "alloc.h"
 
-const bool DG_MEMORY_ALLOC_DEBUG = false;
+const bool DG_MEMORY_ALLOC_DEBUG = true;
 
 struct {
 	DgPoolInfo pool_info;
@@ -247,4 +249,16 @@ void *DgRealloc(void* block, size_t size) {
 	DgFree(block);
 	
 	return new_block;
+}
+
+void DgDumpMemory() {
+	DgFileStream* f = DgFileStreamOpen("dump.bin", "wb");
+	if (f) {
+		DgFileStreamWrite(f, dg_alloc.pool_info.block_size, dg_alloc.pool_info.block);
+		DgFileStreamClose(f);
+		printf("Memory dump offset: <0x%x>\n", dg_alloc.pool_info.block);
+	}
+	else {
+		printf("Memory dump failed.\n");
+	}
 }

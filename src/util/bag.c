@@ -46,7 +46,6 @@ void DgBagFree(DgBag* pb) {
 void DgBagPrint(DgBag* pb) {
 	for (size_t i = 0; i < pb->size; i++) {
 		if (pb->key[i] && pb->value[i]) {
-			printf("location: %x\n", pb->key[i]);
 			printf("%s = %s\n", pb->key[i], pb->value[i]);
 		}
 		else {
@@ -100,7 +99,5 @@ void DgBagSet(DgBag* pb, const char* key, const char* value) {
 		
 		pb->key[pb->size - 1] = key;
 		pb->value[pb->size - 1] = value;
-		
-		printf("location: %x\n", pb->key[pb->size - 1]);
 	}
 }

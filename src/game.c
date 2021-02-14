@@ -103,12 +103,13 @@ int game_main(int argc, char* argv[]) {
 	DgInitPaths();
 	
 	// Create a global property bag
+	printf("Preparing global properties...\n");
 	g_gameProperties = DgBagInit();
 	DgBagSet(&g_gameProperties, "deploy", "0");
 	DgBagSet(&g_gameProperties, "graphicsDriver", "OpenGL");
 	
-	const char* test = DgBagGet(&g_gameProperties, "graphicsDriver");
-	printf("graphicsDriver = %s\n", test);
+	const char* test = DgBagGet(&g_gameProperties, "deploy");
+	printf("deploy = %s\n", test);
 	
 	DgBagPrint(&g_gameProperties);
 	
