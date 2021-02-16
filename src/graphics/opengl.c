@@ -194,15 +194,15 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	// Vertex datas
 	const float data1[] = {
-		 -0.5f,  0.5f,  0.0f, // 0
-		 -0.5f, -0.5f,  0.0f, // 1
-		  0.5f, -0.5f,  0.0f, // 2
+		 -0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.0f,
+		 -0.5f, -0.5f,  0.0f, 0.0f, 1.0f, 0.0f,
+		  0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.0f,
 	};
 	
 	const float data2[] = {
-		  0.5f,  0.5f,  0.0f, // 0
-		 -0.5f,  0.5f,  0.0f, // 1
-		  0.5f, -0.5f,  0.0f, // 2
+		  0.5f,  0.5f,  0.0f,
+		 -0.5f,  0.5f,  0.0f,
+		  0.5f, -0.5f,  0.0f,
 	};
 	
 	const float *datas[] = {(float *) &data1, (float *) &data2};
@@ -221,22 +221,26 @@ DgOpenGLContext* gl_graphics_init(void) {
 	// For the first VAO
 	glBindVertexArray(gl->vaos[0]);
 	glBindBuffer(GL_ARRAY_BUFFER, gl->vbos[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 9, datas[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(data1), datas[0], GL_STATIC_DRAW);
 	
 	gl_error_check(__FILE__, __LINE__);
 	
 	// Tell OpenGL about this vertex data
 	GLint attr_Position = glGetAttribLocation(gl->programs[0], "position");
+	GLint attr_Colour = glGetAttribLocation(gl->programs[0], "colour");
 	
-	glVertexAttribPointer(attr_Position, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(attr_Position, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) 0);
 	glEnableVertexAttribArray(attr_Position);
+	
+	glVertexAttribPointer(attr_Colour, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) (3 * sizeof(float)));
+	glEnableVertexAttribArray(attr_Colour);
 	
 	gl_error_check(__FILE__, __LINE__);
 	
 	// For the second VAO
 	glBindVertexArray(gl->vaos[1]);
 	glBindBuffer(GL_ARRAY_BUFFER, gl->vbos[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 9, datas[1], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(data2), datas[1], GL_STATIC_DRAW);
 	
 	gl_error_check(__FILE__, __LINE__);
 	
