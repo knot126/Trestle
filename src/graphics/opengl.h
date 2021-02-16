@@ -16,13 +16,16 @@
 
 typedef struct DgOpenGLContext {
 	GLFWwindow* window;
-	GLuint vao;
-	GLuint vbo;
-	GLuint ebo;
-	GLuint program;
+	GLuint* vaos;
+	size_t vaos_count;
+	GLuint* vbos;
+	size_t vbos_count;
+	GLuint* ebos;
+	size_t ebos_count;
+	GLuint* programs;
+	size_t programs_count;
 	GLuint* shaders;
 	size_t shader_count;
-	size_t vert_count;
 } DgOpenGLContext;
 
 GLuint gl_load_shader(char* filename, GLenum type);

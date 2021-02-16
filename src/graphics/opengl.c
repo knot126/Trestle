@@ -92,6 +92,32 @@ GLenum gl_error_check(char* file, int line) {
 	}
 }
 
+GLuint gl_make_program(uint32_t shader_count, GLuint* shaders) {
+	// Create program, add shaders to it and link it
+	GLuint program_id = glCreateProgram();
+	
+	for (int i = 0; i < shader_count; i++) {
+		glAttachShader(program_id, shaders[i]);
+	}
+	
+	glBindFragDataLocation(program_id, 0, "out_colour");
+	glLinkProgram(program_id);
+	
+	// Check for any errors making program
+	GLint link_stat;
+	glGetProgramiv(program_id, GL_LINK_STATUS, &link_stat);
+	
+	if (!link_stat) {
+		char mesg[1024];
+		glGetProgramInfoLog(program_id, 1024, NULL, mesg);
+		if (mesg[0]) {
+			printf("%s\n", mesg);
+		}
+	}
+	
+	return program_id;
+}
+
 void gl_set_window_size(GLFWwindow* window, int w, int h) {
 	glViewport(0, 0, w, h);
 }
@@ -126,87 +152,103 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	gl_error_check(__FILE__, __LINE__);
 	
-	// Vertex datas
-	const float g_Triangle[] = {
-		 -0.5f,  0.5f,  0.0f, // 0
-		 -0.5f, -0.5f,  0.0f, // 1
-		  0.5f, -0.5f,  0.0f, // 2
-		
-		  0.5f,  0.5f,  0.0f, // 3
-	};
-	
-	const int g_Triangle_elements[] = {
-		0, 1, 2,
-		1, 2, 3,
-	};
-	
-	gl->vert_count = sizeof(g_Triangle) / 3;
-	
-	// Making a VBO
-	glGenBuffers(1, &gl->vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, gl->vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_Triangle), g_Triangle, GL_STATIC_DRAW);
-	
-	// Making an EBO for the VBO
-	glGenBuffers(1, &gl->ebo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(g_Triangle_elements), g_Triangle_elements, GL_STATIC_DRAW);
-	
-	gl_error_check(__FILE__, __LINE__);
-	
 	// Load shaders
-	gl->shaders = DgAlloc(sizeof(GLuint *) * 2);
+	gl->shaders = DgAlloc(sizeof(GLuint *) * 3);
 	
-	GLuint vertex_shader = gl_load_shader("assets://shaders/vertex.glsl", GL_VERTEX_SHADER);
-	if (!vertex_shader) {
+	GLuint current_shader = gl_load_shader("assets://shaders/vertex.glsl", GL_VERTEX_SHADER);
+	if (!current_shader) {
 		exit(EXIT_FAILURE);
 	}
-	gl->shaders[0] = vertex_shader;
+	gl->shaders[0] = current_shader;
 	
-	GLuint fragment_shader = gl_load_shader("assets://shaders/frag.glsl", GL_FRAGMENT_SHADER);
-	if (!fragment_shader) {
+	current_shader = gl_load_shader("assets://shaders/frag.glsl", GL_FRAGMENT_SHADER);
+	if (!current_shader) {
 		exit(EXIT_FAILURE);
 	}
-	gl->shaders[1] = fragment_shader;
+	gl->shaders[1] = current_shader;
 	
-	gl->shader_count = 2;
-	
-	// Create program and add shaders to it
-	gl->program = glCreateProgram();
-	glAttachShader(gl->program, vertex_shader);
-	glAttachShader(gl->program, fragment_shader);
-	glBindFragDataLocation(gl->program, 0, "out_colour");
-	glLinkProgram(gl->program);
-	
-	GLint link_stat;
-	glGetProgramiv(gl->program, GL_LINK_STATUS, &link_stat);
-	
-	if (!link_stat) {
-		char mesg[512];
-		glGetProgramInfoLog(gl->program, 512, NULL, mesg);
-		printf("%s\n", mesg);
+	current_shader = gl_load_shader("assets://shaders/frag2.glsl", GL_FRAGMENT_SHADER);
+	if (!current_shader) {
+		exit(EXIT_FAILURE);
 	}
+	gl->shaders[2] = current_shader;
 	
-	glUseProgram(gl->program);
+	gl->shader_count = 3;
+	
+	gl->programs = (GLuint *) DgAlloc(sizeof(GLuint) * 2);
+	
+	GLuint my_shaders[2];
+	my_shaders[0] = gl->shaders[0];
+	my_shaders[1] = gl->shaders[1];
+	gl->programs[0] = gl_make_program(2, my_shaders);
+	
+	GLuint my_shaders_[2];
+	my_shaders_[0] = gl->shaders[0];
+	my_shaders_[1] = gl->shaders[1];
+	gl->programs[1] = gl_make_program(2, my_shaders_);
 	
 	// Delete shaders, they are not needed anymore
 	for (int i = 0; i < gl->shader_count; i++) {
 		glDeleteShader(gl->shaders[i]);
 	}
 	
+	// Vertex datas
+	const float data1[] = {
+		 -0.5f,  0.5f,  0.0f, // 0
+		 -0.5f, -0.5f,  0.0f, // 1
+		  0.5f, -0.5f,  0.0f, // 2
+	};
+	
+	const float data2[] = {
+		  0.5f,  0.5f,  0.0f, // 0
+		 -0.5f,  0.5f,  0.0f, // 1
+		  0.5f, -0.5f,  0.0f, // 2
+	};
+	
+	const float *datas[] = {(float *) &data1, (float *) &data2};
+	
+	gl->vaos = (GLuint *) DgAlloc(sizeof(GLuint) * 2);
+	gl->vaos_count = 2;
+	gl->vbos = (GLuint *) DgAlloc(sizeof(GLuint) * 2);
+	gl->vbos_count = 2;
+	
+	// Create a VAOs
+	glGenVertexArrays(gl->vaos_count, gl->vaos);
+	
+	// Making a VBOs
+	glGenBuffers(gl->vbos_count, gl->vbos);
+	
+	// For the first VAO
+	glBindVertexArray(gl->vaos[0]);
+	glBindBuffer(GL_ARRAY_BUFFER, gl->vbos[0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 9, datas[0], GL_STATIC_DRAW);
+	
 	gl_error_check(__FILE__, __LINE__);
 	
-	// Create a VAO
-	glGenVertexArrays(1, &gl->vao);
-	glBindVertexArray(gl->vao);
-	
 	// Tell OpenGL about this vertex data
-	GLint attr_Position = glGetAttribLocation(gl->program, "position");
+	GLint attr_Position = glGetAttribLocation(gl->programs[0], "position");
 	
 	glVertexAttribPointer(attr_Position, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(attr_Position);
 	
 	gl_error_check(__FILE__, __LINE__);
+	
+	// For the second VAO
+	glBindVertexArray(gl->vaos[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, gl->vbos[1]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 9, datas[1], GL_STATIC_DRAW);
+	
+	gl_error_check(__FILE__, __LINE__);
+	
+	// Tell OpenGL about this vertex data
+	attr_Position = glGetAttribLocation(gl->programs[1], "position");
+	
+	glVertexAttribPointer(attr_Position, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(attr_Position);
+	
+	gl_error_check(__FILE__, __LINE__);
+	
+	printf("Graphics subsystem has been initialised.\n");
 	
 	return gl;
 }
@@ -214,10 +256,17 @@ DgOpenGLContext* gl_graphics_init(void) {
 void gl_graphics_free(DgOpenGLContext* gl) {
 	glfwTerminate();
 	
-	glDeleteProgram(gl->program);
+	for (int i = 0; i < gl->programs_count; i++) {
+		glDeleteProgram(gl->programs[i]);
+	}
 	
-	glDeleteBuffers(1, &gl->vbo);
-	glDeleteVertexArrays(1, &gl->vao);
+	for (int i = 0; i < gl->vbos_count; i++) {
+		glDeleteBuffers(gl->vbos_count, gl->vbos);
+	}
+	
+	for (int i = 0; i < gl->vaos_count; i++) {
+		glDeleteVertexArrays(gl->vaos_count, gl->vaos);
+	}
 	
 	DgFree(gl->shaders);
 	DgFree(gl);
@@ -233,14 +282,20 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 	
-	//glBindVertexArray(gl->vao);
-	//glDrawArrays(GL_TRIANGLES, 0, gl->vert_count);
+	glBindVertexArray(gl->vaos[0]);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 	
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebo);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
+	//glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(gl->window, GL_TRUE);
+	}
+	
+	if (glfwGetKey(gl->window, GLFW_KEY_Q) == GLFW_PRESS) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	} else {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 }
 
