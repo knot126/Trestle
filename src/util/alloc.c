@@ -14,7 +14,7 @@
 
 #include "alloc.h"
 
-const bool DG_MEMORY_ALLOC_DEBUG = true;
+const bool DG_MEMORY_ALLOC_DEBUG = false;
 
 struct {
 	DgPoolInfo pool_info;
@@ -238,13 +238,16 @@ void DgFree(void *block) {
 }
 
 void *DgRealloc(void* block, size_t size) {
+	void *memory = (void *) (block - sizeof(DgBlockHeader));
+	size_t old_size = ((DgBlockHeader *) memory)->size + sizeof(DgBlockHeader);
+	
 	void* new_block = DgAlloc(size);
 	
 	if (DG_MEMORY_ALLOC_DEBUG) {
 		printf("Resize memory at <0x%X> (now <0x%X>) to %d...\n", block, new_block, size);
 	}
 	
-	memcpy(new_block, block, size);
+	memcpy(new_block, block, old_size);
 	
 	DgFree(block);
 	

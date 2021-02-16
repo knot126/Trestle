@@ -124,24 +124,33 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glfwSetFramebufferSizeCallback(gl->window, gl_set_window_size);
 	glViewport(0, 0, 1280, 720);
 	
-	// Create a VAO
-	glGenVertexArrays(1, &gl->vao);
-	glBindVertexArray(gl->vao);
-	
 	gl_error_check(__FILE__, __LINE__);
 	
 	// Vertex datas
 	const float g_Triangle[] = {
-		 0.0f,  0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		-0.5f, -0.5f, 0.0f,
-		 1.0f, -1.0f, 0.0f,
+		 -0.5f,  0.5f,  0.0f, // 0
+		 -0.5f, -0.5f,  0.0f, // 1
+		  0.5f, -0.5f,  0.0f, // 2
+		
+		  0.5f,  0.5f,  0.0f, // 3
 	};
 	
-	// Making a buffer
+	const int g_Triangle_elements[] = {
+		0, 1, 2,
+		1, 2, 3,
+	};
+	
+	gl->vert_count = sizeof(g_Triangle) / 3;
+	
+	// Making a VBO
 	glGenBuffers(1, &gl->vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, gl->vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_Triangle), g_Triangle, GL_STATIC_DRAW);
+	
+	// Making an EBO for the VBO
+	glGenBuffers(1, &gl->ebo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(g_Triangle_elements), g_Triangle_elements, GL_STATIC_DRAW);
 	
 	gl_error_check(__FILE__, __LINE__);
 	
@@ -166,14 +175,34 @@ DgOpenGLContext* gl_graphics_init(void) {
 	gl->program = glCreateProgram();
 	glAttachShader(gl->program, vertex_shader);
 	glAttachShader(gl->program, fragment_shader);
-	glBindFragDataLocation(gl->program, 0, "outColor");
+	glBindFragDataLocation(gl->program, 0, "out_colour");
 	glLinkProgram(gl->program);
+	
+	GLint link_stat;
+	glGetProgramiv(gl->program, GL_LINK_STATUS, &link_stat);
+	
+	if (!link_stat) {
+		char mesg[512];
+		glGetProgramInfoLog(gl->program, 512, NULL, mesg);
+		printf("%s\n", mesg);
+	}
+	
 	glUseProgram(gl->program);
+	
+	// Delete shaders, they are not needed anymore
+	for (int i = 0; i < gl->shader_count; i++) {
+		glDeleteShader(gl->shaders[i]);
+	}
 	
 	gl_error_check(__FILE__, __LINE__);
 	
+	// Create a VAO
+	glGenVertexArrays(1, &gl->vao);
+	glBindVertexArray(gl->vao);
+	
 	// Tell OpenGL about this vertex data
 	GLint attr_Position = glGetAttribLocation(gl->program, "position");
+	
 	glVertexAttribPointer(attr_Position, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(attr_Position);
 	
@@ -186,10 +215,6 @@ void gl_graphics_free(DgOpenGLContext* gl) {
 	glfwTerminate();
 	
 	glDeleteProgram(gl->program);
-	
-	for (int i = 0; i < gl->shader_count; i++) {
-		glDeleteShader(gl->shaders[i]);
-	}
 	
 	glDeleteBuffers(1, &gl->vbo);
 	glDeleteVertexArrays(1, &gl->vao);
@@ -205,9 +230,14 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	glfwPollEvents();
 	
 	// OpenGL clear and draw
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	
+	//glBindVertexArray(gl->vao);
+	//glDrawArrays(GL_TRIANGLES, 0, gl->vert_count);
+	
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebo);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(gl->window, GL_TRUE);

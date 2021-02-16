@@ -20,10 +20,9 @@
 	#include <unistd.h>
 #endif
 
-//#include "graphics/vulkan.h"
-//#include "graphics/opengl.h"
 #include "graphics/graphics.h"
 #include "phys/phys.h"
+#include "util/thread.h"
 #include "util/alloc.h"
 #include "util/bag.h"
 #include "util/flag.h"
@@ -57,6 +56,8 @@ static int game_loop(GraphicsInitInfo graphics_info) {
 		// Check if we should still be open
 		should_keep_open = get_should_keep_open(graphics_info);
 		
+		//DgThread t_graphics, t_physics;
+		
 		graphics_update(graphics_info);
 		
 		if (accumulate > phys_delta_time) {
@@ -80,7 +81,6 @@ static int game_loop(GraphicsInitInfo graphics_info) {
 	return 0;
 }
 
-// testing events
 static void on_init_okay(const char* event, void* params) {
 	printf("The game has initialised successfully.\n");
 }
@@ -96,22 +96,22 @@ int game_main(int argc, char* argv[]) {
 	// Create a basic memory pool
 	printf("Making the initial memory pool...\n");
 	alloch_t mempool = DgAllocPoolInit(1024 * 1024 * 8);
-	DgAllocPrintChain();
 	
 	// File system module init
 	printf("Initialising file system paths...\n");
 	DgInitPaths();
 	
 	// Create a global property bag
-	printf("Preparing global properties...\n");
-	g_gameProperties = DgBagInit();
-	DgBagSet(&g_gameProperties, "deploy", "0");
-	DgBagSet(&g_gameProperties, "graphicsDriver", "OpenGL");
-	
-	const char* test = DgBagGet(&g_gameProperties, "deploy");
-	printf("deploy = %s\n", test);
-	
-	DgBagPrint(&g_gameProperties);
+	// TODO: Fix this
+// 	printf("Preparing global properties...\n");
+// 	g_gameProperties = DgBagInit();
+// 	DgBagSet(&g_gameProperties, "deploy", "0");
+// 	DgBagSet(&g_gameProperties, "graphicsDriver", "OpenGL");
+// 	
+// 	const char* test = DgBagGet(&g_gameProperties, "deploy");
+// 	printf("deploy = %s\n", test);
+// 	
+// 	DgBagPrint(&g_gameProperties);
 	
 	// Event centre startup (global events)
 	DgFlagCreateEvent("game_init_ok");

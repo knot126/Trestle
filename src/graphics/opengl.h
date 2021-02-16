@@ -18,9 +18,11 @@ typedef struct DgOpenGLContext {
 	GLFWwindow* window;
 	GLuint vao;
 	GLuint vbo;
+	GLuint ebo;
 	GLuint program;
 	GLuint* shaders;
 	size_t shader_count;
+	size_t vert_count;
 } DgOpenGLContext;
 
 GLuint gl_load_shader(char* filename, GLenum type);
