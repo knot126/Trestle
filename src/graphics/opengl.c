@@ -184,7 +184,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	GLuint my_shaders_[2];
 	my_shaders_[0] = gl->shaders[0];
-	my_shaders_[1] = gl->shaders[1];
+	my_shaders_[1] = gl->shaders[2];
 	gl->programs[1] = gl_make_program(2, my_shaders_);
 	
 	// Delete shaders, they are not needed anymore
@@ -282,7 +282,12 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 	
+	glUseProgram(gl->programs[0]);
 	glBindVertexArray(gl->vaos[0]);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	
+	glUseProgram(gl->programs[1]);
+	glBindVertexArray(gl->vaos[1]);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	
 	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
