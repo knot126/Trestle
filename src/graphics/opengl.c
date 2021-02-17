@@ -15,6 +15,7 @@
 #include <GLFW/glfw3.h>
 
 #include "../util/alloc.h"
+#include "../util/time.h"
 #include "../io/load.h"
 
 #include "opengl.h"
@@ -291,6 +292,13 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	
 	glUseProgram(gl->programs[1]);
+	
+	float time, green;
+	green = (sin(DgTime()) / 2.0f) + 0.5f;
+	
+	int loc = glGetUniformLocation(gl->programs[1], "solid");
+	
+	glUniform3f(loc, 0.0f, green, 0.0f);
 	glBindVertexArray(gl->vaos[1]);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	
