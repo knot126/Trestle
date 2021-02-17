@@ -6,6 +6,7 @@
  */
 
 #include <string.h>
+#include <math.h>
 
 #if !defined(DG_GLEW_INCLUDED_OK)
 	#include "../glew/glew.h"
@@ -100,7 +101,6 @@ GLuint gl_make_program(uint32_t shader_count, GLuint* shaders) {
 		glAttachShader(program_id, shaders[i]);
 	}
 	
-	glBindFragDataLocation(program_id, 0, "out_colour");
 	glLinkProgram(program_id);
 	
 	// Check for any errors making program
