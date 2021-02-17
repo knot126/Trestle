@@ -253,6 +253,12 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	gl_error_check(__FILE__, __LINE__);
 	
+	// Offset testing
+	glUseProgram(gl->programs[0]);
+	glUniform3f(glGetUniformLocation(gl->programs[0], "distort"), 0.1f, 0.3f, 0.4f);
+	
+	glUseProgram(0);
+	
 	printf("Graphics subsystem has been initialised.\n");
 	
 	return gl;
