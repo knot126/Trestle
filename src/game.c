@@ -102,16 +102,12 @@ int game_main(int argc, char* argv[]) {
 	DgInitPaths();
 	
 	// Create a global property bag
-	// TODO: Fix this
-// 	printf("Preparing global properties...\n");
-// 	g_gameProperties = DgBagInit();
-// 	DgBagSet(&g_gameProperties, "deploy", "0");
-// 	DgBagSet(&g_gameProperties, "graphicsDriver", "OpenGL");
-// 	
-// 	const char* test = DgBagGet(&g_gameProperties, "deploy");
-// 	printf("deploy = %s\n", test);
-// 	
-// 	DgBagPrint(&g_gameProperties);
+	printf("Preparing global properties...\n");
+	g_gameProperties = DgBagInit();
+	DgBagSet(&g_gameProperties, "deploy", "0");
+	DgBagSet(&g_gameProperties, "graphicsDriver", "OpenGL");
+	
+	DgBagPrint(&g_gameProperties);
 	
 	// Event centre startup (global events)
 	DgFlagCreateEvent("game_init_ok");

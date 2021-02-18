@@ -195,9 +195,9 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	// Vertex datas
 	const float data1[] = {
-		 -0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.0f,
-		 -0.5f, -0.5f,  0.0f, 0.0f, 1.0f, 0.0f,
-		  0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.0f,
+		 -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 
+		 -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 
+		  0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 
 	};
 	
 	const float data2[] = {
@@ -230,10 +230,10 @@ DgOpenGLContext* gl_graphics_init(void) {
 	GLint attr_Position = glGetAttribLocation(gl->programs[0], "position");
 	GLint attr_Colour = glGetAttribLocation(gl->programs[0], "colour");
 	
-	glVertexAttribPointer(attr_Position, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) 0);
+	glVertexAttribPointer(attr_Position, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) 0);
 	glEnableVertexAttribArray(attr_Position);
 	
-	glVertexAttribPointer(attr_Colour, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) (3 * sizeof(float)));
+	glVertexAttribPointer(attr_Colour, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (5 * sizeof(float)));
 	glEnableVertexAttribArray(attr_Colour);
 	
 	gl_error_check(__FILE__, __LINE__);

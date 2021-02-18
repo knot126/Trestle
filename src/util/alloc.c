@@ -51,6 +51,21 @@ void DgAllocPoolFree(int32_t handle) {
 	}
 }
 
+static void DgAllocIntegrityCheck() {
+	DgFreeBlockInfo *tnode = dg_alloc.pool_info.next;
+	DgFreeBlockInfo *nnode = dg_alloc.pool_info.next->next;
+	
+	while (nnode != NULL) {
+		if (((void *) tnode) + tnode->size > (void *) nnode) {
+			printf("Warning: Corrupted data structure in allocator. Values: <0x%x, 0x%x>.\n", (((void *) tnode) + tnode->size), (void *) nnode);
+			DgAllocPrintChain();
+			break;
+		}
+		tnode = nnode;
+		nnode = nnode->next;
+	}
+}
+
 static void DgOptimiseMemory() {
 	/* 
 	 * Goes through the free memory list and combines free spots that are next 
@@ -174,6 +189,11 @@ void *DgAlloc(size_t size) {
 	memory = memory + sizeof(DgBlockHeader);
 	block_info->size = size;
 	
+	// Integrity check
+	if (DG_MEMORY_ALLOC_DEBUG) {
+		DgAllocIntegrityCheck();
+	}
+	
 	// Return pointer to new block of memory
 	return memory;
 }
@@ -239,7 +259,7 @@ void DgFree(void *block) {
 
 void *DgRealloc(void* block, size_t size) {
 	void *memory = (void *) (block - sizeof(DgBlockHeader));
-	size_t old_size = ((DgBlockHeader *) memory)->size + sizeof(DgBlockHeader);
+	size_t old_size = ((DgBlockHeader *) memory)->size /*+ sizeof(DgBlockHeader)*/;
 	
 	void* new_block = DgAlloc(size);
 	
@@ -249,13 +269,19 @@ void *DgRealloc(void* block, size_t size) {
 	
 	memcpy(new_block, block, old_size);
 	
-	DgFree(block);
+	// FIXME: There is a bug here. Fix it.
+	//DgFree(block);
+	
+	// Integrity check
+	if (DG_MEMORY_ALLOC_DEBUG) {
+		DgAllocIntegrityCheck();
+	}
 	
 	return new_block;
 }
 
-void DgDumpMemory() {
-	DgFileStream* f = DgFileStreamOpen("dump.bin", "wb");
+void DgDumpMemory(char *name) {
+	DgFileStream* f = DgFileStreamOpen(name, "wb");
 	if (f) {
 		DgFileStreamWrite(f, dg_alloc.pool_info.block_size, dg_alloc.pool_info.block);
 		DgFileStreamClose(f);
