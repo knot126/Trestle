@@ -73,7 +73,7 @@ static int game_loop(GraphicsInitInfo graphics_info) {
 		
 		show_fps = show_fps + frame_time;
 		if (show_fps > 1.0f) {
-			printf("FPS: %d\n", (int) (1 / frame_time));
+			printf("FPS: %d (%fms)\n", (int) (1 / frame_time), frame_time);
 			show_fps = 0.0f;
 		}
 	} // while (should_keep_open)

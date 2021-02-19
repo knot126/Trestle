@@ -1,6 +1,14 @@
+-- 
+-- Copyright (C) 2021 Decent Games
+-- -------------------------------
+--
+-- Game Startup Script
+-- 
 
-local ls = engine.loadedState()
-
-if ls == false then
-	print("Something: ", mgGet("object.property"))
+function init()
+	local status = mgGetEngineState()
+	
+	if not status then
+		mgSet("object.property", "test")
+	end
 end
