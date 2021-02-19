@@ -5,44 +5,43 @@ project(Engine VERSION 0.0.0)
 
 # Files for lua
 set(LUA_FILES
-	src/lua/lapi.c
-	src/lua/lctype.c
-	src/lua/lfunc.c
-	src/lua/lmathlib.c
-	src/lua/loslib.c
-	src/lua/ltable.c
-	src/lua/lundump.c
-	src/lua/lauxlib.c
-	src/lua/ldblib.c
-	src/lua/lgc.c
-	src/lua/lmem.c
-	src/lua/lparser.c
-	src/lua/ltablib.c
-	src/lua/lutf8lib.c
-	src/lua/lbaselib.c
-	src/lua/ldebug.c
-	src/lua/linit.c
-	src/lua/loadlib.c
-	src/lua/lstate.c
-	src/lua/ltm.c
-	src/lua/lvm.c
-	src/lua/lcode.c
-	src/lua/ldo.c
-	src/lua/liolib.c
-	src/lua/lobject.c
-	src/lua/lstring.c
-	src/lua/lua.c
-	src/lua/lzio.c
-	src/lua/lcorolib.c
-	src/lua/ldump.c
-	src/lua/llex.c
-	src/lua/lopcodes.c
-	src/lua/lstrlib.c
+	lib/lua/src/lapi.c
+	lib/lua/src/lcode.c
+	lib/lua/src/lctype.c
+	lib/lua/src/ldebug.c
+	lib/lua/src/ldo.c
+	lib/lua/src/ldump.c
+	lib/lua/src/lfunc.c
+	lib/lua/src/lgc.c
+	lib/lua/src/llex.c
+	lib/lua/src/lmem.c
+	lib/lua/src/lobject.c
+	lib/lua/src/lopcodes.c
+	lib/lua/src/lparser.c
+	lib/lua/src/lstate.c
+	lib/lua/src/lstring.c
+	lib/lua/src/ltable.c
+	lib/lua/src/ltm.c
+	lib/lua/src/lundump.c
+	lib/lua/src/lvm.c
+	lib/lua/src/lzio.c
+	lib/lua/src/lauxlib.c
+	lib/lua/src/lbaselib.c
+	lib/lua/src/lcorolib.c
+	lib/lua/src/ldblib.c
+	lib/lua/src/liolib.c
+	lib/lua/src/lmathlib.c
+	lib/lua/src/loadlib.c
+	lib/lua/src/loslib.c
+	lib/lua/src/lstrlib.c
+	lib/lua/src/ltablib.c
+	lib/lua/src/lutf8lib.c
+	lib/lua/src/linit.c
 )
 
 # Source files
 set(FILES 
-#	${LUA_FILES}
+	${LUA_FILES}
 	src/glew/glew.c
 	src/graphics/graphics.c
 	src/graphics/vulkan.c

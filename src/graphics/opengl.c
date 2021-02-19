@@ -254,10 +254,13 @@ DgOpenGLContext* gl_graphics_init(void) {
 	gl_error_check(__FILE__, __LINE__);
 	
 	// Offset testing
-	glUseProgram(gl->programs[0]);
-	glUniform3f(glGetUniformLocation(gl->programs[0], "distort"), 0.1f, 0.3f, 0.4f);
+	//glUseProgram(gl->programs[0]);
+	//glUniform3f(glGetUniformLocation(gl->programs[0], "distort"), 0.1f, 0.3f, 0.4f);
+	//glUseProgram(0);
 	
-	glUseProgram(0);
+	// Texture settings
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	
 	printf("Graphics subsystem has been initialised.\n");
 	

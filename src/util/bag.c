@@ -46,10 +46,10 @@ void DgBagFree(DgBag* pb) {
 void DgBagPrint(DgBag* pb) {
 	for (size_t i = 0; i < pb->size; i++) {
 		if (pb->key[i] && pb->value[i]) {
-			printf("%s = %s\n", pb->key[i], pb->value[i]);
+			printf("\t%s = %s\n", pb->key[i], pb->value[i]);
 		}
 		else {
-			printf("<null pair>\n");
+			printf("\t(null pair)\n");
 		}
 	}
 }

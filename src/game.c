@@ -107,8 +107,6 @@ int game_main(int argc, char* argv[]) {
 	DgBagSet(&g_gameProperties, "deploy", "0");
 	DgBagSet(&g_gameProperties, "graphicsDriver", "OpenGL");
 	
-	DgBagPrint(&g_gameProperties);
-	
 	// Event centre startup (global events)
 	DgFlagCreateEvent("game_init_ok");
 	DgFlagRegisterCallback("game_init_ok", &on_init_okay);
