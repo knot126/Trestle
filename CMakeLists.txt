@@ -39,10 +39,15 @@ set(LUA_FILES
 	lib/lua/src/linit.c
 )
 
+# LibMelon files
+#set(MELON_FILES
+#	
+#	)
+
 # Source files
 set(FILES 
 	${LUA_FILES}
-	src/glew/glew.c
+	lib/glew/glew.c
 	src/graphics/graphics.c
 	src/graphics/vulkan.c
 	src/graphics/opengl.c

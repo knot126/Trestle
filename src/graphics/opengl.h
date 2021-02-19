@@ -7,7 +7,7 @@
 #pragma once
 
 #if !defined(DG_GLEW_INCLUDED_OK)
-	#include "../glew/glew.h"
+	#include "../../lib/glew/glew.h"
 	#define DG_GLEW_INCLUDED_OK
 #endif
 
