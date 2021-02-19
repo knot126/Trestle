@@ -204,6 +204,11 @@ void DgFree(void *block) {
 	 * that we have allocated. 
 	 */
 	
+	// Check for null, like standard C
+	if (block == NULL) {
+		return;
+	}
+	
 	if (DG_MEMORY_ALLOC_DEBUG) {
 		printf("Freeing block of memory at <0x%X>...\n", block);
 	}
@@ -258,8 +263,13 @@ void DgFree(void *block) {
 }
 
 void *DgRealloc(void* block, size_t size) {
-	void *memory = (void *) (block - sizeof(DgBlockHeader));
-	size_t old_size = ((DgBlockHeader *) memory)->size /*+ sizeof(DgBlockHeader)*/;
+	void *memory;
+	size_t old_size;
+	
+	if (block) {
+		memory = (void *) (block - sizeof(DgBlockHeader));
+		old_size = ((DgBlockHeader *) memory)->size;
+	}
 	
 	void* new_block = DgAlloc(size);
 	
@@ -267,10 +277,12 @@ void *DgRealloc(void* block, size_t size) {
 		printf("Resize memory at <0x%X> (now <0x%X>) to %d...\n", block, new_block, size);
 	}
 	
-	memcpy(new_block, block, old_size);
-	
-	// FIXME: There is a bug here. Fix it.
-	//DgFree(block);
+	if (block) {
+		memcpy(new_block, block, old_size);
+		
+		// FIXME: There is a bug here. Fix it.
+		//DgFree(block);
+	}
 	
 	// Integrity check
 	if (DG_MEMORY_ALLOC_DEBUG) {
