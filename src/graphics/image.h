@@ -9,9 +9,9 @@
 
 typedef struct DgImageInfo {
 	byte *data;
-	uint16_t width;
-	uint16_t height;
-	uint16_t channels;
+	int width;
+	int height;
+	int channels;
 } DgImageInfo;
 
-DgImageInfo DgLoadImage(const char* path, byte *datap);
+DgImageInfo DgLoadImage(char* path);

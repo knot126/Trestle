@@ -18,6 +18,7 @@
 #include "../util/time.h"
 #include "../util/fail.h"
 #include "../io/load.h"
+#include "image.h"
 
 #include "opengl.h"
 
@@ -266,14 +267,15 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	
 	// Making a texture
-	const uint32_t tc = 1;
-	gl->textures = (GLuint *) DgAlloc(sizeof(GLuint) * tc);
+	gl->textures_count = 1;
+	gl->textures = (GLuint *) DgAlloc(sizeof(GLuint) * gl->textures_count);
 	
 	if (!gl->textures) {
 		DgFail("Texture list allocation failure.\n", -1);
 	}
 	
-	glGenTextures(tc, gl->textures);
+	glGenTextures(gl->textures_count, gl->textures);
+	DgImageInfo image = DgLoadImage("assets://gfx/Z_container.jpg");
 	
 	printf("Graphics subsystem has been initialised.\n");
 	
