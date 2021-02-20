@@ -15,11 +15,15 @@
 
 #include "../types.h"
 
-DgImageInfo DgLoadImage(const char* path, byte *datap) {
+DgImageInfo DgLoadImage(char* path, byte *datap) {
 	/* Load an image into memory */
 	DgImageInfo info;
 	
+	path = DgEvalPath(path);
+	
 	info.data = (byte *) stbi_load(path, &info.width, &info.height, &info.channels, 0);
+	
+	DgFree(path); // Free pathname
 	
 	if (datap) {
 		datap = info.data;

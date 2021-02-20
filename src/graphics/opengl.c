@@ -270,8 +270,10 @@ DgOpenGLContext* gl_graphics_init(void) {
 	gl->textures = (GLuint *) DgAlloc(sizeof(GLuint) * tc);
 	
 	if (!gl->textures) {
-		DgFail("Texture allocation failure.\n", -1);
+		DgFail("Texture list allocation failure.\n", -1);
 	}
+	
+	glGenTextures(tc, gl->textures);
 	
 	printf("Graphics subsystem has been initialised.\n");
 	
