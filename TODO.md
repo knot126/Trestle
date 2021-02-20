@@ -18,3 +18,5 @@ This doesn't list the obvious things like physics, graphics, etc. More about bac
    * Ex.: using bool arrays instead of bools in structs? This is better for CPU cache access.
  * Update the build system to something better
  * Make sure that all headers have `#pragma once` at the top
+ * Windows port
+ * Android port (?)
