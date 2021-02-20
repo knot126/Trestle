@@ -16,6 +16,7 @@
 
 #include "../util/alloc.h"
 #include "../util/time.h"
+#include "../util/fail.h"
 #include "../io/load.h"
 
 #include "opengl.h"
@@ -261,6 +262,16 @@ DgOpenGLContext* gl_graphics_init(void) {
 	// Texture settings
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	
+	// Making a texture
+	const uint32_t tc = 1;
+	gl->textures = (GLuint *) DgAlloc(sizeof(GLuint) * tc);
+	
+	if (!gl->textures) {
+		DgFail("Texture allocation failure.\n", -1);
+	}
 	
 	printf("Graphics subsystem has been initialised.\n");
 	
