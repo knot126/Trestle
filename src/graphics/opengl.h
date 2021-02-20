@@ -26,7 +26,7 @@ typedef struct DgOpenGLContext {
 	size_t programs_count;
 	GLuint* shaders;
 	size_t shader_count;
-	GLuint* texutres;
+	GLuint* textures;
 	size_t textures_count;
 } DgOpenGLContext;
 

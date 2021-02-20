@@ -57,6 +57,7 @@ set(FILES
 	src/util/thread.c
 	src/util/flag.c
 	src/util/time.c
+	src/util/fail.c
 	src/game.c
 	src/types.c
 	src/main.c)
