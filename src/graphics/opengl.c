@@ -197,10 +197,11 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	// Vertex datas
 	const float data1[] = {
+		// X      Y     Z     U     V     R     G     B
 		 -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 
 		 -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 
 		  0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 
-		  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
 	};
 	
 	const int indicies[] = {
@@ -260,11 +261,6 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glEnableVertexAttribArray(attr_Colour);
 	
 	gl_error_check(__FILE__, __LINE__);
-	
-	// Offset testing
-	//glUseProgram(gl->programs[0]);
-	//glUniform3f(glGetUniformLocation(gl->programs[0], "distort"), 0.1f, 0.3f, 0.4f);
-	//glUseProgram(0);
 	
 	// Making a texture
 	gl->textures_count = 1;
@@ -326,18 +322,6 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	
 	glUseProgram(gl->programs[0]);
 	glBindVertexArray(gl->vaos[0]);
-// 	glDrawArrays(GL_TRIANGLES, 0, 3);
-	
-// 	glUseProgram(gl->programs[1]);
-	
-// 	float time, green;
-// 	green = (sin(DgTime()) / 2.0f) + 0.5f;
-// 	
-// 	int loc = glGetUniformLocation(gl->programs[1], "solid");
-	
-// 	glUniform3f(loc, 0.0f, green, 0.0f);
-// 	glBindVertexArray(gl->vaos[1]);
-// 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
