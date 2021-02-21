@@ -15,3 +15,4 @@ typedef struct DgImageInfo {
 } DgImageInfo;
 
 DgImageInfo DgLoadImage(char* path);
+void DgFreeImage(DgImageInfo* image);

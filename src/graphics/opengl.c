@@ -197,23 +197,37 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	// Vertex datas
 	const float data1[] = {
-		 -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 
+		 -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 
 		 -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 
 		  0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 
+		  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
 	};
 	
-	const float data2[] = {
-		  0.5f,  0.5f,  0.0f,
-		 -0.5f,  0.5f,  0.0f,
-		  0.5f, -0.5f,  0.0f,
+	const int indicies[] = {
+		0, 1, 2,
+		0, 2, 3,
 	};
-	
-	const float *datas[] = {(float *) &data1, (float *) &data2};
 	
 	gl->vaos = (GLuint *) DgAlloc(sizeof(GLuint) * 2);
 	gl->vaos_count = 2;
+	
+	if (!gl->vaos) {
+		DgFail("VAO Alloc error\n", -1);
+	}
+	
 	gl->vbos = (GLuint *) DgAlloc(sizeof(GLuint) * 2);
 	gl->vbos_count = 2;
+	
+	if (!gl->vaos) {
+		DgFail("VBO Alloc error\n", -1);
+	}
+	
+	gl->ebos = (GLuint *) DgAlloc(sizeof(GLuint) * 2);
+	gl->ebos_count = 2;
+	
+	if (!gl->vaos) {
+		DgFail("EBO Alloc error\n", -1);
+	}
 	
 	// Create a VAOs
 	glGenVertexArrays(gl->vaos_count, gl->vaos);
@@ -221,10 +235,17 @@ DgOpenGLContext* gl_graphics_init(void) {
 	// Making a VBOs
 	glGenBuffers(gl->vbos_count, gl->vbos);
 	
+	// Same for EBOs
+	glGenBuffers(gl->ebos_count, gl->ebos);
+	
 	// For the first VAO
 	glBindVertexArray(gl->vaos[0]);
 	glBindBuffer(GL_ARRAY_BUFFER, gl->vbos[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(data1), datas[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(data1), data1, GL_STATIC_DRAW);
+	
+	// Index buffer 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
 	
 	gl_error_check(__FILE__, __LINE__);
 	
@@ -240,31 +261,10 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	gl_error_check(__FILE__, __LINE__);
 	
-	// For the second VAO
-	glBindVertexArray(gl->vaos[1]);
-	glBindBuffer(GL_ARRAY_BUFFER, gl->vbos[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(data2), datas[1], GL_STATIC_DRAW);
-	
-	gl_error_check(__FILE__, __LINE__);
-	
-	// Tell OpenGL about this vertex data
-	attr_Position = glGetAttribLocation(gl->programs[1], "position");
-	
-	glVertexAttribPointer(attr_Position, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(attr_Position);
-	
-	gl_error_check(__FILE__, __LINE__);
-	
 	// Offset testing
 	//glUseProgram(gl->programs[0]);
 	//glUniform3f(glGetUniformLocation(gl->programs[0], "distort"), 0.1f, 0.3f, 0.4f);
 	//glUseProgram(0);
-	
-	// Texture settings
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	
 	// Making a texture
 	gl->textures_count = 1;
@@ -275,7 +275,20 @@ DgOpenGLContext* gl_graphics_init(void) {
 	}
 	
 	glGenTextures(gl->textures_count, gl->textures);
+	glBindTexture(GL_TEXTURE_2D, gl->textures[0]);
+	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	
 	DgImageInfo image = DgLoadImage("assets://gfx/Z_container.jpg");
+	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width, image.height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data);
+	
+	DgFreeImage(&image);
+	
+	gl_error_check(__FILE__, __LINE__);
 	
 	printf("Graphics subsystem has been initialised.\n");
 	
@@ -313,21 +326,21 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	
 	glUseProgram(gl->programs[0]);
 	glBindVertexArray(gl->vaos[0]);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+// 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	
-	glUseProgram(gl->programs[1]);
+// 	glUseProgram(gl->programs[1]);
 	
-	float time, green;
-	green = (sin(DgTime()) / 2.0f) + 0.5f;
+// 	float time, green;
+// 	green = (sin(DgTime()) / 2.0f) + 0.5f;
+// 	
+// 	int loc = glGetUniformLocation(gl->programs[1], "solid");
 	
-	int loc = glGetUniformLocation(gl->programs[1], "solid");
+// 	glUniform3f(loc, 0.0f, green, 0.0f);
+// 	glBindVertexArray(gl->vaos[1]);
+// 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	
-	glUniform3f(loc, 0.0f, green, 0.0f);
-	glBindVertexArray(gl->vaos[1]);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-	
-	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
-	//glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(gl->window, GL_TRUE);

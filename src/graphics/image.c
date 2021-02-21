@@ -30,3 +30,8 @@ DgImageInfo DgLoadImage(char* path) {
 	
 	return info;
 }
+
+void DgFreeImage(DgImageInfo* image) {
+	stbi_image_free(image->data);
+	image->data = 0;
+}
