@@ -280,6 +280,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	}
 	
 	glGenTextures(gl->textures_count, gl->textures);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gl->textures[0]);
 	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -289,7 +290,12 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	DgImageInfo image = DgLoadImage("assets://gfx/Z_container.jpg");
 	
+	if (!image.data) {
+		DgFail("Failed to load texture.\n", -1);
+	}
+	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width, image.height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data);
+	glGenerateMipmap(GL_TEXTURE_2D);
 	
 	DgFreeImage(&image);
 	
@@ -330,11 +336,14 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	
 	glUseProgram(gl->programs[0]);
-	glBindVertexArray(gl->vaos[0]);
 	
 	glBindTexture(GL_TEXTURE_2D, gl->textures[0]);
+	glBindVertexArray(gl->vaos[0]);
+	
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	
+	gl_error_check(__FILE__, __LINE__);
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(gl->window, GL_TRUE);

@@ -5,6 +5,8 @@
  * Image Tools
  */
 
+#include <stdio.h>
+
 #include "../util/alloc.h"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -25,6 +27,10 @@ DgImageInfo DgLoadImage(char* path) {
 	path = DgEvalPath(path);
 	
 	info.data = (byte *) stbi_load(path, &info.width, &info.height, &info.channels, 0);
+	
+	if (info.data) {
+		printf("Loaded image at '%s'.\n", path);
+	}
 	
 	DgFree(path); // Free pathname
 	
