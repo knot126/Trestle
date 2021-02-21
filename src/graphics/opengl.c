@@ -170,12 +170,6 @@ DgOpenGLContext* gl_graphics_init(void) {
 	}
 	gl->shaders[1] = current_shader;
 	
-	current_shader = gl_load_shader("assets://shaders/frag2.glsl", GL_FRAGMENT_SHADER);
-	if (!current_shader) {
-		exit(EXIT_FAILURE);
-	}
-	gl->shaders[2] = current_shader;
-	
 	gl->shader_count = 3;
 	
 	gl->programs = (GLuint *) DgAlloc(sizeof(GLuint) * 2);
@@ -184,11 +178,6 @@ DgOpenGLContext* gl_graphics_init(void) {
 	my_shaders[0] = gl->shaders[0];
 	my_shaders[1] = gl->shaders[1];
 	gl->programs[0] = gl_make_program(2, my_shaders);
-	
-	GLuint my_shaders_[2];
-	my_shaders_[0] = gl->shaders[0];
-	my_shaders_[1] = gl->shaders[2];
-	gl->programs[1] = gl_make_program(2, my_shaders_);
 	
 	// Delete shaders, they are not needed anymore
 	for (int i = 0; i < gl->shader_count; i++) {
@@ -252,10 +241,30 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	// Tell OpenGL about this vertex data
 	GLint attr_Position = glGetAttribLocation(gl->programs[0], "position");
+	GLint attr_Texture = glGetAttribLocation(gl->programs[0], "texturepos");
 	GLint attr_Colour = glGetAttribLocation(gl->programs[0], "colour");
+	
+	if (attr_Position < 0) {
+		printf("No attribute Position.\n");
+	}
+	
+	if (attr_Texture < 0) {
+		printf("No attribute Texture.\n");
+	}
+	
+	if (attr_Colour < 0) {
+		printf("No attribute Colour.\n");
+	}
 	
 	glVertexAttribPointer(attr_Position, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) 0);
 	glEnableVertexAttribArray(attr_Position);
+	
+	gl_error_check(__FILE__, __LINE__);
+	
+	glVertexAttribPointer(attr_Texture, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
+	glEnableVertexAttribArray(attr_Texture);
+	
+	gl_error_check(__FILE__, __LINE__);
 	
 	glVertexAttribPointer(attr_Colour, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (5 * sizeof(float)));
 	glEnableVertexAttribArray(attr_Colour);
@@ -323,6 +332,7 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	glUseProgram(gl->programs[0]);
 	glBindVertexArray(gl->vaos[0]);
 	
+	glBindTexture(GL_TEXTURE_2D, gl->textures[0]);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	
