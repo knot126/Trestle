@@ -10,7 +10,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "../graphics/vulkan.h"
 #include "../graphics/opengl.h"
 #include "../util/alloc.h"
 #include "../io/load.h"
@@ -21,7 +20,7 @@ GraphicsInitInfo graphics_init(GraphicsType type) {
 	GraphicsInitInfo info;
 	
 	if (type == DG_GRAPHICS_TYPE_VULKAN) {
-		info.info = (void *) vk_graphics_init();
+		// info.info = (void *) vk_graphics_init();
 		info.type = DG_GRAPHICS_TYPE_VULKAN;
 	}
 	
@@ -54,7 +53,7 @@ bool get_should_keep_open(GraphicsInitInfo info) {
 
 void graphics_free(GraphicsInitInfo info) {
 	if (info.type == DG_GRAPHICS_TYPE_VULKAN) {
-		vk_graphics_free((DgVulkanInfo *) info.info);
+		// vk_graphics_free((DgVulkanInfo *) info.info);
 	}
 	
 	if (info.type == DG_GRAPHICS_TYPE_OPENGL) {

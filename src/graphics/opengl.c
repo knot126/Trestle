@@ -288,7 +288,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	
-	DgImageInfo image = DgLoadImage("assets://gfx/Z_container.jpg");
+	DgImageInfo image = DgLoadImage("assets://gfx/1.jpg");
 	
 	if (!image.data) {
 		DgFail("Failed to load texture.\n", -1);
@@ -332,7 +332,7 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	glfwPollEvents();
 	
 	// OpenGL clear and draw
-	glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 	
 	glUseProgram(gl->programs[0]);
