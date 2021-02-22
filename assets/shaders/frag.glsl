@@ -9,5 +9,5 @@ in vec3 Colour;
 out vec4 out_colour;
 
 void main() {
-	out_colour = texture(image, Texture) * vec4(Colour, 1.0);
+	out_colour = mix(texture(image, Texture), texture(image2, Texture), 0.5) * vec4(Colour, 1.0);
 }

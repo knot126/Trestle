@@ -228,8 +228,8 @@ DgOpenGLContext* gl_graphics_init(void) {
 	// Same for EBOs
 	glGenBuffers(gl->ebos_count, gl->ebos);
 	
-	// For the first VAO
-	glBindVertexArray(gl->vaos[0]);
+	// VAO Binding
+	glBindVertexArray(gl->vaos[0]); // Make sure first VAO is the active one
 	glBindBuffer(GL_ARRAY_BUFFER, gl->vbos[0]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(data1), data1, GL_STATIC_DRAW);
 	
@@ -272,14 +272,18 @@ DgOpenGLContext* gl_graphics_init(void) {
 	gl_error_check(__FILE__, __LINE__);
 	
 	// Making a texture
-	gl->textures_count = 1;
+	gl->textures_count = 2;
 	gl->textures = (GLuint *) DgAlloc(sizeof(GLuint) * gl->textures_count);
 	
 	if (!gl->textures) {
 		DgFail("Texture list allocation failure.\n", -1);
 	}
 	
+	// START (making textures)
+	
+	//0
 	glGenTextures(gl->textures_count, gl->textures);
+	
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gl->textures[0]);
 	
@@ -298,6 +302,32 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glGenerateMipmap(GL_TEXTURE_2D);
 	
 	DgFreeImage(&image);
+	
+	//1
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, gl->textures[1]);
+	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	
+	image = DgLoadImage("assets://gfx/2.jpg");
+	
+	if (!image.data) {
+		DgFail("Failed to load texture.\n", -1);
+	}
+	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width, image.height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	
+	DgFreeImage(&image);
+	
+	// END (making textures)
+	
+	glUseProgram(gl->programs[0]);
+	glUniform1i(glGetUniformLocation(gl->programs[0], "image"), 0);
+	glUniform1i(glGetUniformLocation(gl->programs[0], "image2"), 1);
 	
 	gl_error_check(__FILE__, __LINE__);
 	
@@ -321,7 +351,11 @@ void gl_graphics_free(DgOpenGLContext* gl) {
 		glDeleteVertexArrays(gl->vaos_count, gl->vaos);
 	}
 	
+	DgFree(gl->textures);
 	DgFree(gl->shaders);
+	DgFree(gl->vaos);
+	DgFree(gl->vbos);
+	DgFree(gl->ebos);
 	DgFree(gl);
 }
 
@@ -337,9 +371,12 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	
 	glUseProgram(gl->programs[0]);
 	
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gl->textures[0]);
-	glBindVertexArray(gl->vaos[0]);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, gl->textures[1]);
 	
+	glBindVertexArray(gl->vaos[0]);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	
