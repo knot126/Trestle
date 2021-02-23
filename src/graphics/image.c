@@ -24,15 +24,15 @@ DgImageInfo DgLoadImage(char* path) {
 	/* Load an image into memory */
 	DgImageInfo info;
 	
-	path = DgEvalPath(path);
+	char *res_path = DgEvalPath(path);
 	
-	info.data = (byte *) stbi_load(path, &info.width, &info.height, &info.channels, 0);
+	info.data = (byte *) stbi_load(res_path, &info.width, &info.height, &info.channels, 0);
 	
 	if (info.data) {
 		printf("Loaded image at '%s'.\n", path);
 	}
 	
-	DgFree(path); // Free pathname
+	DgFree(res_path); // Free pathname
 	
 	return info;
 }

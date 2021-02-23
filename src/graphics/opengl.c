@@ -125,6 +125,27 @@ void gl_set_window_size(GLFWwindow* window, int w, int h) {
 	glViewport(0, 0, w, h);
 }
 
+static void gl_load_texture(DgOpenGLContext *gl, char *path) {
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, gl->textures[1]);
+	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	
+	DgImageInfo image = DgLoadImage(path);
+	
+	if (!image.data) {
+		DgFail("Failed to load texture.\n", -1);
+	}
+	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width, image.height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	
+	DgFreeImage(&image);
+}
+
 DgOpenGLContext* gl_graphics_init(void) {
 	DgOpenGLContext* gl = DgAlloc(sizeof(DgOpenGLContext));
 	memset(gl, 0, sizeof(DgOpenGLContext));
@@ -187,10 +208,10 @@ DgOpenGLContext* gl_graphics_init(void) {
 	// Vertex datas
 	const float data1[] = {
 		// X      Y     Z     U     V     R     G     B
-		 -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 
-		 -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 
-		  0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 
-		  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+		 -0.8f,  0.8f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 
+		 -0.8f, -0.8f, 0.0f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f, 
+		  0.8f, -0.8f, 0.0f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f, 
+		  0.8f,  0.8f, 0.0f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
 	};
 	
 	const int indicies[] = {
@@ -279,51 +300,9 @@ DgOpenGLContext* gl_graphics_init(void) {
 		DgFail("Texture list allocation failure.\n", -1);
 	}
 	
-	// START (making textures)
-	
-	//0
-	glGenTextures(gl->textures_count, gl->textures);
-	
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, gl->textures[0]);
-	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
-	DgImageInfo image = DgLoadImage("assets://gfx/1.jpg");
-	
-	if (!image.data) {
-		DgFail("Failed to load texture.\n", -1);
-	}
-	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width, image.height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	
-	DgFreeImage(&image);
-	
-	//1
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, gl->textures[1]);
-	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
-	image = DgLoadImage("assets://gfx/2.jpg");
-	
-	if (!image.data) {
-		DgFail("Failed to load texture.\n", -1);
-	}
-	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width, image.height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	
-	DgFreeImage(&image);
-	
-	// END (making textures)
+	// Making textures
+	gl_load_texture(gl, "assets://gfx/1.jpg");
+	gl_load_texture(gl, "assets://gfx/2.jpg");
 	
 	glUseProgram(gl->programs[0]);
 	glUniform1i(glGetUniformLocation(gl->programs[0], "image"), 0);
