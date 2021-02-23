@@ -1,6 +1,6 @@
-# Decent Games Quick Run Engine
+# Trestle Engine
 
-This is the main repository for the Decent Games Engine, which currently aims to implement Quick Run. Please note that it is **not yet feature complete**, and it is missing many things. The engine only works on Linux right now, though I should start a Windows port before things get too crazy.
+This is the main repository for Decent Games' Trestle Engine, which currently aims to implement Quick Run. Please note that it is **not yet feature complete**, and it is missing many things. The engine only works on Linux right now, though I should start a Windows port before things get too crazy.
 
 ## Building
 

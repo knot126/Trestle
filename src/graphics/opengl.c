@@ -307,6 +307,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glUseProgram(gl->programs[0]);
 	glUniform1i(glGetUniformLocation(gl->programs[0], "image"), 0);
 	glUniform1i(glGetUniformLocation(gl->programs[0], "image2"), 1);
+	glUseProgram(0);
 	
 	gl_error_check(__FILE__, __LINE__);
 	
@@ -338,9 +339,10 @@ void gl_graphics_free(DgOpenGLContext* gl) {
 	DgFree(gl);
 }
 
+float tween = 1.0;
+
 void gl_graphics_update(DgOpenGLContext* gl) {
 	// Normal OpenGL events
-	
 	glfwSwapBuffers(gl->window);
 	glfwPollEvents();
 	
@@ -349,6 +351,8 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	
 	glUseProgram(gl->programs[0]);
+	
+	glUniform1f(glGetUniformLocation(gl->programs[0], "mixValue"), tween);
 	
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gl->textures[0]);
@@ -363,6 +367,20 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(gl->window, GL_TRUE);
+	}
+	
+	if (glfwGetKey(gl->window, GLFW_KEY_UP) == GLFW_PRESS) {
+		tween += 0.001f;
+		if (tween > 1.0f) {
+			tween = 1.0f;
+		}
+	}
+	
+	if (glfwGetKey(gl->window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+		tween -= 0.001f;
+		if (tween < 0.0f) {
+			tween = 0.0f;
+		}
 	}
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_Q) == GLFW_PRESS) {
