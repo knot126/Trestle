@@ -49,8 +49,6 @@ set(FILES
 	src/io/fs.c
 	src/io/load.c
 	src/linux/main.c
-	src/math/vector2.c
-	src/math/vector3.c
 	src/phys/phys.c
 	src/util/alloc.c
 	src/util/bag.c
@@ -58,6 +56,7 @@ set(FILES
 	src/util/flag.c
 	src/util/time.c
 	src/util/fail.c
+	src/util/maths.c
 	src/game.c
 	src/types.c
 	src/main.c)
