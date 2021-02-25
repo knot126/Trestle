@@ -125,9 +125,12 @@ void gl_set_window_size(GLFWwindow* window, int w, int h) {
 	glViewport(0, 0, w, h);
 }
 
-static void gl_load_texture(DgOpenGLContext *gl, char *path) {
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, gl->textures[1]);
+static void gl_load_texture(DgOpenGLContext *gl, char *path, GLenum active_texture) {
+	static int texture_count = 0;
+	
+	glActiveTexture(active_texture);
+	glBindTexture(GL_TEXTURE_2D, gl->textures[texture_count]);
+	texture_count++;
 	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -142,6 +145,8 @@ static void gl_load_texture(DgOpenGLContext *gl, char *path) {
 	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width, image.height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data);
 	glGenerateMipmap(GL_TEXTURE_2D);
+	
+	printf("Loaded image of id %d.\n", texture_count);
 	
 	DgFreeImage(&image);
 }
@@ -199,6 +204,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	my_shaders[0] = gl->shaders[0];
 	my_shaders[1] = gl->shaders[1];
 	gl->programs[0] = gl_make_program(2, my_shaders);
+	glUseProgram(gl->programs[0]);
 	
 	// Delete shaders, they are not needed anymore
 	for (int i = 0; i < gl->shader_count; i++) {
@@ -300,11 +306,12 @@ DgOpenGLContext* gl_graphics_init(void) {
 		DgFail("Texture list allocation failure.\n", -1);
 	}
 	
-	// Making textures
-	gl_load_texture(gl, "assets://gfx/1.jpg");
-	gl_load_texture(gl, "assets://gfx/2.jpg");
+	glGenTextures(gl->textures_count, gl->textures);
 	
-	glUseProgram(gl->programs[0]);
+	// Making textures
+	gl_load_texture(gl, "assets://gfx/1.jpg", GL_TEXTURE0);
+	gl_load_texture(gl, "assets://gfx/2.jpg", GL_TEXTURE1);
+	
 	glUniform1i(glGetUniformLocation(gl->programs[0], "image"), 0);
 	glUniform1i(glGetUniformLocation(gl->programs[0], "image2"), 1);
 	glUseProgram(0);
@@ -339,7 +346,7 @@ void gl_graphics_free(DgOpenGLContext* gl) {
 	DgFree(gl);
 }
 
-float tween = 1.0;
+float mixValue = 0.5f;
 
 void gl_graphics_update(DgOpenGLContext* gl) {
 	// Normal OpenGL events
@@ -350,9 +357,9 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 	
-	glUseProgram(gl->programs[0]);
+	glUniform1f(glGetUniformLocation(gl->programs[0], "mixValue"), mixValue);
 	
-	glUniform1f(glGetUniformLocation(gl->programs[0], "mixValue"), tween);
+	glUseProgram(gl->programs[0]);
 	
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gl->textures[0]);
@@ -370,16 +377,16 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	}
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_UP) == GLFW_PRESS) {
-		tween += 0.001f;
-		if (tween > 1.0f) {
-			tween = 1.0f;
+		mixValue += 0.01f;
+		if (mixValue > 1.0f) {
+			mixValue = 1.0f;
 		}
 	}
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-		tween -= 0.001f;
-		if (tween < 0.0f) {
-			tween = 0.0f;
+		mixValue -= 0.01f;
+		if (mixValue < 0.0f) {
+			mixValue = 0.0f;
 		}
 	}
 	
