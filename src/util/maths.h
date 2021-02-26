@@ -5,6 +5,8 @@
  * Math Utilites: Vectors and Matricies
  */
 
+#pragma once
+
 typedef struct DgVec2 {
 	float x, y;
 } DgVec2;
@@ -25,7 +27,7 @@ typedef struct DgVec4 {
 	};
 	union {
 		float w, a;
-	}
+	};
 } DgVec4;
 
 typedef DgVec4 DgColour;
