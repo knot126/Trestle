@@ -7,6 +7,8 @@
 
 #pragma once
 
+// DgVec**
+
 typedef struct DgVec2 {
 	float x, y;
 } DgVec2;
@@ -59,3 +61,10 @@ DgVec4 DgVec4Multiply(DgVec4 a, DgVec4 b);
 float DgVec4Magnitude(DgVec4 a);
 float DgVec4Dot(DgVec4 a, DgVec4 b);
 DgVec4 DgVec4Normalise(DgVec4 a);
+
+// DgMat**
+
+typedef struct DgMat4x4 {
+	float e[16];
+} DgMat4x4;
+

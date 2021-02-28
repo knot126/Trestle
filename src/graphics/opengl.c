@@ -163,11 +163,10 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 	
-	gl->window = glfwCreateWindow(1280, 720, "Decent Games Engine", NULL, NULL);
+	gl->window = glfwCreateWindow(1280, 720, "Trestle Engine", NULL, NULL);
 	
 	if (!gl->window) {
-		printf("Failed to create glfw window.\n");
-		exit(-1);
+		DgFail("Failed to create glfw window.", -1);
 	}
 	
 	glfwMakeContextCurrent(gl->window);
@@ -212,6 +211,8 @@ DgOpenGLContext* gl_graphics_init(void) {
 	}
 	
 	// Vertex datas
+	//DgLoadBinaryFileInfo vertexes = DgLoadBinaryFile();
+	
 	const float data1[] = {
 		// X      Y     Z     U     V     R     G     B
 		 -0.8f,  0.8f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 
