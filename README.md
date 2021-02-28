@@ -16,5 +16,4 @@ make -j4
 In the future, all game dependencies should be put into the `lib` directory and be built directly as part of the game. Right now only some of them are. Currently these need to be installed:
 
  * Standard C library and build tools
- * `vulkan-sdk` or `vulkan-devel` (though this should be removed)
  * `glfw` (either Wayland or X.org)
