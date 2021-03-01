@@ -65,6 +65,9 @@ DgVec4 DgVec4Normalise(DgVec4 a);
 // DgMat**
 
 typedef struct DgMat4x4 {
-	float e[16];
+	float ax, ay, az, aw;
+	float bx, by, bz, bw;
+	float cx, cy, cz, cw;
+	float dx, dy, dz, dw;
 } DgMat4x4;
 

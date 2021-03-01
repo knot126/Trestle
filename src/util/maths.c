@@ -180,3 +180,24 @@ inline DgVec4 DgVec4Normalise(DgVec4 a) {
 	
 	return c;
 }
+
+/* 
+ * DgMat4x4
+ */
+
+inline DgVec4 DgMat4x4ByVec4Multiply(DgMat4x4 a, DgVec4 b) {
+	DgVec4 c;
+	
+	c.x = (b.x * a.ax) + (b.x * a.ay) + (b.x * a.az) + (b.x * a.aw);
+	c.y = (b.y * a.bx) + (b.y * a.by) + (b.y * a.bz) + (b.y * a.bw);
+	c.z = (b.z * a.cx) + (b.z * a.cy) + (b.z * a.cz) + (b.z * a.cw);
+	c.w = (b.y * a.dx) + (b.y * a.dy) + (b.y * a.dz) + (b.y * a.dw);
+	
+	return c;
+}
+
+inline DgMat4 DgMat4x4byMat4x4Multiply(DgMat4x4 a, DgMat4x4 b) {
+	DgMat4x4 c;
+	
+	return c;
+}
