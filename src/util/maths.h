@@ -7,6 +7,12 @@
 
 #pragma once
 
+// Angle ops
+
+float DgCos(float angle);
+float DgSin(float angle);
+float DgTan(float angle);
+
 // DgVec**
 
 typedef struct DgVec2 {

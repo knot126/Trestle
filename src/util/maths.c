@@ -7,7 +7,28 @@
 
 #include <math.h>
 
+// For C implementations that do not specify PI
+#if !defined(M_PI)
+	#define M_PI 3.14159265358979323846
+#endif
+
 #include "maths.h"
+
+/*
+ * Various angle operations
+ */
+
+inline float DgCos(float angle) {
+	return (float) cos(angle * M_PI * 2.0f);
+}
+
+inline float DgSin(float angle) {
+	return (float) sin(angle * M_PI * 2.0f);
+}
+
+inline float DgTan(float angle) {
+	return (float) tan(angle * M_PI * 2.0f);
+}
 
 /* 
  * DgVec2 
@@ -196,8 +217,28 @@ inline DgVec4 DgMat4x4ByVec4Multiply(DgMat4x4 a, DgVec4 b) {
 	return c;
 }
 
-inline DgMat4 DgMat4x4byMat4x4Multiply(DgMat4x4 a, DgMat4x4 b) {
+inline DgMat4x4 DgMat4x4byMat4x4Multiply(DgMat4x4 a, DgMat4x4 b) {
 	DgMat4x4 c;
+	
+	c.ax = (a.ax * b.ax) + (a.ay * b.bx) + (a.az * b.cx) + (a.aw * b.dx);
+	c.ay = (a.ax * b.ay) + (a.ay * b.by) + (a.az * b.cy) + (a.aw * b.dy);
+	c.az = (a.ax * b.az) + (a.ay * b.bz) + (a.az * b.cz) + (a.aw * b.dz);
+	c.aw = (a.ax * b.aw) + (a.ay * b.bw) + (a.az * b.cw) + (a.aw * b.dw);
+	
+	c.bx = (a.bx * b.ax) + (a.by * b.bx) + (a.bz * b.cx) + (a.bw * b.dx);
+	c.by = (a.bx * b.ay) + (a.by * b.by) + (a.bz * b.cy) + (a.bw * b.dy);
+	c.bz = (a.bx * b.az) + (a.by * b.bz) + (a.bz * b.cz) + (a.bw * b.dz);
+	c.bw = (a.bx * b.aw) + (a.by * b.bw) + (a.bz * b.cw) + (a.bw * b.dw);
+	
+	c.cx = (a.cx * b.ax) + (a.cy * b.bx) + (a.cz * b.cx) + (a.cw * b.dx);
+	c.cy = (a.cx * b.ay) + (a.cy * b.by) + (a.cz * b.cy) + (a.cw * b.dy);
+	c.cz = (a.cx * b.az) + (a.cy * b.bz) + (a.cz * b.cz) + (a.cw * b.dz);
+	c.cw = (a.cx * b.aw) + (a.cy * b.bw) + (a.cz * b.cw) + (a.cw * b.dw);
+	
+	c.dx = (a.dx * b.ax) + (a.dy * b.bx) + (a.dz * b.cx) + (a.dw * b.dx);
+	c.dy = (a.dx * b.ay) + (a.dy * b.by) + (a.dz * b.cy) + (a.dw * b.dy);
+	c.dz = (a.dx * b.az) + (a.dy * b.bz) + (a.dz * b.cz) + (a.dw * b.dz);
+	c.dw = (a.dx * b.aw) + (a.dy * b.bw) + (a.dz * b.cw) + (a.dw * b.dw);
 	
 	return c;
 }
