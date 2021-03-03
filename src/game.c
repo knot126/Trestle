@@ -27,6 +27,7 @@
 #include "util/bag.h"
 #include "util/flag.h"
 #include "util/time.h"
+#include "util/maths.h"
 #include "io/fs.h"
 
 const float phys_delta_time = 1.0f / 180.0f;

@@ -58,6 +58,7 @@ float DgVec3Magnitude(DgVec3 a);
 float DgVec3Dot(DgVec3 a, DgVec3 b);
 DgVec3 DgVec3Cross(DgVec3 a, DgVec3 b);
 DgVec3 DgVec3Normalise(DgVec3 a);
+DgVec3 DgVec3New(float x, float y, float z);
 
 // DgVec4
 
@@ -67,29 +68,31 @@ DgVec4 DgVec4Multiply(DgVec4 a, DgVec4 b);
 float DgVec4Magnitude(DgVec4 a);
 float DgVec4Dot(DgVec4 a, DgVec4 b);
 DgVec4 DgVec4Normalise(DgVec4 a);
+DgVec4 DgVec4New(float x, float y, float z, float w);
 
 // DgMat**
 
-typedef struct DgMat2x2 {
+typedef struct DgMat2 {
 	float ax, ay;
 	float bx, by;
-} DgMat2x2;
+} DgMat2;
 
-typedef struct DgMat3x3 {
+typedef struct DgMat3 {
 	float ax, ay, az;
 	float bx, by, bz;
 	float cx, cy, cz;
-} DgMat3x3;
+} DgMat3;
 
-typedef struct DgMat4x4 {
+typedef struct DgMat4 {
 	float ax, ay, az, aw;
 	float bx, by, bz, bw;
 	float cx, cy, cz, cw;
 	float dx, dy, dz, dw;
-} DgMat4x4;
+} DgMat4;
 
-// DgMat4x4
+// DgMat4
 
-DgVec4 DgMat4x4ByVec4Multiply(DgMat4x4 a, DgVec4 b);
-DgMat4x4 DgMat4x4byMat4x4Multiply(DgMat4x4 a, DgMat4x4 b);
-DgMat4x4 DgMat4x4New(float a);
+DgVec4 DgMat4ByVec4Multiply(DgMat4 a, DgVec4 b);
+DgMat4 DgMat4ByMat4Multiply(DgMat4 a, DgMat4 b);
+DgMat4 DgMat4New(float a);
+void DgMat4Print(DgMat4 a);

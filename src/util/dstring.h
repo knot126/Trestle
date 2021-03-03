@@ -6,3 +6,5 @@
  */
 
 #pragma once
+
+uint32_t DgHashStringSimpleAddition(char *str);

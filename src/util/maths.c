@@ -6,6 +6,7 @@
  */
 
 #include <math.h>
+#include <stdio.h>
 
 // For C implementations that do not specify PI
 #if !defined(M_PI)
@@ -144,6 +145,16 @@ inline DgVec3 DgVec3Normalise(DgVec3 a) {
 	return c;
 }
 
+inline DgVec3 DgVec3New(float x, float y, float z) {
+	DgVec3 c;
+	
+	c.x = x;
+	c.y = y;
+	c.z = z;
+	
+	return c;
+}
+
 /*
  * DgVec4
  */
@@ -214,10 +225,10 @@ inline DgVec4 DgVec4New(float x, float y, float z, float w) {
 }
 
 /* 
- * DgMat4x4
+ * DgMat4
  */
 
-inline DgVec4 DgMat4x4ByVec4Multiply(DgMat4x4 a, DgVec4 b) {
+inline DgVec4 DgMat4ByVec4Multiply(DgMat4 a, DgVec4 b) {
 	DgVec4 c;
 	
 	c.x = (b.x * a.ax) + (b.x * a.ay) + (b.x * a.az) + (b.x * a.aw);
@@ -228,8 +239,8 @@ inline DgVec4 DgMat4x4ByVec4Multiply(DgMat4x4 a, DgVec4 b) {
 	return c;
 }
 
-inline DgMat4x4 DgMat4x4byMat4x4Multiply(DgMat4x4 a, DgMat4x4 b) {
-	DgMat4x4 c;
+inline DgMat4 DgMat4ByMat4Multiply(DgMat4 a, DgMat4 b) {
+	DgMat4 c;
 	
 	c.ax = (a.ax * b.ax) + (a.ay * b.bx) + (a.az * b.cx) + (a.aw * b.dx);
 	c.ay = (a.ax * b.ay) + (a.ay * b.by) + (a.az * b.cy) + (a.aw * b.dy);
@@ -254,13 +265,46 @@ inline DgMat4x4 DgMat4x4byMat4x4Multiply(DgMat4x4 a, DgMat4x4 b) {
 	return c;
 }
 
-inline DgMat4x4 DgMat4x4New(float a) {
-	DgMat4x4 c;
+inline DgMat4 DgMat4Translate(DgMat4 a, DgVec3 b) {
+	a.aw = b.x;
+	a.bw = b.y;
+	a.cw = b.z;
+	
+	return a;
+}
+
+inline DgMat4 DgMat4Scale(DgMat4 a, DgVec3 b) {
+	a.ax = b.x;
+	a.by = b.y;
+	a.cz = b.z;
+	
+	return a;
+}
+
+inline DgMat4 DgMat4Rotate(DgMat4 a, DgVec3 b) {
+	// TODO: Implement other rotations
+	a.by = DgCos(b.x);
+	a.bz = -DgSin(b.x);
+	a.cy = DgSin(b.x);
+	a.cz = DgCos(b.x);
+	
+	return a;
+}
+
+inline DgMat4 DgMat4New(float a) {
+	DgMat4 c;
 	
 	c.ax = a; c.ay = 0.0f; c.az = 0.0f; c.aw = 0.0f;
-	c.ax = 0.0f; c.ay = a; c.az = 0.0f; c.aw = 0.0f;
-	c.ax = 0.0f; c.ay = 0.0f; c.az = a; c.aw = 0.0f;
-	c.ax = 0.0f; c.ay = 0.0f; c.az = 0.0f; c.aw = a;
+	c.bx = 0.0f; c.by = a; c.bz = 0.0f; c.bw = 0.0f;
+	c.cx = 0.0f; c.cy = 0.0f; c.cz = a; c.cw = 0.0f;
+	c.dx = 0.0f; c.dy = 0.0f; c.dz = 0.0f; c.dw = a;
 	
 	return c;
+}
+
+void DgMat4Print(DgMat4 a) {
+	printf("⎡%f %f %f %f⎤\n", a.ax, a.ay, a.az, a.aw);
+	printf("⎢%f %f %f %f⎥\n", a.bx, a.by, a.bz, a.bw);
+	printf("⎢%f %f %f %f⎥\n", a.cx, a.cy, a.cz, a.cw);
+	printf("⎣%f %f %f %f⎦\n", a.dx, a.dy, a.dz, a.dw);
 }
