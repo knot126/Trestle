@@ -70,6 +70,17 @@ DgVec4 DgVec4Normalise(DgVec4 a);
 
 // DgMat**
 
+typedef struct DgMat2x2 {
+	float ax, ay;
+	float bx, by;
+} DgMat2x2;
+
+typedef struct DgMat3x3 {
+	float ax, ay, az;
+	float bx, by, bz;
+	float cx, cy, cz;
+} DgMat3x3;
+
 typedef struct DgMat4x4 {
 	float ax, ay, az, aw;
 	float bx, by, bz, bw;
@@ -77,3 +88,8 @@ typedef struct DgMat4x4 {
 	float dx, dy, dz, dw;
 } DgMat4x4;
 
+// DgMat4x4
+
+DgVec4 DgMat4x4ByVec4Multiply(DgMat4x4 a, DgVec4 b);
+DgMat4x4 DgMat4x4byMat4x4Multiply(DgMat4x4 a, DgMat4x4 b);
+DgMat4x4 DgMat4x4New(float a);

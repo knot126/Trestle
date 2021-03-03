@@ -202,6 +202,17 @@ inline DgVec4 DgVec4Normalise(DgVec4 a) {
 	return c;
 }
 
+inline DgVec4 DgVec4New(float x, float y, float z, float w) {
+	DgVec4 c;
+	
+	c.x = x;
+	c.y = y;
+	c.z = z;
+	c.w = w;
+	
+	return c;
+}
+
 /* 
  * DgMat4x4
  */
@@ -239,6 +250,17 @@ inline DgMat4x4 DgMat4x4byMat4x4Multiply(DgMat4x4 a, DgMat4x4 b) {
 	c.dy = (a.dx * b.ay) + (a.dy * b.by) + (a.dz * b.cy) + (a.dw * b.dy);
 	c.dz = (a.dx * b.az) + (a.dy * b.bz) + (a.dz * b.cz) + (a.dw * b.dz);
 	c.dw = (a.dx * b.aw) + (a.dy * b.bw) + (a.dz * b.cw) + (a.dw * b.dw);
+	
+	return c;
+}
+
+inline DgMat4x4 DgMat4x4New(float a) {
+	DgMat4x4 c;
+	
+	c.ax = a; c.ay = 0.0f; c.az = 0.0f; c.aw = 0.0f;
+	c.ax = 0.0f; c.ay = a; c.az = 0.0f; c.aw = 0.0f;
+	c.ax = 0.0f; c.ay = 0.0f; c.az = a; c.aw = 0.0f;
+	c.ax = 0.0f; c.ay = 0.0f; c.az = 0.0f; c.aw = a;
 	
 	return c;
 }
