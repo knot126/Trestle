@@ -19,15 +19,15 @@
  * Various angle operations
  */
 
-inline float DgCos(float angle) {
+float DgCos(float angle) {
 	return (float) cos(angle * M_PI * 2.0f);
 }
 
-inline float DgSin(float angle) {
+float DgSin(float angle) {
 	return (float) sin(angle * M_PI * 2.0f);
 }
 
-inline float DgTan(float angle) {
+float DgTan(float angle) {
 	return (float) tan(angle * M_PI * 2.0f);
 }
 
@@ -266,27 +266,39 @@ inline DgMat4 DgMat4ByMat4Multiply(DgMat4 a, DgMat4 b) {
 }
 
 inline DgMat4 DgMat4Translate(DgMat4 a, DgVec3 b) {
-	a.aw = b.x;
-	a.bw = b.y;
-	a.cw = b.z;
+	DgMat4 c = DgMat4New(1.0f);
+	
+	c.aw = b.x;
+	c.bw = b.y;
+	c.cw = b.z;
+	
+	a = DgMat4ByMat4Multiply(a, c);
 	
 	return a;
 }
 
 inline DgMat4 DgMat4Scale(DgMat4 a, DgVec3 b) {
-	a.ax = b.x;
-	a.by = b.y;
-	a.cz = b.z;
+	DgMat4 c = DgMat4New(1.0f);
+	
+	c.ax = b.x;
+	c.by = b.y;
+	c.cz = b.z;
+	
+	a = DgMat4ByMat4Multiply(a, c);
 	
 	return a;
 }
 
 inline DgMat4 DgMat4Rotate(DgMat4 a, DgVec3 b) {
 	// TODO: Implement other rotations
+	DgMat4 c = DgMat4New(1.0f);
+	
 	a.by = DgCos(b.x);
 	a.bz = -DgSin(b.x);
 	a.cy = DgSin(b.x);
 	a.cz = DgCos(b.x);
+	
+	a = DgMat4ByMat4Multiply(a, c);
 	
 	return a;
 }

@@ -17,6 +17,7 @@
 #include "../util/alloc.h"
 #include "../util/time.h"
 #include "../util/fail.h"
+#include "../util/maths.h"
 #include "../io/load.h"
 #include "image.h"
 
@@ -319,6 +320,11 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	gl_error_check(__FILE__, __LINE__);
 	
+	// Simple matris transform
+	DgMat4 xform = DgMat4New(1.0f);
+	xform = DgMat4Rotate(xform, DgVec3New(1.0f, 0.0f, 0.0f));
+	xform = DgMat4Scale(xform, DgVec3New(0.5f, 0.5f, 0.5f));
+	
 	printf("Graphics subsystem has been initialised.\n");
 	
 	return gl;
@@ -358,9 +364,9 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 	
-	glUniform1f(glGetUniformLocation(gl->programs[0], "mixValue"), mixValue);
-	
 	glUseProgram(gl->programs[0]);
+	
+	glUniform1f(glGetUniformLocation(gl->programs[0], "mixValue"), mixValue);
 	
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gl->textures[0]);
