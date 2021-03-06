@@ -289,14 +289,24 @@ inline DgMat4 DgMat4Scale(DgMat4 a, DgVec3 b) {
 	return a;
 }
 
-inline DgMat4 DgMat4Rotate(DgMat4 a, DgVec3 b) {
+inline DgMat4 DgMat4Rotate(DgMat4 a, DgVec3 b, float angle) {
 	// TODO: Implement other rotations
+	/* a = (the matrix that rotation will be applied to)
+	 * b = (the axis that will be rotated upon)
+	 */
 	DgMat4 c = DgMat4New(1.0f);
 	
-	a.by = DgCos(b.x);
-	a.bz = -DgSin(b.x);
-	a.cy = DgSin(b.x);
-	a.cz = DgCos(b.x);
+	c.ax = DgCos(angle) + (b.x * b.x * (1 - DgCos(angle)));
+	c.ay = (b.x * b.y * (1 - DgCos(angle))) - (b.z * DgSin(angle));
+	c.az = (b.x * b.z * (1 - DgCos(angle))) + (b.y * DgSin(angle));
+	
+	c.bx = (b.y * b.x * (1 - DgCos(angle))) + (b.z * DgSin(angle));
+	c.by = DgCos(angle) + (b.y * b.y * (1 - DgCos(angle)));
+	c.bz = (b.y * b.z * (1 - DgCos(angle))) - (b.x * DgSin(angle));
+	
+	c.cx = (b.z * b.x * (1 - DgCos(angle))) - (b.y * DgSin(angle));
+	c.cy = (b.z * b.y * (1 - DgCos(angle))) + (b.x * DgSin(angle));
+	c.cz = DgCos(angle) + (b.z * b.z * (1 - DgCos(angle)));
 	
 	a = DgMat4ByMat4Multiply(a, c);
 	

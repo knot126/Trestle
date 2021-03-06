@@ -322,8 +322,14 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	// Simple matris transform
 	DgMat4 xform = DgMat4New(1.0f);
-	xform = DgMat4Rotate(xform, DgVec3New(1.0f, 0.0f, 0.0f));
+	//xform = DgMat4Rotate(xform, DgVec3New(1.0f, 0.0f, 0.0f), 0.25f);
 	xform = DgMat4Scale(xform, DgVec3New(0.5f, 0.5f, 0.5f));
+	xform = DgMat4Translate(xform, DgVec3New(0.0f, 0.5f, 0.0f));
+	DgMat4Print(xform);
+	
+	glUseProgram(gl->programs[0]);
+	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "xform"), 1, GL_TRUE, &xform.ax);
+	glUseProgram(0);
 	
 	printf("Graphics subsystem has been initialised.\n");
 	

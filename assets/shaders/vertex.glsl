@@ -1,5 +1,7 @@
 #version 420 core
 
+uniform mat4 xform;
+
 in vec3 position;
 in vec2 texturepos;
 in vec3 colour;
@@ -10,5 +12,5 @@ out vec3 Colour;
 void main() {
 	Colour = colour;
 	Texture = texturepos;
-	gl_Position = vec4(position, 1.0);
+	gl_Position = xform * vec4(position, 1.0);
 }

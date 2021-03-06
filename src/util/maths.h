@@ -96,6 +96,6 @@ DgVec4 DgMat4ByVec4Multiply(DgMat4 a, DgVec4 b);
 DgMat4 DgMat4ByMat4Multiply(DgMat4 a, DgMat4 b);
 DgMat4 DgMat4Translate(DgMat4 a, DgVec3 b);
 DgMat4 DgMat4Scale(DgMat4 a, DgVec3 b);
-DgMat4 DgMat4Rotate(DgMat4 a, DgVec3 b);
+DgMat4 DgMat4Rotate(DgMat4 a, DgVec3 b, float angle);
 DgMat4 DgMat4New(float a);
 void DgMat4Print(DgMat4 a);
