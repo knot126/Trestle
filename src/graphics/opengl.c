@@ -348,7 +348,7 @@ void gl_graphics_free(DgOpenGLContext* gl) {
 	DgFree(gl);
 }
 
-float mixValue = 0.5f;
+float mixValue = 1.0f;
 
 void gl_graphics_update(DgOpenGLContext* gl) {
 	// Normal OpenGL events
@@ -365,10 +365,12 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	
 	// Simple matris transform
 	DgMat4 xform = DgMat4New(1.0f);
-	xform = DgMat4Rotate(xform, DgVec3New(0.0f, 0.0f, 1.0f), DgTime() * 0.25f);
-	xform = DgMat4Scale(xform, DgVec3New(0.5f, 0.5f, 0.5f));
 	xform = DgMat4Translate(xform, DgVec3New(0.0f, 0.5f, 0.0f));
+	xform = DgMat4Scale(xform, DgVec3New(0.5f, 0.5f, 0.5f));
+	xform = DgMat4Rotate(xform, DgVec3New(0.0f, 0.0f, 1.0f), DgTime() * 0.25f * mixValue);
+	
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "xform"), 1, GL_TRUE, &xform.ax);
+	
 	
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gl->textures[0]);
@@ -387,15 +389,15 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_UP) == GLFW_PRESS) {
 		mixValue += 0.01f;
-		if (mixValue > 1.0f) {
-			mixValue = 1.0f;
+		if (mixValue > 10.0f) {
+			mixValue = 10.0f;
 		}
 	}
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_DOWN) == GLFW_PRESS) {
 		mixValue -= 0.01f;
-		if (mixValue < 0.0f) {
-			mixValue = 0.0f;
+		if (mixValue < 0.01f) {
+			mixValue = 0.01f;
 		}
 	}
 	
