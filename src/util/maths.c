@@ -313,6 +313,32 @@ inline DgMat4 DgMat4Rotate(DgMat4 a, DgVec3 b, float angle) {
 	return a;
 }
 
+inline DgMat4 DgMat4NewPerspective(float l, float r, float b, float t, float n, float f) {
+	DgMat4 C = DgMat4New(0.0f);
+	
+	C.ax = (2 * n) / (r - l);
+	C.az = (r + l) / (r - l);
+	
+	C.by = (2 * n) / (t - b);
+	C.bz = (t + b) / (t - b);
+	
+	C.cz = -(f + n) / (f - n);
+	C.cw = -(2 * f * n) / (f - n);
+	
+	C.dz = -1;
+	
+	return C;
+}
+
+inline DgMat4 DgMat4NewPerspective2(float fov, float rat, float f, float b) {
+	/* Gives a perspective translation given FOV and Screen Ratio. */
+	float tangent = DgTan(fov / 2);
+	float h = f * tangent;
+	float w = h * rat;
+	
+	return DgMat4NewPerspective(-w, w, -h, h, f, b);
+}
+
 inline DgMat4 DgMat4New(float a) {
 	DgMat4 c;
 	

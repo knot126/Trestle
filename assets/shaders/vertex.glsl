@@ -1,6 +1,8 @@
 #version 420 core
 
-uniform mat4 xform;
+uniform mat4 model;
+uniform mat4 camera;
+uniform mat4 proj;
 
 in vec3 position;
 in vec2 texturepos;
@@ -12,5 +14,5 @@ out vec3 Colour;
 void main() {
 	Colour = colour;
 	Texture = texturepos;
-	gl_Position = xform * vec4(position, 1.0);
+	gl_Position = proj * camera * model * vec4(position, 1.0);
 }

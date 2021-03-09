@@ -216,10 +216,10 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	const float data1[] = {
 		// X      Y     Z     U     V     R     G     B
-		 -0.8f,  0.8f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 
-		 -0.8f, -0.8f, 0.0f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f, 
-		  0.8f, -0.8f, 0.0f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f, 
-		  0.8f,  0.8f, 0.0f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
+		 -0.4f,  0.4f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 
+		 -0.4f, -0.4f, 0.0f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f, 
+		  0.4f, -0.4f, 0.0f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f, 
+		  0.4f,  0.4f, 0.0f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
 	};
 	
 	const int indicies[] = {
@@ -350,39 +350,7 @@ void gl_graphics_free(DgOpenGLContext* gl) {
 
 float mixValue = 1.0f;
 
-void gl_graphics_update(DgOpenGLContext* gl) {
-	// Normal OpenGL events
-	glfwSwapBuffers(gl->window);
-	glfwPollEvents();
-	
-	// OpenGL clear and draw
-	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-	
-	glUseProgram(gl->programs[0]);
-	
-	//glUniform1f(glGetUniformLocation(gl->programs[0], "mixValue"), mixValue);
-	
-	// Simple matris transform
-	DgMat4 xform = DgMat4New(1.0f);
-	xform = DgMat4Translate(xform, DgVec3New(0.0f, 0.5f, 0.0f));
-	xform = DgMat4Scale(xform, DgVec3New(0.5f, 0.5f, 0.5f));
-	xform = DgMat4Rotate(xform, DgVec3New(0.0f, 0.0f, 1.0f), DgTime() * 0.25f * mixValue);
-	
-	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "xform"), 1, GL_TRUE, &xform.ax);
-	
-	
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, gl->textures[0]);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, gl->textures[1]);
-	
-	glBindVertexArray(gl->vaos[0]);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	
-	gl_error_check(__FILE__, __LINE__);
-	
+static void gl_handle_input(DgOpenGLContext* gl) {
 	if (glfwGetKey(gl->window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(gl->window, GL_TRUE);
 	}
@@ -406,6 +374,51 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	} else {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
+}
+
+void gl_graphics_update(DgOpenGLContext* gl) {
+	// Normal OpenGL events
+	glfwSwapBuffers(gl->window);
+	glfwPollEvents();
+	
+	// OpenGL clear and draw
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	
+	glUseProgram(gl->programs[0]);
+	
+	//glUniform1f(glGetUniformLocation(gl->programs[0], "mixValue"), mixValue);
+	
+	// Simple matris transform
+// 	DgMat4 xform = DgMat4New(1.0f);
+// 	xform = DgMat4Translate(xform, DgVec3New(0.0f, 0.5f, 0.0f));
+// 	xform = DgMat4Scale(xform, DgVec3New(0.5f, 0.5f, 0.5f));
+// 	xform = DgMat4Rotate(xform, DgVec3New(0.0f, 0.0f, 1.0f), DgTime() * 0.25f * mixValue);
+	
+	// trying to get things looking better at all resolutions
+	int w, h;
+	glfwGetWindowSize(gl->window, &w, &h);
+	
+	DgMat4 model = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.5f, 0.0f, 1.0f), -0.25f * DgTime());
+	DgMat4 camera = DgMat4Translate(DgMat4New(1.0f), DgVec3New(0.0f, 0.0f, -3.0f));
+	DgMat4 proj = DgMat4NewPerspective2(0.9f, (float) w / (float) h, 0.1f, 100.0f);
+	
+	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
+	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "camera"), 1, GL_TRUE, &camera.ax);
+	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "proj"), 1, GL_TRUE, &proj.ax);
+	
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, gl->textures[0]);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, gl->textures[1]);
+	
+	glBindVertexArray(gl->vaos[0]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	
+	gl_error_check(__FILE__, __LINE__);
+	
+	gl_handle_input(gl);
 }
 
 bool gl_get_should_keep_open(DgOpenGLContext *info) {
