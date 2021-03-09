@@ -28,6 +28,8 @@ typedef struct DgOpenGLContext {
 	size_t shader_count;
 	GLuint* textures;
 	size_t textures_count;
+	
+	size_t element_count; // number of elements in loaded data
 } DgOpenGLContext;
 
 GLuint gl_load_shader(char* filename, GLenum type);

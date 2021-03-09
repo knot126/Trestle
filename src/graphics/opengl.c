@@ -215,17 +215,54 @@ DgOpenGLContext* gl_graphics_init(void) {
 	//DgLoadBinaryFileInfo vertexes = DgLoadBinaryFile();
 	
 	const float data1[] = {
-		// X      Y     Z     U     V     R     G     B
-		 -0.4f,  0.4f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 
-		 -0.4f, -0.4f, 0.0f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f, 
-		  0.4f, -0.4f, 0.0f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f, 
-		  0.4f,  0.4f, 0.0f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
+		// X      Y      Z     U     V     R     G     B
+		-0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
+		 
+		-0.5f,  0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+		 0.5f, -0.5f, -0.5f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
+		 0.5f,  0.5f, -0.5f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
+		
+		-0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
+		 
+		-0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+		 0.5f, -0.5f, -0.5f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
+		 
+		 0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f, -0.5f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
+		
+		-0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
 	};
 	
 	const int indicies[] = {
 		0, 1, 2,
 		0, 2, 3,
+		4, 5, 6,
+		4, 6, 7,
+		8, 9, 10,
+		8, 10, 11,
+		12, 13, 14,
+		12, 14, 15,
+		16, 17, 18,
+		16, 18, 19,
+		20, 21, 22,
+		20, 22, 23,
 	};
+	
+	gl->element_count = sizeof(indicies) / sizeof(int);
 	
 	gl->vaos = (GLuint *) DgAlloc(sizeof(GLuint) * 2);
 	gl->vaos_count = 2;
@@ -414,7 +451,7 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	
 	glBindVertexArray(gl->vaos[0]);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, gl->element_count, GL_UNSIGNED_INT, 0);
 	
 	gl_error_check(__FILE__, __LINE__);
 	
