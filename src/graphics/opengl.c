@@ -355,6 +355,8 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glUniform1i(glGetUniformLocation(gl->programs[0], "image2"), 1);
 	glUseProgram(0);
 	
+	glEnable(GL_DEPTH_TEST);
+	
 	gl_error_check(__FILE__, __LINE__);
 	
 	printf("Graphics subsystem has been initialised.\n");
@@ -420,7 +422,7 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	
 	// OpenGL clear and draw
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glUseProgram(gl->programs[0]);
 	
@@ -436,7 +438,7 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	int w, h;
 	glfwGetWindowSize(gl->window, &w, &h);
 	
-	DgMat4 model = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.5f, 0.0f, 1.0f), -0.25f * DgTime());
+	DgMat4 model = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.5f, 0.2f, 1.0f), -0.25f * DgTime());
 	DgMat4 camera = DgMat4Translate(DgMat4New(1.0f), DgVec3New(0.0f, 0.0f, -3.0f));
 	DgMat4 proj = DgMat4NewPerspective2(0.9f, (float) w / (float) h, 0.1f, 100.0f);
 	
