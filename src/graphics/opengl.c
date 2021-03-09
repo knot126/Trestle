@@ -36,11 +36,34 @@ GLuint gl_load_shader(char* filename, GLenum type) {
 		return 0;
 	}
 	
+	// Construct the shader source string from some strings and a file
+	GLchar *strings[3];
+	GLint strings_lengths[3];
+	
+	strings[0] = "#version 420 core\n";
+	switch (type) {
+		case GL_VERTEX_SHADER:
+			strings[1] = "#define VERTEX\n\n";
+			break;
+		case GL_FRAGMENT_SHADER:
+			strings[1] = "#define FRAGMENT\n\n";
+			break;
+		case GL_GEOMETRY_SHADER:
+			strings[1] = "#define GEOMETRY\n\n";
+			break;
+	}
+	strings[2] = (GLchar *) shader_source->data;
+	
+	strings_lengths[0] = strlen(strings[0]);
+	strings_lengths[1] = strlen(strings[1]);
+	strings_lengths[2] = shader_source->size;
+	
 	// Create shader and load source
 	GLuint shader = glCreateShader(type);
-	glShaderSource(shader, 1, 
-		(const GLchar* const *) &shader_source->data, 
-		(const GLint *) &shader_source->size);
+	glShaderSource(shader,
+		3, 
+		(const GLchar* const *) strings, 
+		(const GLint *) strings_lengths);
 	
 	// Cleanup path
 	DgUnloadBinaryFile(shader_source);
@@ -64,7 +87,7 @@ GLuint gl_load_shader(char* filename, GLenum type) {
 		return 0;
 	}
 	
-	printf("Loaded shader at '%s'.\n", filename);
+	//printf("Loaded shader from '%s'.\n", filename);
 	
 	return shader;
 }
@@ -97,13 +120,41 @@ GLenum gl_error_check(char* file, int line) {
 	}
 }
 
-GLuint gl_make_program(uint32_t shader_count, GLuint* shaders) {
+GLuint gl_make_program(DgOpenGLContext *gl, char* source_path) {
 	// Create program, add shaders to it and link it
+	GLuint vertex = gl_load_shader(source_path, GL_VERTEX_SHADER);
+	if (!vertex) {
+		return 0;
+	}
+	
+	GLuint fragment = gl_load_shader(source_path, GL_FRAGMENT_SHADER);
+	if (!fragment) {
+		return 0;
+	}
+	
+	gl->shader_count += 2;
+	
+	// Allocate memory to store shader IDs
+	if (!gl->shaders) {
+		gl->shaders = DgAlloc(sizeof(GLuint) * gl->shader_count);
+	}
+	else {
+		gl->shaders = DgRealloc(gl->shaders, sizeof(GLuint) * gl->shader_count);
+	}
+	
+	if (!gl->shaders) {
+		DgFail("Error: Failed to allocate memory for shaders list. Abort!!", -4);
+		return 0;
+	}
+	else {
+		gl->shaders[gl->shader_count - 2] = vertex;
+		gl->shaders[gl->shader_count - 1] = fragment;
+	}
+	
 	GLuint program_id = glCreateProgram();
 	
-	for (int i = 0; i < shader_count; i++) {
-		glAttachShader(program_id, shaders[i]);
-	}
+	glAttachShader(program_id, vertex);
+	glAttachShader(program_id, fragment);
 	
 	glLinkProgram(program_id);
 	
@@ -117,7 +168,10 @@ GLuint gl_make_program(uint32_t shader_count, GLuint* shaders) {
 		if (mesg[0]) {
 			printf("%s\n", mesg);
 		}
+		return 0;
 	}
+	
+	glUseProgram(program_id);
 	
 	return program_id;
 }
@@ -182,29 +236,8 @@ DgOpenGLContext* gl_graphics_init(void) {
 	gl_error_check(__FILE__, __LINE__);
 	
 	// Load shaders
-	gl->shaders = DgAlloc(sizeof(GLuint *) * 3);
-	
-	GLuint current_shader = gl_load_shader("assets://shaders/vertex.glsl", GL_VERTEX_SHADER);
-	if (!current_shader) {
-		exit(EXIT_FAILURE);
-	}
-	gl->shaders[0] = current_shader;
-	
-	current_shader = gl_load_shader("assets://shaders/frag.glsl", GL_FRAGMENT_SHADER);
-	if (!current_shader) {
-		exit(EXIT_FAILURE);
-	}
-	gl->shaders[1] = current_shader;
-	
-	gl->shader_count = 3;
-	
-	gl->programs = (GLuint *) DgAlloc(sizeof(GLuint) * 2);
-	
-	GLuint my_shaders[2];
-	my_shaders[0] = gl->shaders[0];
-	my_shaders[1] = gl->shaders[1];
-	gl->programs[0] = gl_make_program(2, my_shaders);
-	glUseProgram(gl->programs[0]);
+	gl->programs = (GLuint *) DgAlloc(sizeof(GLuint) * 1);
+	gl->programs[0] = gl_make_program(gl, "assets://shaders/main.glsl");
 	
 	// Delete shaders, they are not needed anymore
 	for (int i = 0; i < gl->shader_count; i++) {
@@ -425,14 +458,6 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glUseProgram(gl->programs[0]);
-	
-	//glUniform1f(glGetUniformLocation(gl->programs[0], "mixValue"), mixValue);
-	
-	// Simple matris transform
-// 	DgMat4 xform = DgMat4New(1.0f);
-// 	xform = DgMat4Translate(xform, DgVec3New(0.0f, 0.5f, 0.0f));
-// 	xform = DgMat4Scale(xform, DgVec3New(0.5f, 0.5f, 0.5f));
-// 	xform = DgMat4Rotate(xform, DgVec3New(0.0f, 0.0f, 1.0f), DgTime() * 0.25f * mixValue);
 	
 	// trying to get things looking better at all resolutions
 	int w, h;
