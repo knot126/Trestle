@@ -8,4 +8,5 @@
 #pragma once
 
 double DgTime(void);
+double DgRealTime(void);
 void DgInitTime(void);

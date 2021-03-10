@@ -58,6 +58,7 @@ set(FILES
 	src/util/dstring.c
 	src/util/fail.c
 	src/util/maths.c
+	src/util/rand.c
 	src/game.c
 	src/types.c
 	src/main.c)
