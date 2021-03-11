@@ -48,6 +48,7 @@ set(FILES
 	src/graphics/image.c
 	src/io/fs.c
 	src/io/load.c
+	src/io/config.c
 	src/linux/main.c
 	src/phys/phys.c
 	src/util/alloc.c

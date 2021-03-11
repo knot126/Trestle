@@ -2,8 +2,5 @@
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
- * Config File Parser and Loader
+ * XML Parser
  */
-
-#pragma once
-

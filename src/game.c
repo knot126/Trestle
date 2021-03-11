@@ -30,6 +30,7 @@
 #include "util/maths.h"
 #include "util/rand.h"
 #include "io/fs.h"
+#include "io/config.h"
 
 const float phys_delta_time = 1.0f / 180.0f;
 static DgBag g_gameProperties;
@@ -108,6 +109,9 @@ int game_main(int argc, char* argv[]) {
 	g_gameProperties = DgBagInit();
 	DgBagSet(&g_gameProperties, "deploy", "0");
 	DgBagSet(&g_gameProperties, "graphicsDriver", "OpenGL");
+	
+	// NEW: Load config
+	DgLoadConfigFile("assets://config.ini");
 	
 	// Event centre startup (global events)
 	DgFlagCreateEvent("game_init_ok");

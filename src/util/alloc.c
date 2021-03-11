@@ -128,8 +128,19 @@ void *DgAlloc(size_t size) {
 		size = sizeof(DgFreeBlockInfo) - sizeof(DgBlockHeader);
 	}
 	
+	// Make sure the block is aligned, by size of size_t
+	size += sizeof(size_t) - (size % sizeof(size_t));
+	
 	if (DG_MEMORY_ALLOC_DEBUG) {
-		printf("Allocating %d bytes of memory...\n", size);
+		DgFreeBlockInfo *next = dg_alloc.pool_info.next;
+		size_t total = 0;
+		
+		while (next != NULL) {
+			total += next->size;
+			next = next->next;
+		}
+		
+		printf("Allocating %d bytes of memory (%d bytes free)...\n", size, total);
 	}
 	
 	// Find the next chunk that will fit
@@ -145,7 +156,8 @@ void *DgAlloc(size_t size) {
 	}
 	
 	if (!cnode) {
-		printf("DgAlloc: Failed to allocate %d bytes of memory.\n", size);
+		printf("DgAlloc: Failed to allocate %d bytes of memory (out of memory).\n", size);
+		DgAllocPrintChain();
 		return NULL;
 	}
 	
