@@ -111,9 +111,11 @@ int game_main(int argc, char* argv[]) {
 	DgBagSet(&g_gameProperties, "graphicsDriver", "OpenGL");
 	
 	// Load config
+	printf("Loading engine configuration file...\n");
 	DgConfig *config = DgConfigLoad("assets://config.ini");
-	if (config) {
-		DgConfigPrint(config);
+	
+	if (!config) {
+		DgFail("Error: Failed to load engine configuration file.", 1);
 	}
 	
 	// Event centre startup (global events)

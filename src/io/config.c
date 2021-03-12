@@ -2,6 +2,8 @@
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
+ * DEPRECATED: This entire file will be replaced by a more basic format.
+ * 
  * Config File Parser and Loader
  */
 
@@ -134,6 +136,7 @@ DgConfig *DgConfigLoad(char* path) {
 	
 	// Parse into DgBag tree
 	{
+		/*
 		for (size_t i = 0; i < tokens_count; i++) {
 			char *c = "";
 			
@@ -156,6 +159,7 @@ DgConfig *DgConfigLoad(char* path) {
 					break;
 			}
 		}
+		*/
 		
 		bool isSection = false;
 		bool isKey = true;
