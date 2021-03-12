@@ -112,14 +112,14 @@ int game_main(int argc, char* argv[]) {
 	DgBagSet(&g_gameProperties, "graphicsDriver", "OpenGL");
 	
 	// Load config
-	/*
+	/**/
 	printf("Loading engine configuration file...\n");
 	DgConfig *config = DgConfigLoad("assets://config.ini", true);
 	
 	if (!config) {
 		DgFail("Error: Failed to load configuration file.\n", 1);
 	}
-	*/
+	/**/
 	
 	// Event centre startup (global events)
 	DgFlagCreateEvent("game_init_ok");
@@ -141,6 +141,12 @@ int game_main(int argc, char* argv[]) {
 	// Global flags cleanup
 	printf("Cleaning up memory used by flags...\n");
 	DgFlagGlobalCleanup();
+	
+	// Cleanup main config file
+	if (config) {
+		printf("Freeing memory used by config...\n");
+		DgConfigFree(config);
+	}
 	
 	// Free pool
 	printf("Free memory pool...\n");

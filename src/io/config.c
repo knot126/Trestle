@@ -114,5 +114,9 @@ void DgConfigPrint(DgConfig *config) {
 
 void DgConfigFree(DgConfig *config) {
 	/* Frees a DgConfig file. */
+	for (size_t i = 0; i < config->config.size; i++) {
+		DgFree((void *) config->config.key[i]);
+	}
+	
 	DgFree(config);
 }

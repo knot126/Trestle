@@ -10,7 +10,24 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
-// NOTE: Should be replaced with DgHandle32
+typedef struct DgFreeBlockInfo {
+	size_t size;
+	struct DgFreeBlockInfo *next;
+} DgFreeBlockInfo;
+
+typedef struct DgPoolInfo {
+	// Information about the main block
+	void* block;
+	size_t block_size;
+	
+	// The head, points to first free space
+	DgFreeBlockInfo* next;
+} DgPoolInfo;
+
+typedef struct DgBlockHeader {
+	size_t size;
+} DgBlockHeader;
+
 typedef int32_t alloch_t;
 
 // Init and destroy main allocator
