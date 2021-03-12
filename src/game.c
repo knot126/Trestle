@@ -29,6 +29,7 @@
 #include "util/time.h"
 #include "util/maths.h"
 #include "util/rand.h"
+#include "util/fail.h"
 #include "io/fs.h"
 #include "io/config.h"
 
@@ -111,12 +112,14 @@ int game_main(int argc, char* argv[]) {
 	DgBagSet(&g_gameProperties, "graphicsDriver", "OpenGL");
 	
 	// Load config
+	/*
 	printf("Loading engine configuration file...\n");
-	DgConfig *config = DgConfigLoad("assets://config.ini");
+	DgConfig *config = DgConfigLoad("assets://config.ini", true);
 	
 	if (!config) {
-		DgFail("Error: Failed to load engine configuration file.", 1);
+		DgFail("Error: Failed to load configuration file.\n", 1);
 	}
+	*/
 	
 	// Event centre startup (global events)
 	DgFlagCreateEvent("game_init_ok");

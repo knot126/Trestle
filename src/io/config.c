@@ -2,9 +2,7 @@
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
- * DEPRECATED: This entire file will be replaced by a more basic format.
- * 
- * Config File Parser and Loader
+ * SimpleConfig File Lodader
  */
 
 #include <string.h>
@@ -18,12 +16,13 @@
 
 #include "config.h"
 
-inline static void tokSet(DgINIToken *tok, DgINILoaderTokenType type, char *dat) {
-	tok->type = type;
-	tok->data = dat;
-}
+const bool _DG_SIMPLE_CONFIG_PARSER_DEBUG = true;
 
-DgConfig *DgConfigLoad(char* path) {
+DgConfig *DgConfigLoad(char *path, const bool enable_comments) {
+	/* This will load a very simple configuation file into memory and decipher 
+	 * it into a DgBag, which is then wrapped in a DgConfig structure. While
+	 * it could have returned a property bag, the user would have to call a 
+	 * special but unrelated function to free the allocated memory. */
 	path = DgEvalPath(path);
 	
 	DgLoadBinaryFileInfo *file = DgLoadBinaryFile(path);
@@ -31,220 +30,89 @@ DgConfig *DgConfigLoad(char* path) {
 	// Free path name string
 	DgFree(path);
 	
-	// Token data
-	size_t tokens_count = 1;
-	DgINIToken *tokens = DgAlloc(sizeof(DgINIToken) * tokens_count);
+	// Initialise the property bag
+	DgConfig *conf = DgAlloc(sizeof(DgConfig));
+	if (!conf) { return (void *) 0; } // failed to allocate memory
+	conf->config = DgBagInit();
 	
-	if (!tokens) {
-		DgFail("Failed to allocate memory for INI tokens.\n", -1);
+	if (_DG_SIMPLE_CONFIG_PARSER_DEBUG) {
+		printf("SimpleConfig: Start parse file.\n");
 	}
 	
-	// Tokenise
-	{
-		// Document data
-		size_t length = file->size;
-		const char *data = (const char *) file->data;
+	// NOTE: Here, breadth is the current offset in the string.
+	for (size_t breadth = 0; breadth < file->size; /* will inc in function */) {
+		char buffer[256] = { 0 };
 		
-		tokSet((tokens + 0), DG_INI_IGNORE, NULL);
+		if (_DG_SIMPLE_CONFIG_PARSER_DEBUG) {
+			printf("SimpleConfig: Parsing line at b=%d.\n", breadth);
+		}
 		
-		for (size_t i = 0; i < length; i++) {
-			char this = data[i];
-			
-			switch (this) {
-				// Note: spaces are a special case
-				case '\n':
-				case '=':
-					// Add setting delmimiter
+		// Find the next new line, where base is the start of the current line
+		char *base = (char *) ( (void*) file->data + breadth);
+		char *end = (char *) memchr(base, '\n', (breadth - file->size));
+		if (end == 0) { break; } // not safe to continue
+		
+		// Calculates size to copy using base (starting) and end (ending) pointers
+		size_t line_len = (size_t)((void*)end - (void*)base);
+		if (line_len > 256) {
+			line_len = 256;
+		}
+		
+		// Copy the memory into the buffer (keep in mind the buffer is cleared
+		// very time the loop comes around). 
+		memcpy(buffer, base, line_len);
+		
+		if (end) {
+			if (buffer[0] == '#' && enable_comments) {
+				// Comment - skip line if comments are enabled
+			}
+			else {
+				char *key = memchr(buffer, '=', 256);
+				
+				// Any line without an '=' is just a comment.
+				if (key) {
+					key[0] = '\0'; // set '=' to be '\0'
+					key++;
 					
-					// Ignore delmimiters before data and extra ones
-					// IMPORTANT: check tokens_count FIRST, otherwise we could
-					// read from external memory..
-					if (tokens_count < 2 || tokens[tokens_count - 1].type == DG_INI_DELIMITER) {
-						break;
+					size_t vs = strlen(buffer) + 1;
+					size_t ks = strlen(key) + 1;
+					
+					// Using one alloc to save space and time
+					char *final = (char *) DgAlloc(vs + ks);
+					
+					if (!final) {
+						printf("Failed to allocate memory for SimpleConfig.\n");
+						return (void *) 0;
 					}
 					
-					tokens_count++;
-					tokens = DgRealloc(tokens, sizeof(DgINIToken) * tokens_count);
+					strcpy(final, buffer);
+					strcpy(final + vs, key);
 					
-					if (!tokens) {
-						DgFail("Failed to reallocate memory for INI tokens.\n", -1);
+					if (_DG_SIMPLE_CONFIG_PARSER_DEBUG) {
+						printf("SimpleConfig: Have %s=%s.\n", final, final+vs);
 					}
 					
-					tokSet((tokens + (tokens_count - 1)), DG_INI_DELIMITER, NULL);
-					
-					break;
-				case '[':
-				case ']':
-					// Add section delimiter
-					tokens_count++;
-					tokens = DgRealloc(tokens, sizeof(DgINIToken) * tokens_count);
-					
-					if (!tokens) {
-						DgFail("Failed to reallocate memory for INI tokens.\n", -1);
-					}
-					
-					tokSet((tokens + (tokens_count - 1)), DG_INI_SECTION, NULL);
-					
-					break;
-				default:
-					// Create a new name if not already a name
-					if (tokens[tokens_count - 1].type != DG_INI_NAME) {
-						tokens_count++;
-						tokens = DgRealloc(tokens, sizeof(DgINIToken) * tokens_count);
-						
-						if (!tokens) {
-							DgFail("Failed to reallocate memory for INI tokens.\n", -1);
-						}
-						
-						tokens[tokens_count - 1].data = DgAlloc(sizeof(char) * 2);
-						
-						if (!tokens[tokens_count - 1].data) {
-							DgFail("Failed to allocate memory for INI string name.\n", -1);
-						}
-						
-						tokens[tokens_count - 1].type = DG_INI_NAME;
-						tokens[tokens_count - 1].data[0] = this;
-						tokens[tokens_count - 1].data[1] = '\0';
-					}
-					// Otherwise, add to this name
-					else {
-						size_t datalen = strlen(tokens[tokens_count - 1].data) + 1;
-						
-						tokens[tokens_count - 1].data = DgRealloc(
-							tokens[tokens_count - 1].data, 
-							++datalen);
-						
-						tokens[tokens_count - 1].data[datalen - 2] = this;
-						tokens[tokens_count - 1].data[datalen - 1] = '\0';
-					}
-					
-					break;
+					DgBagSet(&conf->config, final, final + vs);
+				}
 			}
 		}
+		
+		// Push up the string position
+		breadth = breadth + (size_t)((void*)end - (void*)base) + 1;
 	}
 	
 	// The file can now be unloaded
 	DgUnloadBinaryFile(file);
 	
-	DgConfig *result = (DgConfig *) DgAlloc(sizeof(DgConfig));
-	
-	if (!result) {
-		DgFail("Failed to allocate memory for DgConfig struct.\n", -1);
-	}
-	
-	memset(result, 0, sizeof(DgConfig));
-	
-	// Parse into DgBag tree
-	{
-		/*
-		for (size_t i = 0; i < tokens_count; i++) {
-			char *c = "";
-			
-			switch (tokens[i].type) {
-				case DG_INI_IGNORE:
-					printf("ini: TOK_IGNORE\n");
-					break;
-				case DG_INI_SECTION:
-					printf("ini: TOK_SECT\n");
-					break;
-				case DG_INI_DELIMITER:
-					printf("ini: TOK_DELIMIT\n");
-					break;
-				case DG_INI_NAME:
-					if (tokens[i].data) {
-						c = tokens[i].data;
-					}
-					
-					printf("ini: TOK_NAME '%s'\n", c);
-					break;
-			}
-		}
-		*/
-		
-		bool isSection = false;
-		bool isKey = true;
-		bool isValue = false;
-// 		bool isComment = false;
-		DgBag *current_bag;
-		char *next_key;
-		
-		for (size_t i = 0; i < tokens_count; i++) {
-			switch (tokens[i].type) {
-				case DG_INI_IGNORE:
-					break;
-				case DG_INI_SECTION:
-					isSection = !isSection;
-					break;
-				case DG_INI_DELIMITER:
-					if (tokens[i - 1].type == DG_INI_NAME && tokens[i - 1].data[0] != ';') {
-						isValue = !isValue;
-						isKey = !isKey;
-					}
-					break;
-				case DG_INI_NAME:
-					if (isSection) {
-						// Makes the section titles and bags
-						if (!result->sections) {
-							result->sections = (char **) DgAlloc(sizeof(char *) * 1);
-						}
-						else {
-							result->sections = (char **) DgRealloc(result->sections, sizeof(char *) * (result->size + 1));
-						}
-						
-						if (!result->sections) {
-							DgFail("Memory allocation failure for INI sections.\n", -1);
-						}
-						
-						result->sections[result->size] = tokens[i].data;
-						
-						if (!result->configs) {
-							result->configs = (DgBag *) DgAlloc(sizeof(DgBag) * 1);
-						}
-						else {
-							result->configs = (DgBag *) DgRealloc(result->sections, sizeof(DgBag) * (result->size + 1));
-						}
-						
-						if (!result->configs) {
-							DgFail("Memory allocation failure for INI k/v pairs.\n", -1);
-						}
-						
-						result->configs[result->size] = DgBagInit();
-						current_bag = (result->configs + result->size);
-						
-						result->size++;
-					}
-					else if (isKey) {
-						next_key = tokens[i].data;
-					}
-					else if (isValue) {
-						// Adds properties to the bags
-						DgBagSet(current_bag, next_key, tokens[i].data);
-					}
-					else {
-						printf("INI Parser: Bad INI file.\n");
-						return (void *) 0;
-					}
-			}
-		}
-	}
-	
-	DgFree(tokens);
-	
-	return result;
+	return conf;
 }
 
 void DgConfigPrint(DgConfig *config) {
-	for (size_t i = 0; i < config->size; i++) {
-		printf("%s\n", config->sections[i]);
-		DgBagPrint(&config->configs[i]);
-	}
+	/* Prints the contents of a DgConfig file. */
+	DgBagPrint(&config->config);
 }
 
 void DgConfigFree(DgConfig *config) {
-	for (size_t i = 0; i < config->size; i++) {
-		DgFree(config);
-	}
-	
-	DgFree(config->sections);
+	/* Frees a DgConfig file. */
 	DgFree(config);
 }
