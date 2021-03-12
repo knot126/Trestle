@@ -21,7 +21,7 @@ inline static void tokSet(DgINIToken *tok, DgINILoaderTokenType type, char *dat)
 	tok->data = dat;
 }
 
-DgConfig DgLoadConfigFile(char* path) {
+DgConfig *DgConfigLoad(char* path) {
 	path = DgEvalPath(path);
 	
 	DgLoadBinaryFileInfo *file = DgLoadBinaryFile(path);
@@ -124,6 +124,14 @@ DgConfig DgLoadConfigFile(char* path) {
 	// The file can now be unloaded
 	DgUnloadBinaryFile(file);
 	
+	DgConfig *result = (DgConfig *) DgAlloc(sizeof(DgConfig));
+	
+	if (!result) {
+		DgFail("Failed to allocate memory for DgConfig struct.\n", -1);
+	}
+	
+	memset(result, 0, sizeof(DgConfig));
+	
 	// Parse into DgBag tree
 	{
 		for (size_t i = 0; i < tokens_count; i++) {
@@ -149,10 +157,90 @@ DgConfig DgLoadConfigFile(char* path) {
 			}
 		}
 		
+		bool isSection = false;
+		bool isKey = true;
+		bool isValue = false;
+// 		bool isComment = false;
+		DgBag *current_bag;
+		char *next_key;
+		
 		for (size_t i = 0; i < tokens_count; i++) {
-			
+			switch (tokens[i].type) {
+				case DG_INI_IGNORE:
+					break;
+				case DG_INI_SECTION:
+					isSection = !isSection;
+					break;
+				case DG_INI_DELIMITER:
+					if (tokens[i - 1].type == DG_INI_NAME && tokens[i - 1].data[0] != ';') {
+						isValue = !isValue;
+						isKey = !isKey;
+					}
+					break;
+				case DG_INI_NAME:
+					if (isSection) {
+						// Makes the section titles and bags
+						if (!result->sections) {
+							result->sections = (char **) DgAlloc(sizeof(char *) * 1);
+						}
+						else {
+							result->sections = (char **) DgRealloc(result->sections, sizeof(char *) * (result->size + 1));
+						}
+						
+						if (!result->sections) {
+							DgFail("Memory allocation failure for INI sections.\n", -1);
+						}
+						
+						result->sections[result->size] = tokens[i].data;
+						
+						if (!result->configs) {
+							result->configs = (DgBag *) DgAlloc(sizeof(DgBag) * 1);
+						}
+						else {
+							result->configs = (DgBag *) DgRealloc(result->sections, sizeof(DgBag) * (result->size + 1));
+						}
+						
+						if (!result->configs) {
+							DgFail("Memory allocation failure for INI k/v pairs.\n", -1);
+						}
+						
+						result->configs[result->size] = DgBagInit();
+						current_bag = (result->configs + result->size);
+						
+						result->size++;
+					}
+					else if (isKey) {
+						next_key = tokens[i].data;
+					}
+					else if (isValue) {
+						// Adds properties to the bags
+						DgBagSet(current_bag, next_key, tokens[i].data);
+					}
+					else {
+						printf("INI Parser: Bad INI file.\n");
+						return (void *) 0;
+					}
+			}
 		}
 	}
 	
+	DgFree(tokens);
 	
+	return result;
+}
+
+void DgConfigPrint(DgConfig *config) {
+	for (size_t i = 0; i < config->size; i++) {
+		printf("%s\n", config->sections[i]);
+		DgBagPrint(&config->configs[i]);
+	}
+}
+
+void DgConfigFree(DgConfig *config) {
+	for (size_t i = 0; i < config->size; i++) {
+		DgFree(config);
+	}
+	
+	DgFree(config->sections);
+	DgFree(config);
 }

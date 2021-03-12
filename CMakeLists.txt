@@ -60,6 +60,7 @@ set(FILES
 	src/util/fail.c
 	src/util/maths.c
 	src/util/rand.c
+	src/util/array.c
 	src/game.c
 	src/types.c
 	src/main.c)

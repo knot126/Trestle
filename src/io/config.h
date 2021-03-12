@@ -27,4 +27,6 @@ typedef struct DgConfig {
 	DgBag *configs;
 } DgConfig;
 
-DgConfig DgLoadConfigFile(char* path);
+DgConfig *DgConfigLoad(char* path);
+void DgConfigPrint(DgConfig *config);
+void DgConfigFree(DgConfig *config);

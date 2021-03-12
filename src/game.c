@@ -110,8 +110,11 @@ int game_main(int argc, char* argv[]) {
 	DgBagSet(&g_gameProperties, "deploy", "0");
 	DgBagSet(&g_gameProperties, "graphicsDriver", "OpenGL");
 	
-	// NEW: Load config
-	DgLoadConfigFile("assets://config.ini");
+	// Load config
+	DgConfig *config = DgConfigLoad("assets://config.ini");
+	if (config) {
+		DgConfigPrint(config);
+	}
 	
 	// Event centre startup (global events)
 	DgFlagCreateEvent("game_init_ok");
