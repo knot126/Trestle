@@ -1,0 +1,32 @@
+<project>
+	<target name="Quick Run Assets" type="assets">
+		<nullTarget/>
+	</target>
+	<?import lua glew glfw ?>
+	<target name="Quick Run" type="binary" depends="[&quot;Quick Run Assets&quot;, {&quot;system-features&quot;: &quot;modern&quot;}]" linuxLink="m GL glfw pthread" winLink="">
+		<group name="Source code" appendFolder="./src/">
+			<file path="graphics/graphics.c"/>
+			<file path="graphics/image.c"/>
+			<file path="graphics/opengl.c"/>
+			<file path="io/config.c"/>
+			<file path="io/fs.c"/>
+			<file path="io/ini.c"/>
+			<file path="io/input.c"/>
+			<file path="io/load.c"/>
+			<file path="io/xml.c"/>
+			<file path="linux/main.c" platform="linux" tags="hasmain linuxonly"/>
+			<file path="phys/phys.c"/>
+			<file path="util/alloc.c"/>
+			<file path="util/array.c"/>
+			<file path="util/bag.c"/>
+			<file path="util/dstring.c"/>
+			<file path="util/fail.c"/>
+			<file path="util/flag.c"/>
+			<file path="util/maths.c"/>
+			<file path="util/rand.c"/>
+			<file path="util/thread.c"/>
+			<file path="util/time.c"/>
+		</group>
+	</target>
+	<target name="*" depends="[&quot;Quick Run&quot;]"/>
+</project>

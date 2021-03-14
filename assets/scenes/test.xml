@@ -1,0 +1,6 @@
+<!-- This is a test scene file by cdde. I may or may not use scenes in the final game at all, but it is here for testing puropses. -->
+
+<scene extents="64.0 64.0 20.0">
+	<point id="centre" pos="0.0 0.0 0.0"/>
+	<model extern:is="true" extern:path="assets://models.m3d"/>
+</scene>

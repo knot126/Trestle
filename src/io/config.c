@@ -16,13 +16,20 @@
 
 #include "config.h"
 
-const bool _DG_SIMPLE_CONFIG_PARSER_DEBUG = true;
+const bool _DG_SIMPLE_CONFIG_PARSER_DEBUG = false;
+//#define _DG_SIMPLE_CONFIG_PARSER_CLOCK 1
+
+#if defined(_DG_SIMPLE_CONFIG_PARSER_CLOCK)
+	#include "../util/time.h"
+#endif
 
 DgConfig *DgConfigLoad(char *path, const bool enable_comments) {
 	/* This will load a very simple configuation file into memory and decipher 
 	 * it into a DgBag, which is then wrapped in a DgConfig structure. While
 	 * it could have returned a property bag, the user would have to call a 
-	 * special but unrelated function to free the allocated memory. */
+	 * special but unrelated function to free the allocated memory. There are
+	 * some parts of this that are messy, but I plan to work on that with the 
+	 * INI parser. */
 	path = DgEvalPath(path);
 	
 	DgLoadBinaryFileInfo *file = DgLoadBinaryFile(path);
@@ -38,6 +45,10 @@ DgConfig *DgConfigLoad(char *path, const bool enable_comments) {
 	if (_DG_SIMPLE_CONFIG_PARSER_DEBUG) {
 		printf("SimpleConfig: Start parse file.\n");
 	}
+	
+#if defined(_DG_SIMPLE_CONFIG_PARSER_CLOCK)
+	float __ck = DgTime();
+#endif
 	
 	// NOTE: Here, breadth is the current offset in the string.
 	for (size_t breadth = 0; breadth < file->size; /* will inc in function */) {
@@ -89,7 +100,7 @@ DgConfig *DgConfigLoad(char *path, const bool enable_comments) {
 					strcpy(final + vs, key);
 					
 					if (_DG_SIMPLE_CONFIG_PARSER_DEBUG) {
-						printf("SimpleConfig: Have %s=%s.\n", final, final+vs);
+						printf("SimpleConfig: Have \"%s\" = \"%s\".\n", final, final+vs);
 					}
 					
 					DgBagSet(&conf->config, final, final + vs);
@@ -100,6 +111,11 @@ DgConfig *DgConfigLoad(char *path, const bool enable_comments) {
 		// Push up the string position
 		breadth = breadth + (size_t)((void*)end - (void*)base) + 1;
 	}
+	
+#if defined(_DG_SIMPLE_CONFIG_PARSER_CLOCK)
+	__ck = DgTime() - __ck;
+	printf("INI Parser Preformance Results:\n\tParsed %d chars in %f seconds.\n\tAbout %f chars per clock cycle.\n", file->size, __ck, (float) file->size / __ck);
+#endif
 	
 	// The file can now be unloaded
 	DgUnloadBinaryFile(file);
@@ -118,5 +134,11 @@ void DgConfigFree(DgConfig *config) {
 		DgFree((void *) config->config.key[i]);
 	}
 	
+	DgBagFree(&config->config);
 	DgFree(config);
+}
+
+DgBag *DgConfigGetBag(DgConfig *config) {
+	/* Gets the bag used with a config file. */
+	return &config->config;
 }

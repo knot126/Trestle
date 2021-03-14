@@ -18,3 +18,4 @@ typedef struct DgConfig {
 DgConfig *DgConfigLoad(char *path, const bool enable_comments);
 void DgConfigPrint(DgConfig *config);
 void DgConfigFree(DgConfig *config);
+DgBag *DgConfigGetBag(DgConfig *config);

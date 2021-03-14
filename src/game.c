@@ -35,6 +35,7 @@
 
 const float phys_delta_time = 1.0f / 180.0f;
 static DgBag g_gameProperties;
+DgBag *g_gameConfig;
 
 static void print_info(void) {
 	printf("Engine compiled on %s at %s.\n", __DATE__, __TIME__);
@@ -112,14 +113,16 @@ int game_main(int argc, char* argv[]) {
 	DgBagSet(&g_gameProperties, "graphicsDriver", "OpenGL");
 	
 	// Load config
-	/**/
 	printf("Loading engine configuration file...\n");
 	DgConfig *config = DgConfigLoad("assets://config.ini", true);
 	
 	if (!config) {
 		DgFail("Error: Failed to load configuration file.\n", 1);
 	}
-	/**/
+	
+	g_gameConfig = DgConfigGetBag(config);
+	
+	DgBagPrint(g_gameConfig);
 	
 	// Event centre startup (global events)
 	DgFlagCreateEvent("game_init_ok");
