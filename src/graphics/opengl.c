@@ -428,14 +428,14 @@ static void gl_handle_input(DgOpenGLContext* gl) {
 	}
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_UP) == GLFW_PRESS) {
-		mixValue += 0.1f;
+		mixValue += 0.01f;
 		if (mixValue > 10.0f) {
 			mixValue = 10.0f;
 		}
 	}
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-		mixValue -= 0.1f;
+		mixValue -= 0.01f;
 		if (mixValue < 0.0f) {
 			mixValue = 0.0f;
 		}
@@ -464,7 +464,7 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	glfwGetWindowSize(gl->window, &w, &h);
 	
 	DgVec3 cam_position = DgVec3New(0.0f, 0.0f, -3.0f);
-	DgVec3 cam_target = DgVec3New(0.0f, 0.0f, 1.0f);
+	DgVec3 cam_target = DgVec3New(0.0f, 0.0f, 0.0f);
 	
 	DgMat4 model = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.5f, 0.2f, 1.0f), -0.25f * DgTime());
 	DgMat4 camera = DgTransformLookAt(cam_position, cam_target, DgVec3New(0.0f, 1.0f, 0.0f));

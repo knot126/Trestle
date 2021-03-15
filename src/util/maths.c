@@ -371,7 +371,7 @@ void DgMat4Print(DgMat4 a) {
 
 DgMat4 DgTransformLookAt(DgVec3 from, DgVec3 to, DgVec3 world_up) {
 	DgVec3 forward = DgVec3Normalise(DgVec3Subtract(from, to));
-	DgVec3 right = DgVec3Cross(DgVec3Normalise(world_up), to);
+	DgVec3 right = DgVec3Cross(DgVec3Normalise(world_up), forward);
 	DgVec3 up = DgVec3Cross(forward, right);
 	
 	DgMat4 cam = DgMat4New(1.0f);
