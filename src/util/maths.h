@@ -101,3 +101,7 @@ DgMat4 DgMat4NewPerspective(float l, float r, float b, float t, float n, float f
 DgMat4 DgMat4NewPerspective2(float fov, float rat, float f, float b);
 DgMat4 DgMat4New(float a);
 void DgMat4Print(DgMat4 a);
+
+// Misc.
+
+DgMat4 DgTransformLookAt(DgVec3 from, DgVec3 to, DgVec3 world_up);

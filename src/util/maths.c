@@ -116,7 +116,11 @@ inline DgVec3 DgVec3Multiply(DgVec3 a, DgVec3 b) {
 }
 
 inline float DgVec3Magnitude(DgVec3 a) {
-	return sqrt((a.x * a.x) + (a.y * a.y) + (a.z * a.z));
+	if (a.x == 0.0f && a.y == 0.0f && a.z == 0.0f) {
+		return 0.0f;
+	}
+	
+	return (float) sqrt((a.x * a.x) + (a.y * a.y) + (a.z * a.z));
 }
 
 inline float DgVec3Dot(DgVec3 a, DgVec3 b) {
@@ -136,7 +140,11 @@ inline DgVec3 DgVec3Cross(DgVec3 a, DgVec3 b) {
 inline DgVec3 DgVec3Normalise(DgVec3 a) {
 	DgVec3 c;
 	
-	float m = 1 / DgVec3Magnitude(a);
+	float m = DgVec3Magnitude(a);
+	
+	if (m != 0.0f) {
+		m = 1.0f / m;
+	}
 	
 	c.x = a.x * m;
 	c.y = a.y * m;
@@ -355,4 +363,34 @@ void DgMat4Print(DgMat4 a) {
 	printf("⎢%f %f %f %f⎥\n", a.bx, a.by, a.bz, a.bw);
 	printf("⎢%f %f %f %f⎥\n", a.cx, a.cy, a.cz, a.cw);
 	printf("⎣%f %f %f %f⎦\n", a.dx, a.dy, a.dz, a.dw);
+}
+
+/* 
+ * Other misc. functions
+ */
+
+DgMat4 DgTransformLookAt(DgVec3 from, DgVec3 to, DgVec3 world_up) {
+	DgVec3 forward = DgVec3Normalise(DgVec3Subtract(from, to));
+	DgVec3 right = DgVec3Cross(DgVec3Normalise(world_up), to);
+	DgVec3 up = DgVec3Cross(forward, right);
+	
+	DgMat4 cam = DgMat4New(1.0f);
+	
+	cam.ax = right.x;
+	cam.ay = right.y;
+	cam.az = right.z;
+	
+	cam.bx = up.x;
+	cam.by = up.y;
+	cam.bz = up.z;
+	
+	cam.cx = forward.x;
+	cam.cy = forward.y;
+	cam.cz = forward.z;
+	
+	cam.aw = from.x;
+	cam.bw = from.y;
+	cam.cw = from.z;
+	
+	return cam;
 }

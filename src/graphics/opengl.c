@@ -464,11 +464,10 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	glfwGetWindowSize(gl->window, &w, &h);
 	
 	DgVec3 cam_position = DgVec3New(0.0f, 0.0f, -3.0f);
-	DgVec3 cam_target = DgVec3New(0.0f, 0.0f, 0.0f);
-	DgVec3 cam_align = DgVec3Normalise(DgVec3Subtract(cam_position, cam_target));
+	DgVec3 cam_target = DgVec3New(0.0f, 0.0f, 1.0f);
 	
 	DgMat4 model = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.5f, 0.2f, 1.0f), -0.25f * DgTime());
-	DgMat4 camera = DgMat4Translate(DgMat4New(1.0f), cam_align);
+	DgMat4 camera = DgTransformLookAt(cam_position, cam_target, DgVec3New(0.0f, 1.0f, 0.0f));
 	DgMat4 proj = DgMat4NewPerspective2(0.9f, (float) w / (float) h, 0.1f, 100.0f);
 	
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
