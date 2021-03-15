@@ -24,3 +24,14 @@ void *DgRealloc(void *block, size_t size);
 
 // Debugging functions
 void DgAllocPrintChain();
+
+/* 
+ * Linear Allocation
+ */
+
+typedef struct DgLinearAllocPoolInfo {
+	char name[16];
+	size_t size;
+	void * memory;
+	void * next;
+} DgLinearAllocPoolInfo;

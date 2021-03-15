@@ -428,16 +428,16 @@ static void gl_handle_input(DgOpenGLContext* gl) {
 	}
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_UP) == GLFW_PRESS) {
-		mixValue += 0.01f;
+		mixValue += 0.1f;
 		if (mixValue > 10.0f) {
 			mixValue = 10.0f;
 		}
 	}
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-		mixValue -= 0.01f;
-		if (mixValue < 0.01f) {
-			mixValue = 0.01f;
+		mixValue -= 0.1f;
+		if (mixValue < 0.0f) {
+			mixValue = 0.0f;
 		}
 	}
 	
@@ -463,8 +463,12 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	int w, h;
 	glfwGetWindowSize(gl->window, &w, &h);
 	
+	DgVec3 cam_position = DgVec3New(0.0f, 0.0f, -3.0f);
+	DgVec3 cam_target = DgVec3New(0.0f, 0.0f, 0.0f);
+	DgVec3 cam_align = DgVec3Normalise(DgVec3Subtract(cam_position, cam_target));
+	
 	DgMat4 model = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.5f, 0.2f, 1.0f), -0.25f * DgTime());
-	DgMat4 camera = DgMat4Translate(DgMat4New(1.0f), DgVec3New(0.0f, 0.0f, -3.0f));
+	DgMat4 camera = DgMat4Translate(DgMat4New(1.0f), cam_align);
 	DgMat4 proj = DgMat4NewPerspective2(0.9f, (float) w / (float) h, 0.1f, 100.0f);
 	
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
