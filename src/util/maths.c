@@ -370,27 +370,27 @@ void DgMat4Print(DgMat4 a) {
  */
 
 DgMat4 DgTransformLookAt(DgVec3 from, DgVec3 to, DgVec3 world_up) {
-	DgVec3 forward = DgVec3Normalise(DgVec3Subtract(from, to));
-	DgVec3 right = DgVec3Cross(DgVec3Normalise(world_up), forward);
+	DgVec3 forward = DgVec3Normalise(DgVec3Subtract(to, from));
+	DgVec3 right = DgVec3Normalise(DgVec3Cross(world_up, forward));
 	DgVec3 up = DgVec3Cross(forward, right);
 	
 	DgMat4 cam = DgMat4New(1.0f);
 	
-	cam.ax = right.x;
-	cam.ay = right.y;
-	cam.az = right.z;
+// 	cam.ax = right.x;
+// 	cam.ay = right.y;
+// 	cam.az = right.z;
+// 	
+// 	cam.bx = up.x;
+// 	cam.by = up.y;
+// 	cam.bz = up.z;
+// 	
+// 	cam.cx = forward.x;
+// 	cam.cy = forward.y;
+// 	cam.cz = forward.z;
 	
-	cam.bx = up.x;
-	cam.by = up.y;
-	cam.bz = up.z;
-	
-	cam.cx = forward.x;
-	cam.cy = forward.y;
-	cam.cz = forward.z;
-	
-	cam.aw = from.x;
-	cam.bw = from.y;
-	cam.cw = from.z;
+	cam.aw = -from.x;
+	cam.bw = -from.y;
+	cam.cw = -from.z;
 	
 	return cam;
 }
