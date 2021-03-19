@@ -20,7 +20,7 @@ out vec3 Colour;
 void main() {
 	Colour = colour;
 	Texture = texturepos;
-	gl_Position = proj * camera * model * vec4(position, 1.0);
+	gl_Position = proj * (camera * (model * vec4(position, 1.0)));
 }
 #endif
 

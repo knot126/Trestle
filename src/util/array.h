@@ -9,13 +9,22 @@
 
 #include <inttypes.h>
 
-typedef struct DgArray {
-	void *data;
+#include "../types.h"
+
+typedef struct trArray_ {
+	byte *data;
 	uint32_t size;
 	uint32_t type_size;
 	uint32_t allocated;
 	uint8_t __extra_space__[4];
-} DgArray;
+} trArray_;
 
-DgArray DgArrayNew(const uint32_t type_size, const uint32_t count);
-void DgArrayResize(DgArray *array, const uint32_t count);
+typedef trArray_* Array;
+
+Array trArray(const uint32_t type_size, const uint32_t count);
+Array trArrayResize(Array array, const uint32_t count);
+void trArrayFree(Array array);
+byte *trArrayPointer(Array array);
+
+void trArrayPush(Array array, byte *data);
+void trArrayPop(Array array, byte *data);

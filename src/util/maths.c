@@ -322,7 +322,7 @@ inline DgMat4 DgMat4Rotate(DgMat4 a, DgVec3 b, float angle) {
 }
 
 inline DgMat4 DgMat4NewPerspective(float l, float r, float b, float t, float n, float f) {
-	DgMat4 C = DgMat4New(0.0f);
+	DgMat4 C = DgMat4New(1.0f);
 	
 	C.ax = (2 * n) / (r - l);
 	C.az = (r + l) / (r - l);
@@ -370,27 +370,34 @@ void DgMat4Print(DgMat4 a) {
  */
 
 DgMat4 DgTransformLookAt(DgVec3 from, DgVec3 to, DgVec3 world_up) {
-	DgVec3 forward = DgVec3Normalise(DgVec3Subtract(to, from));
-	DgVec3 right = DgVec3Normalise(DgVec3Cross(world_up, forward));
-	DgVec3 up = DgVec3Cross(forward, right);
+	DgMat4 view_matrix = DgMat4New(1.0f);
+	DgMat4 rot_matrix = DgMat4New(1.0f);
 	
-	DgMat4 cam = DgMat4New(1.0f);
+	DgVec3 axis_n = DgVec3Normalise(DgVec3Subtract(to, from));
+	DgVec3 axis_v = DgVec3Normalise(DgVec3Cross(from, DgVec3Cross(world_up, from)));
+	DgVec3 axis_u = DgVec3Normalise(DgVec3Cross(axis_n, axis_v));
 	
-// 	cam.ax = right.x;
-// 	cam.ay = right.y;
-// 	cam.az = right.z;
-// 	
-// 	cam.bx = up.x;
-// 	cam.by = up.y;
-// 	cam.bz = up.z;
-// 	
-// 	cam.cx = forward.x;
-// 	cam.cy = forward.y;
-// 	cam.cz = forward.z;
+	// Rotate on the X-axis
+	rot_matrix.ax = axis_u.x;
+	rot_matrix.ay = axis_u.y;
+	rot_matrix.az = axis_u.z;
 	
-	cam.aw = -from.x;
-	cam.bw = -from.y;
-	cam.cw = -from.z;
+	// Rotate on the Y-axis
+	rot_matrix.bx = axis_v.x;
+	rot_matrix.by = axis_v.y;
+	rot_matrix.bz = axis_v.z;
 	
-	return cam;
+	// Rotate on the Z-axis
+	rot_matrix.cx = axis_n.x;
+	rot_matrix.cy = axis_n.y;
+	rot_matrix.cz = axis_n.z;
+	
+	// Move the camera, but this does not angle it.
+	view_matrix.aw = -from.x;
+	view_matrix.bw = -from.y;
+	view_matrix.cw = -from.z;
+	
+	view_matrix = DgMat4ByMat4Multiply(view_matrix, rot_matrix);
+	
+	return view_matrix;
 }

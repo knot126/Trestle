@@ -10,34 +10,50 @@
 
 #include "../util/alloc.h"
 #include "../util/fail.h"
+#include "../types.h"
 
 #include "array.h"
 
-DgArray DgArrayNew(const uint32_t type_size, const uint32_t count) {
-	DgArray array;
+Array trArray(const uint32_t type_size, const uint32_t count) {
+	trArray_* array = DgAlloc(sizeof(trArray_));
 	
-	array.size = (uint32_t) count;
-	array.type_size = (uint32_t) type_size;
-	array.allocated = array.size * array.type_size;
-	array.data = DgAlloc(array.allocated);
+	array->size = (uint32_t) count;
+	array->type_size = (uint32_t) type_size;
+	array->allocated = array->size * array->type_size;
+	array->data = DgAlloc(array->allocated);
 	
-	if (!array.data) {
+	if (!array->data) {
 		DgFail("Failed to allocate memory for array.", 1);
 	}
 	
 	return array;
 }
 
-void DgArrayResize(DgArray *array, const uint32_t count) {
+Array trArrayResize(Array array, const uint32_t count) {
 	array->size = count;
 	array->allocated = array->size * array->type_size;
-	array->data = DgRealloc(array->data, array->allocated);
+	array->data = (byte *) DgRealloc(array->data, array->allocated);
 	
 	if (!array->data) {
 		DgFail("Failed to allocate memory for array.", 1);
 	}
+	
+	return array;
 }
 
-void DgArrayFree(DgArray *array) {
+void trArrayFree(Array array) {
 	DgFree(array->data);
+	DgFree(array);
+}
+
+byte *trArrayPointer(Array array) {
+	return array->data;
+}
+
+void trArrayPush(Array array, byte *data) {
+	
+}
+
+void trArrayPop(Array array, byte *data) {
+	
 }
