@@ -373,9 +373,12 @@ DgMat4 DgTransformLookAt(DgVec3 from, DgVec3 to, DgVec3 world_up) {
 	DgMat4 view_matrix = DgMat4New(1.0f);
 	DgMat4 rot_matrix = DgMat4New(1.0f);
 	
-	DgVec3 axis_n = DgVec3Normalise(DgVec3Subtract(to, from));
-	DgVec3 axis_v = DgVec3Normalise(DgVec3Cross(from, DgVec3Cross(world_up, from)));
-	DgVec3 axis_u = DgVec3Normalise(DgVec3Cross(axis_n, axis_v));
+// 	DgVec3 axis_n = DgVec3Normalise(DgVec3Subtract(to, from));
+// 	DgVec3 axis_v = DgVec3Normalise(DgVec3Cross(from, DgVec3Cross(world_up, from)));
+// 	DgVec3 axis_u = DgVec3Normalise(DgVec3Cross(axis_n, axis_v));
+	DgVec3 axis_n = DgVec3New(0.5, 0.0, 0.0);
+	DgVec3 axis_v = DgVec3New(0.0, 0.5, 0.0);
+	DgVec3 axis_u = DgVec3New(0.0, 0.0, 1.0);
 	
 	// Rotate on the X-axis
 	rot_matrix.ax = axis_u.x;

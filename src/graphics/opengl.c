@@ -23,6 +23,8 @@
 
 #include "opengl.h"
 
+DgVec3 campos;
+
 GLuint gl_load_shader(char* filename, GLenum type) {
 	/* 
 	 * Load and create an OpenGL shader `filename`, of type `type`.
@@ -390,6 +392,8 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	glEnable(GL_DEPTH_TEST);
 	
+	campos = DgVec3New(1.0f, 0.0f, 3.0f);
+	
 	gl_error_check(__FILE__, __LINE__);
 	
 	printf("Graphics subsystem has been initialised.\n");
@@ -420,28 +424,31 @@ void gl_graphics_free(DgOpenGLContext* gl) {
 	DgFree(gl);
 }
 
-float mixValue = 1.0f;
-
 static void gl_handle_input(DgOpenGLContext* gl) {
 	if (glfwGetKey(gl->window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(gl->window, GL_TRUE);
 	}
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_UP) == GLFW_PRESS) {
-		mixValue += 0.01f;
-		if (mixValue > 10.0f) {
-			mixValue = 10.0f;
-		}
+		campos.z -= 0.01f;
 	}
-	
 	if (glfwGetKey(gl->window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-		mixValue -= 0.01f;
-		if (mixValue < 0.0f) {
-			mixValue = 0.0f;
-		}
+		campos.z += 0.01f;
 	}
 	
+	if (glfwGetKey(gl->window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+		campos.x += 0.01f;
+	}
+	if (glfwGetKey(gl->window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+		campos.x -= 0.01f;
+	}
+	
+	static bool polymode = false;
 	if (glfwGetKey(gl->window, GLFW_KEY_Q) == GLFW_PRESS) {
+		polymode = !polymode;
+	}
+	
+	if (polymode) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	} else {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -463,14 +470,12 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	int w, h;
 	glfwGetWindowSize(gl->window, &w, &h);
 	
-	DgVec3 campos = DgVec3New(1.0f, 0.0f, 3.0f);
 	//DgVec3 campos = DgVec3New(DgSin(DgTime() * 0.1f) * 5.0f, 0.0f, DgCos(DgTime() * 0.1f) * 5.0f);
 	DgVec3 lookpoint = DgVec3New(0.0f, 0.0f, 0.0f);
 	
 	//DgVec3New(1.0f * DgSin(DgTime() * 0.2f), 1.0f * DgCos(DgTime() * 0.2f), 1.0f * DgSin(DgTime() * 0.2f))
 	DgMat4 model = DgMat4Translate(DgMat4New(1.0f), DgVec3New(0.0f, 0.0f, 0.0f));
 	DgMat4 camera = DgTransformLookAt(campos, lookpoint, DgVec3New(0.0f, 1.0f, 0.0f));
-	DgMat4Print(camera);
 	DgMat4 proj = DgMat4NewPerspective2(0.125f, (float) w / (float) h, 0.1f, 100.0f);
 	
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
