@@ -1,4 +1,4 @@
-<project>
+<project name="Main">
 	<target name="Quick Run Assets" type="assets">
 		<nullTarget/>
 	</target>

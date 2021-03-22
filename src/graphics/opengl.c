@@ -18,6 +18,7 @@
 #include "../util/time.h"
 #include "../util/fail.h"
 #include "../util/maths.h"
+#include "../util/rand.h"
 #include "../io/load.h"
 #include "image.h"
 
@@ -249,7 +250,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	// Vertex datas
 	//DgLoadBinaryFileInfo vertexes = DgLoadBinaryFile();
 	
-	const float data1[] = {
+	float data1[] = {
 		// X      Y      Z     U     V     R     G     B
 		-0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
 		-0.5f, -0.5f,  0.5f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
@@ -281,6 +282,12 @@ DgOpenGLContext* gl_graphics_init(void) {
 		-0.5f,  0.5f, -0.5f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
 		-0.5f,  0.5f,  0.5f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
 	};
+	
+	for (int i = 0; i < 24; i++) {
+		data1[(i * 8) + 5] = DgRandFloat();
+		data1[(i * 8) + 6] = DgRandFloat();
+		data1[(i * 8) + 7] = DgRandFloat();
+	}
 	
 	const int indicies[] = {
 		0, 1, 2,
@@ -470,15 +477,15 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	int w, h;
 	glfwGetWindowSize(gl->window, &w, &h);
 	
-	//DgVec3 campos = DgVec3New(DgSin(DgTime() * 0.1f) * 5.0f, 0.0f, DgCos(DgTime() * 0.1f) * 5.0f);
+	campos = DgVec3New(DgSin(DgTime() * 0.1f) * 5.0f, 0.0f, DgCos(DgTime() * 0.1f) * 5.0f);
 	DgVec3 lookpoint = DgVec3New(0.0f, 0.0f, 0.0f);
 	
 	//DgVec3New(1.0f * DgSin(DgTime() * 0.2f), 1.0f * DgCos(DgTime() * 0.2f), 1.0f * DgSin(DgTime() * 0.2f))
-	DgMat4 model = DgMat4Translate(DgMat4New(1.0f), DgVec3New(0.0f, 0.0f, 0.0f));
+	
 	DgMat4 camera = DgTransformLookAt(campos, lookpoint, DgVec3New(0.0f, 1.0f, 0.0f));
 	DgMat4 proj = DgMat4NewPerspective2(0.125f, (float) w / (float) h, 0.1f, 100.0f);
 	
-	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
+	
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "camera"), 1, GL_TRUE, &camera.ax);
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "proj"), 1, GL_TRUE, &proj.ax);
 	
@@ -489,7 +496,15 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	
 	glBindVertexArray(gl->vaos[0]);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
-	glDrawElements(GL_TRIANGLES, gl->element_count, GL_UNSIGNED_INT, 0);
+	
+	for (int i = -4; i < 4; i++) {
+		for (int j = -3; j < 3; j++) {
+			DgMat4 model = DgMat4Translate(DgMat4New(1.0f), DgVec3New(((float)i)*2.0f, ((float)j)*2.0f, 0.0f));
+			glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
+			glDrawElements(GL_TRIANGLES, gl->element_count, GL_UNSIGNED_INT, 0);
+		}
+	}
+	
 	
 	gl_error_check(__FILE__, __LINE__);
 	

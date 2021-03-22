@@ -11,3 +11,6 @@
 
 uint32_t DgERandMidSqU32(void);
 float DgERandMidSqF32(void);
+
+uint32_t DgRandInt();
+float DgRandFloat();

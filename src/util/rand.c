@@ -36,3 +36,11 @@ float DgERandMidSqF32(void) {
 	 */
 	return (float) (DgERandMidSqU32() * (1.0f / 16777215.0f));
 }
+
+uint32_t DgRandInt() {
+	return DgERandMidSqU32();
+}
+
+float DgRandFloat() {
+	return DgERandMidSqF32();
+}
