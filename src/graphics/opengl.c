@@ -20,6 +20,7 @@
 #include "../util/maths.h"
 #include "../util/rand.h"
 #include "../io/load.h"
+#include "../types.h" // For g_deltaTime
 #include "image.h"
 
 #include "opengl.h"
@@ -443,7 +444,7 @@ void gl_graphics_free(DgOpenGLContext* gl) {
 	DgFree(gl);
 }
 
-const float camSpeed = 0.02f;
+const float camSpeed = 2.0f;
 DgVec3 camfwd;
 
 static void gl_handle_input(DgOpenGLContext* gl) {
@@ -452,17 +453,17 @@ static void gl_handle_input(DgOpenGLContext* gl) {
 	}
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_UP) == GLFW_PRESS) {
-		campos = DgVec3Add(campos, DgVec3Scale(camSpeed, camfwd));
+		campos = DgVec3Add(campos, DgVec3Scale(camSpeed * g_deltaTime, camfwd));
 	}
 	if (glfwGetKey(gl->window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-		campos = DgVec3Subtract(campos, DgVec3Scale(camSpeed, camfwd));
+		campos = DgVec3Subtract(campos, DgVec3Scale(camSpeed * g_deltaTime, camfwd));
 	}
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-		campos = DgVec3Add(campos, DgVec3Scale(camSpeed, DgVec3Cross(camfwd, DgVec3New(0.0f, 1.0f, 0.0f))));
+		campos = DgVec3Add(campos, DgVec3Scale(camSpeed * g_deltaTime, DgVec3Cross(camfwd, DgVec3New(0.0f, 1.0f, 0.0f))));
 	}
 	if (glfwGetKey(gl->window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-		campos = DgVec3Subtract(campos, DgVec3Scale(camSpeed, DgVec3Cross(camfwd, DgVec3New(0.0f, 1.0f, 0.0f))));
+		campos = DgVec3Subtract(campos, DgVec3Scale(camSpeed * g_deltaTime, DgVec3Cross(camfwd, DgVec3New(0.0f, 1.0f, 0.0f))));
 	}
 	
 	static bool polymode = false;

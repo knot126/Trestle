@@ -32,6 +32,7 @@
 #include "util/fail.h"
 #include "io/fs.h"
 #include "io/config.h"
+#include "types.h"
 
 const float phys_delta_time = 1.0f / 180.0f;
 static DgBag g_gameProperties;
@@ -46,10 +47,6 @@ static int game_loop(GraphicsInitInfo graphics_info) {
 	 * The main loop.
 	 */
 	bool should_keep_open = true;
-	
-	if (!should_keep_open) {
-		printf("Graphics pointer is null.\n");
-	}
 	
 	float show_fps = 0.0;
 	// We will accumulate and update physics when time is right.
@@ -72,6 +69,9 @@ static int game_loop(GraphicsInitInfo graphics_info) {
 		
 		// Update frame time
 		frame_time = DgTime() - frame_time;
+		
+		// Update global delta time
+		g_deltaTime = frame_time;
 		
 		// Update accumulator
 		accumulate += frame_time;

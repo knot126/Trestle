@@ -15,3 +15,5 @@ const char* ASSETS_LOOK_PATH[2] = {
 const char* USER_LOOK_PATH[1] = {
 	"$HOME",
 };
+
+float g_deltaTime;
