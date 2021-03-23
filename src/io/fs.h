@@ -23,7 +23,7 @@ DgFileStream* DgFileStreamReopen(DgFileStream* stream, char* path, char* permiss
 DgFileStream* DgChangeStreamPermissions(DgFileStream* stream, char* permissions);
 void DgFileStreamClose(DgFileStream* stream);
 void DgFileStreamRead(DgFileStream* stream, size_t size, void* data);
-void DgFileStreamWrite(DgFileStream* stream, size_t size, void* data);
+void DgFileStreamWrite(DgFileStream* stream, size_t size, const void* data);
 size_t DgFileStreamLength(DgFileStream* stream);
 void DgMkdir(char* path);
 bool DgIsDir(const char* dir);

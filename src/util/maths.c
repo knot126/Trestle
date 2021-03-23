@@ -115,6 +115,16 @@ inline DgVec3 DgVec3Multiply(DgVec3 a, DgVec3 b) {
 	return c;
 }
 
+inline DgVec3 DgVec3Scale(float a, DgVec3 b) {
+	DgVec3 c;
+	
+	c.x = b.x * a;
+	c.y = b.y * a;
+	c.z = b.z * a;
+	
+	return c;
+}
+
 inline float DgVec3Magnitude(DgVec3 a) {
 	if (a.x == 0.0f && a.y == 0.0f && a.z == 0.0f) {
 		return 0.0f;

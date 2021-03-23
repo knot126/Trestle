@@ -54,6 +54,7 @@ DgVec2 DgVec2Normalise(DgVec2 a);
 DgVec3 DgVec3Add(DgVec3 a, DgVec3 b);
 DgVec3 DgVec3Subtract(DgVec3 a, DgVec3 b);
 DgVec3 DgVec3Multiply(DgVec3 a, DgVec3 b);
+DgVec3 DgVec3Scale(float a, DgVec3 b);
 float DgVec3Magnitude(DgVec3 a);
 float DgVec3Dot(DgVec3 a, DgVec3 b);
 DgVec3 DgVec3Cross(DgVec3 a, DgVec3 b);

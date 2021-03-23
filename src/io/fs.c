@@ -131,7 +131,7 @@ void DgFileStreamRead(DgFileStream* stream, size_t size, void* data) {
 	fread(data, sizeof(byte), size, stream->_c_file_stream);
 }
 
-void DgFileStreamWrite(DgFileStream* stream, size_t size, void* data) {
+void DgFileStreamWrite(DgFileStream* stream, size_t size, const void* data) {
 	/*
 	 * Write size bytes from data into stream
 	 */

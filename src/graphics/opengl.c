@@ -248,8 +248,6 @@ DgOpenGLContext* gl_graphics_init(void) {
 	}
 	
 	// Vertex datas
-	//DgLoadBinaryFileInfo vertexes = DgLoadBinaryFile();
-	
 	float data1[] = {
 		// X      Y      Z     U     V     R     G     B
 		-0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
@@ -283,6 +281,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 		-0.5f,  0.5f,  0.5f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
 	};
 	
+	// Make random colours
 	for (int i = 0; i < 24; i++) {
 		data1[(i * 8) + 5] = DgRandFloat();
 		data1[(i * 8) + 6] = DgRandFloat();
@@ -303,6 +302,19 @@ DgOpenGLContext* gl_graphics_init(void) {
 		20, 21, 22,
 		20, 22, 23,
 	};
+	
+	// Write a file with the cube mesh
+	DgFileStream *s = DgFileStreamOpen("./cube.bin", "wb");
+	
+	uint32_t temp;
+	temp = sizeof(data1) / 32;
+	DgFileStreamWriteInt32(s, &temp);
+	DgFileStreamWrite(s, sizeof(data1), data1);
+	temp = sizeof(indicies) / 4;
+	DgFileStreamWriteInt32(s, &temp);
+	DgFileStreamWrite(s, sizeof(indicies), indicies);
+	
+	DgFileStreamClose(s);
 	
 	gl->element_count = sizeof(indicies) / sizeof(int);
 	
@@ -431,23 +443,26 @@ void gl_graphics_free(DgOpenGLContext* gl) {
 	DgFree(gl);
 }
 
+const float camSpeed = 0.02f;
+DgVec3 camfwd;
+
 static void gl_handle_input(DgOpenGLContext* gl) {
 	if (glfwGetKey(gl->window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(gl->window, GL_TRUE);
 	}
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_UP) == GLFW_PRESS) {
-		campos.z -= 0.01f;
+		campos = DgVec3Add(campos, DgVec3Scale(camSpeed, camfwd));
 	}
 	if (glfwGetKey(gl->window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-		campos.z += 0.01f;
+		campos = DgVec3Subtract(campos, DgVec3Scale(camSpeed, camfwd));
 	}
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-		campos.x += 0.01f;
+		campos = DgVec3Add(campos, DgVec3Scale(camSpeed, DgVec3Cross(camfwd, DgVec3New(0.0f, 1.0f, 0.0f))));
 	}
 	if (glfwGetKey(gl->window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-		campos.x -= 0.01f;
+		campos = DgVec3Subtract(campos, DgVec3Scale(camSpeed, DgVec3Cross(camfwd, DgVec3New(0.0f, 1.0f, 0.0f))));
 	}
 	
 	static bool polymode = false;
@@ -477,14 +492,10 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	int w, h;
 	glfwGetWindowSize(gl->window, &w, &h);
 	
-	campos = DgVec3New(DgSin(DgTime() * 0.1f) * 5.0f, 0.0f, DgCos(DgTime() * 0.1f) * 5.0f);
-	DgVec3 lookpoint = DgVec3New(0.0f, 0.0f, 0.0f);
+	camfwd = DgVec3New(0.0f, 0.0f, -1.0f);
 	
-	//DgVec3New(1.0f * DgSin(DgTime() * 0.2f), 1.0f * DgCos(DgTime() * 0.2f), 1.0f * DgSin(DgTime() * 0.2f))
-	
-	DgMat4 camera = DgTransformLookAt(campos, lookpoint, DgVec3New(0.0f, 1.0f, 0.0f));
+	DgMat4 camera = DgTransformLookAt(campos, DgVec3Add(campos, camfwd), DgVec3New(0.0f, 1.0f, 0.0f));
 	DgMat4 proj = DgMat4NewPerspective2(0.125f, (float) w / (float) h, 0.1f, 100.0f);
-	
 	
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "camera"), 1, GL_TRUE, &camera.ax);
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "proj"), 1, GL_TRUE, &proj.ax);
@@ -499,12 +510,13 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	
 	for (int i = -4; i < 4; i++) {
 		for (int j = -3; j < 3; j++) {
-			DgMat4 model = DgMat4Translate(DgMat4New(1.0f), DgVec3New(((float)i)*2.0f, ((float)j)*2.0f, 0.0f));
-			glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
-			glDrawElements(GL_TRIANGLES, gl->element_count, GL_UNSIGNED_INT, 0);
+			for (int k = -1; k < 2; k++) {
+				DgMat4 model = DgMat4Translate(DgMat4New(1.0f), DgVec3New(((float)i)*2.0f, ((float)j)*2.0f, ((float)k)*2.0f));
+				glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
+				glDrawElements(GL_TRIANGLES, gl->element_count, GL_UNSIGNED_INT, 0);
+			}
 		}
 	}
-	
 	
 	gl_error_check(__FILE__, __LINE__);
 	
