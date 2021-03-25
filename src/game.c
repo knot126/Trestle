@@ -20,6 +20,7 @@
 	#include <unistd.h>
 #endif
 
+#include "generic/world.h"
 #include "graphics/graphics.h"
 #include "phys/phys.h"
 #include "util/thread.h"
@@ -27,40 +28,37 @@
 #include "util/bag.h"
 #include "util/flag.h"
 #include "util/time.h"
-#include "util/maths.h"
-#include "util/rand.h"
 #include "util/fail.h"
 #include "io/fs.h"
 #include "io/config.h"
+#include "systems.h"
 #include "types.h"
-
-const float phys_delta_time = 1.0f / 180.0f;
-static DgBag g_gameProperties;
-DgBag *g_gameConfig;
 
 static void print_info(void) {
 	printf("Engine compiled on %s at %s.\n", __DATE__, __TIME__);
 }
 
-static int game_loop(GraphicsInitInfo graphics_info) {
+static int game_loop(World *world, SystemStates *systems) {
 	/* 
 	 * The main loop.
 	 */
 	bool should_keep_open = true;
 	
 	float show_fps = 0.0;
+	
 	// We will accumulate and update physics when time is right.
 	float accumulate = 0.0f;
+	const float phys_delta_time = 1.0f / 180.0f;
 	
 	while (should_keep_open) {
 		float frame_time = DgTime();
 		
 		// Check if we should still be open
-		should_keep_open = get_should_keep_open(graphics_info);
+		should_keep_open = get_should_keep_open(systems->graphics);
 		
 		//DgThread t_graphics, t_physics;
 		
-		graphics_update(graphics_info);
+		graphics_update(systems->graphics);
 		
 		if (accumulate > phys_delta_time) {
 			phys_update();
@@ -106,12 +104,6 @@ int game_main(int argc, char* argv[]) {
 	printf("Initialising file system paths...\n");
 	DgInitPaths();
 	
-	// Create a global property bag
-	printf("Preparing global properties...\n");
-	g_gameProperties = DgBagInit();
-	DgBagSet(&g_gameProperties, "deploy", "0");
-	DgBagSet(&g_gameProperties, "graphicsDriver", "OpenGL");
-	
 	// Load config
 	printf("Loading engine configuration file...\n");
 	DgConfig *config = DgConfigLoad("assets://config.ini", true);
@@ -120,26 +112,32 @@ int game_main(int argc, char* argv[]) {
 		DgFail("Error: Failed to load configuration file.\n", 1);
 	}
 	
-	g_gameConfig = DgConfigGetBag(config);
-	
-	DgBagPrint(g_gameConfig);
-	
 	// Event centre startup (global events)
 	DgFlagCreateEvent("game_init_ok");
 	DgFlagRegisterCallback("game_init_ok", &on_init_okay);
 	
-	// Graphics initialisation
-	printf("Init graphics subsystem...\n");
-	GraphicsInitInfo graphics_info = graphics_init(DG_GRAPHICS_TYPE_OPENGL);
+	// Load world
+	printf("Initialising main world...\n");
+	World main_world;
+	world_init(&main_world, 0);
+	
+	// Load systems state
+	// 
+	// This is only for the really big systems in the game and not for anything
+	// that can basically manage itself (for example, utility functions), though
+	// perhaps they should be ported to use system init as well.
+	printf("Initialising systems...\n");
+	SystemStates systems;
+	sys_init(&systems);
 	
 	// Main loop
 	printf("Starting the main loop...\n");
 	DgFlagRaise("game_init_ok", NULL);
-	game_loop(graphics_info);
+	game_loop(&main_world, &systems);
 	
-	// Graphics destruction
-	printf("Destroying graphics subsystem...\n");
-	graphics_free(graphics_info);
+	// Systems destruction
+	printf("Destroying systems...");
+	sys_destroy(&systems);
 	
 	// Global flags cleanup
 	printf("Cleaning up memory used by flags...\n");

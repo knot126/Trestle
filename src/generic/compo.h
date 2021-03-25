@@ -9,6 +9,8 @@
 
 #include <inttypes.h>
 
+#include "../util/maths.h"
+
 typedef uint32_t EntityId_t;
 
 typedef struct {
@@ -25,4 +27,4 @@ typedef struct {
 	ComponentBase_t _base;
 	float * mesh;
 	int mesh_length;
-} CTransfrom;
+} CMesh;

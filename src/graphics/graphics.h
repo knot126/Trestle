@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <stdbool.h>
+
 typedef enum GraphicsType {
 	DG_GRAPHICS_TYPE_OPENGL = 1,
 	DG_GRAPHICS_TYPE_VULKAN = 2,

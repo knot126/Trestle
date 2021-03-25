@@ -43,6 +43,7 @@ set(LUA_FILES
 set(FILES 
 	${LUA_FILES}
 	lib/glew/glew.c
+	src/generic/world.c
 	src/graphics/graphics.c
 	src/graphics/opengl.c
 	src/graphics/image.c
@@ -62,6 +63,7 @@ set(FILES
 	src/util/rand.c
 	src/util/array.c
 	src/game.c
+	src/systems.c
 	src/types.c
 	src/main.c)
 
