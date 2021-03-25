@@ -19,7 +19,7 @@ typedef struct GraphicsInitInfo {
 	GraphicsType type;
 } GraphicsInitInfo;
 
-GraphicsInitInfo graphics_init(GraphicsType type);
+GraphicsInitInfo graphics_init(void);
 void graphics_update(GraphicsInitInfo info);
 bool get_should_keep_open(GraphicsInitInfo info);
 void graphics_free(GraphicsInitInfo info);

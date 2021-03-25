@@ -136,7 +136,7 @@ int game_main(int argc, char* argv[]) {
 	game_loop(&main_world, &systems);
 	
 	// Systems destruction
-	printf("Destroying systems...");
+	printf("Destroying systems...\n");
 	sys_destroy(&systems);
 	
 	// Global flags cleanup

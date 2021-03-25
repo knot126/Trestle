@@ -18,7 +18,7 @@ void sys_init(SystemStates *sys) {
 	
 	// Graphics initialisation
 	printf("Init graphics subsystem...\n");
-	sys->graphics = graphics_init(DG_GRAPHICS_TYPE_OPENGL);
+	sys->graphics = graphics_init();
 }
 
 void sys_destroy(SystemStates *sys) {

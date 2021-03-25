@@ -16,18 +16,14 @@
 
 #include "graphics.h"
 
-GraphicsInitInfo graphics_init(GraphicsType type) {
+GraphicsInitInfo graphics_init(void) {
+	/*
+	 * Initialise graphics subsystem
+	 */
 	GraphicsInitInfo info;
 	
-	if (type == DG_GRAPHICS_TYPE_VULKAN) {
-		// info.info = (void *) vk_graphics_init();
-		info.type = DG_GRAPHICS_TYPE_VULKAN;
-	}
-	
-	if (type == DG_GRAPHICS_TYPE_OPENGL) {
-		info.info = (void *) gl_graphics_init();
-		info.type = DG_GRAPHICS_TYPE_OPENGL;
-	}
+	info.info = (void *) gl_graphics_init();
+	info.type = DG_GRAPHICS_TYPE_OPENGL;
 	
 	if (!info.info) {
 		printf("Error: Pointer to graphics info is null.\n");
@@ -38,25 +34,22 @@ GraphicsInitInfo graphics_init(GraphicsType type) {
 }
 
 void graphics_update(GraphicsInitInfo info) {
-	if (info.type == DG_GRAPHICS_TYPE_OPENGL) {
-		gl_graphics_update((DgOpenGLContext *) info.info);
-	}
+	/*
+	 * Call the used graphics update function
+	 */
+	gl_graphics_update((DgOpenGLContext *) info.info);
 }
 
 bool get_should_keep_open(GraphicsInitInfo info) {
-	if (info.type == DG_GRAPHICS_TYPE_OPENGL) {
-		return gl_get_should_keep_open((DgOpenGLContext *) info.info);
-	}
-	
-	return false;
+	/*
+	 * Call the used function to get if the window still needs to be open.
+	 */
+	return gl_get_should_keep_open((DgOpenGLContext *) info.info);
 }
 
 void graphics_free(GraphicsInitInfo info) {
-	if (info.type == DG_GRAPHICS_TYPE_VULKAN) {
-		// vk_graphics_free((DgVulkanInfo *) info.info);
-	}
-	
-	if (info.type == DG_GRAPHICS_TYPE_OPENGL) {
-		gl_graphics_free((DgOpenGLContext *) info.info);
-	}
+	/*
+	 * Free the graphics subsystem
+	 */
+	gl_graphics_free((DgOpenGLContext *) info.info);
 }
