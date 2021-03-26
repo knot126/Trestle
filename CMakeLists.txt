@@ -50,10 +50,12 @@ set(FILES
 	src/io/fs.c
 	src/io/load.c
 	src/io/config.c
+	src/io/input.c
 	src/linux/main.c
 	src/phys/phys.c
 	src/util/alloc.c
 	src/util/bag.c
+	src/util/clocker.c
 	src/util/thread.c
 	src/util/flag.c
 	src/util/time.c

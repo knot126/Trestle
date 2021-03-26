@@ -25,12 +25,14 @@
 #include "phys/phys.h"
 #include "util/thread.h"
 #include "util/alloc.h"
+#include "util/clocker.h"
 #include "util/bag.h"
 #include "util/flag.h"
 #include "util/time.h"
 #include "util/fail.h"
 #include "io/fs.h"
 #include "io/config.h"
+#include "io/input.h"
 #include "systems.h"
 #include "types.h"
 
@@ -52,6 +54,7 @@ static int game_loop(World *world, SystemStates *systems) {
 	
 	while (should_keep_open) {
 		float frame_time = DgTime();
+		float clock; // time var for clocker
 		
 		// Check if we should still be open
 		should_keep_open = get_should_keep_open(systems->graphics);
@@ -59,6 +62,7 @@ static int game_loop(World *world, SystemStates *systems) {
 		//DgThread t_graphics, t_physics;
 		
 		graphics_update(systems->graphics);
+		input_update(systems->graphics);
 		
 		if (accumulate > phys_delta_time) {
 			phys_update();

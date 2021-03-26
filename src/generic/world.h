@@ -19,9 +19,9 @@ typedef enum {
 } ComponentMaskEnum;
 
 typedef struct {
-	// Masks
+	// Masks and entities
 	EntityComponentMask_t *mask;
-	size_t mask_count;
+	size_t count;
 	
 	// Transform Components
 	CTransform *CTransfroms;

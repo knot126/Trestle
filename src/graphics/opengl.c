@@ -14,6 +14,7 @@
 #endif
 #include <GLFW/glfw3.h>
 
+#include "../generic/world.h"
 #include "../util/alloc.h"
 #include "../util/time.h"
 #include "../util/fail.h"
@@ -234,17 +235,29 @@ static void gl_load_texture(DgOpenGLContext *gl, char *path, GLenum active_textu
 }
 
 DgOpenGLContext* gl_graphics_init(void) {
+	/*
+	 * Initialise any global OpenGL graphics state. In the future, this should 
+	 * not be in chrage of things like the camera, but this is how it is for the
+	 * moment as I am still trying to play around with everything.
+	 * 
+	 * Returns a (DgOpenGLContext *) to created info structure.
+	 */
+	
+	// Create context info structure
 	DgOpenGLContext* gl = DgAlloc(sizeof(DgOpenGLContext));
 	memset(gl, 0, sizeof(DgOpenGLContext));
 	
+	// Glfw init
 	glfwInit();
 	
+	// Window paramaters
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 	
+	// Create window
 	gl->window = glfwCreateWindow(1280, 720, "Trestle Engine", NULL, NULL);
 	
 	if (!gl->window) {
@@ -274,6 +287,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	}
 	
 	// Vertex datas
+	// TODO: Move to a mesh entity
 	float data1[] = {
 		// X      Y      Z     U     V     R     G     B
 		-0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
@@ -447,30 +461,74 @@ DgOpenGLContext* gl_graphics_init(void) {
 	return gl;
 }
 
-void gl_graphics_free(DgOpenGLContext* gl) {
-	glfwTerminate();
+void gl_graphics_update(DgOpenGLContext* gl) {
+	/*
+	 * Update OpenGL-related state and the graphics system
+	 */
 	
-	for (int i = 0; i < gl->programs_count; i++) {
-		glDeleteProgram(gl->programs[i]);
+	// Normal OpenGL events
+	glfwSwapBuffers(gl->window);
+	glfwPollEvents();
+	
+	// OpenGL clear and draw
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	glUseProgram(gl->programs[0]);
+	
+	// Calculate the projection matrix
+	// We use the current window width and height to calculate the aspect ratio
+	// for each frame, allowing dynamic resize of the window.
+	int w, h;
+	glfwGetWindowSize(gl->window, &w, &h);
+	DgMat4 proj = DgMat4NewPerspective2(0.125f, (float) w / (float) h, 0.1f, 100.0f);
+	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "proj"), 1, GL_TRUE, &proj.ax);
+	
+	// Calculate view matrix (camera transform)
+	// TODO: I think either the perspective view is still messing things up or
+	// I have somehow done this wrong. See the this is broken near the pitch in
+	// input processing function to get an idea of what is going on.
+	camfwd = DgVec3Normalise(DgVec3New(
+		DgCos(yaw) * DgCos(pitch), 
+		DgSin(pitch), 
+		DgSin(yaw) * DgCos(pitch)));
+	DgMat4 camera = DgTransformLookAt(campos, DgVec3Add(campos, camfwd), DgVec3New(0.0f, 1.0f, 0.0f));
+	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "camera"), 1, GL_TRUE, &camera.ax);
+	
+	// Bind the currently active textures for this shader
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, gl->textures[0]);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, gl->textures[1]);
+	
+	glBindVertexArray(gl->vaos[0]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
+	
+	for (int i = -4; i < 4; i++) {
+		for (int j = -3; j < 3; j++) {
+			for (int k = -1; k < 2; k++) {
+				DgMat4 model = DgMat4Translate(DgMat4New(1.0f), DgVec3New(((float)i)*2.0f, ((float)j)*2.0f, ((float)k)*2.0f));
+				glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
+				glDrawElements(GL_TRIANGLES, gl->element_count, GL_UNSIGNED_INT, 0);
+			}
+		}
+	}
+	/*
+	 * This will need to be done in the future for each entity in the world:
+	
+	for (size_t i = 0; i < world->count; i++) {
+		if (world->masks[i] & (QR_COMPONENT_MESH) == (QR_COMPONENT_MESH)) {
+			// do stuff here
+		}
 	}
 	
-	for (int i = 0; i < gl->vbos_count; i++) {
-		glDeleteBuffers(gl->vbos_count, gl->vbos);
-	}
+	*/
 	
-	for (int i = 0; i < gl->vaos_count; i++) {
-		glDeleteVertexArrays(gl->vaos_count, gl->vaos);
-	}
-	
-	DgFree(gl->textures);
-	DgFree(gl->shaders);
-	DgFree(gl->vaos);
-	DgFree(gl->vbos);
-	DgFree(gl->ebos);
-	DgFree(gl);
+	// Check for errors
+	gl_error_check(__FILE__, __LINE__);
 }
 
-static void gl_handle_input(DgOpenGLContext* gl) {
+void gl_handle_input(DgOpenGLContext* gl) {
 	if (glfwGetKey(gl->window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(gl->window, GL_TRUE);
 	}
@@ -501,7 +559,9 @@ static void gl_handle_input(DgOpenGLContext* gl) {
 	}
 	
 	yaw += mouse_delta.x * camSenseitivity * g_deltaTime;
-	pitch += mouse_delta.y * camSenseitivity * g_deltaTime;
+	
+	// TODO: This is broken ! 
+	//pitch += mouse_delta.y * camSenseitivity * g_deltaTime;
 	
 	if (pitch > 0.249f) {
 		pitch = 0.249f;
@@ -512,53 +572,27 @@ static void gl_handle_input(DgOpenGLContext* gl) {
 	}
 }
 
-void gl_graphics_update(DgOpenGLContext* gl) {
-	// Normal OpenGL events
-	glfwSwapBuffers(gl->window);
-	glfwPollEvents();
+void gl_graphics_free(DgOpenGLContext* gl) {
+	glfwTerminate();
 	
-	// OpenGL clear and draw
-	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	glUseProgram(gl->programs[0]);
-	
-	// trying to get things looking better at all resolutions
-	int w, h;
-	glfwGetWindowSize(gl->window, &w, &h);
-	
-	camfwd = DgVec3Normalise(DgVec3New(
-		DgCos(yaw) * DgCos(pitch), 
-		DgSin(pitch), 
-		DgSin(yaw) * DgCos(pitch)));
-	
-	DgMat4 camera = DgTransformLookAt(campos, DgVec3Add(campos, camfwd), DgVec3New(0.0f, 1.0f, 0.0f));
-	DgMat4 proj = DgMat4NewPerspective2(0.125f, (float) w / (float) h, 0.1f, 100.0f);
-	
-	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "camera"), 1, GL_TRUE, &camera.ax);
-	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "proj"), 1, GL_TRUE, &proj.ax);
-	
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, gl->textures[0]);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, gl->textures[1]);
-	
-	glBindVertexArray(gl->vaos[0]);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
-	
-	for (int i = -4; i < 4; i++) {
-		for (int j = -3; j < 3; j++) {
-			for (int k = -1; k < 2; k++) {
-				DgMat4 model = DgMat4Translate(DgMat4New(1.0f), DgVec3New(((float)i)*2.0f, ((float)j)*2.0f, ((float)k)*2.0f));
-				glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
-				glDrawElements(GL_TRIANGLES, gl->element_count, GL_UNSIGNED_INT, 0);
-			}
-		}
+	for (int i = 0; i < gl->programs_count; i++) {
+		glDeleteProgram(gl->programs[i]);
 	}
 	
-	gl_error_check(__FILE__, __LINE__);
+	for (int i = 0; i < gl->vbos_count; i++) {
+		glDeleteBuffers(gl->vbos_count, gl->vbos);
+	}
 	
-	gl_handle_input(gl);
+	for (int i = 0; i < gl->vaos_count; i++) {
+		glDeleteVertexArrays(gl->vaos_count, gl->vaos);
+	}
+	
+	DgFree(gl->textures);
+	DgFree(gl->shaders);
+	DgFree(gl->vaos);
+	DgFree(gl->vbos);
+	DgFree(gl->ebos);
+	DgFree(gl);
 }
 
 bool gl_get_should_keep_open(DgOpenGLContext *info) {
