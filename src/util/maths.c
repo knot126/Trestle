@@ -81,6 +81,15 @@ inline DgVec2 DgVec2Normalise(DgVec2 a) {
 	return c;
 }
 
+inline DgVec2 DgVec2New(float x, float y) {
+	DgVec2 c;
+	
+	c.x = x;
+	c.y = y;
+	
+	return c;
+}
+
 /* 
  * DgVec3 
  */

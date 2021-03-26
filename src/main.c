@@ -27,13 +27,6 @@
 #endif
 
 #if defined(_WIN32) || defined(_WIN64)
+	#define OS_WINDOWS
 	#include "windows/main.h"
 #endif
-
-// // Go to platform_main()
-// #ifndef DG_MAIN_DEFINED
-// #define DG_MAIN_DEFINED
-// int main(int argc, char* argv[]) {
-// 	return platform_main(argc, argv);
-// }
-// #endif

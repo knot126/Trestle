@@ -48,6 +48,7 @@ DgVec2 DgVec2Multiply(DgVec2 a, DgVec2 b);
 float DgVec2Magnitude(DgVec2 a);
 float DgVec2Dot(DgVec2 a, DgVec2 b);
 DgVec2 DgVec2Normalise(DgVec2 a);
+DgVec2 DgVec2New(float x, float y);
 
 // DgVec3
 

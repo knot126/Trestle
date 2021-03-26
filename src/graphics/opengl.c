@@ -27,6 +27,14 @@
 
 DgVec3 campos;
 
+DgVec2 mouse_delta;
+DgVec2 mouse_last;
+
+const float camSpeed = 2.5f;
+const float camSenseitivity = 0.01f;
+float pitch = 0.0f, yaw = -0.125f;
+DgVec3 camfwd;
+
 GLuint gl_load_shader(char* filename, GLenum type) {
 	/* 
 	 * Load and create an OpenGL shader `filename`, of type `type`.
@@ -184,6 +192,21 @@ void gl_set_window_size(GLFWwindow* window, int w, int h) {
 	glViewport(0, 0, w, h);
 }
 
+void gl_update_mouse(GLFWwindow* window, double x, double y) {
+	static bool first = false;
+	
+	if (first) {
+		mouse_last.x = x;
+		mouse_last.y = y;
+		first = true;
+	}
+	
+	mouse_delta.x = x - mouse_last.x;
+	mouse_delta.y = y - mouse_last.y;
+	
+	mouse_last = DgVec2New(x, y);
+}
+
 static void gl_load_texture(DgOpenGLContext *gl, char *path, GLenum active_texture) {
 	static int texture_count = 0;
 	
@@ -235,6 +258,8 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	glfwSwapInterval(0);
 	glfwSetFramebufferSizeCallback(gl->window, gl_set_window_size);
+	glfwSetCursorPosCallback(gl->window, gl_update_mouse);
+	glfwSetInputMode(gl->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glViewport(0, 0, 1280, 720);
 	
 	gl_error_check(__FILE__, __LINE__);
@@ -412,6 +437,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	glEnable(GL_DEPTH_TEST);
 	
+	mouse_delta = DgVec2New(720.0f / 2.0f, 1280.0f / 2.0f);
 	campos = DgVec3New(1.0f, 0.0f, 3.0f);
 	
 	gl_error_check(__FILE__, __LINE__);
@@ -444,9 +470,6 @@ void gl_graphics_free(DgOpenGLContext* gl) {
 	DgFree(gl);
 }
 
-const float camSpeed = 2.0f;
-DgVec3 camfwd;
-
 static void gl_handle_input(DgOpenGLContext* gl) {
 	if (glfwGetKey(gl->window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(gl->window, GL_TRUE);
@@ -476,6 +499,17 @@ static void gl_handle_input(DgOpenGLContext* gl) {
 	} else {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
+	
+	yaw += mouse_delta.x * camSenseitivity * g_deltaTime;
+	pitch += mouse_delta.y * camSenseitivity * g_deltaTime;
+	
+	if (pitch > 0.249f) {
+		pitch = 0.249f;
+	}
+	
+	if (pitch < -0.249f) {
+		pitch = -0.249f;
+	}
 }
 
 void gl_graphics_update(DgOpenGLContext* gl) {
@@ -493,7 +527,10 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	int w, h;
 	glfwGetWindowSize(gl->window, &w, &h);
 	
-	camfwd = DgVec3New(0.0f, 0.0f, -1.0f);
+	camfwd = DgVec3Normalise(DgVec3New(
+		DgCos(yaw) * DgCos(pitch), 
+		DgSin(pitch), 
+		DgSin(yaw) * DgCos(pitch)));
 	
 	DgMat4 camera = DgTransformLookAt(campos, DgVec3Add(campos, camfwd), DgVec3New(0.0f, 1.0f, 0.0f));
 	DgMat4 proj = DgMat4NewPerspective2(0.125f, (float) w / (float) h, 0.1f, 100.0f);
