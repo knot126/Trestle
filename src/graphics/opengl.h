@@ -38,5 +38,6 @@ GLenum gl_error_check(char* file, int line);
 DgOpenGLContext* gl_graphics_init(void);
 void gl_graphics_update(DgOpenGLContext* gl);
 void gl_graphics_free(DgOpenGLContext* gl);
+void gl_update_mouse(GLFWwindow* window, double x, double y);
 void gl_handle_input(DgOpenGLContext* gl);
 bool gl_get_should_keep_open(DgOpenGLContext *info);
