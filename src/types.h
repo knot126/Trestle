@@ -35,5 +35,5 @@ union DgCommonUnion {
 	byte *asBytes;
 };
 
-extern const char* ASSETS_LOOK_PATH[2];
+extern const char* ASSETS_LOOK_PATH[4];
 extern float g_deltaTime;

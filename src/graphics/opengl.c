@@ -215,15 +215,46 @@ DgOpenGLContext* gl_graphics_init(void) {
 	// Same for EBOs
 	glGenBuffers(gl->ebos_count, gl->ebos);
 	
-	// VAO Binding
-	glBindVertexArray(gl->vaos[0]); // Make sure first VAO is the active one
+	// Loading the data that VAO will need
+	s = DgFileStreamOpen("./cube.bin", "rb");
+	if (!s) {
+		DgFail("Failed to open file stream to read data.\n", -1);
+	}
+	
+	uint32_t vao_size;
+	DgFileStreamReadInt32(s, &vao_size);
+	float * vao_data = DgAlloc(vao_size * 32);
+	if (!vao_data) {
+		DgFail("Failed to load VAO data from file.\n", -1);
+	}
+	DgFileStreamRead(s, vao_size * 32, vao_data);
+	
+	uint32_t ebo_size;
+	DgFileStreamReadInt32(s, &ebo_size);
+	uint32_t * ebo_data = DgAlloc(ebo_size * 4);
+	if (!ebo_data) {
+		DgFail("Failed to load EBO data from file.\n", -1);
+	}
+	DgFileStreamRead(s, ebo_size * 4, ebo_data);
+	
+	DgFileStreamClose(s);
+	
+	// Make sure first VAO is the active one
+	glBindVertexArray(gl->vaos[0]);
+	
+	// VBO setting data
 	glBindBuffer(GL_ARRAY_BUFFER, gl->vbos[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(data1), data1, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vao_size, vao_data, GL_STATIC_DRAW);
 	
 	// Index buffer 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, ebo_size, ebo_data, GL_STATIC_DRAW);
 	
+	// Free the filey things from earlier
+	DgFree(ebo_data);
+	DgFree(vao_data);
+	
+	// Check for errors
 	gl_error_check(__FILE__, __LINE__);
 	
 	// Tell OpenGL about this vertex data

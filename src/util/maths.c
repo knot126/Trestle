@@ -292,6 +292,14 @@ inline DgMat4 DgMat4ByMat4Multiply(DgMat4 a, DgMat4 b) {
 	return c;
 }
 
+inline DgMat4 DgMat4Inverse(DgMat4 a) {
+	DgMat4 c;
+	
+	
+	
+	return c;
+}
+
 inline DgMat4 DgMat4Translate(DgMat4 a, DgVec3 b) {
 	DgMat4 c = DgMat4New(1.0f);
 	
@@ -415,6 +423,7 @@ DgMat4 DgTransformLookAt(DgVec3 from, DgVec3 to, DgVec3 world_up) {
 	view_matrix.aw = from.x;
 	view_matrix.bw = -from.y;
 	view_matrix.cw = from.z;
+// 	view_matrix.dw = 1.0f;
 	
 	view_matrix = DgMat4ByMat4Multiply(rot_matrix, view_matrix);
 	

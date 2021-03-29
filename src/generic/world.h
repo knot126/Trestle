@@ -21,17 +21,18 @@ typedef enum {
 typedef struct {
 	// Masks and entities
 	EntityComponentMask_t *mask;
-	size_t count;
+	uint32_t mask_count;
+	uint32_t mask_alloc;
 	
 	// Transform Components
-	CTransform *CTransfroms;
-	size_t      CTransfroms_count;
-	size_t      CTransfroms_alloc;
+	CTransform *CTransforms;
+	uint32_t    CTransforms_count;
+	uint32_t    CTransforms_alloc;
 	
 	// Mesh Components
 	CMesh *CMeshs;
-	size_t CMeshs_count;
-	size_t CMeshs_alloc;
+	uint32_t CMeshs_count;
+	uint32_t CMeshs_alloc;
 } World;
 
 void world_init(World *world, size_t prealloc_count);

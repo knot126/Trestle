@@ -18,13 +18,15 @@ typedef struct {
 } ComponentBase_t;
 
 typedef struct {
-	ComponentBase_t _base;
+	ComponentBase_t base;
 	DgVec3 pos;
 	DgVec3 rot;
 } CTransform;
 
 typedef struct {
-	ComponentBase_t _base;
+	ComponentBase_t base;
+	uint32_t mesh_length;
 	float * mesh;
-	int mesh_length;
+	uint32_t index_length;
+	uint32_t * index;
 } CMesh;
