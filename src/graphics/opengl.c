@@ -113,6 +113,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 		glDeleteShader(gl->shaders[i]);
 	}
 	
+	/*
 	// Vertex datas
 	// TODO: Move to a mesh entity
 	float data1[] = {
@@ -182,8 +183,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	DgFileStreamWrite(s, sizeof(indicies), indicies);
 	
 	DgFileStreamClose(s);
-	
-	gl->element_count = sizeof(indicies) / sizeof(int);
+	*/
 	
 	gl->vaos = (GLuint *) DgAlloc(sizeof(GLuint) * 2);
 	gl->vaos_count = 2;
@@ -215,37 +215,12 @@ DgOpenGLContext* gl_graphics_init(void) {
 	// Same for EBOs
 	glGenBuffers(gl->ebos_count, gl->ebos);
 	
-	// Loading the data that VAO will need
-	s = DgFileStreamOpen("./cube.bin", "rb");
-	if (!s) {
-		DgFail("Failed to open file stream to read data.\n", -1);
-	}
-	
-	uint32_t vbo_size;
-	DgFileStreamReadInt32(s, &vbo_size);
-	float * vbo_data = DgAlloc(vbo_size * 32);
-	if (!vbo_data) {
-		DgFail("Failed to load VAO data from file.\n", -1);
-	}
-	DgFileStreamRead(s, vbo_size * 32, vbo_data);
-	
-	uint32_t ebo_size;
-	DgFileStreamReadInt32(s, &ebo_size);
-	uint32_t * ebo_data = DgAlloc(ebo_size * 4);
-	if (!ebo_data) {
-		DgFail("Failed to load EBO data from file.\n", -1);
-	}
-	DgFileStreamRead(s, ebo_size * 4, ebo_data);
-	
-	DgFileStreamClose(s);
-	
 	// Make sure first VAO is the active one
 	glBindVertexArray(gl->vaos[0]);
 	
 	// VBO setting data
 	glBindBuffer(GL_ARRAY_BUFFER, gl->vbos[0]);
 	glBufferData(GL_ARRAY_BUFFER, vbo_size * 32, vbo_data, GL_STATIC_DRAW);
-	gl_error_check(__FILE__, __LINE__);
 	
 	// Index buffer 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);

@@ -11,7 +11,7 @@
 
 #include "../generic/compo.h"
 
-typedef uint32_t EntityComponentMask_t;
+typedef uint32_t mask_t;
 
 typedef enum {
 	QR_COMPONENT_TRANSFORM = 1 << 0,
@@ -20,7 +20,7 @@ typedef enum {
 
 typedef struct {
 	// Masks and entities
-	EntityComponentMask_t *mask;
+	mask_t *mask;
 	uint32_t mask_count;
 	uint32_t mask_alloc;
 	
@@ -36,3 +36,4 @@ typedef struct {
 } World;
 
 void world_init(World *world, size_t prealloc_count);
+uint32_t world_create_entity(World *world, mask_t mask);

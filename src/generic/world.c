@@ -21,7 +21,10 @@ void world_init(World *world, size_t prealloc_count) {
 	}
 	
 	// Pre-allocate components to a count
-	world->mask = DgAlloc(prealloc_count * sizeof(EntityComponentMask_t));
+	/* NOTE: Disabled for now to make things simplier. I am going to look more
+	 * into methods of managing C arrays soon and these will be re-enabled if I
+	 * think it is optimal to do so.
+	world->mask = DgAlloc(prealloc_count * sizeof(mask_t));
 	world->mask_alloc = prealloc_count;
 	
 	world->CTransforms = DgAlloc(prealloc_count * sizeof(CTransform));
@@ -29,11 +32,35 @@ void world_init(World *world, size_t prealloc_count) {
 	
 	world->CMeshs = DgAlloc(prealloc_count * sizeof(CMesh));
 	world->CMeshs_alloc = prealloc_count;
+	*/
 }
 
-uint32_t world_create_entity(World *world, EntityComponentMask_t mask) {
+uint32_t world_create_entity(World *world, mask_t mask) {
 	/*
-	 * Create a new entity in a given world
+	 * Create a new entity in a given world and return its ID
 	 */
+	world->mask_count++;
 	
+	// NOTE: nullptr passed to realloc works like alloc, so we do not need to
+	// consider a case where the list has not been initialised.
+	world->mask = DgRealloc(world->mask, sizeof(mask_t) * world->mask_count);
+	world->mask[world->mask_count - 1] = mask;
+	
+	// Allocate the nessicary components
+	
+	// Transform
+	if (mask & QR_COMPONENT_TRANSFORM == QR_COMPONENT_TRANSFORM) {
+		world->CTransforms_count++;
+		world->CTransforms = DgRealloc(world->CTransforms, sizeof(CTransform) * world->CTransforms_count);
+		world->CTransforms[world->CTransforms_count - 1].base.id = world->mask_count;
+	}
+	
+	// Mesh
+	if (mask & QR_COMPONENT_MESH == QR_COMPONENT_MESH) {
+		world->CMeshs_count++;
+		world->CMeshs = DgRealloc(world->CMeshs, sizeof(CMesh) * world->CMeshs_count);
+		world->CMeshs[world->CMeshs_count - 1].base.id = world->mask_count;
+	}
+	
+	return world->mask_count;
 }

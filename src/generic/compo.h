@@ -8,6 +8,7 @@
 #pragma once
 
 #include <inttypes.h>
+#include <stdbool.h>
 
 #include "../util/maths.h"
 
@@ -25,8 +26,9 @@ typedef struct {
 
 typedef struct {
 	ComponentBase_t base;
-	uint32_t mesh_length;
-	float * mesh;
-	uint32_t index_length;
+	bool updated; // Putting this here *should* avoid wasted space due to padding.
+	float * vert;
 	uint32_t * index;
+	uint32_t vert_count;
+	uint32_t index_count;
 } CMesh;
