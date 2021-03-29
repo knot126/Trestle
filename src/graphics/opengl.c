@@ -170,18 +170,18 @@ DgOpenGLContext* gl_graphics_init(void) {
 		20, 22, 23,
 	};
 	
-// 	// Write a file with the cube mesh
-	DgFileStream *s;// = DgFileStreamOpen("./cube.bin", "wb");
-// 	
-// 	uint32_t temp;
-// 	temp = sizeof(data1) / 32;
-// 	DgFileStreamWriteInt32(s, &temp);
-// 	DgFileStreamWrite(s, sizeof(data1), data1);
-// 	temp = sizeof(indicies) / 4;
-// 	DgFileStreamWriteInt32(s, &temp);
-// 	DgFileStreamWrite(s, sizeof(indicies), indicies);
-// 	
-// 	DgFileStreamClose(s);
+	// Write a file with the cube mesh
+	DgFileStream *s = DgFileStreamOpen("./cube.bin", "wb");
+	
+	uint32_t temp;
+	temp = sizeof(data1) / 32;
+	DgFileStreamWriteInt32(s, &temp);
+	DgFileStreamWrite(s, sizeof(data1), data1);
+	temp = sizeof(indicies) / 4;
+	DgFileStreamWriteInt32(s, &temp);
+	DgFileStreamWrite(s, sizeof(indicies), indicies);
+	
+	DgFileStreamClose(s);
 	
 	gl->element_count = sizeof(indicies) / sizeof(int);
 	
@@ -228,12 +228,6 @@ DgOpenGLContext* gl_graphics_init(void) {
 		DgFail("Failed to load VAO data from file.\n", -1);
 	}
 	DgFileStreamRead(s, vbo_size * 32, vbo_data);
-	for (int i = 0; i < vbo_size; i++) {
-		printf("%.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f \n",
-			vbo_data[(i * 8) + 0], vbo_data[(i * 8) + 1], vbo_data[(i * 8) + 2],
-			vbo_data[(i * 8) + 3], vbo_data[(i * 8) + 4], vbo_data[(i * 8) + 5],
-			vbo_data[(i * 8) + 6], vbo_data[(i * 8) + 7]);
-	}
 	
 	uint32_t ebo_size;
 	DgFileStreamReadInt32(s, &ebo_size);
@@ -250,14 +244,11 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	// VBO setting data
 	glBindBuffer(GL_ARRAY_BUFFER, gl->vbos[0]);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(data1), data1, GL_STATIC_DRAW);
 	glBufferData(GL_ARRAY_BUFFER, vbo_size * 32, vbo_data, GL_STATIC_DRAW);
-	printf("static : %d | dynamic: %d", sizeof(data1), vbo_size * 32);
 	gl_error_check(__FILE__, __LINE__);
 	
 	// Index buffer 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, ebo_size * sizeof(float), ebo_data, GL_STATIC_DRAW);
 	
 	// Free the filey things from earlier
