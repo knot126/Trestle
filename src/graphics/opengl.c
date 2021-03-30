@@ -185,6 +185,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	DgFileStreamClose(s);
 	*/
 	
+	// Allocate memory for the various types of data
 	gl->vaos = (GLuint *) DgAlloc(sizeof(GLuint) * 2);
 	gl->vaos_count = 2;
 	
@@ -192,43 +193,39 @@ DgOpenGLContext* gl_graphics_init(void) {
 		DgFail("VAO Alloc error\n", -1);
 	}
 	
-	gl->vbos = (GLuint *) DgAlloc(sizeof(GLuint) * 2);
-	gl->vbos_count = 2;
-	
-	if (!gl->vaos) {
-		DgFail("VBO Alloc error\n", -1);
-	}
-	
-	gl->ebos = (GLuint *) DgAlloc(sizeof(GLuint) * 2);
-	gl->ebos_count = 2;
-	
-	if (!gl->vaos) {
-		DgFail("EBO Alloc error\n", -1);
-	}
+// 	gl->vbos = (GLuint *) DgAlloc(sizeof(GLuint) * 2);
+// 	gl->vbos_count = 2;
+// 	
+// 	if (!gl->vaos) {
+// 		DgFail("VBO Alloc error\n", -1);
+// 	}
+// 	
+// 	gl->ebos = (GLuint *) DgAlloc(sizeof(GLuint) * 2);
+// 	gl->ebos_count = 2;
+// 	
+// 	if (!gl->vaos) {
+// 		DgFail("EBO Alloc error\n", -1);
+// 	}
 	
 	// Create a VAOs
 	glGenVertexArrays(gl->vaos_count, gl->vaos);
 	
-	// Making a VBOs
-	glGenBuffers(gl->vbos_count, gl->vbos);
-	
-	// Same for EBOs
-	glGenBuffers(gl->ebos_count, gl->ebos);
+// 	// Making a VBOs
+// 	glGenBuffers(gl->vbos_count, gl->vbos);
+// 	
+// 	// Same for EBOs
+// 	glGenBuffers(gl->ebos_count, gl->ebos);
 	
 	// Make sure first VAO is the active one
 	glBindVertexArray(gl->vaos[0]);
 	
 	// VBO setting data
-	glBindBuffer(GL_ARRAY_BUFFER, gl->vbos[0]);
-	glBufferData(GL_ARRAY_BUFFER, vbo_size * 32, vbo_data, GL_STATIC_DRAW);
+// 	glBindBuffer(GL_ARRAY_BUFFER, gl->vbos[0]);
+// 	glBufferData(GL_ARRAY_BUFFER, vbo_size * 32, vbo_data, GL_STATIC_DRAW);
 	
 	// Index buffer 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, ebo_size * sizeof(float), ebo_data, GL_STATIC_DRAW);
-	
-	// Free the filey things from earlier
-	DgFree(ebo_data);
-	DgFree(vbo_data);
+// 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
+// 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, ebo_size * sizeof(float), ebo_data, GL_STATIC_DRAW);
 	
 	// Check for errors
 	gl_error_check(__FILE__, __LINE__);
@@ -338,25 +335,34 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	glBindVertexArray(gl->vaos[0]);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
 	
-	for (int i = -4; i < 4; i++) {
-		for (int j = -3; j < 3; j++) {
-			for (int k = -1; k < 2; k++) {
-				DgMat4 model = DgMat4Translate(DgMat4New(1.0f), DgVec3New(((float)i)*2.0f, ((float)j)*2.0f, ((float)k)*2.0f));
-				glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
-				glDrawElements(GL_TRIANGLES, gl->element_count, GL_UNSIGNED_INT, 0);
+	for (size_t i = 0; i < world->CMeshs_count; i++) {
+		if (world->CMeshs[i] & (QR_COMPONENT_MESH) == (QR_COMPONENT_MESH)) {
+			// Push new verticies if needed
+			if (world->CMeshs[i].updated) {
+				if (!world->CMeshs[i].vbo) {
+					glGenBuffers(1, &world->CMeshs[i].vbo);
+				}
+				
+				if (!world->CMeshs[i].ebo) {
+					glGenBuffers(1, &world->CMeshs[i].ebo);
+				}
+				
+				glBindBuffer(GL_ARRAY_BUFFER, world->CMeshs[i].vbo);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world->CMeshs[i].ebo);
+				
+				glBufferData(GL_ARRAY_BUFFER, world->CMeshs[i].vert_count * 32, world->CMeshs[i].vert, GL_STATIC_DRAW);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, world->CMeshs[i].index_count * sizeof(uint32_t), world->CMeshs[i].index, GL_STATIC_DRAW);
 			}
-		}
-	}
-	/*
-	 * This will need to be done in the future for each entity in the world:
-	
-	for (size_t i = 0; i < world->count; i++) {
-		if (world->masks[i] & (QR_COMPONENT_MESH) == (QR_COMPONENT_MESH)) {
-			// do stuff here
+			
+			DgMat4 model = DgMat4Translate(DgMat4New(1.0f), );
+			glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
+			glDrawElements(GL_TRIANGLES, gl->element_count, GL_UNSIGNED_INT, 0);
 		}
 	}
 	
-	*/
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glUseProgram(0);
 	
 	// Check for errors
 	gl_error_check(__FILE__, __LINE__);

@@ -31,4 +31,5 @@ typedef struct {
 	uint32_t * index;
 	uint32_t vert_count;
 	uint32_t index_count;
+	uint32_t vbo, ebo;
 } CMesh;

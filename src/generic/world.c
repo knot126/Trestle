@@ -9,6 +9,9 @@
 
 #include "../generic/world.h"
 #include "../util/alloc.h"
+#include "../util/fail.h"
+
+#include "world.h"
 
 void world_init(World *world, size_t prealloc_count) {
 	/*
@@ -44,6 +47,11 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 	// NOTE: nullptr passed to realloc works like alloc, so we do not need to
 	// consider a case where the list has not been initialised.
 	world->mask = DgRealloc(world->mask, sizeof(mask_t) * world->mask_count);
+	
+	if (!world->mask) {
+		DgFail("Allocation error: world->mask.\n", 3);
+	}
+	
 	world->mask[world->mask_count - 1] = mask;
 	
 	// Allocate the nessicary components
@@ -52,6 +60,12 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 	if (mask & QR_COMPONENT_TRANSFORM == QR_COMPONENT_TRANSFORM) {
 		world->CTransforms_count++;
 		world->CTransforms = DgRealloc(world->CTransforms, sizeof(CTransform) * world->CTransforms_count);
+		
+		if (!world->CTransforms) {
+			DgFail("Allocation error: world->CTransforms.\n", 3);
+		}
+		
+		memset((world->CTransforms + (world->CTransforms_count - 1)), 0, sizeof(CTransform));
 		world->CTransforms[world->CTransforms_count - 1].base.id = world->mask_count;
 	}
 	
@@ -59,6 +73,12 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 	if (mask & QR_COMPONENT_MESH == QR_COMPONENT_MESH) {
 		world->CMeshs_count++;
 		world->CMeshs = DgRealloc(world->CMeshs, sizeof(CMesh) * world->CMeshs_count);
+		
+		if (!world->CTransforms) {
+			DgFail("Allocation error: world->CMeshs.\n", 3);
+		}
+		
+		memset((world->CMeshs + (world->CMeshs_count - 1)), 0, sizeof(CMesh));
 		world->CMeshs[world->CMeshs_count - 1].base.id = world->mask_count;
 	}
 	
