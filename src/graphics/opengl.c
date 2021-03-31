@@ -113,78 +113,6 @@ DgOpenGLContext* gl_graphics_init(void) {
 		glDeleteShader(gl->shaders[i]);
 	}
 	
-	/*
-	// Vertex datas
-	// TODO: Move to a mesh entity
-	float data1[] = {
-		// X      Y      Z     U     V     R     G     B
-		-0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
-		 
-		-0.5f,  0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
-		
-		-0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
-		 
-		-0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
-		 
-		 0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
-		
-		-0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
-	};
-	
-	// Make random colours
-	for (int i = 0; i < 24; i++) {
-		data1[(i * 8) + 5] = DgRandFloat();
-		data1[(i * 8) + 6] = DgRandFloat();
-		data1[(i * 8) + 7] = DgRandFloat();
-	}
-	
-	const int indicies[] = {
-		0, 1, 2,
-		0, 2, 3,
-		4, 5, 6,
-		4, 6, 7,
-		8, 9, 10,
-		8, 10, 11,
-		12, 13, 14,
-		12, 14, 15,
-		16, 17, 18,
-		16, 18, 19,
-		20, 21, 22,
-		20, 22, 23,
-	};
-	
-	// Write a file with the cube mesh
-	DgFileStream *s = DgFileStreamOpen("./cube.bin", "wb");
-	
-	uint32_t temp;
-	temp = sizeof(data1) / 32;
-	DgFileStreamWriteInt32(s, &temp);
-	DgFileStreamWrite(s, sizeof(data1), data1);
-	temp = sizeof(indicies) / 4;
-	DgFileStreamWriteInt32(s, &temp);
-	DgFileStreamWrite(s, sizeof(indicies), indicies);
-	
-	DgFileStreamClose(s);
-	*/
-	
 	// Allocate memory for the various types of data
 	gl->vaos = (GLuint *) DgAlloc(sizeof(GLuint) * 2);
 	gl->vaos_count = 2;
@@ -264,7 +192,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	return gl;
 }
 
-void gl_graphics_update(DgOpenGLContext* gl) {
+void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	/*
 	 * Update OpenGL-related state and the graphics system
 	 */
@@ -305,35 +233,32 @@ void gl_graphics_update(DgOpenGLContext* gl) {
 	glBindTexture(GL_TEXTURE_2D, gl->textures[1]);
 	
 	glBindVertexArray(gl->vaos[0]);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl->ebos[0]);
 	
 	for (size_t i = 0; i < world->CMeshs_count; i++) {
-		if (world->CMeshs[i] & (QR_COMPONENT_MESH) == (QR_COMPONENT_MESH)) {
-			// Push new verticies if needed
-			if (world->CMeshs[i].updated) {
-				if (!world->CMeshs[i].vbo) {
-					glGenBuffers(1, &world->CMeshs[i].vbo);
-				}
-				
-				if (!world->CMeshs[i].ebo) {
-					glGenBuffers(1, &world->CMeshs[i].ebo);
-				}
-				
-				glBindBuffer(GL_ARRAY_BUFFER, world->CMeshs[i].vbo);
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world->CMeshs[i].ebo);
-				
-				glBufferData(GL_ARRAY_BUFFER, world->CMeshs[i].vert_count * 32, world->CMeshs[i].vert, GL_STATIC_DRAW);
-				glBufferData(GL_ELEMENT_ARRAY_BUFFER, world->CMeshs[i].index_count * sizeof(uint32_t), world->CMeshs[i].index, GL_STATIC_DRAW);
+		// Push new verticies if needed
+		if (world->CMeshs[i].updated) {
+			if (!world->CMeshs[i].vbo) {
+				glGenBuffers(1, &world->CMeshs[i].vbo);
+			}
+			
+			if (!world->CMeshs[i].ebo) {
+				glGenBuffers(1, &world->CMeshs[i].ebo);
 			}
 			
 			glBindBuffer(GL_ARRAY_BUFFER, world->CMeshs[i].vbo);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world->CMeshs[i].ebo);
 			
-			DgMat4 model = DgMat4Translate(DgMat4New(1.0f), );
-			glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
-			
-			glDrawElements(GL_TRIANGLES, world->CMeshs[i].index_count, GL_UNSIGNED_INT, 0);
+			glBufferData(GL_ARRAY_BUFFER, world->CMeshs[i].vert_count * 32, world->CMeshs[i].vert, GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, world->CMeshs[i].index_count * sizeof(uint32_t), world->CMeshs[i].index, GL_STATIC_DRAW);
 		}
+		
+		glBindBuffer(GL_ARRAY_BUFFER, world->CMeshs[i].vbo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world->CMeshs[i].ebo);
+		
+		DgMat4 model = DgMat4Translate(DgMat4New(1.0f), );
+		glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
+		
+		glDrawElements(GL_TRIANGLES, world->CMeshs[i].index_count, GL_UNSIGNED_INT, 0);
 	}
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -398,19 +323,9 @@ void gl_graphics_free(DgOpenGLContext* gl) {
 		glDeleteProgram(gl->programs[i]);
 	}
 	
-	for (int i = 0; i < gl->vbos_count; i++) {
-		glDeleteBuffers(gl->vbos_count, gl->vbos);
-	}
-	
-	for (int i = 0; i < gl->vaos_count; i++) {
-		glDeleteVertexArrays(gl->vaos_count, gl->vaos);
-	}
-	
 	DgFree(gl->textures);
 	DgFree(gl->shaders);
 	DgFree(gl->vaos);
-	DgFree(gl->vbos);
-	DgFree(gl->ebos);
 	DgFree(gl);
 }
 

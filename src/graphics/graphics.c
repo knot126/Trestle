@@ -10,6 +10,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "../generic/world.h"
 #include "../graphics/opengl.h"
 #include "../util/alloc.h"
 #include "../io/load.h"
@@ -33,11 +34,11 @@ GraphicsInitInfo graphics_init(void) {
 	return info;
 }
 
-void graphics_update(GraphicsInitInfo info) {
+void graphics_update(World *world, GraphicsInitInfo info) {
 	/*
 	 * Call the used graphics update function
 	 */
-	gl_graphics_update((DgOpenGLContext *) info.info);
+	gl_graphics_update(world, (DgOpenGLContext *) info.info);
 }
 
 bool get_should_keep_open(GraphicsInitInfo info) {

@@ -9,6 +9,8 @@
 
 #include <stdbool.h>
 
+#include "../generic/world.h"
+
 typedef enum GraphicsType {
 	DG_GRAPHICS_TYPE_OPENGL = 1,
 	DG_GRAPHICS_TYPE_VULKAN = 2,
@@ -20,6 +22,6 @@ typedef struct GraphicsInitInfo {
 } GraphicsInitInfo;
 
 GraphicsInitInfo graphics_init(void);
-void graphics_update(GraphicsInitInfo info);
+void graphics_update(World *world, GraphicsInitInfo info);
 bool get_should_keep_open(GraphicsInitInfo info);
 void graphics_free(GraphicsInitInfo info);

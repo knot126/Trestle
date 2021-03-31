@@ -61,7 +61,7 @@ static int game_loop(World *world, SystemStates *systems) {
 		
 		//DgThread t_graphics, t_physics;
 		
-		graphics_update(systems->graphics);
+		graphics_update(world, systems->graphics);
 		input_update(systems->graphics);
 		
 		if (accumulate > phys_delta_time) {
