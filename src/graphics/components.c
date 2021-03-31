@@ -13,7 +13,7 @@
 #include "../generic/compo.h"
 #include "../io/fs.h"
 
-#include "graphics_entity.h"
+#include "components.h"
 
 bool entity_load_mesh(World *world, uint32_t id, const char *path) {
 	/*
