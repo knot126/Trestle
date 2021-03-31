@@ -182,6 +182,16 @@ inline DgVec3 DgVec3New(float x, float y, float z) {
 	return c;
 }
 
+inline DgVec3 DgVec3Copy(DgVec3 a) {
+	DgVec3 c;
+	
+	c.x = a.x;
+	c.y = a.y;
+	c.z = a.z;
+	
+	return c;
+}
+
 /*
  * DgVec4
  */

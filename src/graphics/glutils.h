@@ -189,4 +189,38 @@ static void gl_load_texture(DgOpenGLContext *gl, char *path, GLenum active_textu
 	DgFreeImage(&image);
 }
 
+static void gl_set_format(DgOpenGLContext *gl) {
+	// Tell OpenGL about this vertex data
+	GLint attr_Position = glGetAttribLocation(gl->programs[0], "position");
+	GLint attr_Texture = glGetAttribLocation(gl->programs[0], "texturepos");
+	GLint attr_Colour = glGetAttribLocation(gl->programs[0], "colour");
+	
+	if (attr_Position < 0) {
+		printf("No attribute Position.\n");
+	}
+	
+	if (attr_Texture < 0) {
+		printf("No attribute Texture.\n");
+	}
+	
+	if (attr_Colour < 0) {
+		printf("No attribute Colour.\n");
+	}
+	
+	glVertexAttribPointer(attr_Position, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) 0);
+	glEnableVertexAttribArray(attr_Position);
+	
+	gl_error_check(__FILE__, __LINE__);
+	
+	glVertexAttribPointer(attr_Texture, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
+	glEnableVertexAttribArray(attr_Texture);
+	
+	gl_error_check(__FILE__, __LINE__);
+	
+	glVertexAttribPointer(attr_Colour, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (5 * sizeof(float)));
+	glEnableVertexAttribArray(attr_Colour);
+	
+	gl_error_check(__FILE__, __LINE__);
+}
+
 #endif

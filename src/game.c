@@ -22,6 +22,7 @@
 
 #include "generic/world.h"
 #include "graphics/graphics.h"
+#include "graphics/components.h"
 #include "phys/phys.h"
 #include "util/thread.h"
 #include "util/alloc.h"
@@ -124,6 +125,10 @@ int game_main(int argc, char* argv[]) {
 	printf("Initialising main world...\n");
 	World main_world;
 	world_init(&main_world, 0);
+	
+	// Create test entity
+	uint32_t ent = world_create_entity(&main_world, QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH);
+	entity_load_mesh(&main_world, ent, "assets://mesh/cube2.bin");
 	
 	// Load systems state
 	// 

@@ -7,4 +7,4 @@
 
 #pragma once
 
-bool entity_load_mesh(World *world, uint32_t id, const char *path);
+bool entity_load_mesh(World *world, uint32_t id, char *path);

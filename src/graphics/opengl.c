@@ -130,38 +130,6 @@ DgOpenGLContext* gl_graphics_init(void) {
 	// Check for errors
 	gl_error_check(__FILE__, __LINE__);
 	
-	// Tell OpenGL about this vertex data
-	GLint attr_Position = glGetAttribLocation(gl->programs[0], "position");
-	GLint attr_Texture = glGetAttribLocation(gl->programs[0], "texturepos");
-	GLint attr_Colour = glGetAttribLocation(gl->programs[0], "colour");
-	
-	if (attr_Position < 0) {
-		printf("No attribute Position.\n");
-	}
-	
-	if (attr_Texture < 0) {
-		printf("No attribute Texture.\n");
-	}
-	
-	if (attr_Colour < 0) {
-		printf("No attribute Colour.\n");
-	}
-	
-	glVertexAttribPointer(attr_Position, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) 0);
-	glEnableVertexAttribArray(attr_Position);
-	
-	gl_error_check(__FILE__, __LINE__);
-	
-	glVertexAttribPointer(attr_Texture, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
-	glEnableVertexAttribArray(attr_Texture);
-	
-	gl_error_check(__FILE__, __LINE__);
-	
-	glVertexAttribPointer(attr_Colour, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (5 * sizeof(float)));
-	glEnableVertexAttribArray(attr_Colour);
-	
-	gl_error_check(__FILE__, __LINE__);
-	
 	// Making a texture
 	gl->textures_count = 2;
 	gl->textures = (GLuint *) DgAlloc(sizeof(GLuint) * gl->textures_count);
@@ -235,6 +203,8 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	glBindVertexArray(gl->vaos[0]);
 	
 	for (size_t i = 0; i < world->CMeshs_count; i++) {
+		uint32_t id = world->CMeshs[i].base.id;
+		
 		// Push new verticies if needed
 		if (world->CMeshs[i].updated) {
 			if (!world->CMeshs[i].vbo) {
@@ -255,7 +225,19 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 		glBindBuffer(GL_ARRAY_BUFFER, world->CMeshs[i].vbo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world->CMeshs[i].ebo);
 		
-		DgMat4 model = DgMat4Translate(DgMat4New(1.0f), );
+		gl_set_format(gl);
+		
+		// Find the transform
+		DgVec3 translate = DgVec3New(0.0f, 0.0f, 0.0f);
+		
+		for (int i = 0; i < world->CTransforms_count; i++) {
+			if (world->CTransforms[i].base.id == id) {
+				translate = DgVec3Copy(world->CTransforms[i].pos);
+				break;
+			}
+		}
+		
+		DgMat4 model = DgMat4Translate(DgMat4New(1.0f), translate);
 		glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
 		
 		glDrawElements(GL_TRIANGLES, world->CMeshs[i].index_count, GL_UNSIGNED_INT, 0);

@@ -61,6 +61,7 @@ float DgVec3Dot(DgVec3 a, DgVec3 b);
 DgVec3 DgVec3Cross(DgVec3 a, DgVec3 b);
 DgVec3 DgVec3Normalise(DgVec3 a);
 DgVec3 DgVec3New(float x, float y, float z);
+DgVec3 DgVec3Copy(DgVec3 a);
 
 // DgVec4
 

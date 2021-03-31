@@ -12,10 +12,11 @@
 #include "../generic/world.h"
 #include "../generic/compo.h"
 #include "../io/fs.h"
+#include "../util/alloc.h"
 
 #include "components.h"
 
-bool entity_load_mesh(World *world, uint32_t id, const char *path) {
+bool entity_load_mesh(World *world, uint32_t id, char *path) {
 	/*
 	 * Loads an uncompressed mesh from a file into an entity's mesh component
 	 */
@@ -36,7 +37,7 @@ bool entity_load_mesh(World *world, uint32_t id, const char *path) {
 	}
 	
 	// Open the file stream
-	char *real_path = DgPathEval(path);
+	char *real_path = DgEvalPath(path);
 	DgFileStream *s = DgFileStreamOpen(real_path, "rb");
 	DgFree(real_path);
 	
