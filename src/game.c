@@ -21,6 +21,7 @@
 #endif
 
 #include "generic/world.h"
+#include "generic/transform.h"
 #include "graphics/graphics.h"
 #include "graphics/components.h"
 #include "phys/phys.h"
@@ -129,6 +130,10 @@ int game_main(int argc, char* argv[]) {
 	// Create test entity
 	uint32_t ent = world_create_entity(&main_world, QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH);
 	entity_load_mesh(&main_world, ent, "assets://mesh/cube2.bin");
+	
+	ent = world_create_entity(&main_world, QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH);
+	entity_set_transform(&main_world, ent, DgVec3New(-1.2f, 0.0f, 0.0f), DgVec3New(0.0f, 0.0f, 0.0f));
+	entity_load_mesh(&main_world, ent, "assets://mesh/cube3.bin");
 	
 	// Load systems state
 	// 

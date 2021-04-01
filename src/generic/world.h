@@ -8,6 +8,7 @@
 #pragma once
 
 #include <inttypes.h>
+#include <stddef.h>
 
 #include "../generic/compo.h"
 

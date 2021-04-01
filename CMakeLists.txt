@@ -44,6 +44,7 @@ set(FILES
 	${LUA_FILES}
 	lib/glew/glew.c
 	src/generic/world.c
+	src/generic/transform.c
 	src/graphics/components.c
 	src/graphics/graphics.c
 	src/graphics/opengl.c
