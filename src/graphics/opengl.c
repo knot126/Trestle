@@ -287,7 +287,7 @@ void gl_handle_input(DgOpenGLContext* gl) {
 	yaw += mouse_delta.x * camSenseitivity * g_deltaTime;
 	
 	// TODO: This is broken ! 
-	//pitch += mouse_delta.y * camSenseitivity * g_deltaTime;
+	pitch += mouse_delta.y * camSenseitivity * g_deltaTime;
 	
 	if (pitch > 0.249f) {
 		pitch = 0.249f;

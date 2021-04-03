@@ -27,7 +27,6 @@
 #include "phys/phys.h"
 #include "util/thread.h"
 #include "util/alloc.h"
-#include "util/clocker.h"
 #include "util/bag.h"
 #include "util/flag.h"
 #include "util/time.h"
@@ -82,7 +81,7 @@ static int game_loop(World *world, SystemStates *systems) {
 		
 		show_fps = show_fps + frame_time;
 		if (show_fps > 1.0f) {
-			printf("FPS: %d (%fms)\n", (int) (1 / frame_time), frame_time);
+			printf("FPS: %d (%fms)\n", (int) (1 / frame_time), frame_time * 1000.0f);
 			show_fps = 0.0f;
 		}
 	} // while (should_keep_open)
@@ -102,16 +101,12 @@ int game_main(int argc, char* argv[]) {
 	// Initialise the clock
 	DgInitTime();
 	
-	// Create a basic memory pool
-	printf("Making the initial memory pool...\n");
-	alloch_t mempool = DgAllocPoolInit(1024 * 1024 * 8);
-	
 	// File system module init
-	printf("Initialising file system paths...\n");
+	printf("Info: Initialising file system paths...\n");
 	DgInitPaths();
 	
 	// Load config
-	printf("Loading engine configuration file...\n");
+	printf("Info: Loading engine configuration file...\n");
 	DgConfig *config = DgConfigLoad("assets://config.ini", true);
 	
 	if (!config) {
@@ -123,7 +118,7 @@ int game_main(int argc, char* argv[]) {
 	DgFlagRegisterCallback("game_init_ok", &on_init_okay);
 	
 	// Load world
-	printf("Initialising main world...\n");
+	printf("Info: Initialising main world...\n");
 	World main_world;
 	world_init(&main_world, 0);
 	
@@ -140,32 +135,28 @@ int game_main(int argc, char* argv[]) {
 	// This is only for the really big systems in the game and not for anything
 	// that can basically manage itself (for example, utility functions), though
 	// perhaps they should be ported to use system init as well.
-	printf("Initialising systems...\n");
+	printf("Info: Initialising systems...\n");
 	SystemStates systems;
 	sys_init(&systems);
 	
 	// Main loop
-	printf("Starting the main loop...\n");
+	printf("Info: Starting the main loop...\n");
 	DgFlagRaise("game_init_ok", NULL);
 	game_loop(&main_world, &systems);
 	
 	// Systems destruction
-	printf("Destroying systems...\n");
+	printf("Info: Destroying systems...\n");
 	sys_destroy(&systems);
 	
 	// Global flags cleanup
-	printf("Cleaning up memory used by flags...\n");
+	printf("Info: Cleaning up memory used by flags...\n");
 	DgFlagGlobalCleanup();
 	
 	// Cleanup main config file
 	if (config) {
-		printf("Freeing memory used by config...\n");
+		printf("Info: Freeing memory used by config...\n");
 		DgConfigFree(config);
 	}
-	
-	// Free pool
-	printf("Free memory pool...\n");
-	DgAllocPoolFree(mempool);
 	
 	return 0;
 }

@@ -433,9 +433,41 @@ DgMat4 DgTransformLookAt(DgVec3 from, DgVec3 to, DgVec3 world_up) {
 	view_matrix.aw = from.x;
 	view_matrix.bw = -from.y;
 	view_matrix.cw = from.z;
-// 	view_matrix.dw = 1.0f;
 	
 	view_matrix = DgMat4ByMat4Multiply(rot_matrix, view_matrix);
 	
 	return view_matrix;
+}
+
+DgMat4 DgTransformLookAt2(DgVec3 from, DgVec3 to, DgVec3 world_up) {
+	DgMat4 view_matrix = DgMat4New(1.0f);
+	DgMat4 rot_matrix = DgMat4New(1.0f);
+	
+	DgVec3 axis_n = DgVec3Normalise(DgVec3Subtract(to, from));
+	DgVec3 axis_v = DgVec3Normalise(DgVec3Cross(from, DgVec3Cross(world_up, from)));
+	DgVec3 axis_u = DgVec3Normalise(DgVec3Cross(axis_n, axis_v));
+	
+	// Rotate on the X-axis
+	rot_matrix.ax = axis_u.x;
+	rot_matrix.ay = axis_u.y;
+	rot_matrix.az = axis_u.z;
+	
+	// Rotate on the Y-axis
+	rot_matrix.bx = axis_v.x;
+	rot_matrix.by = axis_v.y;
+	rot_matrix.bz = axis_v.z;
+	
+	// Rotate on the Z-axis
+	rot_matrix.cx = axis_n.x;
+	rot_matrix.cy = axis_n.y;
+	rot_matrix.cz = axis_n.z;
+	
+	// Move the camera, but this does not angle it.
+	view_matrix.aw = -from.x;
+	view_matrix.bw = -from.y;
+	view_matrix.cw = -from.z;
+	
+	view_matrix = DgMat4ByMat4Multiply(view_matrix, rot_matrix);
+	
+	return DgMat4Inverse(view_matrix);
 }

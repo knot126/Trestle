@@ -57,7 +57,6 @@ set(FILES
 	src/phys/phys.c
 	src/util/alloc.c
 	src/util/bag.c
-	src/util/clocker.c
 	src/util/thread.c
 	src/util/flag.c
 	src/util/time.c
@@ -66,6 +65,7 @@ set(FILES
 	src/util/maths.c
 	src/util/rand.c
 	src/util/array.c
+	src/util/strmap.c
 	src/game.c
 	src/systems.c
 	src/types.c
