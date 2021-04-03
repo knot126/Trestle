@@ -182,12 +182,12 @@ inline DgVec3 DgVec3New(float x, float y, float z) {
 	return c;
 }
 
-inline DgVec3 DgVec3Copy(DgVec3 a) {
+inline DgVec3 DgVec3Negate(DgVec3 a) {
 	DgVec3 c;
 	
-	c.x = a.x;
-	c.y = a.y;
-	c.z = a.z;
+	c.x = -a.x;
+	c.y = -a.y;
+	c.z = -a.z;
 	
 	return c;
 }
@@ -406,7 +406,29 @@ void DgMat4Print(DgMat4 a) {
  * Other misc. functions
  */
 
+DgMat4 DgTransfromBruteCamera(DgVec3 trans, DgVec3 rot) {
+	/**
+	 * <summary>Brute-force camera transfrom in that </summary>
+	 * <input type="DgVec3" name="trans">The translation that will be applied to the camera.</input>
+	 * <input type="DgVec3" name="rot">The rotation that will be applied to the camera.</input>
+	 */
+	
+	DgMat4 pos = DgMat4Translate(DgMat4New(1.0f), DgVec3New(-trans.x, -trans.y, -trans.z));
+	
+	DgMat4 rot_x = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(1.0f, 0.0f, 0.0f), rot.x);
+	DgMat4 rot_y = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.0f, 1.0f, 0.0f), rot.y);
+	DgMat4 rot_z = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.0f, 0.0f, 1.0f), rot.z);
+	
+	return DgMat4ByMat4Multiply(pos, DgMat4ByMat4Multiply(rot_x, DgMat4ByMat4Multiply(rot_y, rot_z)));
+}
+
 DgMat4 DgTransformLookAt(DgVec3 from, DgVec3 to, DgVec3 world_up) {
+	/**
+	 * <summary>Return a <type>DgMat4</type> that makes the camera look at <arg>to</arg>.</summary>
+	 * <input type="DgVec3" name="from">Location of the camera.</input>
+	 * <input type="DgVec3" name="to">The point where the camera faces.</input>
+	 * <input type="DgVec3" name="world_up">The up-vector of the world.</input>
+	 */
 	DgMat4 view_matrix = DgMat4New(1.0f);
 	DgMat4 rot_matrix = DgMat4New(1.0f);
 	
@@ -440,6 +462,12 @@ DgMat4 DgTransformLookAt(DgVec3 from, DgVec3 to, DgVec3 world_up) {
 }
 
 DgMat4 DgTransformLookAt2(DgVec3 from, DgVec3 to, DgVec3 world_up) {
+	/**
+	 * <summary>Return a <type>DgMat4</type> that makes the camera look at <arg>to</arg>.</summary>
+	 * <input type="DgVec3" name="from">Location of the camera.</input>
+	 * <input type="DgVec3" name="to">The point where the camera faces.</input>
+	 * <input type="DgVec3" name="world_up">The up-vector of the world.</input>
+	 */
 	DgMat4 view_matrix = DgMat4New(1.0f);
 	DgMat4 rot_matrix = DgMat4New(1.0f);
 	

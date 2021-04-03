@@ -27,6 +27,7 @@
 #include "opengl.h"
 
 DgVec3 campos;
+DgVec3 camrot;
 
 DgVec2 mouse_delta;
 DgVec2 mouse_last;
@@ -151,7 +152,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glEnable(GL_DEPTH_TEST);
 	
 	mouse_delta = DgVec2New(720.0f / 2.0f, 1280.0f / 2.0f);
-	campos = DgVec3New(1.0f, 0.0f, 3.0f);
+	campos = DgVec3New(0.0f, 0.0f, 3.0f);
 	
 	gl_error_check(__FILE__, __LINE__);
 	
@@ -187,11 +188,9 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	// TODO: I think either the perspective view is still messing things up or
 	// I have somehow done this wrong. See the this is broken near the pitch in
 	// input processing function to get an idea of what is going on.
-	camfwd = DgVec3Normalise(DgVec3New(
-		DgCos(yaw) * DgCos(pitch), 
-		DgSin(pitch), 
-		DgSin(yaw) * DgCos(pitch)));
-	DgMat4 camera = DgTransformLookAt(campos, DgVec3Add(campos, camfwd), DgVec3New(0.0f, 1.0f, 0.0f));
+	//camfwd = DgVec3New(yaw, pitch, 0.0f);
+// 	DgMat4 camera = DgTransformLookAt(campos, DgVec3Add(campos, camfwd), DgVec3New(0.0f, 1.0f, 0.0f));
+	DgMat4 camera = DgTransfromBruteCamera(campos, camrot);
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "camera"), 1, GL_TRUE, &camera.ax);
 	
 	// Bind the currently active textures for this shader
@@ -232,7 +231,7 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 		
 		for (int i = 0; i < world->CTransforms_count; i++) {
 			if (world->CTransforms[i].base.id == id) {
-				translate = DgVec3Copy(world->CTransforms[i].pos);
+				translate = world->CTransforms[i].pos;
 				break;
 			}
 		}
@@ -295,6 +294,15 @@ void gl_handle_input(DgOpenGLContext* gl) {
 	
 	if (pitch < -0.249f) {
 		pitch = -0.249f;
+	}
+	
+	if (glfwGetKey(gl->window, GLFW_KEY_T) == GLFW_PRESS) {
+		if (camrot.x == 0.075f) {
+			camrot.x = 0.0f;
+		}
+		else {
+			camrot.x = 0.075f;
+		}
 	}
 }
 
