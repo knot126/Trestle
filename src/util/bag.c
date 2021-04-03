@@ -18,23 +18,9 @@ DgBag DgBagInit() {
 	/* Create a new property bag with one element already initialised. */
 	DgBag pb;
 	
-	pb.key = (const char **) DgAlloc(sizeof(const char *));
-	
-	if (!pb.key) {
-		printf("Failed to allocate memory for bag keys.\n");
-		return pb;
-	}
-	
-	pb.value = (const char **) DgAlloc(sizeof(const char *));
-	
-	if (!pb.value) {
-		printf("Failed to allocate memory for bag values.\n");
-		return pb;
-	}
-	
-	memset(pb.key, 0, sizeof(const char *));
-	
-	pb.size = 1;
+	pb.key = (const char **) 0;
+	pb.value = (const char **) 0;
+	pb.size = 0;
 	
 	return pb;
 }
@@ -44,14 +30,21 @@ void DgBagFree(DgBag* pb) {
 }
 
 void DgBagPrint(DgBag* pb) {
+	if (!pb->key || !pb->value) {
+		printf("\t<property bag is null>\n");
+		return;
+	}
+	
+	printf("{\n");
 	for (size_t i = 0; i < pb->size; i++) {
 		if (pb->key[i] && pb->value[i]) {
-			printf("\t%s = %s\n", pb->key[i], pb->value[i]);
+			printf("\t\"%s\": \"%s\",\n", pb->key[i], pb->value[i]);
 		}
 		else {
-			printf("\t(null pair)\n");
+			printf("\t<key or value is null>\n");
 		}
 	}
+	printf("}\n");
 }
 
 const char *DgBagGet(DgBag* pb, const char* key) {
@@ -61,6 +54,10 @@ const char *DgBagGet(DgBag* pb, const char* key) {
 	 */
 	const char *value = "";
 	
+	if (!pb->key || !pb->value) {
+		return value;
+	}
+	
 	for (size_t i = 0; i < pb->size; i++) {
 		if (pb->key[i] && !strcmp(pb->key[i], key)) {
 			value = pb->value[i];
@@ -68,7 +65,7 @@ const char *DgBagGet(DgBag* pb, const char* key) {
 		}
 	}
 	
-	return (const char *) value;
+	return value;
 }
 
 void DgBagSet(DgBag* pb, const char* key, const char* value) {
@@ -87,7 +84,7 @@ void DgBagSet(DgBag* pb, const char* key, const char* value) {
 	}
 	
 	if (!have) {
-		pb->size = pb->size + 1;
+		pb->size++;
 		
 		pb->key = (const char **) DgRealloc(pb->key, sizeof(const char *) * pb->size);
 		pb->value = (const char **) DgRealloc(pb->value, sizeof(const char *) * pb->size);

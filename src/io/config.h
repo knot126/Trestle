@@ -11,11 +11,5 @@
 
 #include "../util/bag.h"
 
-typedef struct DgConfig {
-	DgBag config;
-} DgConfig;
-
-DgConfig *DgConfigLoad(char *path, const bool enable_comments);
-void DgConfigPrint(DgConfig *config);
-void DgConfigFree(DgConfig *config);
-DgBag *DgConfigGetBag(DgConfig *config);
+DgBag *DgConfigLoad(char *path, const bool enable_comments);
+void DgConfigFree(DgBag *config);

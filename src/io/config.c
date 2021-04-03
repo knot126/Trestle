@@ -23,13 +23,16 @@ const bool _DG_SIMPLE_CONFIG_PARSER_DEBUG = false;
 	#include "../util/time.h"
 #endif
 
-DgConfig *DgConfigLoad(char *path, const bool enable_comments) {
+DgBag *DgConfigLoad(char *path, const bool enable_comments) {
 	/* This will load a very simple configuation file into memory and decipher 
 	 * it into a DgBag, which is then wrapped in a DgConfig structure. While
 	 * it could have returned a property bag, the user would have to call a 
 	 * special but unrelated function to free the allocated memory. There are
 	 * some parts of this that are messy, but I plan to work on that with the 
-	 * INI parser. */
+	 * INI parser. 
+	 * 
+	 * 2021-04-03: Changed so that the bag is no longer wrapped in a structure.
+	 */
 	path = DgEvalPath(path);
 	
 	DgLoadBinaryFileInfo *file = DgLoadBinaryFile(path);
@@ -38,9 +41,9 @@ DgConfig *DgConfigLoad(char *path, const bool enable_comments) {
 	DgFree(path);
 	
 	// Initialise the property bag
-	DgConfig *conf = DgAlloc(sizeof(DgConfig));
+	DgBag *conf = DgAlloc(sizeof(DgBag));
 	if (!conf) { return (void *) 0; } // failed to allocate memory
-	conf->config = DgBagInit();
+	*conf = DgBagInit();
 	
 	if (_DG_SIMPLE_CONFIG_PARSER_DEBUG) {
 		printf("SimpleConfig: Start parse file.\n");
@@ -78,12 +81,28 @@ DgConfig *DgConfigLoad(char *path, const bool enable_comments) {
 				// Comment - skip line if comments are enabled
 			}
 			else {
-				char *key = memchr(buffer, '=', 256);
+				char *key = 0;
+				
+				for (int i = 0; i < 256; i++) {
+					if (buffer[i] == ' ' && !key) {
+						// stop parsing name at first space
+						buffer[i] = '\0';
+					}
+					
+					if (buffer[i] == '=') {
+						key = (buffer + i);
+						break;
+					}
+				}
 				
 				// Any line without an '=' is just a comment.
 				if (key) {
 					key[0] = '\0'; // set '=' to be '\0'
-					key++;
+					
+					// skip spaces, and inc at least once so not pointing to '='
+					do {
+						key++;
+					} while (*key == ' ');
 					
 					size_t vs = strlen(buffer) + 1;
 					size_t ks = strlen(key) + 1;
@@ -103,7 +122,7 @@ DgConfig *DgConfigLoad(char *path, const bool enable_comments) {
 						printf("SimpleConfig: Have \"%s\" = \"%s\".\n", final, final+vs);
 					}
 					
-					DgBagSet(&conf->config, final, final + vs);
+					DgBagSet(conf, final, final + vs);
 				}
 			}
 		}
@@ -123,22 +142,11 @@ DgConfig *DgConfigLoad(char *path, const bool enable_comments) {
 	return conf;
 }
 
-void DgConfigPrint(DgConfig *config) {
-	/* Prints the contents of a DgConfig file. */
-	DgBagPrint(&config->config);
-}
-
-void DgConfigFree(DgConfig *config) {
-	/* Frees a DgConfig file. */
-	for (size_t i = 0; i < config->config.size; i++) {
-		DgFree((void *) config->config.key[i]);
+void DgConfigFree(DgBag *config) {
+	/* Frees a config file properly. */
+	for (size_t i = 0; i < config->size; i++) {
+		DgFree((void *) config->key[i]);
 	}
 	
-	DgBagFree(&config->config);
-	DgFree(config);
-}
-
-DgBag *DgConfigGetBag(DgConfig *config) {
-	/* Gets the bag used with a config file. */
-	return &config->config;
+	DgBagFree(config);
 }
