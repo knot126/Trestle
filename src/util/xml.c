@@ -5,14 +5,13 @@
  * Decent Games XML Parser
  */
 
+#include <stdio.h>
 #include <inttypes.h>
 
 #include "../util/alloc.h"
 #include "../io/fs.h"
 
 #include "xml.h"
-
-#define DG_XML_BUFFER_SIZE 256
 
 /**
  * Parser Helper Functions
@@ -44,7 +43,7 @@ static void DgXMLNodeFree(DgXMLNode *node) {
 	DgFree(node->sub);
 	
 	for (size_t i = 0; i < node->attrib_count; i++) {
-		DgXMLPairFree(node->attrib[i]);
+		DgXMLPairFree((node->attrib + i));
 	}
 	
 	DgFree(node->attrib);
@@ -61,24 +60,41 @@ static void DgXMLNodeFree(DgXMLNode *node) {
  * parser APIs.
  */
 
-uint32_t DgXMLDocumentLoad(DgXMLNode *doc, const char *path) {
+uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 	/**
-	 * <summary>Load an XML document into memory.</summary>
+	 * <summary>Load an XML document into memory; specifically, into the <type>DgXMLNode.</summary>
 	 */
+	
 	char *real_path = DgEvalPath((char *) path);
-	DgFileStream *stream = DgFileStreamOpen(path, "rb");
+	DgFileStream *stream = DgFileStreamOpen(real_path, "rb");
 	DgFree(real_path);
 	
 	if (!stream) {
-		doc = NULL;
-		return;
+		return 1;
 	}
 	
-	// Lexer nonlocals
-	char buffer[DG_XML_BUFFER_SIZE];
+	// Load document into memory and close the stream
+	size_t doc_size = DgFileStreamLength(stream);
+	char * const content = DgAlloc(doc_size + 1);
 	
+	if (!content) {
+		return 2;
+	}
 	
-	
+	DgFileStreamRead(stream, doc_size, content);
+	content[doc_size] = '\0';
 	DgFileStreamClose(stream);
+	
+	printf("%s\n", content);
+	
+	// Lexer nonlocals
+	char *current = (char *) content;
+	
+	// Lexer to parse the document
+	for (size_t i = 0; i < doc_size; i++) {
+		 
+	}
+	
+	return 0;
 }
 

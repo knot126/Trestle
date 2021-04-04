@@ -20,4 +20,4 @@ typedef struct DgXMLNode {
 	char *text;
 } DgXMLNode;
 
-uint32_t DgXMLDocumentLoad(DgXMLDocument *doc, const char *path);
+uint32_t DgXMLLoad(DgXMLNode *doc, const char *path);

@@ -66,6 +66,7 @@ set(FILES
 	src/util/rand.c
 	src/util/array.c
 	src/util/strmap.c
+	src/util/xml.c
 	src/game.c
 	src/systems.c
 	src/types.c

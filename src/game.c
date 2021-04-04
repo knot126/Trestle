@@ -31,6 +31,7 @@
 #include "util/flag.h"
 #include "util/time.h"
 #include "util/fail.h"
+#include "util/xml.h"
 #include "io/fs.h"
 #include "io/config.h"
 #include "io/input.h"
@@ -114,6 +115,10 @@ int game_main(int argc, char* argv[]) {
 	}
 	
 	DgBagPrint(config);
+	
+	// Loading XML config
+	DgXMLNode settings_doc;
+	DgXMLLoad(&settings_doc, "assets://config.xml");
 	
 	// Event centre startup (global events)
 	DgFlagCreateEvent("game_init_ok");
