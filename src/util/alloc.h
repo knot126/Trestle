@@ -17,3 +17,6 @@ typedef int32_t alloch_t;
 void *DgAlloc(size_t size);
 void DgFree(void *block);
 void *DgRealloc(void *block, size_t size);
+
+// Utility functions bundled with allocator
+char *DgStrdup(char *source);

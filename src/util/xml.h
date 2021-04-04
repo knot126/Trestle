@@ -13,14 +13,11 @@ typedef struct DgXMLPair {
 
 typedef struct DgXMLNode {
 	char *name;
-	struct DgXMLNode *sub;
-	DgXMLPair *attributes;
+	struct DgXMLNode **sub;
+	size_t sub_count;
+	DgXMLPair *attrib;
+	size_t attrib_count;
 	char *text;
 } DgXMLNode;
 
-typedef struct DgXMLDocument {
-	char *name;
-	DgXMLNode *sub;
-	DgXMLPair *attributes;
-	char *text;
-} DgXMLDocument;
+uint32_t DgXMLDocumentLoad(DgXMLDocument *doc, const char *path);

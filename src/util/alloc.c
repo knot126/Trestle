@@ -28,3 +28,8 @@ void DgFree(void *block) {
 void *DgRealloc(void* block, size_t size) {
 	return realloc(block, size);
 }
+
+char *DgStrdup(char *source) {
+	char *dest = DgAlloc(strlen(source) + 1);
+	return strcpy(dest, source);
+}

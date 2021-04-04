@@ -107,7 +107,7 @@ int game_main(int argc, char* argv[]) {
 	
 	// Load config
 	printf("Info: Loading engine configuration file...\n");
-	DgBag *config = DgConfigLoad("assets://config.ini", true);
+	DgBag *config = DgConfigLoad("assets://config.cfg", true);
 	
 	if (!config) {
 		DgFail("Error: Failed to load configuration file.\n", 1);
