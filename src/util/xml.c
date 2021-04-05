@@ -114,6 +114,15 @@ static bool isSeperator(char c) {
 	}
 }
 
+static bool isString(char c) {
+	if (c == '"') {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 /**
  * Main Parser Functions: Load Full Document
  * =========================================
@@ -154,7 +163,7 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 	// Lexer nonlocals
 	uint32_t depth = 0;
 	
-#if 0
+//#if 0
 	// Lexer to parse the document
 	for (size_t i = 0; i < doc_size; i++) {
 		if (isStart(content[i])) {
@@ -170,6 +179,7 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 			}
 			content[i] = '\0';
 			doc->name = DgStrdup(&content[start]);
+			printf("%s\n", doc->name);
 			
 			while (!isEnd(content[i]) || !isNodeEnd(content[i])) {
 				do {
@@ -183,6 +193,7 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 					break;
 				}
 				
+				// get value
 				start = i;
 				while (!isWhitespace(content[i]) && !isSeperator(content[i])) {
 					i++;
@@ -190,9 +201,23 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 				content[i] = '\0';
 				char *key = DgStrdup(&content[start]);
 				
+				// We should expect a starting quote
+				i++;
+				if (!isString(content[i])) {
+					printf("Warning: XML Parser Error: Expected start of string, got %c.\n", content[i]);
+					return 5;
+				}
+				i++;
+				
+				// 
+				start = i;
 				do {
 					i++;
-				} while (!isWhitespace(content[i]));
+				} while (!isString(content[i]));
+				content[i] = '\0';
+				char *value = DgStrdup(&content[start]);
+				
+				printf("\t%s : %s\n", key, value);
 			}
 		}
 		
@@ -206,7 +231,7 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 			i++;
 		}
 	}
-#endif
+//#endif
 	
 	return 0;
 }
