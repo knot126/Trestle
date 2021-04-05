@@ -9,7 +9,7 @@
 #include <inttypes.h>
 
 #include "../util/alloc.h"
-#include "../util/fs.h"
+#include "../io/fs.h"
 
 #include "xml.h"
 
@@ -92,7 +92,7 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 	
 	// Lexer to parse the document
 	for (size_t i = 0; i < doc_size; i++) {
-		
+		 
 	}
 	
 	return 0;

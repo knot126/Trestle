@@ -14,13 +14,13 @@
 #endif
 #include <GLFW/glfw3.h>
 
-#include "../world/world.h"
+#include "../generic/world.h"
 #include "../util/alloc.h"
 #include "../util/time.h"
 #include "../util/fail.h"
 #include "../util/maths.h"
 #include "../util/rand.h"
-#include "../util/load.h"
+#include "../io/load.h"
 #include "../types.h" // For g_deltaTime
 #include "image.h"
 
@@ -203,7 +203,6 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	
 	for (size_t i = 0; i < world->CMeshs_count; i++) {
 		uint32_t id = world->CMeshs[i].base.id;
-		//printf("Info: Rendering entity %d with mesh node.\n", id);
 		
 		// Push new verticies if needed
 		if (world->CMeshs[i].updated) {
@@ -220,8 +219,6 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 			
 			glBufferData(GL_ARRAY_BUFFER, world->CMeshs[i].vert_count * 32, world->CMeshs[i].vert, GL_STATIC_DRAW);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, world->CMeshs[i].index_count * sizeof(uint32_t), world->CMeshs[i].index, GL_STATIC_DRAW);
-			
-			gl_error_check(__FILE__, __LINE__);
 		}
 		
 		glBindBuffer(GL_ARRAY_BUFFER, world->CMeshs[i].vbo);
@@ -243,8 +240,6 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 		glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
 		
 		glDrawElements(GL_TRIANGLES, world->CMeshs[i].index_count, GL_UNSIGNED_INT, 0);
-		
-		gl_error_check(__FILE__, __LINE__);
 	}
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

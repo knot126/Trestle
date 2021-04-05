@@ -15,7 +15,7 @@
 #define STBI_FREE(p) DgFree(p)
 #include "../../lib/stb/stb_image.h"
 
-#include "../util/fs.h"
+#include "../io/fs.h"
 #include "../types.h"
 
 #include "image.h"

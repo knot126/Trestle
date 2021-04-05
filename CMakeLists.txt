@@ -43,13 +43,16 @@ set(LUA_FILES
 set(FILES 
 	${LUA_FILES}
 	lib/glew/glew.c
-	src/world/world.c
-	src/world/transform.c
-	src/world/compo/graphics.c
+	src/generic/world.c
+	src/generic/transform.c
+	src/graphics/components.c
 	src/graphics/graphics.c
 	src/graphics/opengl.c
 	src/graphics/image.c
-	src/input/input.c
+	src/io/fs.c
+	src/io/load.c
+	src/io/config.c
+	src/io/input.c
 	src/linux/main.c
 	src/phys/phys.c
 	src/util/alloc.c
@@ -57,17 +60,15 @@ set(FILES
 	src/util/thread.c
 	src/util/flag.c
 	src/util/time.c
-	src/util/string.c
+	src/util/dstring.c
 	src/util/fail.c
 	src/util/maths.c
 	src/util/rand.c
 	src/util/array.c
 	src/util/strmap.c
 	src/util/xml.c
-	src/util/fs.c
-	src/util/load.c
-	src/util/config.c
 	src/game.c
+	src/systems.c
 	src/types.c
 	src/main.c)
 

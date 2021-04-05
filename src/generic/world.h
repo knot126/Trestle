@@ -10,7 +10,7 @@
 #include <inttypes.h>
 #include <stddef.h>
 
-#include "../world/compo.h"
+#include "../generic/compo.h"
 
 typedef uint32_t mask_t;
 

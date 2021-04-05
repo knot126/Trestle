@@ -10,7 +10,7 @@
 #include <stdbool.h>
 #include <inttypes.h>
 
-#include "../world/world.h"
+#include "../generic/world.h"
 #include "../util/maths.h"
 
 bool entity_set_transform(World *world, uint32_t id, DgVec3 pos, DgVec3 rot);

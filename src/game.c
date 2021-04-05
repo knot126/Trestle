@@ -20,12 +20,11 @@
 	#include <unistd.h>
 #endif
 
-#include "world/world.h"
-#include "world/transform.h"
-#include "world/compo/graphics.h"
+#include "generic/world.h"
+#include "generic/transform.h"
 #include "graphics/graphics.h"
+#include "graphics/components.h"
 #include "phys/phys.h"
-#include "input/input.h"
 #include "util/thread.h"
 #include "util/alloc.h"
 #include "util/bag.h"
@@ -33,32 +32,14 @@
 #include "util/time.h"
 #include "util/fail.h"
 #include "util/xml.h"
-#include "util/fs.h"
-#include "util/config.h"
+#include "io/fs.h"
+#include "io/config.h"
+#include "io/input.h"
+#include "systems.h"
 #include "types.h"
-
-#include "game.h"
 
 static void print_info(void) {
 	printf("Engine compiled on %s at %s.\n", __DATE__, __TIME__);
-}
-
-static void on_init_okay(const char* event, void* params) {
-	printf("The game has initialised successfully.\n");
-}
-
-static void sys_init(SystemStates *sys) {
-	// Set to null
-	memset(sys, 0, sizeof(SystemStates));
-	
-	// Graphics initialisation
-	printf("Init graphics subsystem...\n");
-	sys->graphics = graphics_init();
-}
-
-static void sys_destroy(SystemStates *sys) {
-	printf("Destroying graphics subsystem...\n");
-	graphics_free(sys->graphics);
 }
 
 static int game_loop(World *world, SystemStates *systems) {
@@ -107,6 +88,10 @@ static int game_loop(World *world, SystemStates *systems) {
 	} // while (should_keep_open)
 	
 	return 0;
+}
+
+static void on_init_okay(const char* event, void* params) {
+	printf("The game has initialised successfully.\n");
 }
 
 int game_main(int argc, char* argv[]) {
