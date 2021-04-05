@@ -189,8 +189,9 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	// I have somehow done this wrong. See the this is broken near the pitch in
 	// input processing function to get an idea of what is going on.
 	camfwd = DgVec3New(yaw, pitch, 0.0f);
-	DgMat4 camera = DgTransformLookAt(campos, DgVec3Add(campos, camfwd), DgVec3New(0.0f, 1.0f, 0.0f));
+// 	DgMat4 camera = DgTransformLookAt(campos, DgVec3Add(campos, camfwd), DgVec3New(0.0f, 1.0f, 0.0f));
 // 	DgMat4 camera = DgTransfromBruteCamera(campos, camrot);
+	DgMat4 camera = DgMat4Translate(DgMat4New(1.0f), DgVec3New(0.0f, 0.0f, -3.0f));
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "camera"), 1, GL_TRUE, &camera.ax);
 	
 	// Bind the currently active textures for this shader
