@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <inttypes.h>
+#include <stdbool.h>
 
 #include "../util/alloc.h"
 #include "../util/fs.h"
@@ -51,6 +52,69 @@ static void DgXMLNodeFree(DgXMLNode *node) {
 }
 
 /**
+ * Test Functions
+ * ==============
+ * 
+ * Functions for tests like isWhitespace()
+ */
+
+static bool isWhitespace(char c) {
+	// Is XML whitespace?
+	if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+static bool isBom(const char * const c) {
+	// Is UTF-8 BOM?
+	if (c[0] == '\xEF' && c[1] == '\xBB' && c[2] == '\xBF') {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+static bool isStart(char c) {
+	if (c == '<') {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+static bool isEnd(char c) {
+	if (c == '>' || c == '/') {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+static bool isNodeEnd(char c) {
+	if (c == '/') {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+static bool isSeperator(char c) {
+	if (c == '=') {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+/**
  * Main Parser Functions: Load Full Document
  * =========================================
  * 
@@ -88,12 +152,61 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 	printf("%s\n", content);
 	
 	// Lexer nonlocals
-	char *current = (char *) content;
+	uint32_t depth = 0;
 	
+#if 0
 	// Lexer to parse the document
 	for (size_t i = 0; i < doc_size; i++) {
+		if (isStart(content[i])) {
+			// Go to tag name
+			do {
+				i++;
+			} while (isWhitespace(content[i]));
+			
+			// Get tag name
+			size_t start = i;
+			while (!isWhitespace(content[i])) {
+				i++;
+			}
+			content[i] = '\0';
+			doc->name = DgStrdup(&content[start]);
+			
+			while (!isEnd(content[i]) || !isNodeEnd(content[i])) {
+				do {
+					i++;
+				} while (isWhitespace(content[i]));
+				
+				if (isEnd(content[i])) {
+					if (!isNodeEnd(content[i])) {
+						depth++;
+					}
+					break;
+				}
+				
+				start = i;
+				while (!isWhitespace(content[i]) && !isSeperator(content[i])) {
+					i++;
+				}
+				content[i] = '\0';
+				char *key = DgStrdup(&content[start]);
+				
+				do {
+					i++;
+				} while (!isWhitespace(content[i]));
+			}
+		}
 		
+		// NOTERA: Does not check that enough of the document is left to check for BOM.
+		if (depth == 0 && !isWhitespace(content[i]) && !isBom(&content[i])) {
+			printf("Warning: XML Parser Error: Junk comes before document.\n");
+			return 3;
+		}
+		
+		if (isWhitespace(content[i])) {
+			i++;
+		}
 	}
+#endif
 	
 	return 0;
 }
