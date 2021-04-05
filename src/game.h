@@ -7,8 +7,11 @@
 
 #pragma once
 
+#include "graphics/graphics.h"
 #include "util/bag.h"
 
-extern DgBag *g_gameConfig;
+typedef struct {
+	GraphicsInitInfo graphics;
+} SystemStates;
 
 int game_main(int argc, char* argv[]);

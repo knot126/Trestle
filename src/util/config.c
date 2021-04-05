@@ -11,8 +11,8 @@
 #include "../util/bag.h"
 #include "../util/alloc.h"
 #include "../util/fail.h"
-#include "../io/fs.h"
-#include "../io/load.h"
+#include "../util/fs.h"
+#include "../util/load.h"
 
 #include "config.h"
 

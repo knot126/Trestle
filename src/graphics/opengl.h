@@ -14,7 +14,7 @@
 #include <stdbool.h>
 #include <GLFW/glfw3.h>
 
-#include "../generic/world.h"
+#include "../world/world.h"
 
 typedef struct DgOpenGLContext {
 	GLFWwindow* window;

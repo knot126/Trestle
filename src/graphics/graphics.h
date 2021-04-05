@@ -9,7 +9,7 @@
 
 #include <stdbool.h>
 
-#include "../generic/world.h"
+#include "../world/world.h"
 
 typedef enum GraphicsType {
 	DG_GRAPHICS_TYPE_OPENGL = 1,

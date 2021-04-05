@@ -10,10 +10,10 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "../generic/world.h"
+#include "../world/world.h"
 #include "../graphics/opengl.h"
 #include "../util/alloc.h"
-#include "../io/load.h"
+#include "../util/load.h"
 
 #include "graphics.h"
 

@@ -9,12 +9,12 @@
 #include <inttypes.h>
 #include <stdbool.h>
 
-#include "../generic/world.h"
-#include "../generic/compo.h"
-#include "../io/fs.h"
-#include "../util/alloc.h"
+#include "../../world/world.h"
+#include "../../world/compo.h"
+#include "../../util/fs.h"
+#include "../../util/alloc.h"
 
-#include "components.h"
+#include "graphics.h"
 
 bool entity_load_mesh(World *world, uint32_t id, char *path) {
 	/*

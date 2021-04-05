@@ -8,7 +8,7 @@
 #include <string.h>
 #include <inttypes.h>
 
-#include "dstring.h"
+#include "string.h"
 
 uint32_t DgHashStringSimpleAddition(char *str) {
 	/* 
