@@ -13,8 +13,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "../io/fs.h"
-
 #include "alloc.h"
 
 void *DgAlloc(size_t size) {

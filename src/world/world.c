@@ -7,7 +7,7 @@
 
 #include <string.h>
 
-#include "../generic/world.h"
+#include "../world/world.h"
 #include "../util/alloc.h"
 #include "../util/fail.h"
 
