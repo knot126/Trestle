@@ -170,7 +170,9 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 			// Go to tag name
 			do {
 				i++;
-			} while (isWhitespace(content[i]));
+			} while (isWhitespace(content[i]) || isEnd(content[i]));
+			
+			depth++;
 			
 			// Get tag name
 			size_t start = i;
@@ -179,16 +181,16 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 			}
 			content[i] = '\0';
 			doc->name = DgStrdup(&content[start]);
-			printf("%s\n", doc->name);
+			printf("(%d) %s\n", depth, doc->name);
 			
-			while (!isEnd(content[i]) || !isNodeEnd(content[i])) {
+			while (true/*!isEnd(content[i])*/) {
 				do {
 					i++;
 				} while (isWhitespace(content[i]));
 				
 				if (isEnd(content[i])) {
-					if (!isNodeEnd(content[i])) {
-						depth++;
+					if (isNodeEnd(content[i])) {
+						depth--;
 					}
 					break;
 				}
@@ -220,6 +222,9 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 				printf("\t%s : %s\n", key, value);
 			}
 		}
+		
+		printf("Next depth: %d\n", depth);
+		printf("Rest of Document: %s\n", &content[i]);
 		
 		// NOTERA: Does not check that enough of the document is left to check for BOM.
 		if (depth == 0 && !isWhitespace(content[i]) && !isBom(&content[i])) {
