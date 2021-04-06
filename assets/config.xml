@@ -1,3 +1,5 @@
 <config item1="item1" item2="item2" this_is_a_setting="this is a result">
-	<subitem kind="configObject"/>
+	<test>
+		<subitem kind="configObject"/>
+	</test>
 </config>

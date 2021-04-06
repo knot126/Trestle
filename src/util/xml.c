@@ -166,7 +166,11 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 //#if 0
 	// Lexer to parse the document
 	for (size_t i = 0; i < doc_size; i++) {
+		printf("Char into iter: %c\n", content[i]);
+		
 		if (isStart(content[i])) {
+			printf("Entering start of node. Current char = '%c'.\n", content[i]);
+			
 			// Go to tag name
 			do {
 				i++;
@@ -176,12 +180,17 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 			
 			// Get tag name
 			size_t start = i;
-			while (!isWhitespace(content[i])) {
+			while (!isWhitespace(content[i]) && !isEnd(content[i])) {
 				i++;
 			}
+			bool end = isEnd(content[i]);
 			content[i] = '\0';
 			doc->name = DgStrdup(&content[start]);
 			printf("(%d) %s\n", depth, doc->name);
+			
+			if (end) {
+				continue;
+			}
 			
 			while (true/*!isEnd(content[i])*/) {
 				do {
@@ -233,6 +242,7 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 		}
 		
 		if (isWhitespace(content[i])) {
+			printf("Skipping characther.\n");
 			i++;
 		}
 	}
