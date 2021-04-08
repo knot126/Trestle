@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "../util/alloc.h"
 #include "../util/fs.h"
@@ -30,25 +31,25 @@ static void DgXMLPairFree(DgXMLPair *pair) {
 	DgFree(pair->value);
 }
 
-static void DgXMLNodeFree(DgXMLNode *node) {
+static void DgXMLNodeFree(DgXMLNode node) {
 	/**
 	 * <summary>Frees a DgXMLNode.</summary>
 	 */
 	
-	DgFree(node->name);
+	DgFree(node.name);
 	
-	for (size_t i = 0; i < node->sub_count; i++) {
-		DgXMLNodeFree(node->sub[i]);
+	for (size_t i = 0; i < node.sub_count; i++) {
+		DgXMLNodeFree(node.sub[i]);
 	}
 	
-	DgFree(node->sub);
+	DgFree(node.sub);
 	
-	for (size_t i = 0; i < node->attrib_count; i++) {
-		DgXMLPairFree((node->attrib + i));
+	for (size_t i = 0; i < node.attrib_count; i++) {
+		DgXMLPairFree((node.attrib + i));
 	}
 	
-	DgFree(node->attrib);
-	DgFree(node->text);
+	DgFree(node.attrib);
+	DgFree(node.text);
 }
 
 /**
@@ -135,7 +136,9 @@ static bool isString(char c) {
 
 uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 	/**
-	 * <summary>Load an XML document into memory; specifically, into the <type>DgXMLNode.</summary>
+	 * <summary>Load an XML document into memory; specifically, into the <type>DgXMLNode</type> provided.</summary>
+	 * <input name="doc">The root node that the document will be loaded into.</input>
+	 * <input name="path">The path that will be passed to <func file="fs.c">DgEvalPath</func>.</input>
 	 */
 	
 	char *real_path = DgEvalPath((char *) path);
@@ -158,15 +161,21 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 	content[doc_size] = '\0';
 	DgFileStreamClose(stream);
 	
-	printf("%s\n", content);
+	printf("== %s ==\n%s\n", path, content);
 	
-	// Lexer nonlocals
+	// Clear the XML node
+	memset(doc, 0, sizeof(DgXMLNode));
+	
+	// Parser nonlocals
 	uint32_t depth = 0;
+	DgXMLNode *current = doc;
 	
-//#if 0
-	// Lexer to parse the document
+	// Parser, to parse the document (this used to say lexer and not parser :P)
 	for (size_t i = 0; i < doc_size; i++) {
-		printf("Char into iter: %c\n", content[i]);
+		printf("## START OF LOOP ##\nChar into iter: %c\n", content[i]);
+		
+		// Update the current node to be sure it's correct
+		// TODO: Implement this
 		
 		if (isStart(content[i])) {
 			printf("Entering start of node. Current char = '%c'.\n", content[i]);
@@ -174,9 +183,29 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 			// Go to tag name
 			do {
 				i++;
-			} while (isWhitespace(content[i]) || isEnd(content[i]));
+			} while (isWhitespace(content[i]));
+			
+			// Independent closing tags
+			if (isNodeEnd(content[i])) {
+				depth--;
+				if (depth == 0) {
+					break;
+				}
+				do {
+					i++;
+				} while (!isEnd(content[i]));
+				continue;
+			}
 			
 			depth++;
+			
+			// Allocate subnodes
+			if (depth > 1) {
+				current->sub_count++;
+				current->sub = (DgXMLNode *) DgRealloc(current->sub, sizeof(DgXMLNode) * current->sub_count);
+				current = &current->sub[current->sub_count - 1];
+				memset(current, 0, sizeof(DgXMLNode));
+			}
 			
 			// Get tag name
 			size_t start = i;
@@ -185,8 +214,8 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 			}
 			bool end = isEnd(content[i]);
 			content[i] = '\0';
-			doc->name = DgStrdup(&content[start]);
-			printf("(%d) %s\n", depth, doc->name);
+			current->name = DgStrdup(&content[start]);
+			printf("Found:\n\t(%d) %s\n", depth, current->name);
 			
 			if (end) {
 				continue;
@@ -215,12 +244,12 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 				// We should expect a starting quote
 				i++;
 				if (!isString(content[i])) {
-					printf("Warning: XML Parser Error: Expected start of string, got %c.\n", content[i]);
+					printf("Warning: XML Parser Error: Expected start of string, got '%c'.\n", content[i]);
 					return 5;
 				}
 				i++;
 				
-				// 
+				// Get value
 				start = i;
 				do {
 					i++;
@@ -228,7 +257,13 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 				content[i] = '\0';
 				char *value = DgStrdup(&content[start]);
 				
-				printf("\t%s : %s\n", key, value);
+				printf("\t\t%s : %s\n", key, value);
+				
+				// Add pair to current node
+				current->attrib_count++;
+				current->attrib = DgRealloc(current->attrib, sizeof(DgXMLPair) * current->attrib_count);
+				current->attrib[current->attrib_count - 1].key = key;
+				current->attrib[current->attrib_count - 1].value = value;
 			}
 		}
 		
@@ -243,10 +278,8 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 		
 		if (isWhitespace(content[i])) {
 			printf("Skipping characther.\n");
-			i++;
 		}
 	}
-//#endif
 	
 	return 0;
 }

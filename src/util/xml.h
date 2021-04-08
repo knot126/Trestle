@@ -13,7 +13,7 @@ typedef struct DgXMLPair {
 
 typedef struct DgXMLNode {
 	char *name;
-	struct DgXMLNode **sub;
+	struct DgXMLNode *sub;
 	size_t sub_count;
 	DgXMLPair *attrib;
 	size_t attrib_count;
