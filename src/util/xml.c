@@ -15,6 +15,8 @@
 
 #include "xml.h"
 
+const bool _DG_XML_DEBUG = true;
+
 /**
  * Parser Helper Functions
  * =======================
@@ -124,6 +126,14 @@ static bool isString(char c) {
 	}
 }
 
+static bool isCommentStart(const char * const c) {
+	return (c[0] == '<' && c[1] == '!' && c[2] == '-' && c[3] == '-');
+}
+
+static bool isCommentEnd(const char * const c) {
+	return (c[0] == '-' && c[1] == '-' && c[2] == '>');
+}
+
 /**
  * Main Parser Functions: Load Full Document
  * =========================================
@@ -134,7 +144,7 @@ static bool isString(char c) {
  * parser APIs.
  */
 
-uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
+uint32_t DgXMLLoad(DgXMLNode * const doc, const char * const path) {
 	/**
 	 * <summary>Load an XML document into memory; specifically, into the <type>DgXMLNode</type> provided.</summary>
 	 * <input name="doc">The root node that the document will be loaded into.</input>
@@ -161,7 +171,7 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 	content[doc_size] = '\0';
 	DgFileStreamClose(stream);
 	
-	printf("== %s ==\n%s\n", path, content);
+	if(_DG_XML_DEBUG) printf("== %s ==\n%s\n", path, content);
 	
 	// Clear the XML node
 	memset(doc, 0, sizeof(DgXMLNode));
@@ -172,13 +182,26 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 	
 	// Parser, to parse the document (this used to say lexer and not parser :P)
 	for (size_t i = 0; i < doc_size; i++) {
-		printf("## START OF LOOP ##\nChar into iter: %c\n", content[i]);
+		if(_DG_XML_DEBUG) printf("## START OF LOOP ##\nChar into iter: %c\n", content[i]);
 		
 		// Update the current node to be sure it's correct
-		// TODO: Implement this
+		current = doc;
+		for (uint32_t i = 1; i < depth; i++) {
+			current = &current->sub[current->sub_count - 1];
+		}
 		
+		// Check for comments
+		if (isCommentStart(&content[i])) {
+			if(_DG_XML_DEBUG) printf("Comment start at %d.\n", i);
+			do {
+				i++;
+			} while (!isCommentEnd(&content[i]) && content[i] != '\0');
+			if(_DG_XML_DEBUG) printf("Comment end at %d.\n", i);
+		}
+		
+		// Start of a node
 		if (isStart(content[i])) {
-			printf("Entering start of node. Current char = '%c'.\n", content[i]);
+			if(_DG_XML_DEBUG) printf("Entering start of node. Current char = '%c'.\n", content[i]);
 			
 			// Go to tag name
 			do {
@@ -215,7 +238,7 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 			bool end = isEnd(content[i]);
 			content[i] = '\0';
 			current->name = DgStrdup(&content[start]);
-			printf("Found:\n\t(%d) %s\n", depth, current->name);
+			printf("(%d) %s\n", depth, current->name);
 			
 			if (end) {
 				continue;
@@ -257,7 +280,7 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 				content[i] = '\0';
 				char *value = DgStrdup(&content[start]);
 				
-				printf("\t\t%s : %s\n", key, value);
+				printf("\t%s : %s\n", key, value);
 				
 				// Add pair to current node
 				current->attrib_count++;
@@ -267,8 +290,10 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 			}
 		}
 		
-		printf("Next depth: %d\n", depth);
-		printf("Rest of Document: %s\n", &content[i]);
+		if (_DG_XML_DEBUG) {
+			printf("Next depth: %d\n", depth);
+			printf("Rest of Document: %s\n", &content[i]);
+		}
 		
 		// NOTERA: Does not check that enough of the document is left to check for BOM.
 		if (depth == 0 && !isWhitespace(content[i]) && !isBom(&content[i])) {
@@ -277,8 +302,15 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char *path) {
 		}
 		
 		if (isWhitespace(content[i])) {
-			printf("Skipping characther.\n");
+			// Do nothing
+			if(_DG_XML_DEBUG) printf("Skipping characther.\n");
 		}
+	}
+	
+	if (depth != 0) {
+		printf("Warning: XML Parser Error: Soft assertion (depth != 0) failed!\n");
+		printf("Warning: Hint: Make sure the document hiearchy is okay (tags end correctly).\n");
+		return 6;
 	}
 	
 	return 0;
