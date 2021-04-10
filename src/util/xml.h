@@ -2,7 +2,7 @@
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
- * Decent Games XML Parser
+ * Decent Games XML Parser A1
  */
 
 #pragma once
@@ -17,7 +17,9 @@ typedef struct DgXMLNode {
 	size_t sub_count;
 	DgXMLPair *attrib;
 	size_t attrib_count;
-	char *text;
+//	char *text;
 } DgXMLNode;
 
 uint32_t DgXMLLoad(DgXMLNode * const doc, const char * const path);
+void DgXMLFree(DgXMLNode *doc);
+void DgXMLPrintNode(uint32_t indent, DgXMLNode* node);

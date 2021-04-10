@@ -33,3 +33,8 @@ typedef struct {
 	uint32_t index_count;
 	uint32_t vbo, ebo;
 } CMesh;
+
+typedef struct {
+	ComponentBase_t base;
+	
+} CCamera;

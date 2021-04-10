@@ -89,7 +89,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	gl->window = glfwCreateWindow(1280, 720, "Trestle Engine", NULL, NULL);
 	
 	if (!gl->window) {
-		DgFail("Failed to create glfw window.", -1);
+		DgFail("Error: Failed to create glfw window.", -1);
 	}
 	
 	glfwMakeContextCurrent(gl->window);
@@ -119,7 +119,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	gl->vaos_count = 2;
 	
 	if (!gl->vaos) {
-		DgFail("VAO Alloc error\n", -1);
+		DgFail("Error: VAO Alloc error\n", -1);
 	}
 	
 	// Create a VAOs
@@ -136,7 +136,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	gl->textures = (GLuint *) DgAlloc(sizeof(GLuint) * gl->textures_count);
 	
 	if (!gl->textures) {
-		DgFail("Texture list allocation failure.\n", -1);
+		DgFail("Error: Texture list allocation failure.\n", -1);
 	}
 	
 	glGenTextures(gl->textures_count, gl->textures);
@@ -150,13 +150,14 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glUseProgram(0);
 	
 	glEnable(GL_DEPTH_TEST);
+//	glEnable(GL_CULL_FACE);
 	
 	mouse_delta = DgVec2New(720.0f / 2.0f, 1280.0f / 2.0f);
 	campos = DgVec3New(0.0f, 0.0f, 3.0f);
 	
 	gl_error_check(__FILE__, __LINE__);
 	
-	printf("Graphics subsystem has been initialised.\n");
+	printf("Info: Graphics system has been initialised.\n");
 	
 	return gl;
 }
@@ -193,9 +194,7 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 		DgSin(pitch),
 		DgSin(yaw) * DgCos(pitch)
 	);
-	DgMat4 camera = DgTransformLookAt2(DgVec3New(0.0f, 1.0f, 3.0f), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(0.0f, 1.0f, 0.0f));
-	//DgMat4Print(camera);
-	//DgMat4 camera = DgMat4Translate(DgMat4New(1.0f), DgVec3New(0.0f, 0.0f, -3.0f));
+	DgMat4 camera = DgTransformLookAt2(campos/*DgVec3New(0.0f, -1.0f, -3.0f)*/, DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "camera"), 1, GL_TRUE, &camera.ax);
 	
 	// Bind the currently active textures for this shader
@@ -269,10 +268,12 @@ void gl_handle_input(DgOpenGLContext* gl) {
 	}
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_UP) == GLFW_PRESS) {
-		campos = DgVec3Add(campos, DgVec3Scale(camSpeed * g_deltaTime, camfwd));
+		//campos = DgVec3Add(campos, DgVec3Scale(camSpeed * g_deltaTime, camfwd));
+		campos.y += 0.01f;
 	}
 	if (glfwGetKey(gl->window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-		campos = DgVec3Subtract(campos, DgVec3Scale(camSpeed * g_deltaTime, camfwd));
+		//campos = DgVec3Subtract(campos, DgVec3Scale(camSpeed * g_deltaTime, camfwd));
+		campos.y -= 0.01f;
 	}
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_RIGHT) == GLFW_PRESS) {

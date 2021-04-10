@@ -13,6 +13,7 @@
 #include "../../world/compo.h"
 #include "../../util/fs.h"
 #include "../../util/alloc.h"
+#include "../../util/xml.h"
 
 #include "graphics.h"
 
@@ -67,6 +68,18 @@ bool entity_load_mesh(World *world, uint32_t id, char *path) {
 	mesh->updated = true;
 	
 	DgFileStreamClose(s);
+	
+	return true;
+}
+
+bool entity_generate_mesh_from_xml(World * const world, const uint32_t id, const char * const path) {
+	DgXMLNode doc;
+	
+	if (DgXMLLoad(&doc, path)) {
+		return false;
+	}
+	
+	DgXMLFree(&doc);
 	
 	return true;
 }

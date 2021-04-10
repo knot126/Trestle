@@ -2,7 +2,7 @@
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
- * Decent Games XML Parser
+ * Decent Games XML Parser A1
  */
 
 #include <stdio.h>
@@ -15,7 +15,7 @@
 
 #include "xml.h"
 
-const bool _DG_XML_DEBUG = true;
+const bool _DG_XML_DEBUG = false;
 
 /**
  * Parser Helper Functions
@@ -51,7 +51,9 @@ static void DgXMLNodeFree(DgXMLNode node) {
 	}
 	
 	DgFree(node.attrib);
+	/*
 	DgFree(node.text);
+	*/
 }
 
 /**
@@ -152,6 +154,11 @@ uint32_t DgXMLLoad(DgXMLNode * const doc, const char * const path) {
 	 */
 	
 	char *real_path = DgEvalPath((char *) path);
+	
+	if (!real_path) {
+		return 1;
+	}
+	
 	DgFileStream *stream = DgFileStreamOpen(real_path, "rb");
 	DgFree(real_path);
 	
@@ -161,7 +168,7 @@ uint32_t DgXMLLoad(DgXMLNode * const doc, const char * const path) {
 	
 	// Load document into memory and close the stream
 	size_t doc_size = DgFileStreamLength(stream);
-	char * const content = DgAlloc(doc_size + 1);
+	char * const content = (char * const) DgAlloc(doc_size + 1);
 	
 	if (!content) {
 		return 2;
@@ -238,7 +245,9 @@ uint32_t DgXMLLoad(DgXMLNode * const doc, const char * const path) {
 			bool end = isEnd(content[i]);
 			content[i] = '\0';
 			current->name = DgStrdup(&content[start]);
-			printf("(%d) %s\n", depth, current->name);
+			if (_DG_XML_DEBUG) {
+				printf("(%d) %s\n", depth, current->name);
+			}
 			
 			if (end) {
 				continue;
@@ -280,7 +289,9 @@ uint32_t DgXMLLoad(DgXMLNode * const doc, const char * const path) {
 				content[i] = '\0';
 				char *value = DgStrdup(&content[start]);
 				
-				printf("\t%s : %s\n", key, value);
+				if (_DG_XML_DEBUG) {
+					printf("\t%s : %s\n", key, value);
+				}
 				
 				// Add pair to current node
 				current->attrib_count++;
@@ -313,6 +324,39 @@ uint32_t DgXMLLoad(DgXMLNode * const doc, const char * const path) {
 		return 6;
 	}
 	
+	DgFree(content);
+	
 	return 0;
+}
+
+void DgXMLFree(DgXMLNode *doc) {
+	DgXMLNodeFree(*doc);
+}
+
+void DgXMLPrintNode(uint32_t indent, DgXMLNode* node) {
+	if (node->name) {
+		for (uint32_t i = 0; i < indent; i++) {
+			printf("\t");
+		}
+		
+		printf("%s:\n", node->name);
+	}
+	
+	indent++;
+	
+	if (node->attrib) {
+		for (uint32_t i = 0; i < node->attrib_count; i++) {
+			for (uint32_t j = 0; j < indent; j++) {
+				printf("\t");
+			}
+			printf("%s = \"%s\"\n", node->attrib[i].key, node->attrib[i].value);
+		}
+	}
+	
+	if (node->sub) {
+		for (uint32_t i = 0; i < node->sub_count; i++) {
+			DgXMLPrintNode(indent, &node->sub[i]);
+		}
+	}
 }
 

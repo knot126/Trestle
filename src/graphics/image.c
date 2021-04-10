@@ -29,7 +29,7 @@ DgImageInfo DgLoadImage(char* path) {
 	info.data = (byte *) stbi_load(res_path, &info.width, &info.height, &info.channels, 0);
 	
 	if (info.data) {
-		printf("Loaded image at '%s'.\n", path);
+		printf("Info: ImageModule: Loaded image at '%s'.\n", path);
 	}
 	
 	DgFree(res_path); // Free pathname

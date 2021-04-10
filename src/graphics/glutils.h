@@ -19,7 +19,7 @@ GLuint gl_load_shader(char* filename, GLenum type) {
 	DgLoadBinaryFileInfo* shader_source = DgLoadBinaryFile(path);
 	
 	if (!shader_source) {
-		printf("Failed to load shader '%s'.\n", filename);
+		printf("Error: Failed to load shader '%s'.\n", filename);
 		return 0;
 	}
 	
@@ -83,26 +83,26 @@ GLenum gl_error_check(char* file, int line) {
 	GLenum e = glGetError();
 	
 	if (e) {
-		printf("At %s:%d : ", file, line);
+		printf("At line [%s] in [%d]: ", file, line);
 	}
 	
 	switch (e) {
 		case GL_NO_ERROR:
 			break;
 		case GL_INVALID_ENUM:
-			printf("OpenGL: Invalid enum: a bad enum was passed to a function.\n");
+			printf("Error: OpenGL: Invalid enum: a bad enum was passed to a function.\n");
 			break;
 		case GL_INVALID_VALUE:
-			printf("OpenGL: Invalid value: a bad value was passed to a function.\n");
+			printf("Error: OpenGL: Invalid value: a bad value was passed to a function.\n");
 			break;
 		case GL_INVALID_OPERATION:
-			printf("OpenGL: Invalid operation: the operation is not allowed in the current state.\n");
+			printf("Error: OpenGL: Invalid operation: the operation is not allowed in the current state.\n");
 			break;
 		case GL_INVALID_FRAMEBUFFER_OPERATION:
-			printf("OpenGL: Framebuffer not ready: the framebuffer was not ready for the operation.\n");
+			printf("Error: OpenGL: Framebuffer not ready: the framebuffer was not ready for the operation.\n");
 			break;
 		case GL_OUT_OF_MEMORY:
-			printf("OpenGL: Out of memory: the system has run out of memory.\n");
+			printf("Error: OpenGL: Out of memory: the system has run out of memory.\n");
 			break;
 	}
 }
@@ -130,7 +130,7 @@ GLuint gl_make_program(DgOpenGLContext *gl, char* source_path) {
 	}
 	
 	if (!gl->shaders) {
-		DgFail("Error: Failed to allocate memory for shaders list. Abort!!", -4);
+		DgFail("Error: Failed to allocate memory for shaders list. Abort!!", 100);
 		return 0;
 	}
 	else {
@@ -178,13 +178,13 @@ static void gl_load_texture(DgOpenGLContext *gl, char *path, GLenum active_textu
 	DgImageInfo image = DgLoadImage(path);
 	
 	if (!image.data) {
-		DgFail("Failed to load texture.\n", -1);
+		DgFail("Error: Failed to load texture.\n", 100);
 	}
 	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width, image.height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	
-	printf("Loaded image of id %d.\n", texture_count);
+	printf("Info: Loaded image with id %d.\n", texture_count);
 	
 	DgFreeImage(&image);
 }
@@ -196,15 +196,15 @@ static void gl_set_format(DgOpenGLContext *gl) {
 	GLint attr_Colour = glGetAttribLocation(gl->programs[0], "colour");
 	
 	if (attr_Position < 0) {
-		printf("No attribute Position.\n");
+		DgFail("Error: No attribute Position.\n", 100);
 	}
 	
 	if (attr_Texture < 0) {
-		printf("No attribute Texture.\n");
+		DgFail("Error: No attribute Texture.\n", 100);
 	}
 	
 	if (attr_Colour < 0) {
-		printf("No attribute Colour.\n");
+		DgFail("Error: No attribute Colour.\n", 100);
 	}
 	
 	glVertexAttribPointer(attr_Position, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) 0);

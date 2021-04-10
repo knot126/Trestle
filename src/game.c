@@ -40,11 +40,11 @@
 #include "game.h"
 
 static void print_info(void) {
-	printf("Engine compiled on %s at %s.\n", __DATE__, __TIME__);
+	printf("Info: Engine compiled on %s at %s.\n", __DATE__, __TIME__);
 }
 
 static void on_init_okay(const char* event, void* params) {
-	printf("The game has initialised successfully.\n");
+	printf("Info: The game has initialised successfully.\n");
 }
 
 static void sys_init(SystemStates *sys) {
@@ -52,12 +52,12 @@ static void sys_init(SystemStates *sys) {
 	memset(sys, 0, sizeof(SystemStates));
 	
 	// Graphics initialisation
-	printf("Init graphics subsystem...\n");
+	printf("Info: Init graphics subsystem...\n");
 	sys->graphics = graphics_init();
 }
 
 static void sys_destroy(SystemStates *sys) {
-	printf("Destroying graphics subsystem...\n");
+	printf("Info: Destroying graphics subsystem...\n");
 	graphics_free(sys->graphics);
 }
 
@@ -126,14 +126,19 @@ int game_main(int argc, char* argv[]) {
 	DgBag *config = DgConfigLoad("assets://config.cfg", true);
 	
 	if (!config) {
-		DgFail("Error: Failed to load configuration file.\n", 1);
+		DgFail("Error: Failed to load configuration file.\n", 200);
 	}
 	
-	DgBagPrint(config);
-	
 	// Loading XML config
+	printf("Info: Loading settings document (XML version).\n");
 	DgXMLNode settings_doc;
-	DgXMLLoad(&settings_doc, "assets://config.xml");
+	uint32_t status = DgXMLLoad(&settings_doc, "assets://config.xml");
+	if (!status) {
+		DgXMLFree(&settings_doc);
+	}
+	else {
+		printf("Error: Loading settings document failed (XML version).\n");
+	}
 	
 	// Event centre startup (global events)
 	DgFlagCreateEvent("game_init_ok");
