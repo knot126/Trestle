@@ -138,7 +138,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	gl_load_texture(gl, "assets://gfx/2.jpg", GL_TEXTURE1);
 	
 	glUniform1i(glGetUniformLocation(gl->programs[0], "image"), 0);
-	glUniform1i(glGetUniformLocation(gl->programs[0], "image2"), 1);
+	//glUniform1i(glGetUniformLocation(gl->programs[0], "image2"), 1);
 	glUseProgram(0);
 	
 	// Alpha blending
@@ -183,7 +183,10 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	// TODO: I think either the perspective view is still messing things up or
 	// I have somehow done this wrong. See the this is broken near the pitch in
 	// input processing function to get an idea of what is going on.
-	DgMat4 camera = DgTransformLookAt2(DgVec3New(0.0f, 2.0f, 3.0f), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(0.0f, 1.0f, 0.0f));
+	DgMat4 camera;
+	
+	// Do the camera
+	camera = DgTransformLookAt2(DgVec3New(0.0f, 1.0f, 3.0f), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(0.0f, 1.0f, 0.0f));
 	
 	// Push our matris to the GPU
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "camera"), 1, GL_TRUE, &camera.ax);
@@ -238,7 +241,7 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 			}
 		}
 		
-		DgMat4 model = DgMat4Translate(DgMat4New(1.0f), translate);
+		DgMat4 model = DgMat4ByMat4Multiply(DgMat4Scale(DgMat4New(1.0f), scale), DgMat4Translate(DgMat4New(1.0f), translate));
 		glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
 		
 		glDrawElements(GL_TRIANGLES, world->CMeshs[i].index_count, GL_UNSIGNED_INT, 0);

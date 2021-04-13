@@ -63,7 +63,7 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 		world->CMeshs_count++;
 		world->CMeshs = DgRealloc(world->CMeshs, sizeof(CMesh) * world->CMeshs_count);
 		
-		if (!world->CTransforms) {
+		if (!world->CMeshs) {
 			DgFail("Allocation error: world->CMeshs.\n", 401);
 		}
 		

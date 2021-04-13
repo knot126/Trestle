@@ -152,6 +152,7 @@ int game_main(int argc, char* argv[]) {
 	// Create test entity
 	uint32_t ent = world_create_entity(&main_world, QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH);
 	entity_load_mesh(&main_world, ent, "assets://mesh/cube2.bin");
+	entity_set_transform(&main_world, ent, DgVec3New(0.0f, 0.0f, 0.2f), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(3.0f, 0.1f, 8.0f));
 	
 	ent = world_create_entity(&main_world, QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH);
 	entity_set_transform(&main_world, ent, DgVec3New(-1.25f, 0.0f, 0.0f), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(1.0f, 1.5f, 1.0f));

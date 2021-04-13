@@ -335,7 +335,6 @@ inline DgMat4 DgMat4Scale(DgMat4 a, DgVec3 b) {
 }
 
 inline DgMat4 DgMat4Rotate(DgMat4 a, DgVec3 b, float angle) {
-	// TODO: Implement other rotations
 	/* a = (the matrix that rotation will be applied to)
 	 * b = (the axis that will be rotated upon)
 	 */
@@ -376,7 +375,9 @@ inline DgMat4 DgMat4NewPerspective(float l, float r, float b, float t, float n, 
 }
 
 inline DgMat4 DgMat4NewPerspective2(float fov, float rat, float f, float b) {
-	/* Gives a perspective translation given FOV and Screen Ratio. */
+	/* 
+	 * Gives a perspective projection given FOV and Screen Ratio.
+	 */
 	float tangent = DgTan(fov / 2);
 	float h = f * tangent;
 	float w = h * rat;
