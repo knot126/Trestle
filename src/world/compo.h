@@ -22,11 +22,12 @@ typedef struct {
 	ComponentBase_t base;
 	DgVec3 pos;
 	DgVec3 rot;
+	DgVec3 scale;
 } CTransform;
 
 typedef struct {
 	ComponentBase_t base;
-	bool updated; // Putting this here *should* avoid wasted space due to padding.
+	bool updated; // Putting this here *should* avoid wasted space due to padding. (NO!)
 	float * vert;
 	uint32_t * index;
 	uint32_t vert_count;
@@ -36,5 +37,10 @@ typedef struct {
 
 typedef struct {
 	ComponentBase_t base;
-	
+	enum {
+		QR_CAM_MOVE = 1,
+		QR_CAM_ORTHO = 2,
+		QR_CAM_EDITOR = 3,
+		QR_CAM_BASE = 4,
+	} mode;
 } CCamera;

@@ -83,3 +83,10 @@ bool entity_generate_mesh_from_xml(World * const world, const uint32_t id, const
 	
 	return true;
 }
+
+void world_set_camera(World * const world, const uint32_t id) {
+	/*
+	 * Setter function for the world's active camera.
+	 */
+	world->CCameras_active = id;
+}

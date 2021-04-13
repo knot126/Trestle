@@ -10,6 +10,7 @@
 #include "../world/world.h"
 #include "../util/alloc.h"
 #include "../util/fail.h"
+#include "../util/xml.h"
 
 #include "world.h"
 
@@ -23,19 +24,7 @@ void world_init(World *world, size_t prealloc_count) {
 		return;
 	}
 	
-	// Pre-allocate components to a count
-	/* NOTE: Disabled for now to make things simplier. I am going to look more
-	 * into methods of managing C arrays soon and these will be re-enabled if I
-	 * think it is optimal to do so.
-	world->mask = DgAlloc(prealloc_count * sizeof(mask_t));
-	world->mask_alloc = prealloc_count;
-	
-	world->CTransforms = DgAlloc(prealloc_count * sizeof(CTransform));
-	world->CTransforms_alloc = prealloc_count;
-	
-	world->CMeshs = DgAlloc(prealloc_count * sizeof(CMesh));
-	world->CMeshs_alloc = prealloc_count;
-	*/
+	// prealloc is disabled for now...
 }
 
 uint32_t world_create_entity(World *world, mask_t mask) {
@@ -49,7 +38,7 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 	world->mask = DgRealloc(world->mask, sizeof(mask_t) * world->mask_count);
 	
 	if (!world->mask) {
-		DgFail("Allocation error: world->mask.\n", 3);
+		DgFail("Allocation error: world->mask.\n", 403);
 	}
 	
 	world->mask[world->mask_count - 1] = mask;
@@ -57,12 +46,12 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 	// Allocate the nessicary components
 	
 	// Transform
-	if (mask & QR_COMPONENT_TRANSFORM == QR_COMPONENT_TRANSFORM) {
+	if ((mask & QR_COMPONENT_TRANSFORM) == QR_COMPONENT_TRANSFORM) {
 		world->CTransforms_count++;
 		world->CTransforms = DgRealloc(world->CTransforms, sizeof(CTransform) * world->CTransforms_count);
 		
 		if (!world->CTransforms) {
-			DgFail("Allocation error: world->CTransforms.\n", 3);
+			DgFail("Allocation error: world->CTransforms.\n", 400);
 		}
 		
 		memset((world->CTransforms + (world->CTransforms_count - 1)), 0, sizeof(CTransform));
@@ -70,17 +59,53 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 	}
 	
 	// Mesh
-	if (mask & QR_COMPONENT_MESH == QR_COMPONENT_MESH) {
+	if ((mask & QR_COMPONENT_MESH) == QR_COMPONENT_MESH) {
 		world->CMeshs_count++;
 		world->CMeshs = DgRealloc(world->CMeshs, sizeof(CMesh) * world->CMeshs_count);
 		
 		if (!world->CTransforms) {
-			DgFail("Allocation error: world->CMeshs.\n", 3);
+			DgFail("Allocation error: world->CMeshs.\n", 401);
 		}
 		
 		memset((world->CMeshs + (world->CMeshs_count - 1)), 0, sizeof(CMesh));
 		world->CMeshs[world->CMeshs_count - 1].base.id = world->mask_count;
 	}
 	
+	// Camera
+	if ((mask & QR_COMPONENT_CAMERA) == QR_COMPONENT_CAMERA) {
+		world->CCameras_count++;
+		world->CCameras = DgRealloc(world->CCameras, sizeof(CCamera) * world->CCameras_count);
+		
+		if (!world->CCameras) {
+			DgFail("Allocation error: world->CCameras\n", 402);
+		}
+		
+		memset((world->CCameras + (world->CCameras_count - 1)), 0, sizeof(CCamera));
+		world->CCameras[world->CCameras_count - 1].base.id = world->mask_count;
+	}
+	
 	return world->mask_count;
+}
+
+bool scene_load_xml(World *world, const char * const path) {
+	DgXMLNode node;
+	
+	if (DgXMLLoad(&node, path)) {
+		return false;
+	}
+	
+	// for each entity tag
+	for (uint32_t s = 0; s < node.sub_count; s++) {
+		if (!strcmp(node.sub[s].name, "entity")) {
+			
+			// for each tag in the entity tag
+			for (uint32_t t = 0; t < node.sub[s].sub_count; t++) {
+				if (!strcmp(node.sub[s].sub[t].name, "transform")) {
+					
+				}
+			}
+		}
+	}
+	
+	return true;
 }

@@ -26,16 +26,8 @@
 
 #include "opengl.h"
 
-DgVec3 campos;
-DgVec3 camrot;
-
 DgVec2 mouse_delta;
 DgVec2 mouse_last;
-
-const float camSpeed = 2.5f;
-const float camSenseitivity = 0.01f;
-float pitch = 0.0f, yaw = -0.125f;
-DgVec3 camfwd;
 
 // Yes, it's odd, but I really rather not include the header files in this file.
 #include "glutils.h"
@@ -149,11 +141,13 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glUniform1i(glGetUniformLocation(gl->programs[0], "image2"), 1);
 	glUseProgram(0);
 	
-	glEnable(GL_DEPTH_TEST);
-//	glEnable(GL_CULL_FACE);
+	// Alpha blending
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
 	
-	mouse_delta = DgVec2New(720.0f / 2.0f, 1280.0f / 2.0f);
-	campos = DgVec3New(0.0f, 0.0f, 3.0f);
+	glEnable(GL_DEPTH_TEST);
+	
+	mouse_last = DgVec2New(720.0f / 2.0f, 1280.0f / 2.0f);
 	
 	gl_error_check(__FILE__, __LINE__);
 	
@@ -189,12 +183,9 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	// TODO: I think either the perspective view is still messing things up or
 	// I have somehow done this wrong. See the this is broken near the pitch in
 	// input processing function to get an idea of what is going on.
-	camfwd = DgVec3New(
-		DgCos(yaw) * DgCos(pitch),
-		DgSin(pitch),
-		DgSin(yaw) * DgCos(pitch)
-	);
-	DgMat4 camera = DgTransformLookAt2(campos/*DgVec3New(0.0f, -1.0f, -3.0f)*/, DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(0.0f, 1.0f, 0.0f));
+	DgMat4 camera = DgTransformLookAt2(DgVec3New(0.0f, 2.0f, 3.0f), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(0.0f, 1.0f, 0.0f));
+	
+	// Push our matris to the GPU
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "camera"), 1, GL_TRUE, &camera.ax);
 	
 	// Bind the currently active textures for this shader
@@ -207,7 +198,7 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	
 	for (size_t i = 0; i < world->CMeshs_count; i++) {
 		uint32_t id = world->CMeshs[i].base.id;
-		//printf("Info: Rendering entity %d with mesh node.\n", id);
+// 		printf("Info: Rendering entity %d with mesh node.\n", id);
 		
 		// Push new verticies if needed
 		if (world->CMeshs[i].updated) {
@@ -235,10 +226,14 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 		
 		// Find the transform
 		DgVec3 translate = DgVec3New(0.0f, 0.0f, 0.0f);
+		DgVec3 rotate = DgVec3New(0.0f, 0.0f, 0.0f);
+		DgVec3 scale = DgVec3New(1.0f, 1.0f, 1.0f);
 		
 		for (int i = 0; i < world->CTransforms_count; i++) {
 			if (world->CTransforms[i].base.id == id) {
 				translate = world->CTransforms[i].pos;
+				rotate = world->CTransforms[i].rot;
+				scale = world->CTransforms[i].scale;
 				break;
 			}
 		}
@@ -267,23 +262,8 @@ void gl_handle_input(DgOpenGLContext* gl) {
 		glfwSetWindowShouldClose(gl->window, GL_TRUE);
 	}
 	
-	if (glfwGetKey(gl->window, GLFW_KEY_UP) == GLFW_PRESS) {
-		//campos = DgVec3Add(campos, DgVec3Scale(camSpeed * g_deltaTime, camfwd));
-		campos.y += 0.01f;
-	}
-	if (glfwGetKey(gl->window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-		//campos = DgVec3Subtract(campos, DgVec3Scale(camSpeed * g_deltaTime, camfwd));
-		campos.y -= 0.01f;
-	}
-	
-	if (glfwGetKey(gl->window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-		campos = DgVec3Add(campos, DgVec3Scale(camSpeed * g_deltaTime, DgVec3Cross(camfwd, DgVec3New(0.0f, 1.0f, 0.0f))));
-	}
-	if (glfwGetKey(gl->window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-		campos = DgVec3Subtract(campos, DgVec3Scale(camSpeed * g_deltaTime, DgVec3Cross(camfwd, DgVec3New(0.0f, 1.0f, 0.0f))));
-	}
-	
 	static bool polymode = false;
+	
 	if (glfwGetKey(gl->window, GLFW_KEY_Q) == GLFW_PRESS) {
 		polymode = !polymode;
 	}
@@ -292,28 +272,6 @@ void gl_handle_input(DgOpenGLContext* gl) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	} else {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
-	
-	yaw += mouse_delta.x * camSenseitivity * g_deltaTime;
-	
-	// TODO: This is broken ! 
-	pitch += mouse_delta.y * camSenseitivity * g_deltaTime;
-	
-	if (pitch > 0.249f) {
-		pitch = 0.249f;
-	}
-	
-	if (pitch < -0.249f) {
-		pitch = -0.249f;
-	}
-	
-	if (glfwGetKey(gl->window, GLFW_KEY_T) == GLFW_PRESS) {
-		if (camrot.x == 0.075f) {
-			camrot.x = 0.0f;
-		}
-		else {
-			camrot.x = 0.075f;
-		}
 	}
 }
 

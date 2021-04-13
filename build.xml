@@ -1,32 +1,36 @@
-<project name="Main">
+<project name="Main" version="0.1.0">
 	<target name="Quick Run Assets" type="assets">
-		<nullTarget/>
+		<command name="Asset bake script" exec="./bake-assets.d"/>
 	</target>
-	<?import lua glew glfw ?>
+	<?include targets/lua.xml targets/glew.xml targets/glfw.xml ?>
 	<target name="Quick Run" type="binary" depends="[&quot;Quick Run Assets&quot;, {&quot;system-features&quot;: &quot;modern&quot;}]" linuxLink="m GL glfw pthread" winLink="">
-		<group name="Source code" appendFolder="./src/">
-			<file path="graphics/graphics.c"/>
-			<file path="graphics/image.c"/>
-			<file path="graphics/opengl.c"/>
-			<file path="io/config.c"/>
-			<file path="io/fs.c"/>
-			<file path="io/ini.c"/>
-			<file path="io/input.c"/>
-			<file path="io/load.c"/>
-			<file path="io/xml.c"/>
-			<file path="linux/main.c" platform="linux" tags="hasmain linuxonly"/>
-			<file path="phys/phys.c"/>
-			<file path="util/alloc.c"/>
-			<file path="util/array.c"/>
-			<file path="util/bag.c"/>
-			<file path="util/dstring.c"/>
-			<file path="util/fail.c"/>
-			<file path="util/flag.c"/>
-			<file path="util/maths.c"/>
-			<file path="util/rand.c"/>
-			<file path="util/thread.c"/>
-			<file path="util/time.c"/>
-		</group>
+		<compile name="Source code" appendFolder="./src/">
+			<unit path="graphics/graphics.c"/>
+			<unit path="graphics/image.c"/>
+			<unit path="graphics/opengl.c"/>
+			<unit path="io/config.c"/>
+			<unit path="io/fs.c"/>
+			<unit path="io/ini.c"/>
+			<unit path="io/input.c"/>
+			<unit path="io/load.c"/>
+			<unit path="io/xml.c"/>
+			<?if Linux ?>
+			<unit path="linux/main.c" platform="linux" tags="hasmain linuxonly"/>
+			<?elseif Windows ?>
+			<unit path="windows/main.c" platform="windows" tags="hasmain winonly"/>
+			<?endif?>
+			<unit path="phys/phys.c"/>
+			<unit path="util/alloc.c"/>
+			<unit path="util/array.c"/>
+			<unit path="util/bag.c"/>
+			<unit path="util/dstring.c"/>
+			<unit path="util/fail.c"/>
+			<unit path="util/flag.c"/>
+			<unit path="util/maths.c"/>
+			<unit path="util/rand.c"/>
+			<unit path="util/thread.c"/>
+			<unit path="util/time.c"/>
+		</compile>
 	</target>
 	<target name="*" depends="[&quot;Quick Run&quot;]"/>
 </project>

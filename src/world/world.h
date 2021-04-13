@@ -17,11 +17,12 @@ typedef uint32_t mask_t;
 typedef enum {
 	QR_COMPONENT_TRANSFORM = 1 << 0,
 	QR_COMPONENT_MESH = 1 << 1,
+	QR_COMPONENT_CAMERA = 1 << 2,
 } ComponentMaskEnum;
 
 typedef struct {
 	// Masks and entities
-	mask_t *mask;
+	mask_t  *mask;
 	uint32_t mask_count;
 	uint32_t mask_alloc;
 	
@@ -31,9 +32,15 @@ typedef struct {
 	uint32_t    CTransforms_alloc;
 	
 	// Mesh Components
-	CMesh *CMeshs;
+	CMesh   *CMeshs;
 	uint32_t CMeshs_count;
 	uint32_t CMeshs_alloc;
+	
+	// Camera Components
+	CCamera *CCameras;
+	uint32_t CCameras_count;
+	uint32_t CCameras_alloc;
+	uint32_t CCameras_active;
 } World;
 
 void world_init(World *world, size_t prealloc_count);

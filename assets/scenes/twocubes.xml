@@ -1,0 +1,9 @@
+<scene>
+	<entity>
+		<mesh path="assets://mesh/cube2.bin"/>
+	</entity>
+	<entity>
+		<transform pos="-1.2 0.4 0.0" rot="0.0 0.0 0.0"/>
+		<mesh path="assets://mesh/cube3.bin"/>
+	</entity>
+</scene>

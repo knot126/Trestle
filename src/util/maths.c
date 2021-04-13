@@ -472,22 +472,21 @@ DgMat4 DgTransformLookAt2(DgVec3 from, DgVec3 to, DgVec3 world_up) {
 	DgMat4 rot_matrix = DgMat4New(1.0f);
 	
 	DgVec3 axis_n = DgVec3Normalise(DgVec3Subtract(to, from)); // forward
-	//DgVec3 axis_v = DgVec3Normalise(DgVec3Cross(axis_n, DgVec3Cross(world_up, axis_n)));
 	DgVec3 axis_v = DgVec3Normalise(DgVec3Cross(world_up, axis_n)); // right
 	DgVec3 axis_u = DgVec3Normalise(DgVec3Cross(axis_n, axis_v)); // up
 	
 	// Convert local X-axe to global X-axe
-	rot_matrix.ax = axis_v.x;
+	rot_matrix.ax = -axis_v.x;
 	rot_matrix.ay = axis_v.y;
 	rot_matrix.az = axis_v.z;
 	
 	// Convert local Y-axe to global Y-axe
 	rot_matrix.bx = axis_u.x;
-	rot_matrix.by = axis_u.y;
+	rot_matrix.by = -axis_u.y;
 	rot_matrix.bz = axis_u.z;
 	
 	// Convert local Z-axe to global Z-axe
-	rot_matrix.cx = axis_n.x;
+	rot_matrix.cx = -axis_n.x;
 	rot_matrix.cy = axis_n.y;
 	rot_matrix.cz = axis_n.z;
 	
