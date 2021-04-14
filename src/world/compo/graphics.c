@@ -87,17 +87,20 @@ bool entity_generate_mesh_from_xml(World * const world, const uint32_t id, const
 void world_set_camera(World * const world, const uint32_t id) {
 	/*
 	 * Setter function for the world's active camera.
+	 * 
+	 * Implementation note: We add one to I so that we can check if no camera
+	 * has been set and use default matrix in that case.
 	 */
 	for (size_t i = 0; i < world->CTransforms_count; i++) {
 		if (world->CTransforms[i].base.id == id) {
-			world->CCameras_active[0] = i;
+			world->CCameras_active[0] = i + 1;
 			break;
 		}
 	}
 	
 	for (size_t i = 0; i < world->CCameras_count; i++) {
 		if (world->CCameras[i].base.id == id) {
-			world->CCameras_active[1] = i;
+			world->CCameras_active[1] = i + 1;
 			break;
 		}
 	}

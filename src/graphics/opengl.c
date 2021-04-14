@@ -186,7 +186,14 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	DgMat4 camera;
 	
 	// Do the camera
-	camera = DgTransformLookAt2(DgVec3New(0.0f, 1.0f, 3.0f), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(0.0f, 1.0f, 0.0f));
+	if (world->CCameras_active[0] != 0) {
+		uint32_t tid = world->CCameras_active[0] - 1, cid = world->CCameras_active[1] - 1;
+		
+		camera = DgTransfromBasicCamera(world->CTransforms[tid].pos, world->CTransforms[tid].rot);
+	}
+	else {
+		camera = DgTransformLookAt2(DgVec3New(0.0f, 1.0f, 3.0f), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(0.0f, 1.0f, 0.0f));
+	}
 	
 	// Push our matris to the GPU
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "camera"), 1, GL_TRUE, &camera.ax);

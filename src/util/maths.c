@@ -407,7 +407,7 @@ void DgMat4Print(DgMat4 a) {
  * Other misc. functions
  */
 
-DgMat4 DgTransfromBruteCamera(DgVec3 trans, DgVec3 rot) {
+DgMat4 DgTransfromBasicCamera(DgVec3 trans, DgVec3 rot) {
 	/**
 	 * <summary>Brute-force camera transfrom in that </summary>
 	 * <input type="DgVec3" name="trans">The translation that will be applied to the camera.</input>
