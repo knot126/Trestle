@@ -155,7 +155,7 @@ int game_main(int argc, char* argv[]) {
 	
 	ent = world_create_entity(&main_world, QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH | QR_COMPONENT_PHYSICS);
 	entity_set_transform(&main_world, ent, DgVec3New(-1.25f, 0.0f, 0.0f), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(1.0f, 1.5f, 1.0f));
-	entity_set_physics(&main_world, ent, DgVec3New(0.0f, 0.0f, -0.01f), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(1.0f, 1.0f, 1.0f));
+	entity_set_physics(&main_world, ent, DgVec3New(0.0f, 0.0f, -0.5f), DgVec3New(-0.1f, -0.1f, -0.1f), DgVec3New(1.0f, 1.0f, 1.0f));
 	entity_load_mesh(&main_world, ent, "assets://mesh/cube3.bin");
 	
 	ent = world_create_entity(&main_world, QR_COMPONENT_TRANSFORM | QR_COMPONENT_CAMERA);
