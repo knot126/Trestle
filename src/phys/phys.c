@@ -13,5 +13,5 @@
 #include "phys.h"
  
 void phys_update(World *world, float delta) {
-	for (uint32_t i = 0; i < )
+	//for (uint32_t i = 0; i < )
 }
