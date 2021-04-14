@@ -65,67 +65,32 @@ static void DgXMLNodeFree(DgXMLNode node) {
 
 static bool isWhitespace(char c) {
 	// Is XML whitespace?
-	if (c == ' ' || c == '\t' || c == '\n' || c == '\r') {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return (c == ' ' || c == '\t' || c == '\n' || c == '\r');
 }
 
 static bool isBom(const char * const c) {
 	// Is UTF-8 BOM?
-	if (c[0] == '\xEF' && c[1] == '\xBB' && c[2] == '\xBF') {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return (c[0] == '\xEF' && c[1] == '\xBB' && c[2] == '\xBF');
 }
 
 static bool isStart(char c) {
-	if (c == '<') {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return (c == '<');
 }
 
 static bool isEnd(char c) {
-	if (c == '>' || c == '/') {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return (c == '>' || c == '/');
 }
 
 static bool isNodeEnd(char c) {
-	if (c == '/') {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return (c == '/');
 }
 
 static bool isSeperator(char c) {
-	if (c == '=') {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return (c == '=');
 }
 
 static bool isString(char c) {
-	if (c == '"') {
-		return true;
-	}
-	else {
-		return false;
-	}
+	return (c == '"');
 }
 
 static bool isCommentStart(const char * const c) {
@@ -134,6 +99,14 @@ static bool isCommentStart(const char * const c) {
 
 static bool isCommentEnd(const char * const c) {
 	return (c[0] == '-' && c[1] == '-' && c[2] == '>');
+}
+
+static bool isProcInst(const char * const c) {
+	return (c[0] == '<' && c[1] == '?');
+}
+
+static bool isProcInstEnd(const char * const c) {
+	return (c[0] == '?' && c[1] == '>');
 }
 
 /**

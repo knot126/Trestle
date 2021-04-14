@@ -44,3 +44,10 @@ typedef struct {
 		QR_CAM_BASE = 4,
 	} mode;
 } CCamera;
+
+typedef struct {
+	ComponentBase_t base;
+	DgVec3 Vpos;
+	DgVec3 Vrot;
+	DgVec3 Vscale;
+} CPhysics;

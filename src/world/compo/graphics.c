@@ -73,13 +73,13 @@ bool entity_load_mesh(World *world, uint32_t id, char *path) {
 }
 
 bool entity_generate_mesh_from_xml(World * const world, const uint32_t id, const char * const path) {
-	DgXMLNode doc;
+/*	DgXMLNode doc;
 	
 	if (DgXMLLoad(&doc, path)) {
 		return false;
 	}
 	
-	DgXMLFree(&doc);
+	DgXMLFree(&doc);*/
 	
 	return true;
 }
@@ -88,5 +88,17 @@ void world_set_camera(World * const world, const uint32_t id) {
 	/*
 	 * Setter function for the world's active camera.
 	 */
-	world->CCameras_active = id;
+	for (size_t i = 0; i < world->CTransforms_count; i++) {
+		if (world->CTransforms[i].base.id == id) {
+			world->CCameras_active[0] = i;
+			break;
+		}
+	}
+	
+	for (size_t i = 0; i < world->CCameras_count; i++) {
+		if (world->CCameras[i].base.id == id) {
+			world->CCameras_active[1] = i;
+			break;
+		}
+	}
 }

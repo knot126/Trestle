@@ -18,4 +18,5 @@ const char* USER_LOOK_PATH[1] = {
 	"$HOME",
 };
 
+float g_physicsDelta = 1.0f / 180.0f;
 float g_deltaTime;

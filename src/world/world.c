@@ -27,6 +27,28 @@ void world_init(World *world, size_t prealloc_count) {
 	// prealloc is disabled for now...
 }
 
+void world_destroy(World *world) {
+	/* 
+	 * Frees the a world and its exsiting resources
+	 */
+	
+	if (world->mask) {
+		DgFree(world->mask);
+	}
+	
+	if (world->CTransforms) {
+		DgFree(world->CTransforms);
+	}
+	
+	if (world->CMeshs) {
+		DgFree(world->CMeshs);
+	}
+	
+	if (world->CCameras) {
+		DgFree(world->CCameras);
+	}
+}
+
 uint32_t world_create_entity(World *world, mask_t mask) {
 	/*
 	 * Create a new entity in a given world and return its ID
@@ -84,6 +106,19 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 		world->CCameras[world->CCameras_count - 1].base.id = world->mask_count;
 	}
 	
+	// Physics
+	if ((mask & QR_COMPONENT_PHYSICS) == QR_COMPONENT_PHYSICS) {
+		world->CPhysicss_count++;
+		world->CPhysicss = DgRealloc(world->CPhysicss, sizeof(CPhysics) * world->CPhysicss_count);
+		
+		if (!world->CPhysicss) {
+			DgFail("Allocation error: world->CPhysicss\n", 402);
+		}
+		
+		memset((world->CPhysicss + (world->CPhysicss_count - 1)), 0, sizeof(CPhysics));
+		world->CPhysicss[world->CPhysicss_count - 1].base.id = world->mask_count;
+	}
+	
 	return world->mask_count;
 }
 
@@ -97,6 +132,11 @@ bool scene_load_xml(World *world, const char * const path) {
 	// for each entity tag
 	for (uint32_t s = 0; s < node.sub_count; s++) {
 		if (!strcmp(node.sub[s].name, "entity")) {
+			uint32_t mask = 0;
+			
+			CTransform *transform;
+			CMesh      *mesh;
+			CCamera    *camera;
 			
 			// for each tag in the entity tag
 			for (uint32_t t = 0; t < node.sub[s].sub_count; t++) {

@@ -36,4 +36,5 @@ union DgCommonUnion {
 };
 
 extern const char* ASSETS_LOOK_PATH[4];
+extern float g_physicsDelta;
 extern float g_deltaTime;

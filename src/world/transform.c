@@ -33,3 +33,25 @@ bool entity_set_transform(World *world, uint32_t id, DgVec3 pos, DgVec3 rot, DgV
 	
 	return true;
 }
+
+bool entity_set_physics(World *world, uint32_t id, DgVec3 pos, DgVec3 rot, DgVec3 scale) {
+	CPhysics *phys = NULL;
+	
+	// Find it
+	for (uint32_t i = 0; i < world->CPhysicss_count; i++) {
+		if (world->CPhysicss[i].base.id == id) {
+			phys = (world->CPhysicss + i);
+			break;
+		}
+	}
+	
+	if (!phys) {
+		return false;
+	}
+	
+	phys->Vpos = pos;
+	phys->Vrot = rot;
+	phys->Vscale = scale;
+	
+	return true;
+}

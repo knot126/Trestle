@@ -71,7 +71,6 @@ static int game_loop(World *world, SystemStates *systems) {
 	
 	// We will accumulate and update physics when time is right.
 	float accumulate = 0.0f;
-	const float phys_delta_time = 1.0f / 180.0f;
 	
 	while (should_keep_open) {
 		float frame_time = DgTime();
@@ -85,8 +84,8 @@ static int game_loop(World *world, SystemStates *systems) {
 		graphics_update(world, systems->graphics);
 		input_update(systems->graphics);
 		
-		if (accumulate > phys_delta_time) {
-			phys_update();
+		if (accumulate > g_physicsDelta) {
+			phys_update(world, g_physicsDelta);
 			accumulate = 0.0f;
 		}
 		
@@ -149,17 +148,19 @@ int game_main(int argc, char* argv[]) {
 	World main_world;
 	world_init(&main_world, 0);
 	
-	// Create test entity
+	// Create test entities
 	uint32_t ent = world_create_entity(&main_world, QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH);
 	entity_load_mesh(&main_world, ent, "assets://mesh/cube2.bin");
 	entity_set_transform(&main_world, ent, DgVec3New(0.0f, 0.0f, 0.2f), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(3.0f, 0.1f, 8.0f));
 	
-	ent = world_create_entity(&main_world, QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH);
+	ent = world_create_entity(&main_world, QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH | QR_COMPONENT_PHYSICS);
 	entity_set_transform(&main_world, ent, DgVec3New(-1.25f, 0.0f, 0.0f), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(1.0f, 1.5f, 1.0f));
+	entity_set_physics(&main_world, ent, DgVec3New(0.0f, 0.0f, -0.01f), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(1.0f, 1.0f, 1.0f));
 	entity_load_mesh(&main_world, ent, "assets://mesh/cube3.bin");
 	
 	ent = world_create_entity(&main_world, QR_COMPONENT_TRANSFORM | QR_COMPONENT_CAMERA);
 	entity_set_transform(&main_world, ent, DgVec3New(0.0f, 2.0f, 3.0f), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(1.0f, 1.0f, 1.0f));
+	world_set_camera(&main_world, ent);
 	
 	// Load systems state
 	// 
@@ -178,6 +179,10 @@ int game_main(int argc, char* argv[]) {
 	// Systems destruction
 	printf("Info: Destroying systems...\n");
 	sys_destroy(&systems);
+	
+	// World destruction
+	printf("Info: Destroying main world...\n");
+	world_destroy(&main_world);
 	
 	// Global flags cleanup
 	printf("Info: Cleaning up memory used by flags...\n");
