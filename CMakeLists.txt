@@ -54,6 +54,7 @@ set(MELON_FILES
 	src/util/time.c
 	src/util/string.c
 	src/util/fail.c
+	src/util/dict.c
 	src/util/maths.c
 	src/util/rand.c
 	src/util/array.c
