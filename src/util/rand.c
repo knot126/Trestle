@@ -37,10 +37,39 @@ float DgERandMidSqF32(void) {
 	return (float) (DgERandMidSqU32() * (1.0f / 16777215.0f));
 }
 
+uint32_t DgRandXORShiftU32(uint32_t n) {
+	/*
+	 * Generate a random number based on a given seed using the XOR-Shift 
+	 * method of generating a random number.
+	 */
+	n ^= n << 13;
+	n ^= n >> 15;
+	n ^= n << 5;
+	
+	return n;
+}
+
+uint32_t DgRandXORShiftSU32() {
+	/*
+	 * A pesudostateless version of the XOR-shift function. It should be 
+	 * semi-threadsafe, since it will add a (most likely) unique value to make
+	 * sure there are minimal conflicts.
+	 */
+	static uint32_t last;
+	
+	last = DgRandXORShiftU32(last + DgNsecTime());
+	
+	return last;
+}
+
+float DgRandXORShiftF32() {
+	return ((float) DgRandXORShiftSU32()) / 4294967295.0f;
+}
+
 uint32_t DgRandInt() {
-	return DgERandMidSqU32();
+	return DgRandXORShiftSU32();
 }
 
 float DgRandFloat() {
-	return DgERandMidSqF32();
+	return DgRandXORShiftF32();
 }

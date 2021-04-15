@@ -9,7 +9,9 @@
 
 #include <inttypes.h>
 
-/* DgCommonUnion: A union of all the common types. */
+/* 
+ * DgCommonUnion: A union of all the common types.
+ */
 
 #ifdef DG_TRESTLE_USE_UINT8_AS_BYTE
 	typedef uint8_t byte_t;
@@ -35,6 +37,5 @@ union DgCommonUnion {
 	byte *asBytes;
 };
 
-extern const char* ASSETS_LOOK_PATH[4];
 extern float g_physicsDelta;
 extern float g_deltaTime;

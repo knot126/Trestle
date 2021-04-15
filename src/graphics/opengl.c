@@ -135,7 +135,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	// Making textures
 	gl_load_texture(gl, "assets://gfx/1.jpg", GL_TEXTURE0);
-	gl_load_texture(gl, "assets://gfx/2.jpg", GL_TEXTURE1);
+	//gl_load_texture(gl, "assets://gfx/2.jpg", GL_TEXTURE1);
 	
 	glUniform1i(glGetUniformLocation(gl->programs[0], "image"), 0);
 	//glUniform1i(glGetUniformLocation(gl->programs[0], "image2"), 1);
@@ -188,7 +188,10 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	// Do the camera
 	if (world->CCameras_active[0] != 0) {
 		uint32_t tid = world->CCameras_active[0] - 1, cid = world->CCameras_active[1] - 1;
-		
+// 		printf("Camera pos = (%f, %f, %f)\n", 
+// 			   world->CTransforms[tid].pos.x,
+// 			   world->CTransforms[tid].pos.y,
+// 			   world->CTransforms[tid].pos.z);
 		camera = DgTransfromBasicCamera(world->CTransforms[tid].pos, world->CTransforms[tid].rot);
 	}
 	else {
@@ -248,7 +251,18 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 			}
 		}
 		
-		DgMat4 model = DgMat4ByMat4Multiply(DgMat4Scale(DgMat4New(1.0f), scale), DgMat4Translate(DgMat4New(1.0f), translate));
+		DgMat4 rot_x = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(1.0f, 0.0f, 0.0f), rotate.x);
+		DgMat4 rot_y = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.0f, 1.0f, 0.0f), rotate.y);
+		DgMat4 rot_z = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.0f, 0.0f, 1.0f), rotate.z);
+		DgMat4 rot_mat = DgMat4ByMat4Multiply(rot_z, DgMat4ByMat4Multiply(rot_y, rot_x));
+		
+		DgMat4 model = 
+			DgMat4ByMat4Multiply(
+				DgMat4Translate(DgMat4New(1.0f), translate), 
+				DgMat4ByMat4Multiply(rot_mat, 
+					DgMat4Scale(DgMat4New(1.0f), scale)
+				)
+			);
 		glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
 		
 		glDrawElements(GL_TRIANGLES, world->CMeshs[i].index_count, GL_UNSIGNED_INT, 0);

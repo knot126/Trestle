@@ -420,7 +420,7 @@ DgMat4 DgTransfromBasicCamera(DgVec3 trans, DgVec3 rot) {
 	DgMat4 rot_y = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.0f, 1.0f, 0.0f), rot.y);
 	DgMat4 rot_z = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.0f, 0.0f, 1.0f), rot.z);
 	
-	return DgMat4ByMat4Multiply(pos, DgMat4ByMat4Multiply(rot_x, DgMat4ByMat4Multiply(rot_y, rot_z)));
+	return DgMat4ByMat4Multiply(DgMat4ByMat4Multiply(rot_x, DgMat4ByMat4Multiply(rot_y, rot_z)), pos);
 }
 
 DgMat4 DgTransformLookAt(DgVec3 from, DgVec3 to, DgVec3 world_up) {

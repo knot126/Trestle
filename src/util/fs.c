@@ -21,6 +21,13 @@
 
 #include "fs.h"
 
+const char* ASSETS_LOOK_PATH[4] = {
+	"./assets",
+	"../Engine/assets",
+	"../Trestle/assets",
+	"../assets",
+};
+
 const char *dg_special_directory_paths[3] = {
 	NULL,
 	NULL,

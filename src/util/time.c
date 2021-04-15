@@ -6,6 +6,7 @@
  */
 
 #include <time.h>
+#include <inttypes.h>
 
 #include "time.h"
 
@@ -37,4 +38,15 @@ double DgRealTime(void) {
 	timespec_get(&t, TIME_UTC);
 	
 	return (double) (t.tv_sec) + (t.tv_nsec / 1000000000.0);
+}
+
+uint32_t DgNsecTime(void) {
+	/*
+	 * Get the current nanosecond part of the time.
+	 */
+	
+	struct timespec t;
+	timespec_get(&t, TIME_UTC);
+	
+	return t.tv_nsec;
 }
