@@ -1,7 +1,13 @@
 cmake_minimum_required(VERSION 3.19)
 
-# Set project stuff
-project(Engine VERSION 0.0.0)
+# Set project
+project(Engine VERSION 0.1.0)
+
+set(EXEC_NAME quickrun)
+set(MELON_NAME melon)
+
+# Find OpenGL
+include("FindOpenGL")
 
 # Files for lua
 set(LUA_FILES
@@ -39,19 +45,8 @@ set(LUA_FILES
 	lib/lua/src/linit.c
 )
 
-# Source files
-set(FILES 
-	${LUA_FILES}
-	lib/glew/glew.c
-	src/world/world.c
-	src/world/transform.c
-	src/world/compo/graphics.c
-	src/graphics/graphics.c
-	src/graphics/opengl.c
-	src/graphics/image.c
-	src/input/input.c
-	src/linux/main.c
-	src/phys/phys.c
+# Melon Source files
+set(MELON_FILES
 	src/util/alloc.c
 	src/util/bag.c
 	src/util/thread.c
@@ -66,7 +61,22 @@ set(FILES
 	src/util/xml.c
 	src/util/fs.c
 	src/util/load.c
-	src/util/config.c
+	src/util/config.c)
+
+# Source files
+set(EXEC_FILES 
+	${LUA_FILES}
+	${MELON_FILES}
+	lib/glew/glew.c
+	src/world/world.c
+	src/world/transform.c
+	src/world/compo/graphics.c
+	src/graphics/graphics.c
+	src/graphics/opengl.c
+	src/graphics/image.c
+	src/input/input.c
+	src/linux/main.c
+	src/phys/phys.c
 	src/game.c
 	src/types.c
 	src/main.c)
@@ -83,9 +93,8 @@ elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 # Create executable and set up linking
-set(EXEC_NAME quickrun)
-
-add_executable(${EXEC_NAME} ${FILES})
+add_executable(${EXEC_NAME} ${EXEC_FILES})
+add_library(${MELON_NAME} SHARED ${MELON_FILES})
 
 target_link_libraries(${EXEC_NAME} m)
 target_link_libraries(${EXEC_NAME} GL)
