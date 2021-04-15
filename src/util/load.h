@@ -1,6 +1,13 @@
+/*
+ * Copyright (C) 2021 Decent Games
+ * ===============================
+ * 
+ * Binary File Loading
+ */
+
 #pragma once
 
-#include "../types.h"
+#include "types.h"
 #include "fs.h"
 
 typedef struct DgLoadBinaryFileInfo {

@@ -92,7 +92,6 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glfwSwapInterval(0);
 	glfwSetFramebufferSizeCallback(gl->window, gl_set_window_size);
 	glfwSetCursorPosCallback(gl->window, gl_update_mouse);
-	glfwSetInputMode(gl->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glViewport(0, 0, 1280, 720);
 	
 	gl_error_check(__FILE__, __LINE__);

@@ -8,9 +8,9 @@
 #include <stdio.h>
 #include <inttypes.h>
 
-#include "../util/alloc.h"
-#include "../util/fail.h"
-#include "../types.h"
+#include "alloc.h"
+#include "fail.h"
+#include "types.h"
 
 #include "array.h"
 

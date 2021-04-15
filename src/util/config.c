@@ -8,19 +8,18 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "../util/bag.h"
-#include "../util/alloc.h"
-#include "../util/fail.h"
-#include "../util/fs.h"
-#include "../util/load.h"
+#include "bag.h"
+#include "alloc.h"
+#include "fail.h"
+#include "fs.h"
+#include "load.h"
 
 #include "config.h"
 
 const bool _DG_SIMPLE_CONFIG_PARSER_DEBUG = false;
-//#define _DG_SIMPLE_CONFIG_PARSER_CLOCK 1
 
 #if defined(_DG_SIMPLE_CONFIG_PARSER_CLOCK)
-	#include "../util/time.h"
+	#include "time.h"
 #endif
 
 DgBag *DgConfigLoad(char *path, const bool enable_comments) {

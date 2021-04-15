@@ -10,8 +10,8 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "../util/alloc.h"
-#include "../util/fs.h"
+#include "alloc.h"
+#include "fs.h"
 
 #include "xml.h"
 

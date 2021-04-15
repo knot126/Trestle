@@ -9,7 +9,7 @@
 
 #include <inttypes.h>
 
-#include "../types.h"
+#include "types.h"
 
 typedef struct trArray_ {
 	byte *data;

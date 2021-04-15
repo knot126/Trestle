@@ -8,7 +8,7 @@
 #include <math.h>
 #include <inttypes.h>
 
-#include "../util/time.h"
+#include "time.h"
 
 #include "rand.h"
 

@@ -16,7 +16,7 @@
 #include "../../lib/stb/stb_image.h"
 
 #include "../util/fs.h"
-#include "../types.h"
+#include "../util/types.h"
 
 #include "image.h"
 

@@ -16,8 +16,8 @@
 	#include <errno.h>
 #endif
 
-#include "../util/alloc.h"
-#include "../types.h"
+#include "alloc.h"
+#include "types.h"
 
 #include "fs.h"
 

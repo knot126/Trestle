@@ -2,15 +2,15 @@
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
- * OpenGL-related graphics stuff
+ * Binary File Loading
  */
 
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../util/alloc.h"
-#include "../types.h"
+#include "alloc.h"
+#include "types.h"
 #include "fs.h"
 
 #include "load.h"

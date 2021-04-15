@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 
-#include "../util/alloc.h"
+#include "alloc.h"
 
 #include "strmap.h"
 

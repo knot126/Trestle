@@ -9,7 +9,7 @@
 
 #include <stdbool.h>
 
-#include "../util/bag.h"
+#include "bag.h"
 
 DgBag *DgConfigLoad(char *path, const bool enable_comments);
 void DgConfigFree(DgBag *config);
