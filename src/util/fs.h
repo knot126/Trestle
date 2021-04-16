@@ -53,3 +53,5 @@ void DgFileStreamWriteInt64(DgFileStream* stream, int64_t* data);
 void DgFileStreamWriteUInt64(DgFileStream* stream, uint64_t* data);
 void DgFileStreamWriteFloat(DgFileStream* stream, float* data);
 void DgFileStreamWriteDouble(DgFileStream* stream, double* data);
+void DgFileStreamWriteLine(DgFileStream* stream, char *data);
+void DgFileStreamWriteString(DgFileStream* stream, char *data);

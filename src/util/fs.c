@@ -21,7 +21,7 @@
 
 #include "fs.h"
 
-const char* ASSETS_LOOK_PATH[4] = {
+const char * const ASSETS_LOOK_PATH[4] = {
 	"./assets",
 	"../Engine/assets",
 	"../Trestle/assets",
@@ -171,7 +171,7 @@ void DgMkdir(char* path) {
 
 bool DgIsDir(const char* dir) {
 #if defined(__linux__)
-	DIR* d = opendir(dir);
+	DIR *d = opendir(dir);
 	if (d) {
 		return true;
 	}
@@ -291,4 +291,14 @@ inline void DgFileStreamWriteFloat(DgFileStream* stream, float* data) {
 
 inline void DgFileStreamWriteDouble(DgFileStream* stream, double* data) {
 	fwrite(data, sizeof(double), 1, stream->_c_file_stream);
+}
+
+inline void DgFileStreamWriteLine(DgFileStream* stream, char *data) {
+	fwrite(data, strlen(data) * sizeof(char), 1, stream->_c_file_stream);
+	char n = '\n';
+	fwrite(&n, 1, 1, stream->_c_file_stream);
+}
+
+inline void DgFileStreamWriteString(DgFileStream* stream, char *data) {
+	fwrite(data, strlen(data) * sizeof(char), 1, stream->_c_file_stream);
 }
