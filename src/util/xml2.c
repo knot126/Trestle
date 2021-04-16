@@ -24,8 +24,8 @@ typedef struct {
 		DG_XML_PROC_END,    // ?>
 	} type;
 	char *text;
-} DgXMLToken;
+} DgXML2Token;
 
-uint32_t DgXMLLoad(DgXMLNode *doc, const char * const path) {
+uint32_t DgXML2Load(DgXML2Node *doc, const char * const path) {
 	
 }

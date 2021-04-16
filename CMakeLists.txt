@@ -49,20 +49,19 @@ set(LUA_FILES
 set(MELON_FILES
 	src/util/alloc.c
 	src/util/bag.c
-	src/util/thread.c
-	src/util/flag.c
-	src/util/time.c
-	src/util/string.c
-	src/util/fail.c
+	src/util/config.c
 	src/util/dict.c
-	src/util/maths.c
-	src/util/rand.c
-	src/util/array.c
-	src/util/strmap.c
-	src/util/xml.c
+	src/util/fail.c
+	src/util/flag.c
 	src/util/fs.c
 	src/util/load.c
-	src/util/config.c)
+	src/util/maths.c
+	src/util/rand.c
+	src/util/thread.c
+	src/util/time.c
+	src/util/xml.c
+	src/util/xml2.c
+	)
 
 # Source files
 set(EXEC_FILES 

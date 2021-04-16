@@ -12,11 +12,11 @@
 typedef struct {
 	char *key;
 	char *value;
-} DgXMLPair;
+} DgXML2Pair;
 
 typedef struct DgXMLNode {
 	char *name;
-	DgXMLPair *attrib;
+	DgXML2Pair *attrib;
 	struct DgXMLEntity *sub;
 	char *text;
-} DgXMLNode;
+} DgXML2Node;
