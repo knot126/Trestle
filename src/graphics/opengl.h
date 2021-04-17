@@ -6,24 +6,17 @@
  */
 #pragma once
 
-#if !defined(DG_GLEW_INCLUDED_OK)
-	#include "../../lib/glew/glew.h"
-	#define DG_GLEW_INCLUDED_OK
-#endif
-
 #include <stdbool.h>
 #include <GLFW/glfw3.h>
 
 #include "../world/world.h"
 
+typedef unsigned int GLuint;
+
 typedef struct DgOpenGLContext {
 	GLFWwindow* window;
 	GLuint* vaos;
 	size_t vaos_count;
-//	GLuint* vbos;
-//	size_t vbos_count;
-//	GLuint* ebos;
-//	size_t ebos_count;
 	GLuint* programs;
 	size_t programs_count;
 	GLuint* shaders;

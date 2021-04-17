@@ -55,6 +55,10 @@ static void sys_init(SystemStates *sys) {
 	// Graphics initialisation
 	printf("Info: Init graphics subsystem...\n");
 	sys->graphics = graphics_init();
+	
+	// Input initialisation
+	printf("Info: Init input system...\n");
+	input_init(sys->graphics);
 }
 
 static void sys_destroy(SystemStates *sys) {
@@ -80,7 +84,7 @@ static int game_loop(World *world, SystemStates *systems) {
 		// Check if we should still be open
 		should_keep_open = get_should_keep_open(systems->graphics);
 		
-		//DgThread t_graphics, t_physics;
+		DgThread th_graphics, th_physics;
 		
 		graphics_update(world, systems->graphics);
 		input_update(systems->graphics);
@@ -89,6 +93,8 @@ static int game_loop(World *world, SystemStates *systems) {
 			phys_update(world, g_physicsDelta);
 			accumulate = 0.0f;
 		}
+		
+		//DgThreadJoin(&th_graphics);
 		
 		// Update frame time
 		frame_time = DgTime() - frame_time;

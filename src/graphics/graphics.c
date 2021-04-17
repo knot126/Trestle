@@ -54,3 +54,13 @@ void graphics_free(GraphicsInitInfo info) {
 	 */
 	gl_graphics_free((DgOpenGLContext *) info.info);
 }
+
+void *Threaded_graphics_update(void *data) {
+	/*
+	 * Wrapper around graphics_update to be called in a thread.
+	 */
+	
+	Args_Threaded_graphics_update *args = (Args_Threaded_graphics_update *) data;
+	graphics_update(args->world, args->info);
+	return NULL;
+}

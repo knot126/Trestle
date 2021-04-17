@@ -10,7 +10,12 @@
 #endif
 
 typedef struct DgThread {
-#if defined(__linux__)
+#if defined(__linux__) && !defined(DG_STDC_THREADS)
 	pthread_t _info;
+#elif defined(DG_STDC_THREADS)
+	thrd_t _info;
 #endif
 } DgThread;
+
+int DgThreadCreate(DgThread* thread, void *(*func)(void *), void *arg);
+int DgThreadJoin(DgThread* thread);

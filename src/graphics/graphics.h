@@ -21,7 +21,14 @@ typedef struct GraphicsInitInfo {
 	GraphicsType type;
 } GraphicsInitInfo;
 
+typedef struct Args_Threaded_graphics_update {
+	World *world;
+	GraphicsInitInfo info;
+} Args_Threaded_graphics_update;
+
 GraphicsInitInfo graphics_init(void);
 void graphics_update(World *world, GraphicsInitInfo info);
 bool get_should_keep_open(GraphicsInitInfo info);
 void graphics_free(GraphicsInitInfo info);
+
+void *Threaded_graphics_update(void *data);

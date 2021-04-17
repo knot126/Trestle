@@ -119,39 +119,21 @@ static bool isProcInstEnd(const char * const c) {
  * parser APIs.
  */
 
-uint32_t DgXMLLoad(DgXMLNode * const doc, const char * const path) {
+uint32_t DgXMLParse(DgXMLNode * const doc, uint32_t t_doc_size, char * const content) {
 	/**
-	 * <summary>Load an XML document into memory; specifically, into the <type>DgXMLNode</type> provided.</summary>
-	 * <input name="doc">The root node that the document will be loaded into.</input>
-	 * <input name="path">The path that will be passed to <func file="fs.c">DgEvalPath</func>.</input>
+	 * <summary>Parse an XML document into a DgXMLNode tree, from the fully 
+	 * loaded buffer at content given the doc_size.</summary>
+	 * <input name="doc">The tree to load the document into.</input>
+	 * <input name="doc_size">The size of the document to be loaded.</input>
+	 * <input name="content">The content of the document. If zero, gets the 
+	 * string length and uses that.</input>
 	 */
 	
-	char *real_path = DgEvalPath((char *) path);
-	
-	if (!real_path) {
-		return 1;
+	if (t_doc_size == 0) {
+		t_doc_size = strlen(content);
 	}
 	
-	DgFileStream *stream = DgFileStreamOpen(real_path, "rb");
-	DgFree(real_path);
-	
-	if (!stream) {
-		return 1;
-	}
-	
-	// Load document into memory and close the stream
-	size_t doc_size = DgFileStreamLength(stream);
-	char * const content = (char * const) DgAlloc(doc_size + 1);
-	
-	if (!content) {
-		return 2;
-	}
-	
-	DgFileStreamRead(stream, doc_size, content);
-	content[doc_size] = '\0';
-	DgFileStreamClose(stream);
-	
-	if(_DG_XML_DEBUG) printf("== %s ==\n%s\n", path, content);
+	const uint32_t doc_size = t_doc_size;
 	
 	// Clear the XML node
 	memset(doc, 0, sizeof(DgXMLNode));
@@ -296,6 +278,44 @@ uint32_t DgXMLLoad(DgXMLNode * const doc, const char * const path) {
 		printf("Warning: Hint: Make sure the document hiearchy is okay (tags end correctly).\n");
 		return 6;
 	}
+}
+
+uint32_t DgXMLLoad(DgXMLNode * const doc, const char * const path) {
+	/**
+	 * <summary>Load an XML document into memory; specifically, into the 
+	 * <type>DgXMLNode</type> provided.</summary>
+	 * <input name="doc">The root node that the document will be loaded into.</input>
+	 * <input name="path">The path that will be passed to <func file="fs.c">DgEvalPath</func>.</input>
+	 */
+	
+	char *real_path = DgEvalPath((char *) path);
+	
+	if (!real_path) {
+		return 1;
+	}
+	
+	DgFileStream *stream = DgFileStreamOpen(real_path, "rb");
+	DgFree(real_path);
+	
+	if (!stream) {
+		return 1;
+	}
+	
+	// Load document into memory and close the stream
+	size_t doc_size = DgFileStreamLength(stream);
+	char * const content = (char * const) DgAlloc(doc_size + 1);
+	
+	if (!content) {
+		return 2;
+	}
+	
+	DgFileStreamRead(stream, doc_size, content);
+	content[doc_size] = '\0';
+	DgFileStreamClose(stream);
+	
+	if(_DG_XML_DEBUG) printf("== %s ==\n%s\n", path, content);
+	
+	DgXMLParse(doc, doc_size, content);
 	
 	DgFree(content);
 	

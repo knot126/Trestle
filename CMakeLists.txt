@@ -77,6 +77,7 @@ set(EXEC_FILES
 	src/input/input.c
 	src/linux/main.c
 	src/phys/phys.c
+	src/input/glfwi.c
 	src/game.c
 	src/types.c
 	src/main.c)
