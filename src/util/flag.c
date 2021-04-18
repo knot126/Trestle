@@ -15,25 +15,25 @@
 
 #include "flag.h"
 
-/* More data-oriented version:
- * struct {
- * 	char                **names;       // Names of events
- * 	DgIFlagCallbackInfo **callbacks;   // List of callbacks
- * 	bool                 *triggered;   // Is the event triggered?
- * 	bool                 *allocated;   // Is the event slot alloced?
- * 	size_t                count;       // Number of events registered
- * } dg_flag; */
-
-struct {
+typedef struct {
 	DgFlagEventInfo* events;
 	size_t allocated;
 	size_t left; // The number of remaing free spots 
 	             // (remember that flags can't be deallocated)
-} dg_flag;
+} DgFlagSystem;
+
+DgFlagSystem dg_flag;
 
 bool DgFlagCreateEvent(const char* name) {
-	/* Should be called to create an event with a name. Returns the index of
-	 * the flag. */
+	/**
+	 * <summary>
+	 * DEPRECATED: This API and system will be replaced with the Events API soon.
+	 * 
+	 * Should be called to create an event with a name. Returns the index of
+	 * the flag.
+	 * </summary>
+	 */
+	printf("libmelon: \033[1;33mWarning:\033[0m Deprecated function DgFlagCreateEvent(name = \"%s\") was called.\n", name);
 	
 	// Initialise subsystem for the first time
 	if (!dg_flag.events) {
@@ -42,7 +42,7 @@ bool DgFlagCreateEvent(const char* name) {
 		dg_flag.events = (DgFlagEventInfo *) DgAlloc(sizeof(DgFlagEventInfo) * init_size);
 		
 		if (!dg_flag.events) {
-			printf("Failed to create event because allocation failed.\n");
+			printf("Error: Failed to create event because allocation failed.\n");
 			return false;
 		}
 		
@@ -57,7 +57,7 @@ bool DgFlagCreateEvent(const char* name) {
 		dg_flag.events = (DgFlagEventInfo *) DgRealloc(dg_flag.events, dg_flag.allocated + sizeof(DgFlagEventInfo) * add_new);
 		
 		if (!dg_flag.events) {
-			printf("Failed to create event because reallocation failed.\n");
+			printf("Error: Failed to create event because reallocation failed.\n");
 			return false;
 		}
 		
@@ -71,7 +71,7 @@ bool DgFlagCreateEvent(const char* name) {
 	this->name = (char *) DgAlloc((strlen(name) + 1) * sizeof(char));
 	
 	if (!this->name) {
-		printf("Failed to allocate memory for string name.");
+		printf("Error: Failed to allocate memory for string name.");
 		return false;
 	}
 	
@@ -86,6 +86,8 @@ bool DgFlagCreateEvent(const char* name) {
 
 bool DgFlagRegisterCallback(const char* event, void (*func)(const char*, void*)) {
 	/* Registers a callback to an event */
+	printf("libmelon: \033[1;33mWarning:\033[0m Deprecated function DgFlagRegisterCallback(event = \"%s\", func = <%X>) was called.\n", event, func);
+	
 	DgFlagEventInfo* this = NULL;
 	
 	// Find the event we want to work with

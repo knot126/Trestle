@@ -14,10 +14,7 @@
 #include "xml2.h"
 
 /**
- * Main Parsing and Loading Functions
- * ==================================
- * 
- * These are some parser functions for simpily loading the document into memory.
+ * Data Types
  */
 
 typedef struct {
@@ -35,6 +32,13 @@ typedef struct {
 	} type;
 	char *text;
 } DgXML2Token;
+
+/**
+ * Main Parsing and Loading Functions
+ * ==================================
+ * 
+ * These are some parser functions for simpily loading the document into memory.
+ */
 
 uint32_t DgXML2Parse(DgXML2Node * const doc, const uint32_t content_size, const char * const content) {
 	/**

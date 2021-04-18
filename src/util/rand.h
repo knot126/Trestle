@@ -9,8 +9,5 @@
 
 #include <inttypes.h>
 
-uint32_t DgERandMidSqU32(void);
-float DgERandMidSqF32(void);
-
-uint32_t DgRandInt();
-float DgRandFloat();
+uint32_t DgRandInt(void);
+float DgRandFloat(void);

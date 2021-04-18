@@ -12,9 +12,11 @@
 
 #include "rand.h"
 
-uint32_t DgERandMidSqU32(void) {
+static uint32_t DgERandMidSqU32(void) {
 	/* 
 	 * Implementing middle squares as a test. DgE = do not use in production.
+	 * 
+	 * DEPRECATED: Replaced with DgRandXORShiftSU32
 	 */
 	const uint32_t mask = 0b11111111111111111111111100000000;
 	static uint32_t seed;
@@ -29,15 +31,17 @@ uint32_t DgERandMidSqU32(void) {
 	return seed;
 }
 
-float DgERandMidSqF32(void) {
+static float DgERandMidSqF32(void) {
 	/*
 	 * Based on the random integer function, this will make a random floating
 	 * point number.
+	 * 
+	 * DEPRECATED: Replaced with DgRandXORShiftF32
 	 */
 	return (float) (DgERandMidSqU32() * (1.0f / 16777215.0f));
 }
 
-uint32_t DgRandXORShiftU32(uint32_t n) {
+static uint32_t DgRandXORShiftU32(uint32_t n) {
 	/*
 	 * Generate a random number based on a given seed using the XOR-Shift 
 	 * method of generating a random number.
@@ -49,7 +53,7 @@ uint32_t DgRandXORShiftU32(uint32_t n) {
 	return n;
 }
 
-uint32_t DgRandXORShiftSU32() {
+static uint32_t DgRandXORShiftSU32(void) {
 	/*
 	 * A pesudostateless version of the XOR-shift function. It should be 
 	 * semi-threadsafe, since it will add a (most likely) unique value to make
@@ -62,14 +66,14 @@ uint32_t DgRandXORShiftSU32() {
 	return last;
 }
 
-float DgRandXORShiftF32() {
+static float DgRandXORShiftF32(void) {
 	return ((float) DgRandXORShiftSU32()) / 4294967295.0f;
 }
 
-uint32_t DgRandInt() {
+uint32_t DgRandInt(void) {
 	return DgRandXORShiftSU32();
 }
 
-float DgRandFloat() {
+float DgRandFloat(void) {
 	return DgRandXORShiftF32();
 }
