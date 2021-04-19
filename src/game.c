@@ -36,6 +36,7 @@
 #include "util/fs.h"
 #include "util/config.h"
 #include "util/rand.h"
+#include "gameplay/gameplay.h"
 #include "types.h"
 
 #include "game.h"
@@ -93,6 +94,8 @@ static int game_loop(World *world, SystemStates *systems) {
 			phys_update(world, g_physicsDelta);
 			accumulate = 0.0f;
 		}
+		
+		gameplay_update(world);
 		
 		//DgThreadJoin(&th_graphics);
 		

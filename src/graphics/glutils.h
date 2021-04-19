@@ -27,7 +27,7 @@ GLuint gl_load_shader(char* filename, GLenum type) {
 	GLchar *strings[3];
 	GLint strings_lengths[3];
 	
-	strings[0] = "#version 420 core\n";
+	strings[0] = "#version 330 core\n";
 	switch (type) {
 		case GL_VERTEX_SHADER:
 			strings[1] = "#define VERTEX\n\n";

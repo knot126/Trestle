@@ -17,6 +17,8 @@
  * Data Types
  */
 
+enum { DG_XML_TOKEN_CHUNKS = 6 };
+
 typedef struct {
 	enum {
 		DG_XML_UNKNOWN,     // unknwon
@@ -31,7 +33,15 @@ typedef struct {
 		DG_XML_PROC_END,    // ?>
 	} type;
 	char *text;
-} DgXML2Token;
+} Dg_XMLParseToken;
+
+/**
+ * Utility Functions
+ */
+
+static Dg_XMLParseToken *token_list_expand(Dg_XMLParseToken *data, size_t current_size) {
+	return (Dg_XMLParseToken *) DgRealloc(data, current_size + DG_XML_TOKEN_CHUNKS);
+}
 
 /**
  * Main Parsing and Loading Functions
@@ -49,7 +59,9 @@ uint32_t DgXML2Parse(DgXML2Node * const doc, const uint32_t content_size, const 
 	 */
 	
 	// Lexer Nonlocals
-	DgXML2Token *token_list = NULL;
+	Dg_XMLParseToken *tokens = NULL;
+	size_t token_count = 0;
+	size_t token_alloc = 0;
 	size_t depth = 0;
 	
 	for (size_t i = 0; i < content_size; i++) {

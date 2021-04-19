@@ -74,6 +74,7 @@ set(EXEC_FILES
 	src/graphics/graphics.c
 	src/graphics/opengl.c
 	src/graphics/image.c
+	src/gameplay/gameplay.c
 	src/input/input.c
 	src/linux/main.c
 	src/phys/phys.c
