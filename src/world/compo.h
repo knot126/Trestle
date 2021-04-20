@@ -45,9 +45,16 @@ typedef struct {
 	} mode;
 } CCamera;
 
+enum {
+	QR_PHYS_DISABLE_GRAVITY = (1<<0),
+};
+
 typedef struct {
 	ComponentBase_t base;
+	float mass;
+	int flags;
 	DgVec3 Vpos;
+	DgVec3 Fpos;
 	DgVec3 Vrot;
-	DgVec3 Vscale;
+	DgVec3 Frot;
 } CPhysics;

@@ -95,6 +95,22 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glfwSetCursorPosCallback(gl->window, gl_update_mouse);
 	glViewport(0, 0, 1280, 720);
 	
+	// set window icon
+	DgImageInfo icon = DgLoadImage("assets://icon.png");
+	if (icon.data) {
+		GLFWimage icons[1];
+		icons[0].pixels = (unsigned char *) icon.data;
+		icons[0].width = icon.width;
+		icons[0].height = icon.height;
+		printf("Set image with w=%d,h=%d to icon.\n", icons[0].width, icons[0].height);
+		glfwSetWindowIcon(gl->window, sizeof(icons) / sizeof(GLFWimage), icons);
+		
+		DgFreeImage(&icon);
+	}
+	else {
+		printf("\033[1;33mWarning:\033[0m Could not set window icon.\n");
+	}
+	
 	gl_error_check(__FILE__, __LINE__);
 	
 	// Load shaders
@@ -134,7 +150,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glGenTextures(gl->textures_count, gl->textures);
 	
 	// Making textures
-	gl_load_texture(gl, "assets://gfx/1.jpg", GL_TEXTURE0);
+	gl_load_texture(gl, "assets://gfx/white.png", GL_TEXTURE0);
 	//gl_load_texture(gl, "assets://gfx/2.jpg", GL_TEXTURE1);
 	
 	glUniform1i(glGetUniformLocation(gl->programs[0], "image"), 0);

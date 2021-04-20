@@ -34,7 +34,7 @@ bool entity_set_transform(World *world, uint32_t id, DgVec3 pos, DgVec3 rot, DgV
 	return true;
 }
 
-bool entity_set_physics(World *world, uint32_t id, DgVec3 pos, DgVec3 rot, DgVec3 scale) {
+bool entity_phys_set_flags(World *world, uint32_t id, int flags) {
 	CPhysics *phys = NULL;
 	
 	// Find it
@@ -49,9 +49,48 @@ bool entity_set_physics(World *world, uint32_t id, DgVec3 pos, DgVec3 rot, DgVec
 		return false;
 	}
 	
-	phys->Vpos = pos;
-	phys->Vrot = rot;
-	phys->Vscale = scale;
+	phys->flags = flags;
+	
+	return true;
+}
+
+bool entity_phys_set_mass(World *world, uint32_t id, float mass) {
+	CPhysics *phys = NULL;
+	
+	// Find it
+	for (uint32_t i = 0; i < world->CPhysicss_count; i++) {
+		if (world->CPhysicss[i].base.id == id) {
+			phys = (world->CPhysicss + i);
+			break;
+		}
+	}
+	
+	if (!phys) {
+		return false;
+	}
+	
+	phys->mass = mass;
+	
+	return true;
+}
+
+bool entity_phys_add_force(World *world, uint32_t id, DgVec3 pos, DgVec3 rot) {
+	CPhysics *phys = NULL;
+	
+	// Find it
+	for (uint32_t i = 0; i < world->CPhysicss_count; i++) {
+		if (world->CPhysicss[i].base.id == id) {
+			phys = (world->CPhysicss + i);
+			break;
+		}
+	}
+	
+	if (!phys) {
+		return false;
+	}
+	
+	phys->Fpos = DgVec3Scale(phys->mass, pos);
+	phys->Frot = DgVec3Scale(phys->mass, rot);
 	
 	return true;
 }

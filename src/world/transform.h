@@ -14,4 +14,6 @@
 #include "../util/maths.h"
 
 bool entity_set_transform(World *world, uint32_t id, DgVec3 pos, DgVec3 rot, DgVec3 scale);
-bool entity_set_physics(World *world, uint32_t id, DgVec3 pos, DgVec3 rot, DgVec3 scale);
+bool entity_phys_set_flags(World *world, uint32_t id, int flags);
+bool entity_phys_set_mass(World *world, uint32_t id, float mass);
+bool entity_phys_add_force(World *world, uint32_t id, DgVec3 pos, DgVec3 rot);
