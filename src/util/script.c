@@ -6,6 +6,7 @@
  */
 
 #include <stdbool.h>
+#include <stdio.h>
 
 #include "lua.h"
 #include "lualib.h"
@@ -35,7 +36,11 @@ bool DgScriptLoad(DgScript *script, char * const path) {
 		return false;
 	}
 	
-	luaL_dofile(script->state, real_path);
+	int stat = luaL_dofile(script->state, real_path);
+	
+	if (stat) {
+		printf("\033[1;31mError:\033[0m Error whilst doing file %s, got errorcode %d.\n", path, stat);
+	}
 	
 	DgFree(real_path);
 	

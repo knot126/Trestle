@@ -23,6 +23,7 @@
 #include "world/world.h"
 #include "world/transform.h"
 #include "world/compo/graphics.h"
+#include "world/scripting.h"
 #include "graphics/graphics.h"
 #include "phys/phys.h"
 #include "input/input.h"
@@ -150,12 +151,6 @@ int game_main(int argc, char* argv[]) {
 		printf("Error: Loading settings document failed (XML version).\n");
 	}
 	
-	// Testing lua loader
-	DgScript script;
-	DgScriptInit(&script);
-	DgScriptLoad(&script, "assets://scripts/startup.lua");
-	DgScriptFree(&script);
-	
 	// Event centre startup (global events)
 	DgFlagCreateEvent("game_init_ok");
 	DgFlagRegisterCallback("game_init_ok", &on_init_okay);
@@ -164,6 +159,7 @@ int game_main(int argc, char* argv[]) {
 	printf("Info: Initialising main world...\n");
 	World main_world;
 	world_init(&main_world, 0);
+	SetActiveWorld(&main_world);
 	
 	// Create test entities
 	uint32_t ent = world_create_entity(&main_world, QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH);
@@ -183,6 +179,14 @@ int game_main(int argc, char* argv[]) {
 	entity_phys_set_mass(&main_world, ent, 10.0f);
 	entity_phys_add_force(&main_world, ent, DgVec3New(0.0f, 0.0f, -0.25f), DgVec3New(0.0f, 0.0f, 0.0f));
 	world_set_camera(&main_world, ent);
+	
+	// Testing lua loader
+	printf("Info: Running startup script...\n");
+	DgScript script;
+	DgScriptInit(&script);
+	registerWorldScriptFunctions(&script);
+	DgScriptLoad(&script, "assets://scripts/startup.lua");
+	DgScriptFree(&script);
 	
 	// Load systems state
 	// 

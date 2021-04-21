@@ -14,6 +14,8 @@
 
 #include "world.h"
 
+World *QuickRunActiveWorld;
+
 void world_init(World *world, size_t prealloc_count) {
 	/*
 	 * Creates a world full of entities
@@ -148,4 +150,8 @@ bool scene_load_xml(World *world, const char * const path) {
 	}
 	
 	return true;
+}
+
+void SetActiveWorld(World *world) {
+	QuickRunActiveWorld = world;
 }
