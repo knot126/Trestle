@@ -34,6 +34,7 @@
 #include "util/fail.h"
 #include "util/xml.h"
 #include "util/fs.h"
+#include "util/script.h"
 #include "util/config.h"
 #include "util/rand.h"
 #include "gameplay/gameplay.h"
@@ -148,6 +149,12 @@ int game_main(int argc, char* argv[]) {
 	else {
 		printf("Error: Loading settings document failed (XML version).\n");
 	}
+	
+	// Testing lua loader
+	DgScript script;
+	DgScriptInit(&script);
+	DgScriptLoad(&script, "assets://scripts/startup.lua");
+	DgScriptFree(&script);
 	
 	// Event centre startup (global events)
 	DgFlagCreateEvent("game_init_ok");

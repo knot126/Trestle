@@ -5,10 +5,4 @@
 -- Game Startup Script
 -- 
 
-function init()
-	local status = mgGetEngineState()
-	
-	if not status then
-		mgSet("object.property", "test")
-	end
-end
+print("This is a test.")

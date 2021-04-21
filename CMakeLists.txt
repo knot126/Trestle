@@ -9,6 +9,9 @@ set(MELON_NAME melon)
 # Find OpenGL
 include("FindOpenGL")
 
+# Include lua
+set(LUA_DIR "lib/lua/src")
+
 # Files for lua
 set(LUA_FILES
 	lib/lua/src/lapi.c
@@ -45,6 +48,35 @@ set(LUA_FILES
 	lib/lua/src/linit.c
 )
 
+set(LUA_INCLUDE_FILES
+	${LUA_DIR}/lapi.h
+	${LUA_DIR}/ldebug.h
+	${LUA_DIR}/ljumptab.h
+	${LUA_DIR}/lobject.h
+	${LUA_DIR}/lprefix.h
+	${LUA_DIR}/ltm.h
+	${LUA_DIR}/lundump.h
+	${LUA_DIR}/lauxlib.h
+	${LUA_DIR}/ldo.h
+	${LUA_DIR}/llex.h
+	${LUA_DIR}/lopcodes.h
+	${LUA_DIR}/lstate.h
+	${LUA_DIR}/lua.h
+	${LUA_DIR}/lvm.h
+	${LUA_DIR}/lcode.h
+	${LUA_DIR}/lfunc.h
+	${LUA_DIR}/llimits.h
+	${LUA_DIR}/lopnames.h
+	${LUA_DIR}/lstring.h
+	${LUA_DIR}/luaconf.h
+	${LUA_DIR}/lzio.h
+	${LUA_DIR}/lctype.h
+	${LUA_DIR}/lgc.h
+	${LUA_DIR}/lmem.h
+	${LUA_DIR}/lparser.h
+	${LUA_DIR}/ltable.h
+	${LUA_DIR}/lualib.h)
+
 # Melon Source files
 set(MELON_FILES
 	src/util/alloc.c
@@ -57,10 +89,12 @@ set(MELON_FILES
 	src/util/load.c
 	src/util/maths.c
 	src/util/rand.c
+	src/util/script.c
 	src/util/thread.c
 	src/util/time.c
 	src/util/xml.c
 	src/util/xml2.c
+	${LUA_INCLUDE_FILES}
 	)
 
 # Source files
@@ -97,6 +131,9 @@ endif()
 # Create executable and set up linking
 add_executable(${EXEC_NAME} ${EXEC_FILES})
 add_library(${MELON_NAME} SHARED ${MELON_FILES})
+
+target_include_directories(${EXEC_NAME} PRIVATE ${LUA_DIR})
+target_include_directories(${MELON_NAME} PRIVATE ${LUA_DIR})
 
 target_link_libraries(${EXEC_NAME} m)
 target_link_libraries(${EXEC_NAME} GL)
