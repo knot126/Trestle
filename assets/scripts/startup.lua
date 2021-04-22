@@ -10,14 +10,6 @@ QR_COMPONENT_MESH = (1 << 1)
 QR_COMPONENT_CAMERA = (1 << 2)
 QR_COMPONENT_PHYSICS = (1 << 3)
 
--- function mgCreateEntity(p)
--- 	return p
--- end
-
-if (mgCreateEntity == nil) then
-	print("ERROR !! Did not register create entity function properly")
-end
-
 ent = mgCreateEntity(QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH)
 
 print("Made entity from lua; Id: ")
