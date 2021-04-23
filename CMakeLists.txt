@@ -104,7 +104,7 @@ set(EXEC_FILES
 	lib/glew/glew.c
 	src/world/world.c
 	src/world/transform.c
-	src/world/compo/graphics.c
+	src/world/graphics.c
 	src/world/scripting.c
 	src/graphics/graphics.c
 	src/graphics/opengl.c

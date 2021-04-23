@@ -77,3 +77,30 @@ uint32_t DgRandInt(void) {
 float DgRandFloat(void) {
 	return DgRandXORShiftF32();
 }
+
+#if !defined(DG_NO_LUA)
+
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+
+#include "script.h"
+
+static int DgRandInt_Scripted(lua_State *script) {
+	lua_pushinteger(script, DgRandInt());
+	
+	return 1;
+}
+
+static int DgRandFloat_Scripted(lua_State *script) {
+	lua_pushnumber(script, DgRandFloat());
+	
+	return 1;
+}
+
+void DgRegisterRandFuncs(DgScript *script) {
+	lua_register(script->state, "mgRandInt", &DgRandInt_Scripted);
+	lua_register(script->state, "mgRandFloat", &DgRandFloat_Scripted);
+}
+
+#endif

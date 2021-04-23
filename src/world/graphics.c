@@ -9,11 +9,11 @@
 #include <inttypes.h>
 #include <stdbool.h>
 
-#include "../../world/world.h"
-#include "../../world/compo.h"
-#include "../../util/fs.h"
-#include "../../util/alloc.h"
-#include "../../util/xml.h"
+#include "../world/world.h"
+#include "../world/compo.h"
+#include "../util/fs.h"
+#include "../util/alloc.h"
+#include "../util/xml.h"
 
 #include "graphics.h"
 

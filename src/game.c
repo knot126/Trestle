@@ -22,7 +22,7 @@
 
 #include "world/world.h"
 #include "world/transform.h"
-#include "world/compo/graphics.h"
+#include "world/graphics.h"
 #include "world/scripting.h"
 #include "graphics/graphics.h"
 #include "phys/phys.h"
@@ -184,6 +184,7 @@ int game_main(int argc, char* argv[]) {
 	printf("Info: Running startup script...\n");
 	DgScript script;
 	DgScriptInit(&script);
+	DgRegisterRandFuncs(&script);
 	registerWorldScriptFunctions(&script);
 	DgScriptLoad(&script, "assets://scripts/startup.lua");
 	DgScriptFree(&script);
