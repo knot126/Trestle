@@ -34,6 +34,7 @@
 #include "util/time.h"
 #include "util/fail.h"
 #include "util/xml.h"
+#include "util/xml2.h"
 #include "util/fs.h"
 #include "util/script.h"
 #include "util/config.h"

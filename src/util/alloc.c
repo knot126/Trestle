@@ -31,3 +31,33 @@ char *DgStrdup(char *source) {
 	char *dest = DgAlloc(strlen(source) + 1);
 	return strcpy(dest, source);
 }
+
+char *DgStrdupl(const char * const source, size_t max) {
+	/*
+	 * Duplicate a string up to a certian length
+	 */
+	size_t len = 0;
+	
+	// Get size
+	while (len < max && source[len] != '\0') {
+		len++;
+	}
+	
+	// Allocate memory
+	char *dest = DgAlloc(len + 1);
+	
+	if (!dest) {
+		return NULL;
+	}
+	
+	// Copy bytes
+	for (size_t i = 0; i < len; i++) {
+		dest[i] = source[i];
+	}
+	
+	// Set last to null terminator
+	dest[len] = '\0';
+	
+	// Return new string
+	return dest;
+}

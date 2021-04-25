@@ -30,7 +30,6 @@ static int scripted_CreateEntity(lua_State *script) {
 static int scripted_SetTransform(lua_State *script) {
 	uint32_t id = lua_tointeger(script, 1);
 	uint32_t stack = (uint32_t) lua_gettop(script);
-	printf("stack top = %d\n", stack);
 	
 	float px = (float) lua_tonumber(script, 2);
 	float py = (float) lua_tonumber(script, 3);

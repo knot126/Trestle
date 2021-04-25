@@ -20,3 +20,4 @@ void *DgRealloc(void *block, size_t size);
 
 // Utility functions bundled with allocator
 char *DgStrdup(char *source);
+char *DgStrdupl(const char * const source, size_t max);

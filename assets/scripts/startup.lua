@@ -34,5 +34,5 @@ for z = 0.0, 16.0, 1.0 do
 		(mgRandFloat() - 0.5) * 5.0, (mgRandFloat() - 0.5) * 5.0, -z,
 		mgRandFloat(), mgRandFloat(), mgRandFloat(),
 		true)
-	print("Created cube with entity ID ", ent)
+	--print("Created cube with entity ID ", ent)
 end
