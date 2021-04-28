@@ -105,6 +105,7 @@ uint32_t DgXML2Parse(DgXML2Node * const doc, const uint32_t content_size, const 
 			while (!is_comment_end(&content[i])) {
 				i++;
 			}
+			i += 3;
 		}
 		
 		else if (is_tag_start(&content[i]) == 1) {
@@ -194,6 +195,17 @@ uint32_t DgXML2Parse(DgXML2Node * const doc, const uint32_t content_size, const 
 		
 		if (tokens[i].type == DG_XML_TAG_END) {
 			depth--;
+		}
+		
+		if (tokens[i].type == DG_XML_NAME) {
+			for (int j = 0; j < depth; j++) {
+				printf("\t");
+			}
+			printf("%s = ", tokens[i].text);
+		}
+		
+		if (tokens[i].type == DG_XML_STRING) {
+			printf("%s\n", tokens[i].text);
 		}
 	}
 	
