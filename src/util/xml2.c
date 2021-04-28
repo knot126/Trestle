@@ -21,10 +21,10 @@
 typedef struct {
 	enum {
 		DG_XML_UNKNOWN,
-		DG_XML_TAG_START,
+		DG_XML_TAG_NAME,
 		DG_XML_TAG_END,
-		DG_XML_KEY,
-		DG_XML_VALUE,
+		DG_XML_NAME,
+		DG_XML_STRING,
 	} type;
 	char *text;
 } Dg_XMLParseToken;
@@ -33,20 +33,20 @@ typedef struct {
  * Utility Functions
  */
 
-static Dg_XMLParseToken *token_list_expand(Dg_XMLParseToken *data, size_t * const current_size) {
+static void expand_tokens(Dg_XMLParseToken **data, size_t * const current_size) {
 	*current_size = *current_size + 1;
-	return (Dg_XMLParseToken *) DgRealloc(data, *current_size * sizeof(Dg_XMLParseToken));
+	*data = DgRealloc(*data, *current_size * sizeof(Dg_XMLParseToken));
 }
 
 static bool is_whitespace(const char * const seq) {
 	return (*seq == ' ' || *seq == '\t' || *seq == '\n' || *seq == '\r');
 }
 
-static bool is_tag_start(const char * const seq) {
+static int is_tag_start(const char * const seq) {
 	/**
 	 * Returns 0 if none, 1 if normal open, 2 if close tag
 	 */
-	if ((seq[0] == '<') && (seq[1] == '/')) return 2;
+	if ((seq[0] == '<') && (seq[1] == '/')) { printf("RET 2\n"); return 2; }
 	return (*seq == '<');
 }
 
@@ -54,7 +54,7 @@ static int is_tag_end(const char * const seq) {
 	/**
 	 * Returns 0 if not any, 1 if normal close, 2 for self-closing
 	 */
-	if ((seq[0] == '/') && (seq[1] == '>')) return 2;
+	if ((seq[0] == '/') && (seq[1] == '>')) { return 2; }
 	return (*seq == '>');
 }
 
@@ -93,9 +93,83 @@ uint32_t DgXML2Parse(DgXML2Node * const doc, const uint32_t content_size, const 
 	Dg_XMLParseToken *tokens = NULL;
 	size_t token_count = 0;
 	
+	/**
+	 * Main tokeniser loop
+	 */
 	for (size_t i = 0; i < content_size; i++) {
+		if (is_whitespace(&content[i]) || is_tag_end(&content[i]) == 1) {
+			continue;
+		}
+		
+		else if (is_tag_start(&content[i]) == 1) {
+			expand_tokens(&tokens, &token_count);
+			
+			tokens[token_count - 1].type = DG_XML_TAG_NAME;
+			
+			i++;
+			size_t start = i;
+			while (!is_whitespace(&content[i]) && !is_tag_end(&content[i])) {
+				i++;
+			}
+			tokens[token_count - 1].text = DgStrdupl(&content[start], i - start);
+			
+			continue;
+		}
+		
+		else if (is_string_term(&content[i])) {
+			expand_tokens(&tokens, &token_count);
+			
+			tokens[token_count - 1].type = DG_XML_STRING;
+			
+			i++;
+			size_t start = i;
+			while (!is_string_term(&content[i])) {
+				i++;
+			}
+			tokens[token_count - 1].text = DgStrdupl(&content[start], i - start);
+			
+			continue;
+		}
+		
+		else if (is_tag_end(&content[i]) == 2 || is_tag_start(&content[i]) == 2) {
+			expand_tokens(&tokens, &token_count);
+			
+			tokens[token_count - 1].type = DG_XML_TAG_END;
+			tokens[token_count - 1].text = NULL;
+			
+			// skip this portion of the document
+			while (is_tag_end(&content[i]) == 0) {
+				i++;
+			}
+			
+			continue;
+		}
+		
+		else {
+			expand_tokens(&tokens, &token_count);
+			
+			tokens[token_count - 1].type = DG_XML_NAME;
+			
+			size_t start = i;
+			while (!is_whitespace(&content[i]) && !is_assoc(&content[i])) {
+				i++;
+			}
+			tokens[token_count - 1].text = DgStrdupl(&content[start], i - start);
+			
+			continue;
+		}
+		
 		printf("%c", content[i]);
 	}
+	
+	/*
+	 * Debug: Print out all the tokens in a nice format.
+	 */
+#if 0
+	for (size_t i = 0; i < token_count; i++) {
+		printf("[ %.3d ] %d -> %s\n", i, tokens[i].type, tokens[i].text);
+	}
+#endif
 }
 
 uint32_t DgXML2Load(DgXML2Node *doc, const char * const path) {
@@ -103,7 +177,7 @@ uint32_t DgXML2Load(DgXML2Node *doc, const char * const path) {
 	
 	// Load the file
 	
-	char * real_path = (char *) DgEvalPath((char *) path);
+	char *real_path = (char *) DgEvalPath((char *) path);
 	
 	if (!real_path) {
 		printf("Warning: XML Parser Error: Could not load file at %s.\n", real_path);

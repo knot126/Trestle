@@ -18,7 +18,7 @@ static uint32_t DgERandMidSqU32(void) {
 	 * 
 	 * DEPRECATED: Replaced with DgRandXORShiftSU32
 	 */
-	const uint32_t mask = 0b11111111111111111111111100000000;
+	const uint32_t mask = 0xFFFFFF00;
 	static uint32_t seed;
 	
 	if (seed == 0) {
