@@ -33,10 +33,10 @@ bool DgFlagCreateEvent(const char* name) {
 	 * the flag.
 	 * </summary>
 	 */
-	printf("libmelon: \033[1;33mWarning:\033[0m Deprecated function DgFlagCreateEvent(name = \"%s\") was called.\n", name);
-	
 	// Initialise subsystem for the first time
 	if (!dg_flag.events) {
+		printf("\033[1;33mWarning:\033[0m Flags are a deprecated feature of melon and should not be used anymore.\n", name);
+		
 		const size_t init_size = 16;
 		
 		dg_flag.events = (DgFlagEventInfo *) DgAlloc(sizeof(DgFlagEventInfo) * init_size);
@@ -86,8 +86,6 @@ bool DgFlagCreateEvent(const char* name) {
 
 bool DgFlagRegisterCallback(const char* event, void (*func)(const char*, void*)) {
 	/* Registers a callback to an event */
-	printf("libmelon: \033[1;33mWarning:\033[0m Deprecated function DgFlagRegisterCallback(event = \"%s\", func = <%X>) was called.\n", event, func);
-	
 	DgFlagEventInfo* this = NULL;
 	
 	// Find the event we want to work with

@@ -25,6 +25,7 @@ typedef struct {
 		DG_XML_TAG_END,
 		DG_XML_NAME,
 		DG_XML_STRING,
+		DG_XML_ASSOC,
 	} type;
 	char *text;
 } Dg_XMLParseToken;
@@ -119,8 +120,13 @@ uint32_t DgXML2Parse(DgXML2Node * const doc, const uint32_t content_size, const 
 				i++;
 			}
 			tokens[token_count - 1].text = DgStrdupl(&content[start], i - start);
+		}
+		
+		else if (is_assoc(&content[i])) {
+			expand_tokens(&tokens, &token_count);
 			
-			continue;
+			tokens[token_count - 1].type = DG_XML_ASSOC;
+			tokens[token_count - 1].text = NULL;
 		}
 		
 		else if (is_string_term(&content[i])) {
@@ -134,8 +140,6 @@ uint32_t DgXML2Parse(DgXML2Node * const doc, const uint32_t content_size, const 
 				i++;
 			}
 			tokens[token_count - 1].text = DgStrdupl(&content[start], i - start);
-			
-			continue;
 		}
 		
 		else if (is_tag_end(&content[i]) == 2 || is_tag_start(&content[i]) == 2) {
@@ -148,8 +152,6 @@ uint32_t DgXML2Parse(DgXML2Node * const doc, const uint32_t content_size, const 
 			while (is_tag_end(&content[i]) == 0) {
 				i++;
 			}
-			
-			continue;
 		}
 		
 		else {
@@ -163,7 +165,10 @@ uint32_t DgXML2Parse(DgXML2Node * const doc, const uint32_t content_size, const 
 			}
 			tokens[token_count - 1].text = DgStrdupl(&content[start], i - start);
 			
-			continue;
+			// NOTE: This fixes an issue where we increment too far on the equal sign.
+			if (is_assoc(&content[i])) {
+				i--;
+			}
 		}
 		
 		printf("%c", content[i]);
