@@ -46,7 +46,7 @@ static int is_tag_start(const char * const seq) {
 	/**
 	 * Returns 0 if none, 1 if normal open, 2 if close tag
 	 */
-	if ((seq[0] == '<') && (seq[1] == '/')) { printf("RET 2\n"); return 2; }
+	if ((seq[0] == '<') && (seq[1] == '/')) { return 2; }
 	return (*seq == '<');
 }
 
@@ -67,7 +67,7 @@ static bool is_string_term(const char * const seq) {
 }
 
 static bool is_comment_start(const char * const seq) {
-	return (seq[0] == '<' && seq[1] == '-' && seq[2] == '-');
+	return (seq[0] == '<' && seq[1] == '!' && seq[2] == '-' && seq[3] == '-');
 }
 
 static bool is_comment_end(const char * const seq) {
@@ -99,6 +99,12 @@ uint32_t DgXML2Parse(DgXML2Node * const doc, const uint32_t content_size, const 
 	for (size_t i = 0; i < content_size; i++) {
 		if (is_whitespace(&content[i]) || is_tag_end(&content[i]) == 1) {
 			continue;
+		}
+		
+		else if (is_comment_start(&content[i])) {
+			while (!is_comment_end(&content[i])) {
+				i++;
+			}
 		}
 		
 		else if (is_tag_start(&content[i]) == 1) {
@@ -162,14 +168,36 @@ uint32_t DgXML2Parse(DgXML2Node * const doc, const uint32_t content_size, const 
 		printf("%c", content[i]);
 	}
 	
-	/*
+	/**
 	 * Debug: Print out all the tokens in a nice format.
 	 */
-#if 0
+#if 1
 	for (size_t i = 0; i < token_count; i++) {
 		printf("[ %.3d ] %d -> %s\n", i, tokens[i].type, tokens[i].text);
 	}
 #endif
+	
+	/**
+	 * XML Parser Main loop
+	 */
+	uint32_t depth = 0;
+	
+	for (size_t i = 0; i < token_count; i++) {
+		if (tokens[i].type == DG_XML_TAG_NAME) {
+			for (int j = 0; j < depth; j++) {
+				printf("\t");
+			}
+			printf("%s:\n", tokens[i].text);
+			
+			depth++;
+		}
+		
+		if (tokens[i].type == DG_XML_TAG_END) {
+			depth--;
+		}
+	}
+	
+	DgFree(tokens);
 }
 
 uint32_t DgXML2Load(DgXML2Node *doc, const char * const path) {
@@ -206,5 +234,9 @@ uint32_t DgXML2Load(DgXML2Node *doc, const char * const path) {
 	
 	const char * const content = tmp_content;
 	
-	return DgXML2Parse(doc, doc_size, content);
+	uint32_t stat = DgXML2Parse(doc, doc_size, content);
+	
+	DgFree((void *) content);
+	
+	return stat;
 }
