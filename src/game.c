@@ -143,17 +143,17 @@ int game_main(int argc, char* argv[]) {
 	
 	// Loading XML config
 // 	printf("Info: Loading settings document (XML version).\n");
-// 	DgXMLNode settings_doc;
-// 	uint32_t status = DgXMLLoad(&settings_doc, "assets://config.xml");
+// 	DgSimpleXMLNode settings_doc;
+// 	uint32_t status = DgSimpleXMLLoad(&settings_doc, "assets://config.xml");
 // 	if (!status) {
-// 		DgXMLFree(&settings_doc);
+// 		DgSimpleXMLFree(&settings_doc);
 // 	}
 // 	else {
 // 		printf("Error: Loading settings document failed (XML version).\n");
 // 	}
 	
-	DgXML2Node somedoc;
-	DgXML2Load(&somedoc, "assets://config.xml");
+	DgXMLNode somedoc;
+	DgXMLLoad(&somedoc, "assets://config.xml");
 	
 	// Event centre startup (global events)
 	DgFlagCreateEvent("game_init_ok");

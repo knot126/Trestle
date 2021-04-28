@@ -12,13 +12,22 @@
 typedef struct {
 	char *key;
 	char *value;
-} DgXML2Pair;
+} DgXMLPair;
 
-typedef struct DgXML2Node {
+typedef struct DgXMLNode {
+	// Node name
 	char *name;
-	DgXML2Pair *attrib;
-	struct DgXMLEntity *sub;
+	
+	// Node attributes
+	DgXMLPair *attrib;
+	size_t attrib_count;
+	
+	// Subnodes
+	struct DgXMLNode *sub;
+	size_t sub_count;
+	
+	// Node text
 	char *text;
-} DgXML2Node;
+} DgXMLNode;
 
-uint32_t DgXML2Load(DgXML2Node *doc, const char * const path);
+uint32_t DgXMLLoad(DgXMLNode *doc, const char * const path);

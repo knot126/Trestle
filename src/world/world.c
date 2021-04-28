@@ -124,34 +124,6 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 	return world->mask_count;
 }
 
-bool scene_load_xml(World *world, const char * const path) {
-	DgXMLNode node;
-	
-	if (DgXMLLoad(&node, path)) {
-		return false;
-	}
-	
-	// for each entity tag
-	for (uint32_t s = 0; s < node.sub_count; s++) {
-		if (!strcmp(node.sub[s].name, "entity")) {
-			uint32_t mask = 0;
-			
-			CTransform *transform;
-			CMesh      *mesh;
-			CCamera    *camera;
-			
-			// for each tag in the entity tag
-			for (uint32_t t = 0; t < node.sub[s].sub_count; t++) {
-				if (!strcmp(node.sub[s].sub[t].name, "transform")) {
-					
-				}
-			}
-		}
-	}
-	
-	return true;
-}
-
 void SetActiveWorld(World *world) {
 	QuickRunActiveWorld = world;
 }

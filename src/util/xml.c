@@ -24,30 +24,30 @@ const bool _DG_XML_DEBUG = false;
  * Functions that helps with creating and freeing parser structures.
  */
 
-static void DgXMLPairFree(DgXMLPair *pair) {
+static void DgSimpleXMLPairFree(DgSimpleXMLPair *pair) {
 	/**
-	 * <summary>Frees a DgXMLPair.</summary>
+	 * <summary>Frees a DgSimpleXMLPair.</summary>
 	 */
 	
 	DgFree(pair->key);
 	DgFree(pair->value);
 }
 
-static void DgXMLNodeFree(DgXMLNode node) {
+static void DgSimpleXMLNodeFree(DgSimpleXMLNode node) {
 	/**
-	 * <summary>Frees a DgXMLNode.</summary>
+	 * <summary>Frees a DgSimpleXMLNode.</summary>
 	 */
 	
 	DgFree(node.name);
 	
 	for (size_t i = 0; i < node.sub_count; i++) {
-		DgXMLNodeFree(node.sub[i]);
+		DgSimpleXMLNodeFree(node.sub[i]);
 	}
 	
 	DgFree(node.sub);
 	
 	for (size_t i = 0; i < node.attrib_count; i++) {
-		DgXMLPairFree((node.attrib + i));
+		DgSimpleXMLPairFree((node.attrib + i));
 	}
 	
 	DgFree(node.attrib);
@@ -119,9 +119,9 @@ static bool isProcInstEnd(const char * const c) {
  * parser APIs.
  */
 
-uint32_t DgXMLParse(DgXMLNode * const doc, uint32_t t_doc_size, char * const content) {
+uint32_t DgSimpleXMLParse(DgSimpleXMLNode * const doc, uint32_t t_doc_size, char * const content) {
 	/**
-	 * <summary>Parse an XML document into a DgXMLNode tree, from the fully 
+	 * <summary>Parse an XML document into a DgSimpleXMLNode tree, from the fully 
 	 * loaded buffer at content given the doc_size.</summary>
 	 * <input name="doc">The tree to load the document into.</input>
 	 * <input name="doc_size">The size of the document to be loaded.</input>
@@ -136,11 +136,11 @@ uint32_t DgXMLParse(DgXMLNode * const doc, uint32_t t_doc_size, char * const con
 	const uint32_t doc_size = t_doc_size;
 	
 	// Clear the XML node
-	memset(doc, 0, sizeof(DgXMLNode));
+	memset(doc, 0, sizeof(DgSimpleXMLNode));
 	
 	// Parser nonlocals
 	uint32_t depth = 0;
-	DgXMLNode *current = doc;
+	DgSimpleXMLNode *current = doc;
 	
 	// Parser, to parse the document (this used to say lexer and not parser :P)
 	for (size_t i = 0; i < doc_size; i++) {
@@ -187,9 +187,9 @@ uint32_t DgXMLParse(DgXMLNode * const doc, uint32_t t_doc_size, char * const con
 			// Allocate subnodes
 			if (depth > 1) {
 				current->sub_count++;
-				current->sub = (DgXMLNode *) DgRealloc(current->sub, sizeof(DgXMLNode) * current->sub_count);
+				current->sub = (DgSimpleXMLNode *) DgRealloc(current->sub, sizeof(DgSimpleXMLNode) * current->sub_count);
 				current = &current->sub[current->sub_count - 1];
-				memset(current, 0, sizeof(DgXMLNode));
+				memset(current, 0, sizeof(DgSimpleXMLNode));
 			}
 			
 			// Get tag name
@@ -250,7 +250,7 @@ uint32_t DgXMLParse(DgXMLNode * const doc, uint32_t t_doc_size, char * const con
 				
 				// Add pair to current node
 				current->attrib_count++;
-				current->attrib = DgRealloc(current->attrib, sizeof(DgXMLPair) * current->attrib_count);
+				current->attrib = DgRealloc(current->attrib, sizeof(DgSimpleXMLPair) * current->attrib_count);
 				current->attrib[current->attrib_count - 1].key = key;
 				current->attrib[current->attrib_count - 1].value = value;
 			}
@@ -280,10 +280,10 @@ uint32_t DgXMLParse(DgXMLNode * const doc, uint32_t t_doc_size, char * const con
 	}
 }
 
-uint32_t DgXMLLoad(DgXMLNode * const doc, const char * const path) {
+uint32_t DgSimpleXMLLoad(DgSimpleXMLNode * const doc, const char * const path) {
 	/**
 	 * <summary>Load an XML document into memory; specifically, into the 
-	 * <type>DgXMLNode</type> provided.</summary>
+	 * <type>DgSimpleXMLNode</type> provided.</summary>
 	 * <input name="doc">The root node that the document will be loaded into.</input>
 	 * <input name="path">The path that will be passed to <func file="fs.c">DgEvalPath</func>.</input>
 	 */
@@ -315,18 +315,18 @@ uint32_t DgXMLLoad(DgXMLNode * const doc, const char * const path) {
 	
 	if(_DG_XML_DEBUG) printf("== %s ==\n%s\n", path, content);
 	
-	DgXMLParse(doc, doc_size, content);
+	DgSimpleXMLParse(doc, doc_size, content);
 	
 	DgFree(content);
 	
 	return 0;
 }
 
-void DgXMLFree(DgXMLNode *doc) {
-	DgXMLNodeFree(*doc);
+void DgSimpleXMLFree(DgSimpleXMLNode *doc) {
+	DgSimpleXMLNodeFree(*doc);
 }
 
-void DgXMLPrintNode(uint32_t indent, DgXMLNode* node) {
+void DgSimpleXMLPrintNode(uint32_t indent, DgSimpleXMLNode* node) {
 	if (node->name) {
 		for (uint32_t i = 0; i < indent; i++) {
 			printf("\t");
@@ -348,7 +348,7 @@ void DgXMLPrintNode(uint32_t indent, DgXMLNode* node) {
 	
 	if (node->sub) {
 		for (uint32_t i = 0; i < node->sub_count; i++) {
-			DgXMLPrintNode(indent, &node->sub[i]);
+			DgSimpleXMLPrintNode(indent, &node->sub[i]);
 		}
 	}
 }

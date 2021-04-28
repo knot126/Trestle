@@ -7,19 +7,19 @@
 
 #pragma once
 
-typedef struct DgXMLPair {
+typedef struct DgSimpleXMLPair {
 	char *key, *value;
-} DgXMLPair;
+} DgSimpleXMLPair;
 
-typedef struct DgXMLNode {
+typedef struct DgSimpleXMLNode {
 	char *name;
-	struct DgXMLNode *sub;
+	struct DgSimpleXMLNode *sub;
 	size_t sub_count;
-	DgXMLPair *attrib;
+	DgSimpleXMLPair *attrib;
 	size_t attrib_count;
-} DgXMLNode;
+} DgSimpleXMLNode;
 
-uint32_t DgXMLParse(DgXMLNode * const doc, uint32_t t_doc_size, char * const content);
-uint32_t DgXMLLoad(DgXMLNode * const doc, const char * const path);
-void DgXMLFree(DgXMLNode *doc);
-void DgXMLPrintNode(uint32_t indent, DgXMLNode* node);
+uint32_t DgSimpleXMLParse(DgSimpleXMLNode * const doc, uint32_t t_doc_size, char * const content);
+uint32_t DgSimpleXMLLoad(DgSimpleXMLNode * const doc, const char * const path);
+void DgSimpleXMLFree(DgSimpleXMLNode *doc);
+void DgSimpleXMLPrintNode(uint32_t indent, DgSimpleXMLNode* node);

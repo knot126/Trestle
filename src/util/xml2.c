@@ -82,7 +82,7 @@ static bool is_comment_end(const char * const seq) {
  * These are some parser functions for simpily loading the document into memory.
  */
 
-uint32_t DgXML2Parse(DgXML2Node * const doc, const uint32_t content_size, const char * const content) {
+uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const char * const content) {
 	/**
 	 * <summary>Parse an XML document (version 2)</summary>
 	 * <input name="doc">The document node that the document will be loaded into.</input>
@@ -170,9 +170,9 @@ uint32_t DgXML2Parse(DgXML2Node * const doc, const uint32_t content_size, const 
 				i--;
 			}
 		}
-		
-		printf("%c", content[i]);
 	}
+	
+	//printf("Took %d iterations to parse document.\n", icount);
 	
 	/**
 	 * Debug: Print out all the tokens in a nice format.
@@ -183,41 +183,48 @@ uint32_t DgXML2Parse(DgXML2Node * const doc, const uint32_t content_size, const 
 	}
 #endif
 	
+	/*
+	 * Pre-parser steps
+	 */
+	memset(doc, 0, sizeof(DgXMLNode));
+	
 	/**
-	 * XML Parser Main loop
+	 * XML Parser loop
 	 */
 	uint32_t depth = 0;
+	DgXMLNode *current = (DgXMLNode *) doc;
 	
 	for (size_t i = 0; i < token_count; i++) {
+		// Resync the current node
+		current = (DgXMLNode *) doc;
+		for (uint32_t j = 1; j < depth; j++) {
+			printf("Resync subnode... (%d < %d)\n", j, depth);
+			current = &current->sub[current->sub_count - 1];
+		}
+		
 		if (tokens[i].type == DG_XML_TAG_NAME) {
-			for (int j = 0; j < depth; j++) {
-				printf("\t");
+			printf("XML Find Tag Name\n");
+			if (depth > 0) {
+				printf("XML Adding Non-Document Subnode to <%X>\n", current);
+				current->sub_count++;
+				current->sub = DgRealloc(current->sub, sizeof(DgXMLNode) * current->sub_count);
+				current = &current->sub[current->sub_count - 1];
+				memset(current, 0, sizeof(DgXMLNode));
 			}
-			printf("%s:\n", tokens[i].text);
 			
+			current->name = tokens[i].text;
 			depth++;
 		}
 		
 		if (tokens[i].type == DG_XML_TAG_END) {
 			depth--;
 		}
-		
-		if (tokens[i].type == DG_XML_NAME) {
-			for (int j = 0; j < depth; j++) {
-				printf("\t");
-			}
-			printf("%s = ", tokens[i].text);
-		}
-		
-		if (tokens[i].type == DG_XML_STRING) {
-			printf("%s\n", tokens[i].text);
-		}
 	}
 	
 	DgFree(tokens);
 }
 
-uint32_t DgXML2Load(DgXML2Node *doc, const char * const path) {
+uint32_t DgXMLLoad(DgXMLNode *doc, const char * const path) {
 	char *tmp_content;
 	
 	// Load the file
@@ -251,7 +258,7 @@ uint32_t DgXML2Load(DgXML2Node *doc, const char * const path) {
 	
 	const char * const content = tmp_content;
 	
-	uint32_t stat = DgXML2Parse(doc, doc_size, content);
+	uint32_t stat = DgXMLParse(doc, doc_size, content);
 	
 	DgFree((void *) content);
 	
