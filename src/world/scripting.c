@@ -16,6 +16,7 @@
 #include "world.h"
 #include "transform.h"
 #include "graphics.h" // graphics utilities
+#include "seg.h"
 
 #include "scripting.h"
 
@@ -100,10 +101,26 @@ static int scripted_LoadMesh(lua_State *script) {
 	return 0;
 }
 
+static int scripted_LoadSegment(lua_State *script) {
+	if (lua_gettop(script) != 1) {
+		lua_pushnumber(script, 0.0);
+		return 1;
+	}
+	
+	const char *path = lua_tostring(script, 1);
+	
+	float length = segment_load(path);
+	
+	lua_pushinteger(script, length);
+	
+	return 1;
+}
+
 void registerWorldScriptFunctions(DgScript *script) {
 	lua_register(script->state, "mgCreateEntity", &scripted_CreateEntity);
 	lua_register(script->state, "mgTransform", &scripted_SetTransform);
 	lua_register(script->state, "mgMesh", &scripted_LoadMesh);
 	lua_register(script->state, "mgForce", &scripted_AddForce);
 	lua_register(script->state, "mgMass", &scripted_SetMass);
+	lua_register(script->state, "mgSegment", &scripted_LoadSegment);
 }

@@ -34,7 +34,6 @@
 #include "util/time.h"
 #include "util/fail.h"
 #include "util/xml.h"
-#include "util/xml2.h"
 #include "util/fs.h"
 #include "util/script.h"
 #include "util/config.h"
@@ -142,18 +141,14 @@ int game_main(int argc, char* argv[]) {
 	}
 	
 	// Loading XML config
-// 	printf("Info: Loading settings document (XML version).\n");
-// 	DgSimpleXMLNode settings_doc;
-// 	uint32_t status = DgSimpleXMLLoad(&settings_doc, "assets://config.xml");
-// 	if (!status) {
-// 		DgSimpleXMLFree(&settings_doc);
-// 	}
-// 	else {
-// 		printf("Error: Loading settings document failed (XML version).\n");
-// 	}
-	
 	DgXMLNode somedoc;
-	DgXMLLoad(&somedoc, "assets://config.xml");
+	if (!DgXMLLoad(&somedoc, "assets://config.xml")) {
+		DgXMLPrintNode(&somedoc, 0);
+		DgXMLNodeFree(&somedoc);
+	}
+	else {
+		printf("\033[1;31mError:\033[0m Failed to load XML doucment.\n");
+	}
 	
 	// Event centre startup (global events)
 	DgFlagCreateEvent("game_init_ok");

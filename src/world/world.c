@@ -10,7 +10,6 @@
 #include "../world/world.h"
 #include "../util/alloc.h"
 #include "../util/fail.h"
-#include "../util/xml.h"
 
 #include "world.h"
 

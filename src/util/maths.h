@@ -63,6 +63,8 @@ DgVec3 DgVec3Normalise(DgVec3 a);
 DgVec3 DgVec3New(float x, float y, float z);
 DgVec3 DgVec3Negate(DgVec3 a);
 
+DgVec3 DgVec3FromString(const char * const s);
+
 // DgVec4
 
 DgVec4 DgVec4Add(DgVec4 a, DgVec4 b);

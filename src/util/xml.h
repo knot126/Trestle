@@ -2,24 +2,35 @@
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
- * Decent Games XML Parser A1
+ * Decent Games XML Parser A2
  */
 
 #pragma once
 
-typedef struct DgSimpleXMLPair {
-	char *key, *value;
-} DgSimpleXMLPair;
+#include <inttypes.h>
 
-typedef struct DgSimpleXMLNode {
+typedef struct {
+	char *key;
+	char *value;
+} DgXMLPair;
+
+typedef struct DgXMLNode {
+	// Node name
 	char *name;
-	struct DgSimpleXMLNode *sub;
-	size_t sub_count;
-	DgSimpleXMLPair *attrib;
+	
+	// Node attributes
+	DgXMLPair *attrib;
 	size_t attrib_count;
-} DgSimpleXMLNode;
+	
+	// Subnodes
+	struct DgXMLNode *sub;
+	size_t sub_count;
+	
+	// Node text
+	char *text;
+} DgXMLNode;
 
-uint32_t DgSimpleXMLParse(DgSimpleXMLNode * const doc, uint32_t t_doc_size, char * const content);
-uint32_t DgSimpleXMLLoad(DgSimpleXMLNode * const doc, const char * const path);
-void DgSimpleXMLFree(DgSimpleXMLNode *doc);
-void DgSimpleXMLPrintNode(uint32_t indent, DgSimpleXMLNode* node);
+uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const char * const content);
+uint32_t DgXMLLoad(DgXMLNode *doc, const char * const path);
+void DgXMLNodeFree(DgXMLNode *node);
+void DgXMLPrintNode(const DgXMLNode * const doc, uint32_t depth);

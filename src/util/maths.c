@@ -7,6 +7,7 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 // For C implementations that do not specify PI
 #if !defined(M_PI)
@@ -188,6 +189,22 @@ inline DgVec3 DgVec3Negate(DgVec3 a) {
 	c.x = -a.x;
 	c.y = -a.y;
 	c.z = -a.z;
+	
+	return c;
+}
+
+inline DgVec3 DgVec3FromString(const char * const s) {
+	DgVec3 c = DgVec3New(0.0f, 0.0f, 0.0f);
+	
+	char * t = (char *) s;
+	
+	c.x = strtof(t, &t);
+	if (t) {
+		c.y = strtof(t, &t);
+		if (t) {
+			c.z = strtof(t, NULL);
+		}
+	}
 	
 	return c;
 }
