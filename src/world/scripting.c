@@ -116,6 +116,53 @@ static int scripted_LoadSegment(lua_State *script) {
 	return 1;
 }
 
+static int scripted_CreateCamera(lua_State *script) {
+	float fx = 0.0f, fy = 0.0f, fz = 0.0f;
+	
+	if (lua_gettop(script) == 3) {
+		fx = (float) lua_tonumber(script, 1);
+		fy = (float) lua_tonumber(script, 2);
+		fz = (float) lua_tonumber(script, 3);
+	}
+	
+	uint32_t ent = world_create_entity(QuickRunActiveWorld, QR_COMPONENT_TRANSFORM | QR_COMPONENT_CAMERA | QR_COMPONENT_PHYSICS);
+	entity_set_transform(QuickRunActiveWorld, ent, DgVec3New(0.0f, 2.0f, 3.0f), DgVec3New(0.1f, 0.0f, 0.0f), DgVec3New(1.0f, 1.0f, 1.0f));
+	entity_phys_set_flags(QuickRunActiveWorld, ent, QR_PHYS_DISABLE_GRAVITY);
+	entity_phys_set_mass(QuickRunActiveWorld, ent, 1.0f);
+	entity_phys_add_force(QuickRunActiveWorld, ent, DgVec3New(fx, fy, fz), DgVec3New(0.0f, 0.0f, 0.0f));
+	world_set_camera(QuickRunActiveWorld, ent);
+	
+	lua_pushinteger(script, ent);
+	
+	return 1;
+}
+
+static int scripted_AddBox(lua_State *script) {
+	int top = lua_gettop(script);
+	
+	float px = 0.0f, py = 0.0f, pz = 0.0f, sx = 1.0f, sy = 1.0f, sz = 1.0f;
+	
+	if (top >= 3) {
+		px = (float) lua_tonumber(script, 1);
+		py = (float) lua_tonumber(script, 2);
+		pz = (float) lua_tonumber(script, 3);
+	}
+	
+	if (top >= 6) {
+		sx = (float) lua_tonumber(script, 4);
+		sy = (float) lua_tonumber(script, 5);
+		sz = (float) lua_tonumber(script, 6);
+	}
+	
+	uint32_t ent = world_create_entity(QuickRunActiveWorld, QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH);
+	entity_load_mesh(QuickRunActiveWorld, ent, "assets://mesh/cube2.bin");
+	entity_set_transform(QuickRunActiveWorld, ent, DgVec3New(px, py, pz), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(sx, sy, sz));
+	
+	lua_pushinteger(script, ent);
+	
+	return 1;
+}
+
 void registerWorldScriptFunctions(DgScript *script) {
 	lua_register(script->state, "mgCreateEntity", &scripted_CreateEntity);
 	lua_register(script->state, "mgTransform", &scripted_SetTransform);
@@ -123,4 +170,6 @@ void registerWorldScriptFunctions(DgScript *script) {
 	lua_register(script->state, "mgForce", &scripted_AddForce);
 	lua_register(script->state, "mgMass", &scripted_SetMass);
 	lua_register(script->state, "mgSegment", &scripted_LoadSegment);
+	lua_register(script->state, "mgCamera", &scripted_CreateCamera);
+	lua_register(script->state, "mgBox", &scripted_AddBox);
 }

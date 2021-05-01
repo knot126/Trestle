@@ -17,7 +17,7 @@ void gameplay_update(World *world) {
 	CPhysics *phys = NULL;
 	
 	for (size_t i = 0; i < world->CPhysicss_count; i++) {
-		if (world->CPhysicss[i].base.id == 3) {
+		if (world->CPhysicss[i].base.id == world->CCameras_active[2]) {
 			phys = &world->CPhysicss[i];
 			break;
 		}

@@ -104,4 +104,6 @@ void world_set_camera(World * const world, const uint32_t id) {
 			break;
 		}
 	}
+	
+	world->CCameras_active[2] = id;
 }

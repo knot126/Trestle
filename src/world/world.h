@@ -41,7 +41,7 @@ typedef struct {
 	CCamera *CCameras;
 	uint32_t CCameras_count;
 	uint32_t CCameras_alloc;
-	uint32_t CCameras_active[2];
+	uint32_t CCameras_active[3];
 	
 	// Physics Components
 	CPhysics *CPhysicss;
