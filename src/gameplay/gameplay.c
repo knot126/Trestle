@@ -43,7 +43,7 @@ void gameplay_update(World *world) {
 		phys->Vpos = DgVec3Add(phys->Vpos, DgVec3New(0.03f, 0.0f, 0.0f));
 	}
 	
-	else {
-		phys->Vpos = DgVec3New(0.0f, 0.0f, 0.0f);
-	}
+// 	else {
+// 		phys->Vpos = DgVec3New(0.0f, 0.0f, 0.0f);
+// 	}
 }

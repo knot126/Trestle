@@ -22,15 +22,15 @@ function new_cube(x, y, z, sx, sy, sz, phys)
 	mgTransform(ent, x, y, z, 0.0, 0.0, 0.0, sx, sy, sz)
 	mgMesh(ent, "assets://mesh/cube2.bin")
 	if phys then
-		mgForce(ent, 0.0, 50000.0, -100000.0, 0.0, 0.0, 0.0)
 		mgMass(ent, 1.0)
+		mgForce(ent, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0)
 	end
 	
 	return ent
 end
 
 cam = mgCamera(0.0, 0.0, -1.0)
-b = new_cube(0.0, 0.0, 0.0, 1.0, 1.0, 1.0, true)
+b = new_cube(0.0, 0.0, 0.0, 1.0, 1.0, 1.0, false)
 
 for z = 0.0, 16.0, 1.0 do
 	cubes[#cubes + 1] = new_cube(

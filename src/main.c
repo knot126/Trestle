@@ -11,22 +11,29 @@
  * Main File
  * =========
  * 
- * This file holds the main function and therefore the call to platform_main.
+ * This file holds the main function for each platform.
  */
 
 // Any "global" defines
 #define GLEW_STATIC
 
-// Platform_main will define the correct main for this platform
+#include "game.h"
+
 #ifdef __linux__
-	#include "linux/main.h"
+	int main(int argc, char* argv[]) {
+		return game_main(argc, argv);
+	}
 #endif
 
 #ifdef __APPLE__
-	#include "macos/main.h"
+	#error Building on macOS is not yet supported.
 #endif
 
 #if defined(_WIN32) || defined(_WIN64)
 	#define OS_WINDOWS
 	#include "windows/main.h"
+	
+	int main(int argc, char *argv[]) {
+		return game_main(argc, argv);
+	}
 #endif

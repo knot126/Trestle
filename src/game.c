@@ -21,8 +21,6 @@
 #endif
 
 #include "world/world.h"
-#include "world/transform.h"
-#include "world/graphics.h"
 #include "world/scripting.h"
 #include "graphics/graphics.h"
 #include "phys/phys.h"
@@ -30,7 +28,6 @@
 #include "util/thread.h"
 #include "util/alloc.h"
 #include "util/bag.h"
-#include "util/flag.h"
 #include "util/time.h"
 #include "util/fail.h"
 #include "util/xml.h"
@@ -82,7 +79,6 @@ static int game_loop(World *world, SystemStates *systems) {
 	
 	while (should_keep_open) {
 		float frame_time = DgTime();
-		float clock; // time var for clocker
 		
 		// Check if we should still be open
 		should_keep_open = get_should_keep_open(systems->graphics);
@@ -121,19 +117,21 @@ static int game_loop(World *world, SystemStates *systems) {
 }
 
 int game_main(int argc, char* argv[]) {
-	/* The first real main game function, called from the main() function of the
-	 * OS. */
+	/**
+	 * The first real main game function, called from the main() function of the
+	 * OS. 
+	 */
 	print_info();
 	
 	// Initialise the clock
 	DgInitTime();
 	
 	// File system module init
-	printf("Info: Initialising file system paths...\n");
+	printf("\033[0;35mInfo:\033[0m Initialising file system paths...\n");
 	DgInitPaths();
 	
 	// Load config
-	printf("Info: Loading engine configuration file...\n");
+	printf("\033[0;35mInfo:\033[0m Loading engine configuration file...\n");
 	DgBag *config = DgConfigLoad("assets://config.cfg", true);
 	
 	if (!config) {
@@ -143,44 +141,21 @@ int game_main(int argc, char* argv[]) {
 	// Loading XML config
 	DgXMLNode somedoc;
 	if (!DgXMLLoad(&somedoc, "assets://config.xml")) {
-		DgXMLPrintNode(&somedoc, 0);
+		//DgXMLPrintNode(&somedoc, 0);
 		DgXMLNodeFree(&somedoc);
 	}
 	else {
 		printf("\033[1;31mError:\033[0m Failed to load XML doucment.\n");
 	}
 	
-	// Event centre startup (global events)
-	DgFlagCreateEvent("game_init_ok");
-	DgFlagRegisterCallback("game_init_ok", &on_init_okay);
-	
 	// Load world
-	printf("Info: Initialising main world...\n");
+	printf("\033[0;35mInfo:\033[0m Initialising main world...\n");
 	World main_world;
 	world_init(&main_world, 0);
 	SetActiveWorld(&main_world);
 	
-	// Create test entities
-// 	uint32_t ent = world_create_entity(&main_world, QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH);
-// 	entity_load_mesh(&main_world, ent, "assets://mesh/cube2.bin");
-// 	entity_set_transform(&main_world, ent, DgVec3New(0.0f, 0.0f, 0.2f), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(3.0f, 0.1f, 8.0f));
-// 	
-// 	ent = world_create_entity(&main_world, QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH | QR_COMPONENT_PHYSICS);
-// 	entity_set_transform(&main_world, ent, DgVec3New(-1.25f, 0.0f, 0.0f), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(1.0f, 1.5f, 1.0f));
-// 	entity_phys_set_flags(&main_world, ent, 0);
-// 	entity_phys_set_mass(&main_world, ent, 100.0f);
-// 	entity_phys_add_force(&main_world, ent, DgVec3New(0.0f, 320.0f, -120.0f), DgVec3New(0.0f, 0.0f, -0.1f));
-// 	entity_load_mesh(&main_world, ent, "assets://mesh/cube3.bin");
-// 	
-// 	uint32_t ent = world_create_entity(&main_world, QR_COMPONENT_TRANSFORM | QR_COMPONENT_CAMERA | QR_COMPONENT_PHYSICS);
-// 	entity_set_transform(&main_world, ent, DgVec3New(0.0f, 2.0f, 3.0f), DgVec3New(0.1f, 0.0f, 0.0f), DgVec3New(1.0f, 1.0f, 1.0f));
-// 	entity_phys_set_flags(&main_world, ent, QR_PHYS_DISABLE_GRAVITY);
-// 	entity_phys_set_mass(&main_world, ent, 10.0f);
-// 	entity_phys_add_force(&main_world, ent, DgVec3New(0.0f, 0.0f, -0.25f), DgVec3New(0.0f, 0.0f, 0.0f));
-// 	world_set_camera(&main_world, ent);
-	
 	// Testing lua loader
-	printf("Info: Running startup script...\n");
+	printf("\033[0;35mInfo:\033[0m Running startup script...\n");
 	DgScript script;
 	DgScriptInit(&script);
 	DgRegisterRandFuncs(&script);
@@ -193,30 +168,25 @@ int game_main(int argc, char* argv[]) {
 	// This is only for the really big systems in the game and not for anything
 	// that can basically manage itself (for example, utility functions), though
 	// perhaps they should be ported to use system init as well.
-	printf("Info: Initialising systems...\n");
+	printf("\033[0;35mInfo:\033[0m Initialising systems...\n");
 	SystemStates systems;
 	sys_init(&systems);
 	
 	// Main loop
-	printf("Info: Starting the main loop...\n");
-	DgFlagRaise("game_init_ok", NULL);
+	printf("\033[0;35mInfo:\033[0m Starting the main loop...\n");
 	game_loop(&main_world, &systems);
 	
 	// Systems destruction
-	printf("Info: Destroying systems...\n");
+	printf("\033[0;35mInfo:\033[0m Destroying systems...\n");
 	sys_destroy(&systems);
 	
 	// World destruction
-	printf("Info: Destroying main world...\n");
+	printf("\033[0;35mInfo:\033[0m Destroying main world...\n");
 	world_destroy(&main_world);
-	
-	// Global flags cleanup
-	printf("Info: Cleaning up memory used by flags...\n");
-	DgFlagGlobalCleanup();
 	
 	// Cleanup main config file
 	if (config) {
-		printf("Info: Freeing memory used by config...\n");
+		printf("\033[0;35mInfo:\033[0m Freeing memory used by config...\n");
 		DgConfigFree(config);
 	}
 	

@@ -84,13 +84,11 @@ set(MELON_FILES
 	src/util/config.c
 	src/util/dict.c
 	src/util/fail.c
-	src/util/flag.c # DEPRECATED
 	src/util/fs.c
 	src/util/load.c
 	src/util/maths.c
 	src/util/rand.c
 	src/util/script.c
-	src/util/sxml.c # DEPRECATED
 	src/util/thread.c
 	src/util/time.c
 	src/util/xml.c
@@ -112,7 +110,6 @@ set(EXEC_FILES
 	src/graphics/image.c
 	src/gameplay/gameplay.c
 	src/input/input.c
-	src/linux/main.c
 	src/phys/phys.c
 	src/input/glfwi.c
 	src/game.c
