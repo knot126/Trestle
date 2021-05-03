@@ -150,7 +150,11 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glGenTextures(gl->textures_count, gl->textures);
 	
 	// Making textures
-	gl_load_texture(gl, "assets://gfx/white.png", GL_TEXTURE0);
+	DgBitmap *bmp = DgBitmapGenTiles(256, 256, 16);
+	if (bmp) {
+		gl_load_texture_buffer(gl, bmp, GL_TEXTURE0);
+		DgBitmapFree(bmp);
+	}
 	//gl_load_texture(gl, "assets://gfx/2.jpg", GL_TEXTURE1);
 	
 	glUniform1i(glGetUniformLocation(gl->programs[0], "image"), 0);

@@ -10,6 +10,8 @@
 #ifndef TRESTLE_OPENGL_UTILITIES_INCLUDED
 #define TRESTLE_OPENGL_UTILITIES_INCLUDED
 
+int texture_count = 0;
+
 GLuint gl_load_shader(char* filename, GLenum type) {
 	/* 
 	 * Load and create an OpenGL shader `filename`, of type `type`.
@@ -164,8 +166,6 @@ GLuint gl_make_program(DgOpenGLContext *gl, char* source_path) {
 }
 
 static void gl_load_texture(DgOpenGLContext *gl, char *path, GLenum active_texture) {
-	static int texture_count = 0;
-	
 	glActiveTexture(active_texture);
 	glBindTexture(GL_TEXTURE_2D, gl->textures[texture_count]);
 	texture_count++;
@@ -187,6 +187,29 @@ static void gl_load_texture(DgOpenGLContext *gl, char *path, GLenum active_textu
 	printf("Info: Loaded image with id %d.\n", texture_count);
 	
 	DgFreeImage(&image);
+}
+
+static void gl_load_texture_buffer(DgOpenGLContext *gl, DgBitmap *bitmap, GLenum active_texture) {
+	glActiveTexture(active_texture);
+	glBindTexture(GL_TEXTURE_2D, gl->textures[texture_count]);
+	texture_count++;
+	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	
+	GLenum mode;
+	
+	if (bitmap->chan == 1) mode = GL_RED;
+	if (bitmap->chan == 2) mode = GL_RG;
+	if (bitmap->chan == 3) mode = GL_RGB;
+	if (bitmap->chan == 4) mode = GL_RGBA;
+	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bitmap->width, bitmap->height, 0, GL_RGB, GL_UNSIGNED_BYTE, bitmap->src);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	
+	printf("Info: Loaded image with id %d.\n", texture_count);
 }
 
 static void gl_set_format(DgOpenGLContext *gl) {

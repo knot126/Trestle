@@ -22,6 +22,10 @@ typedef enum {
 } ComponentMaskEnum;
 
 typedef struct {
+	uint32_t active_id;
+} PlayerWorld;
+
+typedef struct {
 	// Masks and entities
 	mask_t  *mask;
 	uint32_t mask_count;
@@ -47,6 +51,8 @@ typedef struct {
 	CPhysics *CPhysicss;
 	uint32_t  CPhysicss_count;
 	uint32_t  CPhysicss_alloc;
+	
+	PlayerWorld player_info;
 	
 } World;
 

@@ -12,13 +12,8 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <assert.h>
-#if defined(__linux__)
-	#include <unistd.h>
-#endif
 
 #include "world/world.h"
 #include "world/scripting.h"
@@ -35,17 +30,13 @@
 #include "util/script.h"
 #include "util/config.h"
 #include "util/rand.h"
-#include "gameplay/gameplay.h"
+#include "game/gameplay.h"
 #include "types.h"
 
 #include "game.h"
 
 static void print_info(void) {
 	printf("Info: Engine compiled on %s at %s.\n", __DATE__, __TIME__);
-}
-
-static void on_init_okay(const char* event, void* params) {
-	printf("Info: The game has initialised successfully.\n");
 }
 
 static void sys_init(SystemStates *sys) {
@@ -140,13 +131,12 @@ int game_main(int argc, char* argv[]) {
 	
 	// Loading XML config
 	DgXMLNode somedoc;
-	if (!DgXMLLoad(&somedoc, "assets://config.xml")) {
-		//DgXMLPrintNode(&somedoc, 0);
-		DgXMLNodeFree(&somedoc);
-	}
-	else {
+	
+	if (DgXMLLoad(&somedoc, "assets://config.xml")) {
 		printf("\033[1;31mError:\033[0m Failed to load XML doucment.\n");
 	}
+	
+	DgXMLNodeFree(&somedoc);
 	
 	// Load world
 	printf("\033[0;35mInfo:\033[0m Initialising main world...\n");

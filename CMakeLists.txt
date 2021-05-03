@@ -85,6 +85,7 @@ set(MELON_FILES
 	src/util/dict.c
 	src/util/fail.c
 	src/util/fs.c
+	src/util/ini.c
 	src/util/load.c
 	src/util/maths.c
 	src/util/rand.c
@@ -108,7 +109,7 @@ set(EXEC_FILES
 	src/graphics/graphics.c
 	src/graphics/opengl.c
 	src/graphics/image.c
-	src/gameplay/gameplay.c
+	src/game/gameplay.c
 	src/input/input.c
 	src/phys/phys.c
 	src/input/glfwi.c

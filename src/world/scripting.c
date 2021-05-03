@@ -163,6 +163,16 @@ static int scripted_AddBox(lua_State *script) {
 	return 1;
 }
 
+static int scripted_SetPlayer(lua_State *script) {
+	uint32_t id = lua_tointeger(script, 1);
+	
+	QuickRunActiveWorld->player_info.active_id = id;
+	
+	lua_pushinteger(script, id);
+	
+	return 1;
+}
+
 void registerWorldScriptFunctions(DgScript *script) {
 	lua_register(script->state, "mgCreateEntity", &scripted_CreateEntity);
 	lua_register(script->state, "mgTransform", &scripted_SetTransform);
@@ -172,4 +182,5 @@ void registerWorldScriptFunctions(DgScript *script) {
 	lua_register(script->state, "mgSegment", &scripted_LoadSegment);
 	lua_register(script->state, "mgCamera", &scripted_CreateCamera);
 	lua_register(script->state, "mgBox", &scripted_AddBox);
+	lua_register(script->state, "mgActivePlayer", &scripted_SetPlayer);
 }
