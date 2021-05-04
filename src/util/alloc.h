@@ -10,9 +10,6 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
-// NOTE: Should be replaced with DgHandle32
-typedef int32_t alloch_t;
-
 // Allocation functions
 void *DgAlloc(size_t size);
 void DgFree(void *block);
