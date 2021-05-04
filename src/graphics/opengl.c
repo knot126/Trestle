@@ -150,7 +150,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glGenTextures(gl->textures_count, gl->textures);
 	
 	// Making textures
-	DgBitmap *bmp = DgBitmapGenTiles(256, 256, 16);
+	DgBitmap *bmp = DgBitmapGenTiles(256, 256, 64);
 	if (bmp) {
 		gl_load_texture_buffer(gl, bmp, GL_TEXTURE0);
 		DgBitmapFree(bmp);

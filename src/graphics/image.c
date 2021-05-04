@@ -84,7 +84,7 @@ DgBitmap *DgBitmapGenTiles(const uint16_t width, const uint16_t height, const ui
 			printf("X %d | %d | %d\n", current_y, size_tick_y, y);
 		}
 		
-		if (current_x <= 0) {
+		if (size_tick_x <= 0) {
 			current_x = ~current_x;
 			size_tick_x = size;
 		}
