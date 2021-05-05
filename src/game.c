@@ -26,6 +26,7 @@
 #include "util/time.h"
 #include "util/fail.h"
 #include "util/xml.h"
+#include "util/ini.h"
 #include "util/fs.h"
 #include "util/script.h"
 #include "util/config.h"
@@ -124,6 +125,9 @@ int game_main(int argc, char* argv[]) {
 	// Load config
 	printf("\033[0;35mInfo:\033[0m Loading engine configuration file...\n");
 	DgBag *config = DgConfigLoad("assets://config.cfg", true);
+	
+	DgINIDocument ini_config;
+	DgINILoad(&ini_config, "assets://config.ini");
 	
 	if (!config) {
 		DgFail("Error: Failed to load configuration file.\n", 200);

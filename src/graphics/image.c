@@ -18,6 +18,7 @@
 
 #include "../util/fs.h"
 #include "../util/types.h"
+#include "../util/rand.h"
 
 #include "image.h"
 
@@ -81,7 +82,7 @@ DgBitmap *DgBitmapGenTiles(const uint16_t width, const uint16_t height, const ui
 				current_y = ~current_y;
 				size_tick_y = size;
 			}
-			printf("X %d | %d | %d\n", current_y, size_tick_y, y);
+// 			printf("X %d | %d | %d\n", current_y, size_tick_y, y);
 		}
 		
 		if (size_tick_x <= 0) {
@@ -91,7 +92,33 @@ DgBitmap *DgBitmapGenTiles(const uint16_t width, const uint16_t height, const ui
 		
 		current_y = current_x;
 		
-		printf("Z %d | %d\n", current_x, x);
+// 		printf("Z %d | %d\n", current_x, x);
+	}
+	
+	return bitmap;
+}
+
+DgBitmap *DgBitmapRandom(const uint16_t width, const uint16_t height) {
+	DgBitmap *bitmap = (DgBitmap *) DgAlloc(sizeof(DgBitmap));
+	
+	if (!bitmap) {
+		return NULL;
+	}
+	
+	bitmap->width = width;
+	bitmap->height = height;
+	bitmap->chan = DG_IMAGE_CHANNELS;
+	bitmap->src = (unsigned char *) DgAlloc(width * height * DG_IMAGE_CHANNELS * sizeof(unsigned char));
+	
+	if (!bitmap->src) {
+		DgFree(bitmap);
+		return NULL;
+	}
+	
+	unsigned char *src = bitmap->src;
+	
+	for (uint32_t i = 0; i < (bitmap->width * bitmap->height * bitmap->chan); i++) {
+		src[i] = DgRandInt() % 256;
 	}
 	
 	return bitmap;

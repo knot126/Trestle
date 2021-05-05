@@ -36,7 +36,7 @@ typedef struct Dg_INIToken {
  */
 
 static void token_expand(Dg_INIToken **tokens, size_t *count) {
-	*count = *count++;
+	*count = *count + 1;
 	*tokens = (Dg_INIToken *) DgRealloc(*tokens, *count * sizeof(Dg_INIToken));
 }
 
@@ -109,6 +109,10 @@ uint32_t DgINIParse(DgINIDocument *doc, const uint32_t length, const char * cons
 		else if (is_assoc(&content[i])) {
 			token_expand(&tokens, &token_count);
 			
+			if (!tokens) {
+				return 1;
+			}
+			
 			tokens[token_count - 1].type = DG_INI_ASSOC;
 			tokens[token_count - 1].text = NULL;
 		}
@@ -116,6 +120,11 @@ uint32_t DgINIParse(DgINIDocument *doc, const uint32_t length, const char * cons
 		else if (is_section(&content[i])) {
 			token_expand(&tokens, &token_count);
 			
+			if (!tokens) {
+				return 1;
+			}
+			
+			i++;
 			size_t start = i;
 			
 			do {
@@ -127,8 +136,6 @@ uint32_t DgINIParse(DgINIDocument *doc, const uint32_t length, const char * cons
 		}
 		
 		else {
-			token_expand(&tokens, &token_count);
-			
 			// skip whitespace before
 			while (i < length && is_whitespace(&content[i])) {
 				i++;
@@ -136,20 +143,87 @@ uint32_t DgINIParse(DgINIDocument *doc, const uint32_t length, const char * cons
 			
 			size_t start = i;
 			
-			while (i < length && !is_comment(&content[i]) && !is_assoc(&content[i]) && !is_newline(&content[i])) 
+			while (i < length && !is_assoc(&content[i]) && !is_newline(&content[i])) 
 			{
 				i++;
 			}
 			
 			// remove extra whitespace after assoc
 			if (is_assoc(&content[i])) {
-				do {
+				while (i > 0 && is_whitespace(&content[i - 1])) {
 					i--;
-				} while (i > 0 && is_whitespace(&content[i]));
+				};
+			}
+			
+			token_expand(&tokens, &token_count);
+			
+			if (!tokens) {
+				return 1;
 			}
 			
 			tokens[token_count - 1].type = DG_INI_VALUE;
 			tokens[token_count - 1].text = DgStrdupl(&content[start], i - start);
+		}
+	}
+	
+	// Clear the document node
+	memset(doc, 0, sizeof(DgINIDocument));
+	
+	for (size_t i = 0; i < token_count; i++) {
+		printf("[ %.3d ] %d : \"%s\"\n", i, tokens[i].type, tokens[i].text);
+		
+		if (tokens[i].type == DG_INI_SECTION) {
+			doc->section_count = doc->section_count + 1;
+			doc->sections = DgRealloc(doc->sections, doc->section_count * sizeof(DgINISection));
+			
+			if (!doc->sections) {
+				return 2;
+			}
+			
+			DgINISection *sect = &doc->sections[doc->section_count - 1];
+			memset(sect, 0, sizeof(DgINISection));
+			
+			sect->title = tokens[i].text;
+			
+			if ((i + 1) < token_count) {
+				i++;
+			}
+			else {
+				return 2;
+			}
+			
+			while ((i + 3) < i && tokens[i + 1].type != DG_INI_SECTION) {
+				i++;
+				
+				if (tokens[i].type != DG_INI_KEY) {
+					return 2;
+				}
+				
+				char *key = tokens[i].text;
+				
+				i++;
+				
+				if (tokens[i].type != DG_INI_ASSOC) {
+					return 2;
+				}
+				
+				i++;
+				
+				if (tokens[i].type != DG_INI_KEY) {
+					return 2;
+				}
+				
+				char *value = tokens[i].text;
+				
+				sect->pair_count = sect->pair_count + 1;
+				sect->pairs = DgRealloc(sect->pairs, sect->pair_count * sizeof(DgINIPair));
+				
+				sect->pairs[sect->pair_count - 1].key = key;
+				sect->pairs[sect->pair_count - 1].value = value;
+			}
+			
+			// Fixup the next section
+			i--;
 		}
 	}
 	
