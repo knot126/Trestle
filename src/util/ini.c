@@ -195,7 +195,8 @@ uint32_t DgINIParse(DgINIDocument *doc, const uint32_t length, const char * cons
 			while ((i + 3) < i && tokens[i + 1].type != DG_INI_SECTION) {
 				i++;
 				
-				if (tokens[i].type != DG_INI_KEY) {
+				if (tokens[i].type != DG_INI_VALUE) {
+					printf("\033[1;33mWarning:\033[0m INI Parser Error: Expected value for key.\n");
 					return 2;
 				}
 				
@@ -204,12 +205,14 @@ uint32_t DgINIParse(DgINIDocument *doc, const uint32_t length, const char * cons
 				i++;
 				
 				if (tokens[i].type != DG_INI_ASSOC) {
+					printf("\033[1;33mWarning:\033[0m INI Parser Error: Expected assocaitor for values.\n");
 					return 2;
 				}
 				
 				i++;
 				
-				if (tokens[i].type != DG_INI_KEY) {
+				if (tokens[i].type != DG_INI_VALUE) {
+					printf("\033[1;33mWarning:\033[0m INI Parser Error: Expected value.\n");
 					return 2;
 				}
 				
@@ -264,4 +267,50 @@ uint32_t DgINILoad(DgINIDocument *doc, char * const path) {
 	DgFree(content);
 	
 	return status;
+}
+
+void DgINIFree(DgINIDocument *doc) {
+	/**
+	 * Free and INI document
+	 */
+	for (size_t i = 0; i < doc->section_count; i++) {
+		DgFree(doc->sections[i].title);
+		
+		for (size_t j = 0; j < doc->sections[i].pair_count; j++) {
+			DgFree(doc->sections[i].pairs[j].key);
+			DgFree(doc->sections[i].pairs[j].value);
+		}
+		
+		DgFree(doc->sections[i].pairs);
+	}
+	
+	DgFree(doc->sections);
+}
+
+/**
+ * Functions for Getting/Setting data in INI files
+ */
+
+char *DgINIGet(DgINIDocument *doc, const char * const sect, const char * const key) {
+	/**
+	 * Get a value from and INI document, returns empty string if none.
+	 */
+	
+	char *result = "";
+	
+	for (size_t i = 0; i < doc->section_count; i++) {
+		if (!strcmp(doc->sections[i].title, sect)) {
+			DgINISection *section = &doc->sections[i];
+			printf("Found section with title %s.\n", section->title);
+			
+			for (size_t i = 0; i < section->pair_count; i++) {
+				if (!strcmp(section->pairs[i].key, key)) {
+					printf("Found key with value %s.\n", section->pairs[i].value);
+					result = section->pairs[i].value;
+				}
+			}
+		}
+	}
+	
+	return result;
 }

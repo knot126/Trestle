@@ -128,6 +128,8 @@ int game_main(int argc, char* argv[]) {
 	
 	DgINIDocument ini_config;
 	DgINILoad(&ini_config, "assets://config.ini");
+	printf("Main:main_scene = %s\n", DgINIGet(&ini_config, "Main", "main_scene"));
+	DgINIFree(&ini_config);
 	
 	if (!config) {
 		DgFail("Error: Failed to load configuration file.\n", 200);

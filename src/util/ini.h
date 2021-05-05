@@ -28,3 +28,6 @@ typedef struct {
 
 uint32_t DgINIParse(DgINIDocument *doc, const uint32_t length, const char * const content);
 uint32_t DgINILoad(DgINIDocument *doc, char * const path);
+void DgINIFree(DgINIDocument *doc);
+
+char *DgINIGet(DgINIDocument *doc, const char * const sect, const char * const key);
