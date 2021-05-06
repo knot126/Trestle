@@ -12,35 +12,6 @@
 
 #include "rand.h"
 
-static uint32_t DgERandMidSqU32(void) {
-	/* 
-	 * Implementing middle squares as a test. DgE = do not use in production.
-	 * 
-	 * DEPRECATED: Replaced with DgRandXORShiftSU32
-	 */
-	const uint32_t mask = 0xFFFFFF00;
-	static uint32_t seed;
-	
-	if (seed == 0) {
-		seed = ((uint32_t) (DgRealTime() * 1000.0f)) % 40000 + 1000;
-	}
-	
-	seed = seed * seed;
-	seed = (seed & mask) >> 8;
-	
-	return seed;
-}
-
-static float DgERandMidSqF32(void) {
-	/*
-	 * Based on the random integer function, this will make a random floating
-	 * point number.
-	 * 
-	 * DEPRECATED: Replaced with DgRandXORShiftF32
-	 */
-	return (float) (DgERandMidSqU32() * (1.0f / 16777215.0f));
-}
-
 static uint32_t DgRandXORShiftU32(uint32_t n) {
 	/*
 	 * Generate a random number based on a given seed using the XOR-Shift 

@@ -30,7 +30,6 @@ function new_cube(x, y, z, sx, sy, sz, phys)
 end
 
 cam = mgCamera(0.0, 0.0, -100.0)
-b = new_cube(0.0, 0.0, 0.0, 1.0, 1.0, 1.0, false)
 
 for z = 0.0, 16.0, 1.0 do
 	cubes[#cubes + 1] = new_cube(
@@ -39,3 +38,8 @@ for z = 0.0, 16.0, 1.0 do
 		true)
 	--print("Created cube with entity ID ", ent)
 end
+
+--new_cube(0.0, 0.0, 0.0, 1.0, 1.0, 1.0, false)
+new_cube(0.0, 0.0, 0.0, 5.0, 0.5, 3.0, false)
+new_cube(-2.5, 2.0, 0.0, 0.5, 4.0, 3.0, false)
+new_cube(2.5, 2.0, 0.0, 0.5, 4.0, 3.0, false)

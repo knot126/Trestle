@@ -170,7 +170,7 @@ uint32_t DgINIParse(DgINIDocument *doc, const uint32_t length, const char * cons
 	memset(doc, 0, sizeof(DgINIDocument));
 	
 	for (size_t i = 0; i < token_count; i++) {
-		printf("[ %.3d ] %d : \"%s\"\n", i, tokens[i].type, tokens[i].text);
+// 		printf("[ %.3d ] %d : \"%s\"\n", i, tokens[i].type, tokens[i].text);
 		
 		if (tokens[i].type == DG_INI_SECTION) {
 			doc->section_count = doc->section_count + 1;
@@ -185,18 +185,12 @@ uint32_t DgINIParse(DgINIDocument *doc, const uint32_t length, const char * cons
 			
 			sect->title = tokens[i].text;
 			
-			if ((i + 1) < token_count) {
-				i++;
-			}
-			else {
-				return 2;
-			}
-			
-			while ((i + 3) < i && tokens[i + 1].type != DG_INI_SECTION) {
+			// Values
+			while ((i + 3) < token_count && tokens[i + 1].type != DG_INI_SECTION) {
 				i++;
 				
 				if (tokens[i].type != DG_INI_VALUE) {
-					printf("\033[1;33mWarning:\033[0m INI Parser Error: Expected value for key.\n");
+					printf("\033[1;33mWarning:\033[0m INI Parser Error: Expected VALUE for key.\n");
 					return 2;
 				}
 				
@@ -224,9 +218,6 @@ uint32_t DgINIParse(DgINIDocument *doc, const uint32_t length, const char * cons
 				sect->pairs[sect->pair_count - 1].key = key;
 				sect->pairs[sect->pair_count - 1].value = value;
 			}
-			
-			// Fixup the next section
-			i--;
 		}
 	}
 	
@@ -301,16 +292,28 @@ char *DgINIGet(DgINIDocument *doc, const char * const sect, const char * const k
 	for (size_t i = 0; i < doc->section_count; i++) {
 		if (!strcmp(doc->sections[i].title, sect)) {
 			DgINISection *section = &doc->sections[i];
-			printf("Found section with title %s.\n", section->title);
+// 			printf("Found section with title %s.\n", section->title);
 			
-			for (size_t i = 0; i < section->pair_count; i++) {
-				if (!strcmp(section->pairs[i].key, key)) {
-					printf("Found key with value %s.\n", section->pairs[i].value);
-					result = section->pairs[i].value;
+			for (size_t j = 0; j < section->pair_count; j++) {
+				if (!strcmp(section->pairs[j].key, key)) {
+// 					printf("Found key with value %s.\n", section->pairs[j].value);
+					result = section->pairs[j].value;
 				}
 			}
 		}
 	}
 	
 	return result;
+}
+
+void DgINIPrint(DgINIDocument *doc) {
+	for (size_t i = 0; i < doc->section_count; i++) {
+		DgINISection *section = &doc->sections[i];
+		
+		printf("[%s]\n", section->title);
+		
+		for (size_t j = 0; j < section->pair_count; j++) {
+			printf("\t%s = %s\n", section->pairs[j].key, section->pairs[j].value);
+		}
+	}
 }
