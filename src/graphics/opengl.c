@@ -7,6 +7,7 @@
 
 #include <string.h>
 #include <math.h>
+#include <stdlib.h>
 
 #if !defined(DG_GLEW_INCLUDED_OK)
 	#include "../../lib/glew/glew.h"
@@ -21,6 +22,7 @@
 #include "../util/maths.h"
 #include "../util/rand.h"
 #include "../util/load.h"
+#include "../util/ini.h"
 #include "../types.h" // For g_deltaTime
 #include "image.h"
 
@@ -78,8 +80,11 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 	
+	int w_width = atol(DgINIGet(g_quickRunConfig, "Main", "window_width"));
+	int w_height = atol(DgINIGet(g_quickRunConfig, "Main", "window_height"));
+	
 	// Create window
-	gl->window = glfwCreateWindow(1280, 720, "Quick Run", NULL, NULL);
+	gl->window = glfwCreateWindow(w_width, w_height, "Quick Run", NULL, NULL);
 	
 	if (!gl->window) {
 		DgFail("Error: Failed to create glfw window.", -1);
@@ -93,7 +98,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glfwSwapInterval(0);
 	glfwSetFramebufferSizeCallback(gl->window, gl_set_window_size);
 	glfwSetCursorPosCallback(gl->window, gl_update_mouse);
-	glViewport(0, 0, 1280, 720);
+	glViewport(0, 0, w_width, w_height);
 	
 	// set window icon
 	DgImageInfo icon = DgLoadImage("assets://icon.png");

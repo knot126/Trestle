@@ -124,16 +124,15 @@ int game_main(int argc, char* argv[]) {
 	
 	// Load config
 	printf("\033[0;35mInfo:\033[0m Loading engine configuration file...\n");
-	DgBag *config = DgConfigLoad("assets://config.cfg", true);
 	
-	DgINIDocument ini_config;
-	DgINILoad(&ini_config, "assets://config.ini");
-	DgINIPrint(&ini_config);
-	printf("Main:default_scene = %s\n", DgINIGet(&ini_config, "Main", "default_scene"));
-	DgINIFree(&ini_config);
+	DgINIDocument initconf;
+	uint32_t initconf_status = DgINILoad(&initconf, "assets://config.ini");
 	
-	if (!config) {
+	if (initconf_status) {
 		DgFail("Error: Failed to load configuration file.\n", 200);
+	}
+	else {
+		g_quickRunConfig = &initconf;
 	}
 	
 	// Loading XML config
@@ -169,9 +168,21 @@ int game_main(int argc, char* argv[]) {
 	SystemStates systems;
 	sys_init(&systems);
 	
+	/**
+	 * 
+	 * MAIN LOOP
+	 * 
+	 */
+	
 	// Main loop
 	printf("\033[0;35mInfo:\033[0m Starting the main loop...\n");
 	game_loop(&main_world, &systems);
+	
+	/**
+	 * 
+	 * POST OF MAIN-LOOP (ENGINE DESTRUCTION)
+	 * 
+	 */
 	
 	// Systems destruction
 	printf("\033[0;35mInfo:\033[0m Destroying systems...\n");
@@ -182,9 +193,9 @@ int game_main(int argc, char* argv[]) {
 	world_destroy(&main_world);
 	
 	// Cleanup main config file
-	if (config) {
+	if (!initconf_status) {
 		printf("\033[0;35mInfo:\033[0m Freeing memory used by config...\n");
-		DgConfigFree(config);
+		DgINIFree(&initconf);
 	}
 	
 	return 0;

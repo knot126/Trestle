@@ -135,6 +135,8 @@ add_library(${MELON_NAME} SHARED ${MELON_FILES})
 target_include_directories(${EXEC_NAME} PRIVATE ${LUA_DIR})
 target_include_directories(${MELON_NAME} PRIVATE ${LUA_DIR})
 
+target_include_directories(${EXEC_NAME} PRIVATE "src")
+
 target_link_libraries(${EXEC_NAME} m)
 target_link_libraries(${EXEC_NAME} GL)
 target_link_libraries(${EXEC_NAME} glfw)

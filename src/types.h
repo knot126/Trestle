@@ -9,5 +9,9 @@
 
 #include <inttypes.h>
 
+#include "util/ini.h"
+
 extern float g_physicsDelta;
 extern float g_deltaTime;
+
+extern const DgINIDocument * g_quickRunConfig;

@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <inttypes.h>
+#include <stdlib.h>
 
 #include "alloc.h"
 #include "fs.h"
@@ -282,7 +283,7 @@ void DgINIFree(DgINIDocument *doc) {
  * Functions for Getting/Setting data in INI files
  */
 
-char *DgINIGet(DgINIDocument *doc, const char * const sect, const char * const key) {
+char *DgINIGet(const DgINIDocument * const doc, const char * const sect, const char * const key) {
 	/**
 	 * Get a value from and INI document, returns empty string if none.
 	 */
