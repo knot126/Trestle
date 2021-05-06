@@ -10,9 +10,11 @@ QR_COMPONENT_MESH = (1 << 1)
 QR_COMPONENT_CAMERA = (1 << 2)
 QR_COMPONENT_PHYSICS = (1 << 3)
 
+QR_PHYS_DISABLE_GRAVITY = (1 << 0)
+
 cubes = {}
 
-function new_cube(x, y, z, sx, sy, sz, phys)
+function new_cube(x, y, z, sx, sy, sz, phys, pflags)
 	flags = QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH
 	if phys then
 		flags = flags | QR_COMPONENT_PHYSICS
@@ -24,22 +26,30 @@ function new_cube(x, y, z, sx, sy, sz, phys)
 	if phys then
 		mgMass(ent, 1.0)
 		mgForce(ent, 0.0, 0.0, -100.0, 0.0, 0.0, 0.0)
+		if pflags ~= nil then
+			mgPhysFlags(ent, pflags)
+			print("Flags = ", pflags)
+		end
 	end
 	
 	return ent
 end
 
-cam = mgCamera(0.0, 0.0, -100.0)
+cam = mgCamera()
 
 for z = 0.0, 16.0, 1.0 do
 	cubes[#cubes + 1] = new_cube(
 		(mgRandFloat() - 0.5) * 5.0, (mgRandFloat() - 0.5) * 5.0, -z,
 		mgRandFloat(), mgRandFloat(), mgRandFloat(),
-		true)
-	--print("Created cube with entity ID ", ent)
+		true, nil)
+	--print("Crated cube with entity ID ", ent)
 end
 
 --new_cube(0.0, 0.0, 0.0, 1.0, 1.0, 1.0, false)
-new_cube(0.0, 0.0, 0.0, 5.0, 0.5, 3.0, false)
-new_cube(-2.5, 2.0, 0.0, 0.5, 4.0, 3.0, false)
-new_cube(2.5, 2.0, 0.0, 0.5, 4.0, 3.0, false)
+new_cube(0.0, 0.0, 0.0, 5.0, 0.5, 3.0, false, nil)
+new_cube(-2.5, 2.0, 0.0, 0.5, 4.0, 3.0, false, nil)
+new_cube(2.5, 2.0, 0.0, 0.5, 4.0, 3.0, false, nil)
+
+-- player init
+player = new_cube(0.0, 0.5, 0.0, 1.0, 1.0, 1.0, true, QR_PHYS_DISABLE_GRAVITY)
+mgActivePlayer(player)

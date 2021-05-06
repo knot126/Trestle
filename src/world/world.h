@@ -22,7 +22,7 @@ typedef enum {
 } ComponentMaskEnum;
 
 typedef struct {
-	uint32_t active_id;
+	uint32_t id;
 } PlayerWorld;
 
 typedef struct {

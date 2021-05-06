@@ -92,6 +92,15 @@ static int scripted_SetMass(lua_State *script) {
 	return 0;
 }
 
+static int scripted_SetPhysicsFlags(lua_State *script) {
+	uint32_t id = lua_tointeger(script, 1);
+	uint32_t flags = lua_tointeger(script, 2);
+	
+	entity_phys_set_flags(QuickRunActiveWorld, id, flags);
+	
+	return 0;
+}
+
 static int scripted_LoadMesh(lua_State *script) {
 	uint32_t id = lua_tointeger(script, 1);
 	const char *path = lua_tostring(script, 2);
@@ -117,19 +126,23 @@ static int scripted_LoadSegment(lua_State *script) {
 }
 
 static int scripted_CreateCamera(lua_State *script) {
-	float fx = 0.0f, fy = 0.0f, fz = 0.0f;
+	float px = 0.0f, py = 2.0f, pz = 3.0f;
+	float rx = 0.1f, ry = 0.0f, rz = 0.0f;
 	
-	if (lua_gettop(script) == 3) {
-		fx = (float) lua_tonumber(script, 1);
-		fy = (float) lua_tonumber(script, 2);
-		fz = (float) lua_tonumber(script, 3);
+	if (lua_gettop(script) >= 3) {
+		px = (float) lua_tonumber(script, 1);
+		py = (float) lua_tonumber(script, 2);
+		pz = (float) lua_tonumber(script, 3);
 	}
 	
-	uint32_t ent = world_create_entity(QuickRunActiveWorld, QR_COMPONENT_TRANSFORM | QR_COMPONENT_CAMERA | QR_COMPONENT_PHYSICS);
-	entity_set_transform(QuickRunActiveWorld, ent, DgVec3New(0.0f, 2.0f, 3.0f), DgVec3New(0.1f, 0.0f, 0.0f), DgVec3New(1.0f, 1.0f, 1.0f));
-	entity_phys_set_flags(QuickRunActiveWorld, ent, QR_PHYS_DISABLE_GRAVITY);
-	entity_phys_set_mass(QuickRunActiveWorld, ent, 1.0f);
-	entity_phys_add_force(QuickRunActiveWorld, ent, DgVec3New(fx, fy, fz), DgVec3New(0.0f, 0.0f, 0.0f));
+	if (lua_gettop(script) >= 6) {
+		rx = (float) lua_tonumber(script, 4);
+		ry = (float) lua_tonumber(script, 5);
+		rz = (float) lua_tonumber(script, 6);
+	}
+	
+	uint32_t ent = world_create_entity(QuickRunActiveWorld, QR_COMPONENT_TRANSFORM | QR_COMPONENT_CAMERA);
+	entity_set_transform(QuickRunActiveWorld, ent, DgVec3New(px, py, pz), DgVec3New(rx, ry, rz), DgVec3New(1.0f, 1.0f, 1.0f));
 	world_set_camera(QuickRunActiveWorld, ent);
 	
 	lua_pushinteger(script, ent);
@@ -166,7 +179,7 @@ static int scripted_AddBox(lua_State *script) {
 static int scripted_SetPlayer(lua_State *script) {
 	uint32_t id = lua_tointeger(script, 1);
 	
-	QuickRunActiveWorld->player_info.active_id = id;
+	QuickRunActiveWorld->player_info.id = id;
 	
 	lua_pushinteger(script, id);
 	
@@ -174,13 +187,19 @@ static int scripted_SetPlayer(lua_State *script) {
 }
 
 void registerWorldScriptFunctions(DgScript *script) {
+	/*  Low-Level Entities  */
 	lua_register(script->state, "mgCreateEntity", &scripted_CreateEntity);
 	lua_register(script->state, "mgTransform", &scripted_SetTransform);
 	lua_register(script->state, "mgMesh", &scripted_LoadMesh);
 	lua_register(script->state, "mgForce", &scripted_AddForce);
 	lua_register(script->state, "mgMass", &scripted_SetMass);
+	lua_register(script->state, "mgPhysFlags", &scripted_SetPhysicsFlags);
+	
+	/*  Segment and Level Management  */
 	lua_register(script->state, "mgSegment", &scripted_LoadSegment);
-	lua_register(script->state, "mgCamera", &scripted_CreateCamera);
 	lua_register(script->state, "mgBox", &scripted_AddBox);
+	
+	/*  Higher-Level Entities  */
+	lua_register(script->state, "mgCamera", &scripted_CreateCamera);
 	lua_register(script->state, "mgActivePlayer", &scripted_SetPlayer);
 }
