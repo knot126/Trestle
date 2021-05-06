@@ -81,7 +81,6 @@ set(LUA_INCLUDE_FILES
 set(MELON_FILES
 	src/util/alloc.c
 	src/util/bag.c
-	src/util/config.c
 	src/util/dict.c
 	src/util/fail.c
 	src/util/fs.c
