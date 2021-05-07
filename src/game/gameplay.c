@@ -16,6 +16,8 @@
 #include "../world/compo.h"
 #include "../types.h"
 
+float speed = 2.0f;
+
 void gameplay_update(World *world) {
 	/*
 	 * Gameplay/game specific realted updates
@@ -23,7 +25,15 @@ void gameplay_update(World *world) {
 	
 	// PLAYER
 	
+	CTransform *transf = NULL;
 	CPhysics *phys = NULL;
+	
+	for (size_t i = 0; i < world->CTransforms_count; i++) {
+		if (world->CTransforms[i].base.id == world->player_info.id) {
+			transf = &world->CTransforms[i];
+			break;
+		}
+	}
 	
 	for (size_t i = 0; i < world->CPhysicss_count; i++) {
 		if (world->CPhysicss[i].base.id == world->player_info.id) {
@@ -32,28 +42,40 @@ void gameplay_update(World *world) {
 		}
 	}
 	
-	if (!phys) {
+	if (!transf || !phys) {
 		return;
 	}
 	
+	float lspeed = speed * g_deltaTime;
+	
+// 	if (getKeyPressed(GLFW_KEY_UP)) {
+// 		transf->pos = DgVec3Add(transf->pos, DgVec3New(0.0f, 0.0f, -lspeed));
+// 	}
+// 	
+// 	if (getKeyPressed(GLFW_KEY_DOWN)) {
+// 		transf->pos = DgVec3Add(transf->pos, DgVec3New(0.0f, 0.0f, lspeed));
+// 	}
+	
 	if (getKeyPressed(GLFW_KEY_UP)) {
-		phys->Vpos = DgVec3Add(phys->Vpos, DgVec3New(0.0f, 0.0f, -0.03f));
+		speed = speed + g_deltaTime;
 	}
 	
-	else if (getKeyPressed(GLFW_KEY_DOWN)) {
-		phys->Vpos = DgVec3Add(phys->Vpos, DgVec3New(0.0f, 0.0f, 0.03f));
+	if (getKeyPressed(GLFW_KEY_DOWN)) {
+		speed = speed - g_deltaTime;
 	}
 	
-	else if (getKeyPressed(GLFW_KEY_LEFT)) {
-		phys->Vpos = DgVec3Add(phys->Vpos, DgVec3New(-0.03f, 0.0f, 0.0f));
+	transf->pos = DgVec3Add(transf->pos, DgVec3New(0.0f, 0.0f, -lspeed));
+	
+	if (getKeyPressed(GLFW_KEY_LEFT)) {
+		transf->pos = DgVec3Add(transf->pos, DgVec3New(-lspeed, 0.0f, 0.0f));
 	}
 	
-	else if (getKeyPressed(GLFW_KEY_RIGHT)) {
-		phys->Vpos = DgVec3Add(phys->Vpos, DgVec3New(0.03f, 0.0f, 0.0f));
+	if (getKeyPressed(GLFW_KEY_RIGHT)) {
+		transf->pos = DgVec3Add(transf->pos, DgVec3New(lspeed, 0.0f, 0.0f));
 	}
 	
 	if (getKeyPressed(GLFW_KEY_SPACE)) {
-		phys->Vpos = DgVec3Add(phys->Vpos, DgVec3New(0.0f, 0.03f, 0.0f));
+		phys->Fpos = DgVec3Add(phys->Fpos, DgVec3New(0.0f, speed, 0.0f));
 	}
 	
 	// CAMERA
@@ -92,5 +114,5 @@ void gameplay_update(World *world) {
 		return;
 	}
 	
-	cpos->pos = DgVec3New(/*ppos->pos.x*/ 0.0f, ppos->pos.y + 3.0f, ppos->pos.z + 3.0f);
+	cpos->pos = DgVec3New(ppos->pos.x * 0.2f, ppos->pos.y + 3.0f, ppos->pos.z + 3.0f);
 }

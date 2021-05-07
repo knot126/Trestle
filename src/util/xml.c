@@ -10,6 +10,7 @@
 #include <stdio.h>
 
 #include "alloc.h"
+#include "str.h"
 #include "fs.h"
 
 #include "xml.h"

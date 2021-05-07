@@ -31,5 +31,5 @@ uint32_t DgINIParse(DgINIDocument *doc, const uint32_t length, const char * cons
 uint32_t DgINILoad(DgINIDocument *doc, char * const path);
 void DgINIFree(DgINIDocument *doc);
 
-char *DgINIGet(const DgINIDocument * const doc, const char * const sect, const char * const key);
+char *DgINIGet(const DgINIDocument * const doc, const char * const sect, const char * const key, char *safe);
 void DgINIPrint(DgINIDocument *doc);

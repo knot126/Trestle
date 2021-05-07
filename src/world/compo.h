@@ -47,6 +47,8 @@ typedef struct {
 
 enum {
 	QR_PHYS_DISABLE_GRAVITY = (1<<0),
+	QR_PHYS_ENABLE_COLLISION_RESPONSE = (1<<1),
+	QR_PHYS_DISABLE_COLLISION = (1<<2),
 };
 
 typedef struct {
@@ -57,4 +59,5 @@ typedef struct {
 	DgVec3 Fpos;
 	DgVec3 Vrot;
 	DgVec3 Frot;
+	uint32_t col_object;
 } CPhysics;

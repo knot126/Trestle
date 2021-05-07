@@ -134,13 +134,13 @@ int game_main(int argc, char* argv[]) {
 	}
 	
 	// Loading XML config
-	DgXMLNode somedoc;
-	
-	if (DgXMLLoad(&somedoc, "assets://config.xml")) {
-		printf("\033[1;31mError:\033[0m Failed to load XML doucment.\n");
-	}
-	
-	DgXMLNodeFree(&somedoc);
+// 	DgXMLNode somedoc;
+// 	
+// 	if (DgXMLLoad(&somedoc, "assets://config.xml")) {
+// 		printf("\033[1;31mError:\033[0m Failed to load XML doucment.\n");
+// 	}
+// 	
+// 	DgXMLNodeFree(&somedoc);
 	
 	// Load world
 	printf("\033[0;35mInfo:\033[0m Initialising main world...\n");
@@ -154,7 +154,7 @@ int game_main(int argc, char* argv[]) {
 	DgScriptInit(&script);
 	DgRegisterRandFuncs(&script);
 	registerWorldScriptFunctions(&script);
-	DgScriptLoad(&script, "assets://scripts/startup.lua");
+	DgScriptLoad(&script, DgINIGet(&initconf, "Main", "startup_script_path", "assets://scripts/startup.lua"));
 	DgScriptFree(&script);
 	
 	// Load systems state

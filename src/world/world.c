@@ -55,6 +55,7 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 	 * Create a new entity in a given world and return its ID
 	 */
 	world->mask_count++;
+	uint64_t new_bytes = 0;
 	
 	// NOTE: nullptr passed to realloc works like alloc, so we do not need to
 	// consider a case where the list has not been initialised.
@@ -79,6 +80,8 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 		
 		memset((world->CTransforms + (world->CTransforms_count - 1)), 0, sizeof(CTransform));
 		world->CTransforms[world->CTransforms_count - 1].base.id = world->mask_count;
+		
+		new_bytes += sizeof(CTransform);
 	}
 	
 	// Mesh
@@ -92,6 +95,8 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 		
 		memset((world->CMeshs + (world->CMeshs_count - 1)), 0, sizeof(CMesh));
 		world->CMeshs[world->CMeshs_count - 1].base.id = world->mask_count;
+		
+		new_bytes += sizeof(CMesh);
 	}
 	
 	// Camera
@@ -105,6 +110,8 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 		
 		memset((world->CCameras + (world->CCameras_count - 1)), 0, sizeof(CCamera));
 		world->CCameras[world->CCameras_count - 1].base.id = world->mask_count;
+		
+		new_bytes += sizeof(CCamera);
 	}
 	
 	// Physics
@@ -118,7 +125,11 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 		
 		memset((world->CPhysicss + (world->CPhysicss_count - 1)), 0, sizeof(CPhysics));
 		world->CPhysicss[world->CPhysicss_count - 1].base.id = world->mask_count;
+		
+		new_bytes += sizeof(CPhysics);
 	}
+	
+	world->STAT_COUNT_BYTES_ += new_bytes;
 	
 	return world->mask_count;
 }

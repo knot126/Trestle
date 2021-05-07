@@ -11,6 +11,7 @@
 #include <stdlib.h>
 
 #include "alloc.h"
+#include "str.h"
 #include "fs.h"
 
 #include "ini.h"
@@ -283,12 +284,12 @@ void DgINIFree(DgINIDocument *doc) {
  * Functions for Getting/Setting data in INI files
  */
 
-char *DgINIGet(const DgINIDocument * const doc, const char * const sect, const char * const key) {
+char *DgINIGet(const DgINIDocument * const doc, const char * const sect, const char * const key, char *safe) {
 	/**
 	 * Get a value from and INI document, returns empty string if none.
 	 */
 	
-	char *result = "";
+	char *result = safe;
 	
 	for (size_t i = 0; i < doc->section_count; i++) {
 		if (!strcmp(doc->sections[i].title, sect)) {

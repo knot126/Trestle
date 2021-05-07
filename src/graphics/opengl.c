@@ -80,8 +80,8 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 	
-	int w_width = atol(DgINIGet(g_quickRunConfig, "Main", "window_width"));
-	int w_height = atol(DgINIGet(g_quickRunConfig, "Main", "window_height"));
+	int w_width = atol(DgINIGet(g_quickRunConfig, "Main", "window_width", "1280"));
+	int w_height = atol(DgINIGet(g_quickRunConfig, "Main", "window_height", "720"));
 	
 	// Create window
 	gl->window = glfwCreateWindow(w_width, w_height, "Quick Run", NULL, NULL);

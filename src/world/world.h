@@ -13,6 +13,7 @@
 #include "../world/compo.h"
 
 typedef uint32_t mask_t;
+typedef uint32_t ehand_t;
 
 typedef enum {
 	QR_COMPONENT_TRANSFORM = 1 << 0,
@@ -22,6 +23,13 @@ typedef enum {
 } ComponentMaskEnum;
 
 typedef struct {
+	uint32_t transform;
+	uint32_t mesh;
+	uint32_t camera;
+	uint32_t physics;
+} EntIndex;
+
+typedef struct {
 	uint32_t id;
 } PlayerWorld;
 
@@ -29,30 +37,26 @@ typedef struct {
 	// Masks and entities
 	mask_t  *mask;
 	uint32_t mask_count;
-	uint32_t mask_alloc;
 	
 	// Transform Components
 	CTransform *CTransforms;
 	uint32_t    CTransforms_count;
-	uint32_t    CTransforms_alloc;
 	
 	// Mesh Components
 	CMesh   *CMeshs;
 	uint32_t CMeshs_count;
-	uint32_t CMeshs_alloc;
 	
 	// Camera Components
 	CCamera *CCameras;
 	uint32_t CCameras_count;
-	uint32_t CCameras_alloc;
 	uint32_t CCameras_active[3];
 	
 	// Physics Components
 	CPhysics *CPhysicss;
 	uint32_t  CPhysicss_count;
-	uint32_t  CPhysicss_alloc;
 	
 	PlayerWorld player_info;
+	uint64_t STAT_COUNT_BYTES_;
 	
 } World;
 
