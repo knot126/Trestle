@@ -28,7 +28,6 @@ function new_cube(x, y, z, sx, sy, sz, phys, pflags)
 		mgForce(ent, 0.0, 0.0, -100.0, 0.0, 0.0, 0.0)
 		if pflags ~= nil then
 			mgPhysFlags(ent, pflags)
-			print("Flags = ", pflags)
 		end
 	end
 	
@@ -51,5 +50,5 @@ new_cube(-2.5, 2.0, 0.0, 0.5, 4.0, 3.0, false, nil)
 new_cube(2.5, 2.0, 0.0, 0.5, 4.0, 3.0, false, nil)
 
 -- player init
-player = new_cube(0.0, 0.5, 0.0, 1.0, 1.0, 1.0, true, QR_PHYS_DISABLE_GRAVITY)
+player = new_cube(0.0, 0.75, 0.0, 1.0, 1.0, 1.0, true, nil)
 mgActivePlayer(player)
