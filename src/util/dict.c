@@ -30,6 +30,9 @@ DgDict *DgDictNew2(void) {
 }
 
 void DgDictSet(DgDict *dict, DgDictItem *key, DgDictItem *value) {
+	/*
+	 * Set an item in a dictionary
+	 */
 	for (size_t i = 0; i < dict->length; i++) {
 		if (dict->data[i].key.type == key->type && dict->data[i].key.data.asPtr == key->data.asPtr) {
 			DgDictItem *k = &dict->data[i].key;
@@ -50,6 +53,9 @@ void DgDictSet(DgDict *dict, DgDictItem *key, DgDictItem *value) {
 }
 
 DgDictItem* DgDictGet(DgDict *dict, DgDictItem *key) {
+	/*
+	 * Get an item from a dictionary
+	 */
 	for (size_t i = 0; i < dict->length; i++) {
 		if (dict->data[i].key.type == key->type && dict->data[i].key.data.asPtr == key->data.asPtr) {
 			return &dict->data[i].value;

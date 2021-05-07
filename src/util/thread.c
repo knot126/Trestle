@@ -16,6 +16,9 @@
 #include "thread.h"
 
 int DgThreadCreate(DgThread* thread, void *(*func)(void *), void *arg) {
+	/*
+	 * Create a thread object (and start execution?)
+	 */
 #if defined(__linux__) && !defined(DG_STDC_THREADS)
 	return pthread_create(&thread->_info, NULL, func, arg);
 #elif defined(DG_STDC_THREADS)
@@ -24,6 +27,9 @@ int DgThreadCreate(DgThread* thread, void *(*func)(void *), void *arg) {
 }
 
 int DgThreadJoin(DgThread* thread) {
+	/*
+	 * Make the thread object join with the current thread
+	 */
 #if defined(__linux__) && !defined(DG_STDC_THREADS)
 	return pthread_join(thread->_info, NULL);
 #elif defined(DG_STDC_THREADS)

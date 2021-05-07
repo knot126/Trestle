@@ -3,6 +3,7 @@
  * ===============================
  * 
  * PropertyBag implementation
+ * DEPRECATED: do not use this anymore!!
  */
 
 #include <string.h>
@@ -10,12 +11,16 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#warning DgBag is deprecated.
+
 #include "alloc.h"
 
 #include "bag.h"
 
 DgBag DgBagInit() {
-	/* Create a new property bag with one element already initialised. */
+	/* 
+	 * Create a new property bag with one element already initialised.
+	 */
 	DgBag pb;
 	
 	pb.key = (const char **) 0;
@@ -26,10 +31,15 @@ DgBag DgBagInit() {
 }
 
 void DgBagFree(DgBag* pb) {
-	
+	/*
+	 * Free a property bag 
+	 */
 }
 
 void DgBagPrint(DgBag* pb) {
+	/*
+	 * Print the contents of a bag 
+	 */
 	if (!pb->key || !pb->value) {
 		printf("\t<property bag is null>\n");
 		return;

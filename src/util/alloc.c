@@ -16,13 +16,22 @@
 #include "alloc.h"
 
 void *DgAlloc(size_t size) {
+	/*
+	 * Allocate some memory
+	 */
 	return malloc(size);
 }
 
 void DgFree(void *block) {
+	/*
+	 * Free a block of memory
+	 */
 	free(block);
 }
 
 void *DgRealloc(void* block, size_t size) {
+	/*
+	 * Reallocate a block of memory
+	 */
 	return realloc(block, size);
 }
