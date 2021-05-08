@@ -61,3 +61,8 @@ typedef struct {
 	DgVec3 Frot;
 	uint32_t col_object;
 } CPhysics;
+
+typedef struct {
+	DgVec3 pos;
+	DgVec3 size;
+} CShapeAABB;

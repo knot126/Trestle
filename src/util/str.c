@@ -28,6 +28,18 @@ char *DgStrcad(const char * const src1, const char * const src2) {
 	return ns;
 }
 
+char *DgStrcadf(char *src1, const char * const src2) {
+	/*
+	 * Same as DgStrcad, but first string is freed after concat. This is useful
+	 * for compacting concatenations.
+	 */
+	char *string = DgStrcad(src1, src2);
+	
+	DgFree(src1);
+	
+	return string;
+}
+
 char *DgStrdup(char *source) {
 	/*
 	 * Duplicate a string

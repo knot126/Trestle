@@ -55,6 +55,10 @@ typedef struct {
 	CPhysics *CPhysicss;
 	uint32_t  CPhysicss_count;
 	
+	// AABB Objects ** these are special !
+	CShapeAABB aabb_shapes;
+	uint32_t aabb_count;
+	
 	PlayerWorld player_info;
 	uint64_t STAT_COUNT_BYTES_;
 	

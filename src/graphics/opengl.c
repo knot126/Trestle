@@ -23,6 +23,7 @@
 #include "../util/rand.h"
 #include "../util/load.h"
 #include "../util/ini.h"
+#include "../util/str.h"
 #include "../types.h" // For g_deltaTime
 #include "image.h"
 
@@ -84,7 +85,9 @@ DgOpenGLContext* gl_graphics_init(void) {
 	int w_height = atol(DgINIGet(g_quickRunConfig, "Main", "window_height", "720"));
 	
 	// Create window
-	gl->window = glfwCreateWindow(w_width, w_height, "Quick Run", NULL, NULL);
+	char *w_title = DgStrcadf(DgStrcad("Main", " ― Quick Run "), DgINIGet(g_quickRunConfig, "Distribution", "version", "[unknown version]"));
+	gl->window = glfwCreateWindow(w_width, w_height, w_title, NULL, NULL);
+	DgFree(w_title);
 	
 	if (!gl->window) {
 		DgFail("Error: Failed to create glfw window.", -1);
@@ -107,7 +110,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 		icons[0].pixels = (unsigned char *) icon.data;
 		icons[0].width = icon.width;
 		icons[0].height = icon.height;
-		printf("Set image with w=%d,h=%d to icon.\n", icons[0].width, icons[0].height);
+		//printf("Set image with w=%d,h=%d to icon.\n", icons[0].width, icons[0].height);
 		glfwSetWindowIcon(gl->window, sizeof(icons) / sizeof(GLFWimage), icons);
 		
 		DgFreeImage(&icon);
