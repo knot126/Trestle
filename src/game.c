@@ -133,15 +133,6 @@ int game_main(int argc, char* argv[]) {
 		g_quickRunConfig = &initconf;
 	}
 	
-	// Loading XML config
-// 	DgXMLNode somedoc;
-// 	
-// 	if (DgXMLLoad(&somedoc, "assets://config.xml")) {
-// 		printf("\033[1;31mError:\033[0m Failed to load XML doucment.\n");
-// 	}
-// 	
-// 	DgXMLNodeFree(&somedoc);
-	
 	// Load world
 	printf("\033[0;35mInfo:\033[0m Initialising main world...\n");
 	World main_world;
