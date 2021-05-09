@@ -34,6 +34,6 @@ I belive this provides a good balance between using lots of CPU time (by not nee
 ## Notes
 
  * The benefit of this over the current system (i.e. having a ComponentBase and using that to find the entity) is the reduced CPU time.
- * The benefit over switching to the alloc-for-all is that the memory-heavy components are not wasted, and instead only some light-er weight ints are wasted when an entity does not have a component.
+ * The benefit over using sparse arrays is that the memory-heavy components are not wasted, and instead only some light-er weight ints are wasted when an entity does not have a component.
  * Care will need to be taken when adding, removing and modifiying-components for entities in the world.
  * This is still not perfect; obviously, if there were a simple way without wasting memory and still being (mostly) cache effective, it would do that.
