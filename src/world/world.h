@@ -16,10 +16,11 @@ typedef uint32_t mask_t;
 typedef uint32_t ehand_t;
 
 typedef enum {
-	QR_COMPONENT_TRANSFORM = 1 << 0,
-	QR_COMPONENT_MESH = 1 << 1,
-	QR_COMPONENT_CAMERA = 1 << 2,
-	QR_COMPONENT_PHYSICS = 1 << 3,
+	QR_COMPONENT_TRANSFORM = (1 << 0),
+	QR_COMPONENT_MESH = (1 << 1),
+	QR_COMPONENT_CAMERA = (1 << 2),
+	QR_COMPONENT_PHYSICS = (1 << 3),
+	QR_COMPONENT_AABB = (1 << 4),
 } ComponentMaskEnum;
 
 typedef struct {
@@ -54,10 +55,6 @@ typedef struct {
 	// Physics Components
 	CPhysics *CPhysicss;
 	uint32_t  CPhysicss_count;
-	
-	// AABB Objects ** these are special !
-	CShapeAABB aabb_shapes;
-	uint32_t aabb_count;
 	
 	PlayerWorld player_info;
 	uint64_t STAT_COUNT_BYTES_;

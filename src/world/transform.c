@@ -7,6 +7,7 @@
 
 #include <stdbool.h>
 #include <inttypes.h>
+#include <stdio.h>
 
 #include "../world/compo.h"
 #include "../world/world.h"
@@ -94,3 +95,4 @@ bool entity_phys_add_force(World *world, uint32_t id, DgVec3 pos, DgVec3 rot) {
 	
 	return true;
 }
+

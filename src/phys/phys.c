@@ -6,6 +6,7 @@
  */
 
 #include <inttypes.h>
+#include <stdio.h>
 
 #include "../util/maths.h"
 #include "../world/compo.h"
@@ -52,6 +53,32 @@ void phys_update(World *world, float delta) {
 		phys->Fpos = DgVec3New(0.0f, 0.0f, 0.0f);
 		phys->Frot = DgVec3New(0.0f, 0.0f, 0.0f);
 		
-		//printf("Entity %d is at (%f, %f, %f)\n", id, trans->pos.x, trans->pos.y, trans->pos.z);
+		if ((phys->flags & QR_PHYS_ENABLE_RESPONSE) == QR_PHYS_ENABLE_RESPONSE) {
+			CTransform *shape = trans;
+			
+			DgVec3 aHigh = DgVec3Add(shape->pos, shape->scale);
+			DgVec3 aLow = DgVec3Subtract(shape->pos, shape->scale);
+			
+			for (uint32_t i = 0; i < world->CTransforms_count; i++) {
+				if (shape->base.id == world->CTransforms[i].base.id) {
+					continue;
+				}
+				
+				DgVec3 bHigh = DgVec3Add(world->CTransforms[i].pos, world->CTransforms[i].scale);
+				DgVec3 bLow = DgVec3Subtract(world->CTransforms[i].pos, world->CTransforms[i].scale);
+				
+				bool res = (bHigh.x >= aLow.x) && (aHigh.x >= bLow.x)
+					&& (bHigh.y >= aLow.y) && (aHigh.y >= bLow.y)
+					&& (bHigh.z >= aLow.z) && (aHigh.z >= bLow.z);
+				
+				if (res) {
+					printf("Collision!!\n");
+					
+					DgVec3 force_out = DgVec3Subtract(world->CTransforms[i].pos, shape->pos);
+					printf("Difference: (%f, %f, %f)\n", force_out.x, force_out.y, force_out.z);
+					shape->pos.y = world->CTransforms[i].scale.y - force_out.y;
+				}
+			}
+		}
 	}
 }
