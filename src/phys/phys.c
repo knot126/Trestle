@@ -13,7 +13,9 @@
 #include "../world/world.h"
 
 #include "phys.h"
- 
+
+const float GRAVITY_FORCE = -9.81f;
+
 void phys_update(World *world, float delta) {
 	/**
 	 * Update Game Physics
@@ -41,7 +43,7 @@ void phys_update(World *world, float delta) {
 		}
 		
 		if (!((phys->flags & QR_PHYS_DISABLE_GRAVITY) == QR_PHYS_DISABLE_GRAVITY)) {
-			phys->Fpos = DgVec3Add(phys->Fpos, DgVec3New(0.0f, -9.81f * phys->mass, 0.0f));
+			phys->Fpos = DgVec3Add(phys->Fpos, DgVec3New(0.0f, GRAVITY_FORCE * phys->mass, 0.0f));
 		}
 		
 		phys->Vpos = DgVec3Add(phys->Vpos, DgVec3Scale((1.0f / phys->mass) * delta, phys->Fpos));
@@ -72,11 +74,15 @@ void phys_update(World *world, float delta) {
 					&& (bHigh.z >= aLow.z) && (aHigh.z >= bLow.z);
 				
 				if (res) {
-					printf("Collision!!\n");
+// 					printf("Collision!!\n");
 					
 					DgVec3 force_out = DgVec3Subtract(world->CTransforms[i].pos, shape->pos);
-					printf("Difference: (%f, %f, %f)\n", force_out.x, force_out.y, force_out.z);
-					shape->pos.y = world->CTransforms[i].scale.y - force_out.y;
+// 					printf("Difference: (%f, %f, %f) | %f\n", force_out.x, force_out.y, force_out.z, world->CTransforms[i].scale.y - force_out.y);
+					trans->pos.y += bHigh.y - aLow.y;
+					
+					if (!((phys->flags & QR_PHYS_DISABLE_GRAVITY) == QR_PHYS_DISABLE_GRAVITY)) {
+						phys->Fpos = DgVec3Add(phys->Fpos, DgVec3New(0.0f, -GRAVITY_FORCE * phys->mass, 0.0f));
+					}
 				}
 			}
 		}

@@ -38,7 +38,7 @@ end
 
 cam = mgCamera()
 
---[[
+
 for z = 0.0, 16.0, 1.0 do
 	cubes[#cubes + 1] = new_cube(
 		(mgRandFloat() - 0.5) * 5.0, (mgRandFloat() - 0.5) * 5.0, -z,
@@ -46,14 +46,14 @@ for z = 0.0, 16.0, 1.0 do
 		true, nil)
 	--print("Crated cube with entity ID ", ent)
 end
-]]--
+
 
 --new_cube(0.0, 0.0, 0.0, 1.0, 1.0, 1.0, false)
 a = new_cube(0.0, 0.0, -16.0, 5.0, 0.5, 32.0, false, nil)
-b = new_cube(-2.5, 2.0, 0.0, 0.5, 4.0, 3.0, false, nil)
-c = new_cube(2.5, 2.0, 0.0, 0.5, 4.0, 3.0, false, nil)
+b = new_cube(-2.5, 2.0, -16.0, 0.5, 4.0, 32.0, false, nil)
+c = new_cube(2.5, 2.0, -16.0, 0.5, 4.0, 32.0, false, nil)
 
 -- player init
 player = new_cube(0.0, 1.5, 0.0, 1.0, 1.0, 1.0, true, QR_PHYS_ENABLE_RESPONSE)
 mgActivePlayer(player)
-print("Player is ", player, " cube are ", a, b, c)
+--print("Player is ", player, " cube are ", a, b, c)

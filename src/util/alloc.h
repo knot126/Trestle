@@ -8,7 +8,6 @@
 #pragma once
 
 #include <stdlib.h>
-#include <inttypes.h>
 
 void *DgAlloc(size_t size);
 void DgFree(void *block);

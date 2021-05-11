@@ -75,7 +75,7 @@ void gameplay_update(World *world) {
 	}
 	
 	if (getKeyPressed(GLFW_KEY_SPACE)) {
-		phys->Fpos = DgVec3Add(phys->Fpos, DgVec3New(0.0f, speed, 0.0f));
+		phys->Fpos = DgVec3Add(phys->Fpos, DgVec3New(0.0f, speed * speed, 0.0f));
 	}
 	
 	// CAMERA
@@ -114,5 +114,5 @@ void gameplay_update(World *world) {
 		return;
 	}
 	
-	cpos->pos = DgVec3New(ppos->pos.x * 0.2f, ppos->pos.y + 3.0f, ppos->pos.z + 3.0f);
+	cpos->pos = DgVec3New(ppos->pos.x * 0.2f, ppos->pos.y + 4.0f, ppos->pos.z + 4.0f);
 }
