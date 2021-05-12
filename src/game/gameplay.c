@@ -57,11 +57,11 @@ void gameplay_update(World *world) {
 // 	}
 	
 	if (getKeyPressed(GLFW_KEY_UP)) {
-		speed = speed + g_deltaTime;
+		speed = speed + (g_deltaTime * 3.0f);
 	}
 	
 	if (getKeyPressed(GLFW_KEY_DOWN)) {
-		speed = speed - g_deltaTime;
+		speed = speed - (g_deltaTime * 3.0f);
 	}
 	
 	transf->pos = DgVec3Add(transf->pos, DgVec3New(0.0f, 0.0f, -lspeed));
@@ -75,7 +75,7 @@ void gameplay_update(World *world) {
 	}
 	
 	if (getKeyPressed(GLFW_KEY_SPACE)) {
-		phys->Fpos = DgVec3Add(phys->Fpos, DgVec3New(0.0f, speed * speed, 0.0f));
+		phys->Fpos = DgVec3Add(phys->Fpos, DgVec3New(0.0f, speed * 6.0f, 0.0f));
 	}
 	
 	// CAMERA
@@ -97,9 +97,9 @@ void gameplay_update(World *world) {
 			last = 0.0f;
 		}
 	}
-	else {
-		printf("player not found\n");
-	}
+// 	else {
+// 		printf("player not found\n");
+// 	}
 	
 	CTransform *cpos = NULL;
 	

@@ -19,40 +19,35 @@ typedef struct {
 } ComponentBase_t;
 
 typedef struct {
-	ComponentBase_t base;
 	DgVec3 pos;
 	DgVec3 rot;
 	DgVec3 scale;
-} CTransform;
+} C_Transform;
 
 typedef struct {
-	ComponentBase_t base;
 	bool updated; // Putting this here *should* avoid wasted space due to padding. (NO!)
 	float * vert;
 	uint32_t * index;
 	uint32_t vert_count;
 	uint32_t index_count;
 	uint32_t vbo, ebo;
-} CMesh;
+} C_Mesh;
 
 typedef struct {
-	ComponentBase_t base;
 	enum {
 		QR_CAM_MOVE = 1,
 		QR_CAM_ORTHO = 2,
 		QR_CAM_EDITOR = 3,
 		QR_CAM_BASE = 4,
 	} mode;
-} CCamera;
+} C_Camera;
 
 enum {
 	QR_PHYS_DISABLE_GRAVITY = (1<<0),
-//	QR_PHYS_ENABLE_PRESENCE = (1<<1),
-	QR_PHYS_ENABLE_RESPONSE = (1<<2),
+	QR_PHYS_ENABLE_RESPONSE = (1<<1),
 };
 
 typedef struct {
-	ComponentBase_t base;
 	float mass;
 	int flags;
 	DgVec3 Vpos;
@@ -60,4 +55,4 @@ typedef struct {
 	DgVec3 Vrot;
 	DgVec3 Frot;
 	uint32_t col_object;
-} CPhysics;
+} C_Physics;

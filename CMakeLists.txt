@@ -102,10 +102,11 @@ set(EXEC_FILES
 	${MELON_FILES}
 	lib/glew/glew.c
 	src/world/world.c
-	src/world/transform.c
-	src/world/graphics.c
+	#src/world/compo.c
+	#src/world/transform.c
+	#src/world/graphics.c
 	src/world/scripting.c
-	src/world/seg.c
+	#src/world/seg.c
 	src/graphics/graphics.c
 	src/graphics/opengl.c
 	src/graphics/image.c

@@ -14,8 +14,6 @@
 #include "../util/script.h"
 #include "compo.h"
 #include "world.h"
-#include "transform.h"
-#include "graphics.h" // graphics utilities
 #include "seg.h"
 
 #include "scripting.h"
@@ -179,7 +177,7 @@ static int scripted_AddBox(lua_State *script) {
 static int scripted_SetPlayer(lua_State *script) {
 	uint32_t id = lua_tointeger(script, 1);
 	
-	QuickRunActiveWorld->player_info.id = id;
+	QuickRunActiveWorld->player.id = id;
 	
 	lua_pushinteger(script, id);
 	

@@ -10,10 +10,12 @@
 #include <inttypes.h>
 #include <stddef.h>
 
-#include "../world/compo.h"
+#include "../util/maths.h"
 
-typedef uint32_t mask_t;
-typedef uint32_t ehand_t;
+#include "compo.h"
+
+typedef uint32_t entity_t;
+typedef entity_t Entity;
 
 typedef enum {
 	QR_COMPONENT_TRANSFORM = (1 << 0),
@@ -24,46 +26,60 @@ typedef enum {
 } ComponentMaskEnum;
 
 typedef struct {
-	uint32_t transform;
-	uint32_t mesh;
-	uint32_t camera;
-	uint32_t physics;
-} EntIndex;
+	Entity *trans;
+	Entity *mesh;
+	Entity *camera;
+	Entity *phys;
+} EntIndexes;
 
 typedef struct {
-	uint32_t id;
+	Entity id;
 } PlayerWorld;
 
 typedef struct {
 	// Masks and entities
-	mask_t  *mask;
-	uint32_t mask_count;
+	EntIndexes ent;
+	uint32_t   ent_count;
 	
 	// Transform Components
-	CTransform *CTransforms;
-	uint32_t    CTransforms_count;
+	C_Transform *trans;
+	uint32_t     trans_count;
 	
 	// Mesh Components
-	CMesh   *CMeshs;
-	uint32_t CMeshs_count;
+	C_Mesh   *mesh;
+	uint32_t  mesh_count;
 	
 	// Camera Components
-	CCamera *CCameras;
-	uint32_t CCameras_count;
-	uint32_t CCameras_active[3];
+	C_Camera *camera;
+	uint32_t  camera_count;
+	Entity camera_active;
 	
 	// Physics Components
-	CPhysics *CPhysicss;
-	uint32_t  CPhysicss_count;
+	C_Physics *phys;
+	uint32_t   phys_count;
 	
-	PlayerWorld player_info;
-	uint64_t STAT_COUNT_BYTES_;
-	
+	PlayerWorld player;
 } World;
 
 extern World *QuickRunActiveWorld;
 
-void world_init(World *world, size_t prealloc_count);
+// World
+void world_init(World *world, size_t __UNUSED__);
 void world_destroy(World *world);
-uint32_t world_create_entity(World *world, mask_t mask);
+Entity world_create_entity(World *world, uint32_t flags);
 void SetActiveWorld(World *world);
+
+// Transform
+bool entity_set_transform(World * const restrict world, const Entity id, const DgVec3 pos, const DgVec3 rot, const DgVec3 scale);
+
+// Mesh
+bool entity_load_mesh(World * const restrict world, const Entity id, char * restrict path);
+bool entity_generate_mesh_from_xml(World * const restrict world, const Entity id, const char * const restrict path);
+
+// Camera
+void world_set_camera(World * const restrict world, const Entity id);
+
+// Physics
+bool entity_phys_set_flags(World * const restrict world, const Entity id, const int flags);
+bool entity_phys_set_mass(World * const restrict world, const Entity id, float mass);
+bool entity_phys_add_force(World * const restrict world, const Entity id, const DgVec3 pos, const DgVec3 rot);
