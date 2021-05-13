@@ -157,7 +157,7 @@ bool entity_load_mesh(World * const restrict world, const Entity id, char * rest
 	 */
 	
 	// Find the mesh component
-	if (!world->ent.mesh[id - 1]) {
+	if (world->ent.mesh[id - 1] < 0) {
 		printf("Failed to load mesh or model '%s' to entity %d.\n", path, id);
 		return false;
 	}
@@ -215,7 +215,7 @@ void world_set_camera(World * const restrict world, const Entity id) {
 }
 
 bool entity_set_transform(World * const restrict world, const Entity id, const DgVec3 pos, const DgVec3 rot, const DgVec3 scale) {
-	if (!world->ent.trans[id - 1]) {
+	if (world->ent.trans[id - 1] < 0) {
 		printf("No transform component for entity %d.\n", id);
 		return false;
 	}
@@ -234,7 +234,7 @@ bool entity_set_transform(World * const restrict world, const Entity id, const D
 }
 
 bool entity_phys_set_flags(World * const restrict world, const Entity id, const int flags) {
-	if (!world->ent.phys[id - 1]) {
+	if (world->ent.phys[id - 1] < 0) {
 		printf("No physics component for entity %d.\n", id);
 	}
 	
@@ -246,7 +246,7 @@ bool entity_phys_set_flags(World * const restrict world, const Entity id, const 
 }
 
 bool entity_phys_set_mass(World * const restrict world, const Entity id, float mass) {
-	if (!world->ent.phys[id - 1]) {
+	if (world->ent.phys[id - 1] < 0) {
 		printf("No physics component for entity %d.\n", id);
 	}
 	
@@ -258,7 +258,7 @@ bool entity_phys_set_mass(World * const restrict world, const Entity id, float m
 }
 
 bool entity_phys_add_force(World * const restrict world, const Entity id, const DgVec3 pos, const DgVec3 rot) {
-	if (!world->ent.phys[id - 1]) {
+	if (world->ent.phys[id - 1] < 0) {
 		printf("No physics component for entity %d.\n", id);
 	}
 	
