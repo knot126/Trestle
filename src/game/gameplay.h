@@ -10,4 +10,4 @@
 
 #include "../world/world.h"
 
-void gameplay_update(World *world);
+void gameplay_update(World * const restrict world);

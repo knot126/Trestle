@@ -26,7 +26,7 @@ void phys_update(World *world, float delta) {
 	 */
 	
 	for (Entity i = 0; i < world->ent_count; i++) {
-		if (!world->ent.phys[i] || !world->ent.trans[i]) {
+		if (world->ent.phys[i] < 0 || world->ent.trans[i] < 0) {
 			continue;
 		}
 		
@@ -53,7 +53,7 @@ void phys_update(World *world, float delta) {
 			DgVec3 aLow = DgVec3Subtract(shape->pos, shape->scale);
 			
 			for (Entity k = 0; k < world->ent_count; k++) {
-				if (i == k || !world->ent.trans[k]) { continue; }
+				if (i == k || world->ent.trans[k] < 0) { continue; }
 				
 				DgVec3 bHigh = DgVec3Add(
 					world->trans[world->ent.trans[k]].pos, 

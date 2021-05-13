@@ -282,16 +282,13 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	DgMat4 camera;
 	
 	// Do the camera
-	if (world->CCameras_active[0] != 0) {
-		uint32_t tid = world->CCameras_active[0] - 1, cid = world->CCameras_active[1] - 1;
-// 		printf("Camera pos = (%f, %f, %f)\n", 
-// 			   world->CTransforms[tid].pos.x,
-// 			   world->CTransforms[tid].pos.y,
-// 			   world->CTransforms[tid].pos.z);
-		camera = DgTransfromBasicCamera(world->CTransforms[tid].pos, world->CTransforms[tid].rot);
+	if (world->camera_active > -1) {
+		camera = DgTransfromBasicCamera(
+			world->trans[world->ent.trans[world->camera_active - 1]].pos, 
+			world->trans[world->ent.trans[world->camera_active - 1]].rot);
 	}
 	else {
-		camera = DgTransformLookAt2(DgVec3New(0.0f, 1.0f, 3.0f), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(0.0f, 1.0f, 0.0f));
+		camera = DgMat4New(1.0f);
 	}
 	
 	// Push our matris to the GPU
@@ -305,47 +302,42 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	
 	glBindVertexArray(gl->vaos[0]);
 	
-	for (size_t i = 0; i < world->CMeshs_count; i++) {
-		uint32_t id = world->CMeshs[i].base.id;
-// 		printf("Info: Rendering entity %d with mesh node.\n", id);
+	for (Entity i = 0; i < world->ent_count; i++) {
+		if (world->ent.mesh[i] < 0 || world->ent.trans[i] < 0) {
+			continue;
+		}
+		
+		C_Mesh *mesh = &world->mesh[world->ent.mesh[i]];
+		C_Transform *trans = &world->trans[world->ent.trans[i]];
 		
 		// Push new verticies if needed
-		if (world->CMeshs[i].updated) {
-			if (!world->CMeshs[i].vbo) {
-				glGenBuffers(1, &world->CMeshs[i].vbo);
+		if (mesh->updated) {
+			if (!mesh->vbo) {
+				glGenBuffers(1, &mesh->vbo);
 			}
 			
-			if (!world->CMeshs[i].ebo) {
-				glGenBuffers(1, &world->CMeshs[i].ebo);
+			if (!mesh->ebo) {
+				glGenBuffers(1, &mesh->ebo);
 			}
 			
-			glBindBuffer(GL_ARRAY_BUFFER, world->CMeshs[i].vbo);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world->CMeshs[i].ebo);
+			glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ebo);
 			
-			glBufferData(GL_ARRAY_BUFFER, world->CMeshs[i].vert_count * 32, world->CMeshs[i].vert, GL_STATIC_DRAW);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, world->CMeshs[i].index_count * sizeof(uint32_t), world->CMeshs[i].index, GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, mesh->vert_count * 32, mesh->vert, GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->index_count * sizeof(uint32_t), mesh->index, GL_STATIC_DRAW);
 			
 			gl_error_check(__FILE__, __LINE__);
 		}
 		
-		glBindBuffer(GL_ARRAY_BUFFER, world->CMeshs[i].vbo);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world->CMeshs[i].ebo);
+		glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ebo);
 		
 		gl_set_format(gl);
 		
 		// Find the transform
-		DgVec3 translate = DgVec3New(0.0f, 0.0f, 0.0f);
-		DgVec3 rotate = DgVec3New(0.0f, 0.0f, 0.0f);
-		DgVec3 scale = DgVec3New(1.0f, 1.0f, 1.0f);
-		
-		for (int i = 0; i < world->CTransforms_count; i++) {
-			if (world->CTransforms[i].base.id == id) {
-				translate = world->CTransforms[i].pos;
-				rotate = world->CTransforms[i].rot;
-				scale = world->CTransforms[i].scale;
-				break;
-			}
-		}
+		DgVec3 translate = trans->pos;
+		DgVec3 rotate = trans->rot;
+		DgVec3 scale = trans->scale;
 		
 		DgMat4 rot_x = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(1.0f, 0.0f, 0.0f), rotate.x);
 		DgMat4 rot_y = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.0f, 1.0f, 0.0f), rotate.y);
@@ -361,7 +353,7 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 			);
 		glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
 		
-		glDrawElements(GL_TRIANGLES, world->CMeshs[i].index_count, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, mesh->index_count, GL_UNSIGNED_INT, 0);
 		
 		gl_error_check(__FILE__, __LINE__);
 	}

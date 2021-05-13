@@ -14,7 +14,7 @@
 
 #include "compo.h"
 
-typedef uint32_t entity_t;
+typedef int32_t entity_t;
 typedef entity_t Entity;
 
 typedef enum {

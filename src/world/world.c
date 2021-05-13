@@ -82,10 +82,10 @@ Entity world_create_entity(World *world, uint32_t flags) {
 			return 0;
 		}
 		
-		world->ent.trans[world->ent_count - 1] = 0;
-		world->ent.mesh[world->ent_count - 1] = 0;
-		world->ent.camera[world->ent_count - 1] = 0;
-		world->ent.phys[world->ent_count - 1] = 0;
+		world->ent.trans[world->ent_count - 1] = -1;
+		world->ent.mesh[world->ent_count - 1] = -1;
+		world->ent.camera[world->ent_count - 1] = -1;
+		world->ent.phys[world->ent_count - 1] = -1;
 	}
 	
 	// Transform
@@ -99,7 +99,7 @@ Entity world_create_entity(World *world, uint32_t flags) {
 		}
 		
 		memset(&world->trans[world->trans_count - 1], 0, sizeof(C_Transform));
-		world->ent.phys[world->ent_count - 1] = world->trans_count - 1;
+		world->ent.trans[world->ent_count - 1] = world->trans_count - 1;
 	}
 	
 	// Mesh
@@ -113,7 +113,7 @@ Entity world_create_entity(World *world, uint32_t flags) {
 		}
 		
 		memset(&world->mesh[world->mesh_count - 1], 0, sizeof(C_Mesh));
-		world->ent.phys[world->ent_count - 1] = world->mesh_count - 1;
+		world->ent.mesh[world->ent_count - 1] = world->mesh_count - 1;
 	}
 	
 	// Camera
@@ -127,7 +127,7 @@ Entity world_create_entity(World *world, uint32_t flags) {
 		}
 		
 		memset(&world->camera[world->camera_count - 1], 0, sizeof(C_Camera));
-		world->ent.phys[world->ent_count - 1] = world->camera_count - 1;
+		world->ent.camera[world->ent_count - 1] = world->camera_count - 1;
 	}
 	
 	// Physics
@@ -221,8 +221,6 @@ bool entity_set_transform(World * const restrict world, const Entity id, const D
 	}
 	
 	C_Transform *trans = &world->trans[world->ent.trans[id - 1]];
-	
-	NULL;
 	
 	if (!trans) {
 		return false;
