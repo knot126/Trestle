@@ -236,6 +236,7 @@ bool entity_set_transform(World * const restrict world, const Entity id, const D
 bool entity_phys_set_flags(World * const restrict world, const Entity id, const int flags) {
 	if (world->ent.phys[id - 1] < 0) {
 		printf("No physics component for entity %d.\n", id);
+		return false;
 	}
 	
 	C_Physics *phys = &world->phys[world->ent.phys[id - 1]];
@@ -248,6 +249,7 @@ bool entity_phys_set_flags(World * const restrict world, const Entity id, const 
 bool entity_phys_set_mass(World * const restrict world, const Entity id, float mass) {
 	if (world->ent.phys[id - 1] < 0) {
 		printf("No physics component for entity %d.\n", id);
+		return false;
 	}
 	
 	C_Physics *phys = &world->phys[world->ent.phys[id - 1]];
@@ -260,6 +262,7 @@ bool entity_phys_set_mass(World * const restrict world, const Entity id, float m
 bool entity_phys_add_force(World * const restrict world, const Entity id, const DgVec3 pos, const DgVec3 rot) {
 	if (world->ent.phys[id - 1] < 0) {
 		printf("No physics component for entity %d.\n", id);
+		return false;
 	}
 	
 	C_Physics *phys = &world->phys[world->ent.phys[id - 1]];
