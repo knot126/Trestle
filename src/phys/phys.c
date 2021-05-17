@@ -7,6 +7,7 @@
 
 #include <inttypes.h>
 #include <stdio.h>
+#include <math.h>
 
 #include "../util/maths.h"
 #include "../world/compo.h"
@@ -55,23 +56,27 @@ void phys_update(World *world, float delta) {
 			for (Entity k = 0; k < world->ent_count; k++) {
 				if (i == k || world->ent.trans[k] < 0) { continue; }
 				
-				DgVec3 bHigh = DgVec3Add(
-					world->trans[world->ent.trans[k]].pos, 
-					world->trans[world->ent.trans[k]].scale);
-				DgVec3 bLow = DgVec3Subtract(
-					world->trans[world->ent.trans[k]].pos, 
-					world->trans[world->ent.trans[k]].scale);
+				C_Transform *current = &world->trans[world->ent.trans[k]];
+				
+				DgVec3 bHigh = DgVec3Add(current->pos, current->scale);
+				DgVec3 bLow = DgVec3Subtract(current->pos, current->scale);
 				
 				bool res = (bHigh.x >= aLow.x) && (aHigh.x >= bLow.x)
 					&& (bHigh.y >= aLow.y) && (aHigh.y >= bLow.y)
 					&& (bHigh.z >= aLow.z) && (aHigh.z >= bLow.z);
 				
 				if (res) {
-					DgVec3 force_out = DgVec3Subtract(world->trans[world->ent.trans[k]].pos, shape->pos);
+					DgVec3 force_out = DgVec3Subtract(current->pos, shape->pos);
 					
-					trans->pos.y += bHigh.y - aLow.y;
+					float nx = bHigh.x - aLow.x;
+					float ny = bHigh.y - aLow.y;
 					
-					printf("%f %f \n", bHigh.x - aLow.x, bHigh.y - aLow.y);
+					if (aHigh.y < bHigh.y && aLow.y > bLow.y) {
+						trans->pos.x += nx;
+					}
+					else {
+						trans->pos.y += ny;
+					}
 					
 					if (!((phys->flags & QR_PHYS_DISABLE_GRAVITY) == QR_PHYS_DISABLE_GRAVITY)) {
 						phys->Fpos = DgVec3Add(phys->Fpos, DgVec3New(0.0f, -GRAVITY_FORCE * phys->mass, 0.0f));
