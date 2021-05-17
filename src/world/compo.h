@@ -11,7 +11,6 @@
 #include <stdbool.h>
 
 #include "../util/maths.h"
-#include "../graphics/opengl_1.h"
 
 typedef uint32_t EntityId_t;
 
@@ -20,35 +19,40 @@ typedef struct {
 } ComponentBase_t;
 
 typedef struct {
+	ComponentBase_t base;
 	DgVec3 pos;
 	DgVec3 rot;
 	DgVec3 scale;
-} C_Transform;
+} CTransform;
 
 typedef struct {
+	ComponentBase_t base;
 	bool updated; // Putting this here *should* avoid wasted space due to padding. (NO!)
-	MeshVertex * vert;
+	float * vert;
 	uint32_t * index;
 	uint32_t vert_count;
 	uint32_t index_count;
 	uint32_t vbo, ebo;
-} C_Mesh;
+} CMesh;
 
 typedef struct {
+	ComponentBase_t base;
 	enum {
 		QR_CAM_MOVE = 1,
 		QR_CAM_ORTHO = 2,
 		QR_CAM_EDITOR = 3,
 		QR_CAM_BASE = 4,
 	} mode;
-} C_Camera;
+} CCamera;
 
 enum {
 	QR_PHYS_DISABLE_GRAVITY = (1<<0),
-	QR_PHYS_ENABLE_RESPONSE = (1<<1),
+//	QR_PHYS_ENABLE_PRESENCE = (1<<1),
+	QR_PHYS_ENABLE_RESPONSE = (1<<2),
 };
 
 typedef struct {
+	ComponentBase_t base;
 	float mass;
 	int flags;
 	DgVec3 Vpos;
@@ -56,4 +60,4 @@ typedef struct {
 	DgVec3 Vrot;
 	DgVec3 Frot;
 	uint32_t col_object;
-} C_Physics;
+} CPhysics;

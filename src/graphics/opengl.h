@@ -9,7 +9,6 @@
 #include <stdbool.h>
 #include <GLFW/glfw3.h>
 
-#include "opengl_1.h"
 #include "../world/world.h"
 
 typedef unsigned int GLuint;

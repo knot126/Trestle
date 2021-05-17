@@ -7,7 +7,6 @@
 
 #include <inttypes.h>
 #include <stdio.h>
-#include <math.h>
 
 #include "../util/maths.h"
 #include "../world/compo.h"
@@ -26,13 +25,22 @@ void phys_update(World *world, float delta) {
 	 * that have physics.
 	 */
 	
-	for (Entity i = 0; i < world->ent_count; i++) {
-		if (world->ent.phys[i] < 0 || world->ent.trans[i] < 0) {
-			continue;
+	for (uint32_t i = 0; i < world->CPhysicss_count; i++) {
+		uint32_t id = world->CPhysicss[i].base.id;
+		CPhysics *phys = &world->CPhysicss[i];
+		CTransform *trans = NULL;
+		
+		// Find the transfrom component
+		for (uint32_t i = 0; i < world->CTransforms_count; i++) {
+			if (world->CTransforms[i].base.id == id) {
+				trans = &world->CTransforms[i];
+				break;
+			}
 		}
 		
-		C_Physics *phys = &world->phys[world->ent.phys[i]];
-		C_Transform *trans = &world->trans[world->ent.trans[i]];
+		if (!trans) {
+			continue;
+		}
 		
 		if (!((phys->flags & QR_PHYS_DISABLE_GRAVITY) == QR_PHYS_DISABLE_GRAVITY)) {
 			phys->Fpos = DgVec3Add(phys->Fpos, DgVec3New(0.0f, GRAVITY_FORCE * phys->mass, 0.0f));
@@ -48,35 +56,29 @@ void phys_update(World *world, float delta) {
 		phys->Frot = DgVec3New(0.0f, 0.0f, 0.0f);
 		
 		if ((phys->flags & QR_PHYS_ENABLE_RESPONSE) == QR_PHYS_ENABLE_RESPONSE) {
-			C_Transform *shape = trans;
+			CTransform *shape = trans;
 			
 			DgVec3 aHigh = DgVec3Add(shape->pos, shape->scale);
 			DgVec3 aLow = DgVec3Subtract(shape->pos, shape->scale);
 			
-			for (Entity k = 0; k < world->ent_count; k++) {
-				if (i == k || world->ent.trans[k] < 0) { continue; }
+			for (uint32_t i = 0; i < world->CTransforms_count; i++) {
+				if (shape->base.id == world->CTransforms[i].base.id) {
+					continue;
+				}
 				
-				C_Transform *current = &world->trans[world->ent.trans[k]];
-				
-				DgVec3 bHigh = DgVec3Add(current->pos, current->scale);
-				DgVec3 bLow = DgVec3Subtract(current->pos, current->scale);
+				DgVec3 bHigh = DgVec3Add(world->CTransforms[i].pos, world->CTransforms[i].scale);
+				DgVec3 bLow = DgVec3Subtract(world->CTransforms[i].pos, world->CTransforms[i].scale);
 				
 				bool res = (bHigh.x >= aLow.x) && (aHigh.x >= bLow.x)
 					&& (bHigh.y >= aLow.y) && (aHigh.y >= bLow.y)
 					&& (bHigh.z >= aLow.z) && (aHigh.z >= bLow.z);
 				
 				if (res) {
-					DgVec3 force_out = DgVec3Subtract(current->pos, shape->pos);
+// 					printf("Collision!!\n");
 					
-					float nx = bHigh.x - aLow.x;
-					float ny = bHigh.y - aLow.y;
-					
-					if (aHigh.y < bHigh.y && aLow.y > bLow.y) {
-						trans->pos.x += nx;
-					}
-					else {
-						trans->pos.y += ny;
-					}
+					DgVec3 force_out = DgVec3Subtract(world->CTransforms[i].pos, shape->pos);
+// 					printf("Difference: (%f, %f, %f) | %f\n", force_out.x, force_out.y, force_out.z, world->CTransforms[i].scale.y - force_out.y);
+					trans->pos.y += bHigh.y - aLow.y;
 					
 					if (!((phys->flags & QR_PHYS_DISABLE_GRAVITY) == QR_PHYS_DISABLE_GRAVITY)) {
 						phys->Fpos = DgVec3Add(phys->Fpos, DgVec3New(0.0f, -GRAVITY_FORCE * phys->mass, 0.0f));

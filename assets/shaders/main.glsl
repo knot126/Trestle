@@ -12,10 +12,10 @@ uniform mat4 proj;
 
 in vec3 position;
 in vec2 texturepos;
-in vec4 colour;
+in vec3 colour;
 
 out vec2 Texture;
-out vec4 Colour;
+out vec3 Colour;
 
 void main() {
 	Colour = colour;
@@ -28,11 +28,11 @@ void main() {
 uniform sampler2D image;
 
 in vec2 Texture;
-in vec4 Colour;
+in vec3 Colour;
 
 out vec4 out_colour;
 
 void main() {
-	out_colour = texture(image, Texture) * vec4(Colour);
+	out_colour = texture(image, Texture) * vec4(Colour, 1.0);
 }
 #endif

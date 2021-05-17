@@ -18,28 +18,50 @@
 
 float speed = 2.0f;
 
-void gameplay_update(World * const restrict world) {
+void gameplay_update(World *world) {
 	/*
 	 * Gameplay/game specific realted updates
 	 */
 	
 	// PLAYER
 	
-	if (world->player.id < 0) {
+	CTransform *transf = NULL;
+	CPhysics *phys = NULL;
+	
+	for (size_t i = 0; i < world->CTransforms_count; i++) {
+		if (world->CTransforms[i].base.id == world->player_info.id) {
+			transf = &world->CTransforms[i];
+			break;
+		}
+	}
+	
+	for (size_t i = 0; i < world->CPhysicss_count; i++) {
+		if (world->CPhysicss[i].base.id == world->player_info.id) {
+			phys = &world->CPhysicss[i];
+			break;
+		}
+	}
+	
+	if (!transf || !phys) {
 		return;
 	}
 	
-	C_Transform *transf = &world->trans[world->ent.trans[world->player.id - 1]];
-	C_Physics *phys = &world->phys[world->ent.phys[world->player.id - 1]];
-	
 	float lspeed = speed * g_deltaTime;
 	
+// 	if (getKeyPressed(GLFW_KEY_UP)) {
+// 		transf->pos = DgVec3Add(transf->pos, DgVec3New(0.0f, 0.0f, -lspeed));
+// 	}
+// 	
+// 	if (getKeyPressed(GLFW_KEY_DOWN)) {
+// 		transf->pos = DgVec3Add(transf->pos, DgVec3New(0.0f, 0.0f, lspeed));
+// 	}
+	
 	if (getKeyPressed(GLFW_KEY_UP)) {
-		speed = speed + (g_deltaTime * 3.0f);
+		speed = speed + g_deltaTime;
 	}
 	
 	if (getKeyPressed(GLFW_KEY_DOWN)) {
-		speed = speed - (g_deltaTime * 3.0f);
+		speed = speed - g_deltaTime;
 	}
 	
 	transf->pos = DgVec3Add(transf->pos, DgVec3New(0.0f, 0.0f, -lspeed));
@@ -53,21 +75,44 @@ void gameplay_update(World * const restrict world) {
 	}
 	
 	if (getKeyPressed(GLFW_KEY_SPACE)) {
-		phys->Fpos = DgVec3Add(phys->Fpos, DgVec3New(0.0f, speed * 6.0f, 0.0f));
+		phys->Fpos = DgVec3Add(phys->Fpos, DgVec3New(0.0f, speed * speed, 0.0f));
 	}
 	
 	// CAMERA
 	
-	C_Transform *ppos = transf;
+	CTransform *ppos = NULL;
 	
-	static float last;
-	last += g_deltaTime;
-	if (last > 1.0f) {
-		printf("Player pos: (%.3f, %.3f, %.3f)\n", ppos->pos.x, ppos->pos.y, ppos->pos.z);
-		last = 0.0f;
+	for (size_t i = 0; i < world->CTransforms_count; i++) {
+		if (world->CTransforms[i].base.id == world->player_info.id) {
+			ppos = &world->CTransforms[i];
+			break;
+		}
 	}
 	
-	C_Transform *cpos = &world->trans[world->ent.trans[world->camera_active - 1]];
+	if (ppos) {
+		static float last;
+		last += g_deltaTime;
+		if (last > 1.0f) {
+			printf("Player pos: (%.3f, %.3f, %.3f)\n", ppos->pos.x, ppos->pos.y, ppos->pos.z);
+			last = 0.0f;
+		}
+	}
+	else {
+		printf("player not found\n");
+	}
+	
+	CTransform *cpos = NULL;
+	
+	for (size_t i = 0; i < world->CTransforms_count; i++) {
+		if (world->CTransforms[i].base.id == world->CCameras_active[2]) {
+			cpos = &world->CTransforms[i];
+			break;
+		}
+	}
+	
+	if (!ppos || !cpos) {
+		return;
+	}
 	
 	cpos->pos = DgVec3New(ppos->pos.x * 0.2f, ppos->pos.y + 4.0f, ppos->pos.z + 4.0f);
 }

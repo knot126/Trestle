@@ -12,19 +12,19 @@ QR_COMPONENT_PHYSICS = (1 << 3)
 QR_COMPONENT_AABB = (1 << 4)
 
 QR_PHYS_DISABLE_GRAVITY = (1 << 0)
-QR_PHYS_ENABLE_RESPONSE = (1 << 1)
+QR_PHYS_ENABLE_RESPONSE = (1 << 2)
 
 cubes = {}
 
 function new_cube(x, y, z, sx, sy, sz, phys, pflags)
-	local flags = QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH
+	flags = QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH
 	if phys then
 		flags = flags | QR_COMPONENT_PHYSICS
 	end
-	local ent = mgCreateEntity(flags)
+	ent = mgCreateEntity(flags)
 	
 	mgTransform(ent, x, y, z, 0.0, 0.0, 0.0, sx, sy, sz)
-	mgMesh(ent, "assets://mesh/cube.mesh")
+	mgMesh(ent, "assets://mesh/cube2.bin")
 	if phys then
 		mgMass(ent, 1.0)
 		mgForce(ent, 0.0, 0.0, -100.0, 0.0, 0.0, 0.0)
@@ -50,12 +50,10 @@ end
 
 --new_cube(0.0, 0.0, 0.0, 1.0, 1.0, 1.0, false)
 a = new_cube(0.0, 0.0, -16.0, 5.0, 0.5, 32.0, false, nil)
-b = new_cube(-4.0, 2.0, -16.0, 0.5, 4.0, 32.0, false, nil)
-c = new_cube(4.0, 2.0, -16.0, 0.5, 4.0, 32.0, false, nil)
+b = new_cube(-2.5, 2.0, -16.0, 0.5, 4.0, 32.0, false, nil)
+c = new_cube(2.5, 2.0, -16.0, 0.5, 4.0, 32.0, false, nil)
 
 -- player init
 player = new_cube(0.0, 1.5, 0.0, 1.0, 1.0, 1.0, true, QR_PHYS_ENABLE_RESPONSE)
 mgActivePlayer(player)
 --print("Player is ", player, " cube are ", a, b, c)
-
-print("Player is", player, "and camera is", cam)

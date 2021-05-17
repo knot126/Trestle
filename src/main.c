@@ -31,6 +31,7 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 	#define OS_WINDOWS
+	#include "windows/main.h"
 	
 	int main(int argc, char *argv[]) {
 		return game_main(argc, argv);

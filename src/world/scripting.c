@@ -14,6 +14,8 @@
 #include "../util/script.h"
 #include "compo.h"
 #include "world.h"
+#include "transform.h"
+#include "graphics.h" // graphics utilities
 #include "seg.h"
 
 #include "scripting.h"
@@ -166,7 +168,7 @@ static int scripted_AddBox(lua_State *script) {
 	}
 	
 	uint32_t ent = world_create_entity(QuickRunActiveWorld, QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH);
-	entity_load_mesh(QuickRunActiveWorld, ent, "assets://mesh/cube.mesh");
+	entity_load_mesh(QuickRunActiveWorld, ent, "assets://mesh/cube2.bin");
 	entity_set_transform(QuickRunActiveWorld, ent, DgVec3New(px, py, pz), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(sx, sy, sz));
 	
 	lua_pushinteger(script, ent);
@@ -177,7 +179,7 @@ static int scripted_AddBox(lua_State *script) {
 static int scripted_SetPlayer(lua_State *script) {
 	uint32_t id = lua_tointeger(script, 1);
 	
-	QuickRunActiveWorld->player.id = id;
+	QuickRunActiveWorld->player_info.id = id;
 	
 	lua_pushinteger(script, id);
 	

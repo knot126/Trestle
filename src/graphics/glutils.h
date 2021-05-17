@@ -76,6 +76,8 @@ GLuint gl_load_shader(char* filename, GLenum type) {
 		return 0;
 	}
 	
+	//printf("Loaded shader from '%s'.\n", filename);
+	
 	return shader;
 }
 
@@ -83,7 +85,7 @@ GLenum gl_error_check(char* file, int line) {
 	GLenum e = glGetError();
 	
 	if (e) {
-		printf("At line %s in \"%d\": ", file, line);
+		printf("At line [%s] in [%d]: ", file, line);
 	}
 	
 	switch (e) {
@@ -228,17 +230,17 @@ static void gl_set_format(DgOpenGLContext *gl) {
 		DgFail("Error: No attribute Colour.\n", 100);
 	}
 	
-	glVertexAttribPointer(attr_Position, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) 0);
+	glVertexAttribPointer(attr_Position, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) 0);
 	glEnableVertexAttribArray(attr_Position);
 	
 	gl_error_check(__FILE__, __LINE__);
 	
-	glVertexAttribPointer(attr_Texture, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) (3 * sizeof(float)));
+	glVertexAttribPointer(attr_Texture, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
 	glEnableVertexAttribArray(attr_Texture);
 	
 	gl_error_check(__FILE__, __LINE__);
 	
-	glVertexAttribPointer(attr_Colour, 4, GL_FLOAT, GL_TRUE, 6 * sizeof(float), (void *) (5 * sizeof(float)));
+	glVertexAttribPointer(attr_Colour, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (5 * sizeof(float)));
 	glEnableVertexAttribArray(attr_Colour);
 	
 	gl_error_check(__FILE__, __LINE__);
