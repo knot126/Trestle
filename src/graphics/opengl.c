@@ -121,44 +121,42 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	gl_error_check(__FILE__, __LINE__);
 	
-// 	float data1[] = {
-// 		// X      Y      Z     U     V     R     G     B
-// 		-1.0f,  1.0f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-// 		-1.0f, -1.0f,  1.0f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-// 		 1.0f, -1.0f,  1.0f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
-// 		 1.0f,  1.0f,  1.0f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
+// 	MeshVertex data1[] = {
+// 		// X      Y      Z     U     V     C
+// 		{ -1.0f,  1.0f,  1.0f, 0.0f, 0.0f, 0 },
+// 		{ -1.0f, -1.0f,  1.0f, 2.0f, 0.0f, 0 },
+// 		{ 1.0f, -1.0f,  1.0f, 2.0f, 2.0f, 0 },
+// 		{ 1.0f,  1.0f,  1.0f, 0.0f, 2.0f, 0 },
 // 		 
-// 		-1.0f,  1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-// 		-1.0f, -1.0f, -1.0f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-// 		 1.0f, -1.0f, -1.0f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
-// 		 1.0f,  1.0f, -1.0f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
+// 		{ -1.0f,  1.0f, -1.0f, 0.0f, 0.0f, 0 },
+// 		{ -1.0f, -1.0f, -1.0f, 2.0f, 0.0f, 0 },
+// 		{ 1.0f, -1.0f, -1.0f, 2.0f, 2.0f, 0 },
+// 		{ 1.0f,  1.0f, -1.0f, 0.0f, 2.0f, 0 },
 // 		
-// 		-1.0f,  1.0f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-// 		-1.0f,  1.0f, -1.0f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-// 		 1.0f,  1.0f, -1.0f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
-// 		 1.0f,  1.0f,  1.0f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
+// 		{ -1.0f,  1.0f,  1.0f, 0.0f, 0.0f, 0 },
+// 		{ -1.0f,  1.0f, -1.0f, 2.0f, 0.0f, 0 },
+// 		{ 1.0f,  1.0f, -1.0f, 2.0f, 2.0f, 0 },
+// 		{ 1.0f,  1.0f,  1.0f, 0.0f, 2.0f, 0 },
 // 		 
-// 		-1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-// 		-1.0f, -1.0f, -1.0f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-// 		 1.0f, -1.0f, -1.0f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
-// 		 1.0f, -1.0f,  1.0f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
+// 		{ -1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 0 },
+// 		{ -1.0f, -1.0f, -1.0f, 2.0f, 0.0f, 0 },
+// 		{ 1.0f, -1.0f, -1.0f, 2.0f, 2.0f, 0 },
+// 		{ 1.0f, -1.0f,  1.0f, 0.0f, 2.0f, 0 },
 // 		 
-// 		 1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-// 		 1.0f, -1.0f, -1.0f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-// 		 1.0f,  1.0f, -1.0f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
-// 		 1.0f,  1.0f,  1.0f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
+// 		{ 1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 0 },
+// 		{ 1.0f, -1.0f, -1.0f, 2.0f, 0.0f, 0 },
+// 		{ 1.0f,  1.0f, -1.0f, 2.0f, 2.0f, 0 },
+// 		{ 1.0f,  1.0f,  1.0f, 0.0f, 2.0f, 0 },
 // 		
-// 		-1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-// 		-1.0f, -1.0f, -1.0f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-// 		-1.0f,  1.0f, -1.0f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
-// 		-1.0f,  1.0f,  1.0f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
+// 		{ -1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 0 },
+// 		{ -1.0f, -1.0f, -1.0f, 2.0f, 0.0f, 0 },
+// 		{ -1.0f,  1.0f, -1.0f, 2.0f, 2.0f, 0 },
+// 		{ -1.0f,  1.0f,  1.0f, 0.0f, 2.0f, 0 },
 // 	};
 // 	
 // 	// Make random colours
 // 	for (int i = 0; i < 24; i++) {
-// 		data1[(i * 8) + 5] = DgRandFloat();
-// 		data1[(i * 8) + 6] = DgRandFloat();
-// 		data1[(i * 8) + 7] = DgRandFloat();
+// 		data1[i].c = DgRandInt();
 // 	}
 // 	
 // 	const int indicies[] = {
@@ -180,7 +178,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 // 	DgFileStream *s = DgFileStreamOpen("./cube.bin", "wb");
 // 	
 // 	uint32_t temp;
-// 	temp = sizeof(data1) / 32;
+// 	temp = sizeof(data1) / 24;
 // 	DgFileStreamWriteInt32(s, &temp);
 // 	DgFileStreamWrite(s, sizeof(data1), data1);
 // 	temp = sizeof(indicies) / 4;
@@ -302,6 +300,8 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	
 	glBindVertexArray(gl->vaos[0]);
 	
+// 	printf("Now to scan all ents...\n");
+	
 	for (Entity i = 0; i < world->ent_count; i++) {
 		if (world->ent.mesh[i] < 0 || world->ent.trans[i] < 0) {
 			continue;
@@ -309,6 +309,8 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 		
 		C_Mesh *mesh = &world->mesh[world->ent.mesh[i]];
 		C_Transform *trans = &world->trans[world->ent.trans[i]];
+		
+// 		printf("Now to scan all ents...\n");
 		
 		// Push new verticies if needed
 		if (mesh->updated) {
@@ -323,7 +325,7 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 			glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ebo);
 			
-			glBufferData(GL_ARRAY_BUFFER, mesh->vert_count * 32, mesh->vert, GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, mesh->vert_count * sizeof(MeshVertex), mesh->vert, GL_STATIC_DRAW);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->index_count * sizeof(uint32_t), mesh->index, GL_STATIC_DRAW);
 			
 			gl_error_check(__FILE__, __LINE__);

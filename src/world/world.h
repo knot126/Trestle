@@ -17,6 +17,8 @@
 typedef int32_t entity_t;
 typedef entity_t Entity;
 
+typedef uint32_t Mask;
+
 typedef enum {
 	QR_COMPONENT_TRANSFORM = (1 << 0),
 	QR_COMPONENT_MESH = (1 << 1),

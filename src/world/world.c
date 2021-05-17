@@ -12,6 +12,7 @@
 #include "../util/alloc.h"
 #include "../util/fail.h"
 #include "../util/xml.h"
+#include "../graphics/opengl_1.h"
 
 #include "world.h"
 
@@ -156,6 +157,8 @@ bool entity_load_mesh(World * const restrict world, const Entity id, char * rest
 	 * Loads an uncompressed mesh from a file into an entity's mesh component
 	 */
 	
+// 	printf("Loading mesh file %s...\n", path);
+	
 	// Find the mesh component
 	if (world->ent.mesh[id - 1] < 0) {
 		printf("Failed to load mesh or model '%s' to entity %d.\n", path, id);
@@ -170,27 +173,27 @@ bool entity_load_mesh(World * const restrict world, const Entity id, char * rest
 	DgFree(real_path);
 	
 	if (!s) {
-		printf("Failed to load file '%s'.\n", path);
+		printf("Failed to load file '%s' whilst trying to load a mesh file.\n", path);
 		return false;
 	}
 	
 	// Read vertexes
 	DgFileStreamReadInt32(s, &mesh->vert_count);
-	mesh->vert = DgAlloc(mesh->vert_count * 32);
+	mesh->vert = DgAlloc(mesh->vert_count * sizeof(MeshVertex));
 	if (!mesh->vert) {
 		printf("Failed to allocate memory whilst trying to load a mesh file.\n");
 		return false;
 	}
-	DgFileStreamRead(s, mesh->vert_count * 32, mesh->vert);
+	DgFileStreamRead(s, mesh->vert_count * sizeof(MeshVertex), mesh->vert);
 	
 	// Read indexes
 	DgFileStreamReadInt32(s, &mesh->index_count);
-	mesh->index = DgAlloc(mesh->index_count * 4);
+	mesh->index = DgAlloc(mesh->index_count * sizeof(uint32_t));
 	if (!mesh->index) {
 		printf("Failed to allocate memory whilst trying to load a mesh file.\n");
 		return false;
 	}
-	DgFileStreamRead(s, mesh->index_count * 4, mesh->index);
+	DgFileStreamRead(s, mesh->index_count * sizeof(uint32_t), mesh->index);
 	
 	mesh->updated = true;
 	

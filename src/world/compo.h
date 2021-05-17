@@ -11,6 +11,7 @@
 #include <stdbool.h>
 
 #include "../util/maths.h"
+#include "../graphics/opengl_1.h"
 
 typedef uint32_t EntityId_t;
 
@@ -26,7 +27,7 @@ typedef struct {
 
 typedef struct {
 	bool updated; // Putting this here *should* avoid wasted space due to padding. (NO!)
-	float * vert;
+	MeshVertex * vert;
 	uint32_t * index;
 	uint32_t vert_count;
 	uint32_t index_count;

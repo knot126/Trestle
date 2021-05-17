@@ -166,7 +166,7 @@ static int scripted_AddBox(lua_State *script) {
 	}
 	
 	uint32_t ent = world_create_entity(QuickRunActiveWorld, QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH);
-	entity_load_mesh(QuickRunActiveWorld, ent, "assets://mesh/cube2.bin");
+	entity_load_mesh(QuickRunActiveWorld, ent, "assets://mesh/cube.mesh");
 	entity_set_transform(QuickRunActiveWorld, ent, DgVec3New(px, py, pz), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(sx, sy, sz));
 	
 	lua_pushinteger(script, ent);
