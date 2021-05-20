@@ -27,6 +27,7 @@
 #include "util/fs.h"
 #include "util/script.h"
 #include "util/rand.h"
+#include "util/str.h"
 #include "graphics/graphics.h"
 #include "game/gameplay.h"
 #include "game/phys.h"
@@ -131,6 +132,18 @@ int game_main(int argc, char* argv[]) {
 	}
 	else {
 		g_quickRunConfig = &initconf;
+	}
+	
+	// Testing strtok
+	char myString[] = "This is a test, of doing a lot or?the of strings   in a system test.\n";
+	char *save;
+	char *next;
+	
+	next = DgStrtokr(myString, "?,.\n ", &save);
+	
+	while (next != NULL) {
+		printf("'%s'\n", next);
+		next = DgStrtokr(NULL, "?,.\n ", &save);
 	}
 	
 	// Load world
