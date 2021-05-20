@@ -196,3 +196,17 @@ char *DgStrtokr(char *src, const char * const restrict delim, char **saveptr) {
 	
 	return ret;
 }
+
+static void DgTestStrtokr(void) {
+	// Testing strtok
+	char myString[] = "This is a test, of doing a lot or?the of strings   in a system test.\n";
+	char *save;
+	char *next;
+	
+	next = DgStrtokr(myString, "?,.\n ", &save);
+	
+	while (next != NULL) {
+		printf("'%s'\n", next);
+		next = DgStrtokr(NULL, "?,.\n ", &save);
+	}
+}
