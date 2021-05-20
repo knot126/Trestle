@@ -17,8 +17,6 @@
 
 #include "world/world.h"
 #include "world/scripting.h"
-#include "graphics/graphics.h"
-#include "phys/phys.h"
 #include "input/input.h"
 #include "util/thread.h"
 #include "util/alloc.h"
@@ -29,7 +27,9 @@
 #include "util/fs.h"
 #include "util/script.h"
 #include "util/rand.h"
+#include "graphics/graphics.h"
 #include "game/gameplay.h"
+#include "game/phys.h"
 #include "types.h"
 
 #include "game.h"

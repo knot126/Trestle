@@ -1,11 +1,16 @@
-# Quick Run Engine To-Do
+# Melon Framework To-Do
 
-This doesn't list the obvious things like physics, graphics, etc. More about background stuff that I will actually not notice until it's a bit late..
+ * Serialisation to and from JSON (module: `json`)
+ * Compression related things
+   * ZIP archive support and direct access (module: `deflate`, `zip`)
+   * Bitmap loader and writer (formats: `png`, `jpeg`; module: `bitmap`)
+ * Asset related things
+   * 3D model loading and writing (custom xml-based and obj, module: `meshes`)
+   * Asset management infrastructure (module: `assets`)
+ * User Interface tools and integrating OpenGL with Melon (module: `opengl`, `ui`)
+ * Create a custom build system better suited to our needs (XML-based)
+ * Networking and sockets (modules: `socket`, `net`, `http`)
 
- * Serialisation to and from JSON
- * Compression algoritm for storing and loading compressed files
-   * Zlib or Zstd?
-   * ZIP folder mounting and unmounting
- * Update the build system to something better
- * Windows port
- * Android port (?)
+# Game Engine To-Do
+
+ * Better physics

@@ -14,8 +14,6 @@
 #include "../util/script.h"
 #include "compo.h"
 #include "world.h"
-#include "transform.h"
-#include "graphics.h" // graphics utilities
 #include "seg.h"
 
 #include "scripting.h"
