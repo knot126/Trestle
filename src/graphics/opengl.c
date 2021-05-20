@@ -24,6 +24,7 @@
 #include "../util/load.h"
 #include "../util/ini.h"
 #include "../util/str.h"
+#include "../util/bitmap.h"
 #include "../types.h" // For g_deltaTime
 #include "image.h"
 
