@@ -207,6 +207,6 @@ static void DgTestStrtokr(void) {
 	
 	while (next != NULL) {
 		printf("'%s'\n", next);
-		next = DgStrtokr(NULL, "?,.\n ", &save);
+//		next = DgStrtokr(NULL, "?,.\n ", &save);
 	}
 }
