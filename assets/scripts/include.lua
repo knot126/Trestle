@@ -37,3 +37,18 @@ function new_cube(x, y, z, sx, sy, sz, phys, pflags)
 	return ent
 end
 
+function buildWallsAndFloor(w, h, l)
+	-- walls and floor
+	new_cube(0.0, -0.75, -l / 2.0, w, 0.5, l, false, nil)
+	new_cube(-w, (h / 2.0) - 0.75, -l / 2.0, 0.5, h, l, false, nil)
+	new_cube(w, (h / 2.0) - 0.75, -l / 2.0, 0.5, h, l, false, nil)
+	
+	-- decor
+	for z = 1.0, tonumber(l), 2.0 do
+		new_cube(-w + 0.5, (h / 2.0) - 0.75, -z, 0.5, h, 0.5, false, nil)
+		new_cube(-w + 1.0, 0.25, -z, 0.5, 0.5, 0.5, false, nil)
+		
+		new_cube(w - 0.5, (h / 2.0) - 0.75, -z, 0.5, h, 0.5, false, nil)
+		new_cube(w - 1.0, 0.25, -z, 0.5, 0.5, 0.5, false, nil)
+	end
+end

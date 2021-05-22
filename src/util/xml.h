@@ -34,3 +34,4 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 uint32_t DgXMLLoad(DgXMLNode *doc, const char * const path);
 void DgXMLNodeFree(DgXMLNode *node);
 void DgXMLPrintNode(const DgXMLNode * const doc, uint32_t depth);
+char *DgXMLGetAttrib(DgXMLNode *node, const char * const restrict key, char *fallback);

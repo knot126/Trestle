@@ -391,3 +391,16 @@ void DgXMLPrintNode(const DgXMLNode * const doc, uint32_t depth) {
 		printf("(\033[0;33mno subnodes\033[0m)\n");
 	}
 }
+
+char *DgXMLGetAttrib(DgXMLNode *node, const char * const restrict key, char *fallback) {
+	char *value = fallback;
+	
+	for (size_t i = 0; i < node->attrib_count; i++) {
+		if (!strcmp(node->attrib[i].key, key)) {
+			value = node->attrib[i].value;
+			break;
+		}
+	}
+	
+	return value;
+}

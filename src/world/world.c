@@ -196,6 +196,43 @@ bool entity_load_mesh(World * const restrict world, uint32_t id, char * const re
 	return true;
 }
 
+bool entity_load_xmesh(World * const restrict world, uint32_t id, const char * const restrict path) {
+	/**
+	 * Load and generate an XML format mesh to an entity
+	 */
+	DgXMLNode doc;
+	
+	uint32_t status = DgXMLLoad(&doc, path);
+	
+	if (status) {
+		return false;
+	}
+	
+	// Calculate size needed to be allocated
+	// Using: Number of planes * Number of verticies per plane * Number of floats per vertex
+	float *data = (float *) DgAlloc(doc.sub_count * 4 * 8);
+	
+	if (!data) {
+		return false;
+	}
+	
+	for (size_t i = 0; i < doc.sub_count; i++) {
+		if (!strcmp(doc.sub[i].name, "plane")) {
+			DgVec3 pos = DgVec3FromString(DgXMLGetAttrib(&doc, "pos", NULL));
+			DgVec3 size = DgVec3FromString(DgXMLGetAttrib(&doc, "size", NULL));
+			DgVec3 colour = DgVec3FromString(DgXMLGetAttrib(&doc, "colour", NULL));
+			
+			data[((i + 0) * 32) + 0] = pos.x + size.x;
+			data[((i + 0) * 32) + 1] = pos.y + size.y;
+			data[((i + 0) * 32) + 2] = pos.z + size.z;
+			
+			// TODO: Finish this, I am going to work on something else now ...
+		}
+	}
+	
+	DgXMLNodeFree(&doc);
+}
+
 void world_set_camera(World * const restrict world, const uint32_t id) {
 	/*
 	 * Setter function for the world's active camera.

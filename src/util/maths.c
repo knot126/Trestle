@@ -196,6 +196,11 @@ inline DgVec3 DgVec3Negate(DgVec3 a) {
 inline DgVec3 DgVec3FromString(const char * const s) {
 	DgVec3 c = DgVec3New(0.0f, 0.0f, 0.0f);
 	
+	// Return zero vector on null string
+	if (!s) {
+		return c;
+	}
+	
 	char * t = (char *) s;
 	
 	c.x = strtof(t, &t);

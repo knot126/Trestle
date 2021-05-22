@@ -111,7 +111,6 @@ DgOpenGLContext* gl_graphics_init(void) {
 		icons[0].pixels = (unsigned char *) icon.data;
 		icons[0].width = icon.width;
 		icons[0].height = icon.height;
-		//printf("Set image with w=%d,h=%d to icon.\n", icons[0].width, icons[0].height);
 		glfwSetWindowIcon(gl->window, sizeof(icons) / sizeof(GLFWimage), icons);
 		
 		DgFreeImage(&icon);
