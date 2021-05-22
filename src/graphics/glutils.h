@@ -215,19 +215,19 @@ static void gl_load_texture_buffer(DgOpenGLContext *gl, DgBitmap *bitmap, GLenum
 static void gl_set_format(DgOpenGLContext *gl) {
 	// Tell OpenGL about this vertex data
 	GLint attr_Position = glGetAttribLocation(gl->programs[0], "position");
-	GLint attr_Texture = glGetAttribLocation(gl->programs[0], "texturepos");
+	GLint attr_Texture = glGetAttribLocation(gl->programs[0], "texpos");
 	GLint attr_Colour = glGetAttribLocation(gl->programs[0], "colour");
 	
 	if (attr_Position < 0) {
-		DgFail("Error: No attribute Position.\n", 100);
+		DgFail("Error: No attribute 'position'.\n", 100);
 	}
 	
 	if (attr_Texture < 0) {
-		DgFail("Error: No attribute Texture.\n", 100);
+		DgFail("Error: No attribute 'texpos'.\n", 100);
 	}
 	
 	if (attr_Colour < 0) {
-		DgFail("Error: No attribute Colour.\n", 100);
+		DgFail("Error: No attribute 'colour'.\n", 100);
 	}
 	
 	glVertexAttribPointer(attr_Position, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) 0);

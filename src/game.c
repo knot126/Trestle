@@ -36,7 +36,7 @@
 #include "game.h"
 
 static void print_info(void) {
-	printf("Info: Engine compiled on %s at %s.\n", __DATE__, __TIME__);
+	printf("\033[3mEngine compiled on %s at %s.\033[0m\n", __DATE__, __TIME__);
 }
 
 static void sys_init(SystemStates *sys) {
@@ -44,16 +44,16 @@ static void sys_init(SystemStates *sys) {
 	memset(sys, 0, sizeof(SystemStates));
 	
 	// Graphics initialisation
-	printf("Info: Init graphics subsystem...\n");
+	printf("\033[0;35mInfo:\033[0m Init graphics subsystem...\n");
 	sys->graphics = graphics_init();
 	
 	// Input initialisation
-	printf("Info: Init input system...\n");
+	printf("\033[0;35mInfo:\033[0m Init input system...\n");
 	input_init(sys->graphics);
 }
 
 static void sys_destroy(SystemStates *sys) {
-	printf("Info: Destroying graphics subsystem...\n");
+	printf("\033[0;35mInfo:\033[0m Destroying graphics subsystem...\n");
 	graphics_free(sys->graphics);
 }
 
@@ -146,6 +146,7 @@ int game_main(int argc, char* argv[]) {
 	DgScriptInit(&script);
 	DgRegisterRandFuncs(&script);
 	registerWorldScriptFunctions(&script);
+	DgScriptLoad(&script, DgINIGet(&initconf, "Main", "include_script_path", "assets://scripts/include.lua"));
 	DgScriptLoad(&script, DgINIGet(&initconf, "Main", "startup_script_path", "assets://scripts/startup.lua"));
 	DgScriptFree(&script);
 	

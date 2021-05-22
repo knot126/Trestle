@@ -11,7 +11,7 @@ uniform mat4 camera;
 uniform mat4 proj;
 
 in vec3 position;
-in vec2 texturepos;
+in vec2 texpos;
 in vec3 colour;
 
 out vec2 Texture;
@@ -19,7 +19,7 @@ out vec3 Colour;
 
 void main() {
 	Colour = colour;
-	Texture = texturepos;
+	Texture = texpos;
 	gl_Position = proj * ((camera) * (model * vec4(position, 1.0)));
 }
 #endif

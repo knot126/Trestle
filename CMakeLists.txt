@@ -90,6 +90,7 @@ set(MELON_FILES
 	src/util/maths.c
 	src/util/rand.c
 	src/util/script.c
+	src/util/socket.c
 	src/util/str.c
 	src/util/thread.c
 	src/util/time.c
