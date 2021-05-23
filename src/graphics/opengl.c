@@ -10,7 +10,7 @@
 #include <stdlib.h>
 
 #if !defined(DG_GLEW_INCLUDED_OK)
-	#include "../../lib/glew/glew.h"
+	#include "glad.h"
 	#define DG_GLEW_INCLUDED_OK 1
 #endif
 #include <GLFW/glfw3.h>
@@ -96,8 +96,10 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	glfwMakeContextCurrent(gl->window);
 	
-	glewExperimental = GL_TRUE;
-	glewInit();
+	int ret = gladLoadGLLoader( (GLADloadproc) &glfwGetProcAddress );
+	if (!ret) {
+		DgFail("Error: Failed to load GLAD.\n", -1);
+	}
 	
 	glfwSwapInterval(0);
 	glfwSetFramebufferSizeCallback(gl->window, gl_set_window_size);

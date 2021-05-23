@@ -103,10 +103,11 @@ set(MELON_FILES
 set(EXEC_FILES 
 	${LUA_FILES}
 	${MELON_FILES}
-	lib/glew/glew.c
+	#lib/glew/glew.c
 	src/world/world.c
 	src/world/scripting.c
 	src/world/seg.c
+	src/graphics/glad.c
 	src/graphics/graphics.c
 	src/graphics/opengl.c
 	src/graphics/image.c
@@ -137,8 +138,10 @@ target_include_directories(${EXEC_NAME} PRIVATE ${LUA_DIR})
 target_include_directories(${MELON_NAME} PRIVATE ${LUA_DIR})
 
 target_include_directories(${EXEC_NAME} PRIVATE "src")
+target_include_directories(${EXEC_NAME} PRIVATE "lib/glfw/include")
 
 target_link_libraries(${EXEC_NAME} m)
 target_link_libraries(${EXEC_NAME} GL)
+target_link_libraries(${EXEC_NAME} dl)
 target_link_libraries(${EXEC_NAME} glfw)
 target_link_libraries(${EXEC_NAME} pthread)
