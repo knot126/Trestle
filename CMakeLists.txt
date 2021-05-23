@@ -82,7 +82,6 @@ set(MELON_FILES
 	src/util/alloc.c
 	src/util/bag.c
 	src/util/bitmap.c
-	src/util/dict.c
 	src/util/fail.c
 	src/util/fs.c
 	src/util/ini.c
@@ -90,10 +89,12 @@ set(MELON_FILES
 	src/util/maths.c
 	src/util/rand.c
 	src/util/script.c
+	src/util/script_jax.c
 	src/util/socket.c
 	src/util/str.c
 	src/util/thread.c
 	src/util/time.c
+	src/util/value.c
 	src/util/xml.c
 	${LUA_INCLUDE_FILES}
 	)
