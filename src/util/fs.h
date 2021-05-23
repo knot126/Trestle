@@ -16,6 +16,8 @@ typedef struct DgFileStream {
 	FILE* _c_file_stream;
 } DgFileStream;
 
+typedef DgFileStream DgFile;
+
 void DgInitPaths();
 char* DgEvalPath(char* path);
 DgFileStream* DgFileStreamOpen(char* path, char* permissions);

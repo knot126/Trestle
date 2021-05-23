@@ -12,7 +12,7 @@ with open(NAME, "w") as f:
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
- * NOTE: This is an auto-generated file. Please re-generate with "./.gen_util_h.py"
+ * NOTE: This is an auto-generated file. Please re-generate with "./zgen.py"
  */
 
 #pragma once

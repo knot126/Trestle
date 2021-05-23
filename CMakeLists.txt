@@ -86,6 +86,7 @@ set(MELON_FILES
 	src/util/fs.c
 	src/util/ini.c
 	src/util/load.c
+	src/util/log.c
 	src/util/maths.c
 	src/util/rand.c
 	src/util/script.c

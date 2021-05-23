@@ -25,37 +25,17 @@
 #include "../util/ini.h"
 #include "../util/str.h"
 #include "../util/bitmap.h"
+#include "../util/log.h"
 #include "../types.h" // For g_deltaTime
 #include "image.h"
 
 #include "opengl.h"
 
-DgVec2 mouse_delta;
-DgVec2 mouse_last;
-
 // Yes, it's odd, but I really rather not include the header files in this file.
 #include "glutils.h"
 
 void gl_set_window_size(GLFWwindow* window, int w, int h) {
-	glViewport(0, 0, w, h);
-}
-
-void gl_update_mouse(GLFWwindow* window, double x, double y) {
-	/*
-	 * Handles the mouse movement input
-	 */
-	static bool first = false;
-	
-	if (first) {
-		mouse_last.x = x;
-		mouse_last.y = y;
-		first = true;
-	}
-	
-	mouse_delta.x = x - mouse_last.x;
-	mouse_delta.y = y - mouse_last.y;
-	
-	mouse_last = DgVec2New(x, y);
+	glViewport(16, 16, w, h);
 }
 
 DgOpenGLContext* gl_graphics_init(void) {
@@ -75,7 +55,6 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glfwInit();
 	
 	// Window paramaters
-	//glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -91,19 +70,20 @@ DgOpenGLContext* gl_graphics_init(void) {
 	DgFree(w_title);
 	
 	if (!gl->window) {
-		DgFail("Error: Failed to create glfw window.", -1);
+		DgLog(DG_LOG_FATAL, "Failed to create glfw window");
+		return NULL;
 	}
 	
 	glfwMakeContextCurrent(gl->window);
 	
 	int ret = gladLoadGLLoader( (GLADloadproc) &glfwGetProcAddress );
 	if (!ret) {
-		DgFail("Error: Failed to load GLAD.\n", -1);
+		return NULL;
+		DgLog(DG_LOG_FATAL, "Failed to load GLAD");
 	}
 	
 	glfwSwapInterval(0);
 	glfwSetFramebufferSizeCallback(gl->window, gl_set_window_size);
-	glfwSetCursorPosCallback(gl->window, gl_update_mouse);
 	glViewport(0, 0, w_width, w_height);
 	
 	// set window icon
@@ -123,73 +103,75 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	gl_error_check(__FILE__, __LINE__);
 	
-// 	float data1[] = {
-// 		// X      Y      Z     U     V     R     G     B
-// 		-1.0f,  1.0f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-// 		-1.0f, -1.0f,  1.0f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-// 		 1.0f, -1.0f,  1.0f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
-// 		 1.0f,  1.0f,  1.0f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
-// 		 
-// 		-1.0f,  1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-// 		-1.0f, -1.0f, -1.0f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-// 		 1.0f, -1.0f, -1.0f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
-// 		 1.0f,  1.0f, -1.0f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
-// 		
-// 		-1.0f,  1.0f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-// 		-1.0f,  1.0f, -1.0f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-// 		 1.0f,  1.0f, -1.0f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
-// 		 1.0f,  1.0f,  1.0f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
-// 		 
-// 		-1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-// 		-1.0f, -1.0f, -1.0f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-// 		 1.0f, -1.0f, -1.0f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
-// 		 1.0f, -1.0f,  1.0f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
-// 		 
-// 		 1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-// 		 1.0f, -1.0f, -1.0f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-// 		 1.0f,  1.0f, -1.0f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
-// 		 1.0f,  1.0f,  1.0f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
-// 		
-// 		-1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-// 		-1.0f, -1.0f, -1.0f, 2.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-// 		-1.0f,  1.0f, -1.0f, 2.0f, 2.0f, 0.0f, 0.0f, 1.0f,
-// 		-1.0f,  1.0f,  1.0f, 0.0f, 2.0f, 1.0f, 1.0f, 0.0f,
-// 	};
-// 	
-// 	// Make random colours
+	/*
+	float data1[] = {
+		// X      Y      Z     U     V     R     G     B
+		-1.0f,  1.0f,  1.0f, 0.0f, 0.0f, 0.85f, 0.85f, 0.85f,
+		-1.0f, -1.0f,  1.0f, 2.0f, 0.0f, 0.85f, 0.85f, 0.85f,
+		 1.0f, -1.0f,  1.0f, 2.0f, 2.0f, 0.85f, 0.85f, 0.85f,
+		 1.0f,  1.0f,  1.0f, 0.0f, 2.0f, 0.85f, 0.85f, 0.85f,
+		 
+		-1.0f,  1.0f, -1.0f, 0.0f, 0.0f, 0.85f, 0.85f, 0.85f,
+		-1.0f, -1.0f, -1.0f, 2.0f, 0.0f, 0.85f, 0.85f, 0.85f,
+		 1.0f, -1.0f, -1.0f, 2.0f, 2.0f, 0.85f, 0.85f, 0.85f,
+		 1.0f,  1.0f, -1.0f, 0.0f, 2.0f, 0.85f, 0.85f, 0.85f,
+		
+		-1.0f,  1.0f,  1.0f, 0.0f, 0.0f, 0.95f, 0.95f, 0.95f,
+		-1.0f,  1.0f, -1.0f, 2.0f, 0.0f, 0.95f, 0.95f, 0.95f,
+		 1.0f,  1.0f, -1.0f, 2.0f, 2.0f, 0.95f, 0.95f, 0.95f,
+		 1.0f,  1.0f,  1.0f, 0.0f, 2.0f, 0.95f, 0.95f, 0.95f,
+		 
+		-1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 0.95f, 0.95f, 0.95f,
+		-1.0f, -1.0f, -1.0f, 2.0f, 0.0f, 0.95f, 0.95f, 0.95f,
+		 1.0f, -1.0f, -1.0f, 2.0f, 2.0f, 0.95f, 0.95f, 0.95f,
+		 1.0f, -1.0f,  1.0f, 0.0f, 2.0f, 0.95f, 0.95f, 0.95f,
+		 
+		 1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 0.75f, 0.75f, 0.75f,
+		 1.0f, -1.0f, -1.0f, 2.0f, 0.0f, 0.75f, 0.75f, 0.75f,
+		 1.0f,  1.0f, -1.0f, 2.0f, 2.0f, 0.75f, 0.75f, 0.75f,
+		 1.0f,  1.0f,  1.0f, 0.0f, 2.0f, 0.75f, 0.75f, 0.75f,
+		
+		-1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 0.75f, 0.75f, 0.75f,
+		-1.0f, -1.0f, -1.0f, 2.0f, 0.0f, 0.75f, 0.75f, 0.75f,
+		-1.0f,  1.0f, -1.0f, 2.0f, 2.0f, 0.75f, 0.75f, 0.75f,
+		-1.0f,  1.0f,  1.0f, 0.0f, 2.0f, 0.75f, 0.75f, 0.75f,
+	};
+	
+	// Make random colours
 // 	for (int i = 0; i < 24; i++) {
 // 		data1[(i * 8) + 5] = DgRandFloat();
 // 		data1[(i * 8) + 6] = DgRandFloat();
 // 		data1[(i * 8) + 7] = DgRandFloat();
 // 	}
-// 	
-// 	const int indicies[] = {
-// 		0, 1, 2,
-// 		0, 2, 3,
-// 		4, 5, 6,
-// 		4, 6, 7,
-// 		8, 9, 10,
-// 		8, 10, 11,
-// 		12, 13, 14,
-// 		12, 14, 15,
-// 		16, 17, 18,
-// 		16, 18, 19,
-// 		20, 21, 22,
-// 		20, 22, 23,
-// 	};
-// 	
-// 	// Write a file with the cube mesh
-// 	DgFileStream *s = DgFileStreamOpen("./cube.bin", "wb");
-// 	
-// 	uint32_t temp;
-// 	temp = sizeof(data1) / 32;
-// 	DgFileStreamWriteInt32(s, &temp);
-// 	DgFileStreamWrite(s, sizeof(data1), data1);
-// 	temp = sizeof(indicies) / 4;
-// 	DgFileStreamWriteInt32(s, &temp);
-// 	DgFileStreamWrite(s, sizeof(indicies), indicies);
-// 	
-// 	DgFileStreamClose(s);
+	
+	const int indicies[] = {
+		0, 1, 2,
+		0, 2, 3,
+		4, 5, 6,
+		4, 6, 7,
+		8, 9, 10,
+		8, 10, 11,
+		12, 13, 14,
+		12, 14, 15,
+		16, 17, 18,
+		16, 18, 19,
+		20, 21, 22,
+		20, 22, 23,
+	};
+	*/
+	
+	// Write a file with the cube mesh
+	DgFileStream *s = DgFileStreamOpen("./cube.bin", "wb");
+	
+	uint32_t temp;
+	temp = sizeof(data1) / 32;
+	DgFileStreamWriteInt32(s, &temp);
+	DgFileStreamWrite(s, sizeof(data1), data1);
+	temp = sizeof(indicies) / 4;
+	DgFileStreamWriteInt32(s, &temp);
+	DgFileStreamWrite(s, sizeof(indicies), indicies);
+	
+	DgFileStreamClose(s);
 	
 	// Load shaders
 	gl->programs = (GLuint *) DgAlloc(sizeof(GLuint) * 1);
@@ -205,7 +187,8 @@ DgOpenGLContext* gl_graphics_init(void) {
 	gl->vaos_count = 2;
 	
 	if (!gl->vaos) {
-		DgFail("Error: VAO Alloc error\n", -1);
+		DgLog(DG_LOG_FATAL, "Could not allocate memory for vertex array objects");
+		return NULL;
 	}
 	
 	// Create a VAOs
@@ -222,7 +205,8 @@ DgOpenGLContext* gl_graphics_init(void) {
 	gl->textures = (GLuint *) DgAlloc(sizeof(GLuint) * gl->textures_count);
 	
 	if (!gl->textures) {
-		DgFail("Error: Texture list allocation failure.\n", -1);
+		DgLog(DG_LOG_FATAL, "Texture list allocation failure");
+		return NULL;
 	}
 	
 	glGenTextures(gl->textures_count, gl->textures);
@@ -233,23 +217,16 @@ DgOpenGLContext* gl_graphics_init(void) {
 		gl_load_texture_buffer(gl, bmp, GL_TEXTURE0);
 		DgBitmapFree(bmp);
 	}
-	//gl_load_texture(gl, "assets://gfx/2.jpg", GL_TEXTURE1);
 	
 	glUniform1i(glGetUniformLocation(gl->programs[0], "image"), 0);
-	//glUniform1i(glGetUniformLocation(gl->programs[0], "image2"), 1);
 	glUseProgram(0);
 	
 	// Alpha blending
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
-	
 	glEnable(GL_DEPTH_TEST);
 	
-	mouse_last = DgVec2New(720.0f / 2.0f, 1280.0f / 2.0f);
-	
 	gl_error_check(__FILE__, __LINE__);
-	
-	printf("Info: Graphics system has been initialised.\n");
 	
 	return gl;
 }
@@ -380,13 +357,13 @@ void gl_handle_input(DgOpenGLContext* gl) {
 	/*
 	 * Handles most game input
 	 */
-	if (glfwGetKey(gl->window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+	if (glfwGetKey(gl->window, GLFW_KEY_ESCAPE)) {
 		glfwSetWindowShouldClose(gl->window, GL_TRUE);
 	}
 	
 	static bool polymode = false;
 	
-	if (glfwGetKey(gl->window, GLFW_KEY_Q) == GLFW_PRESS) {
+	if (glfwGetKey(gl->window, GLFW_KEY_Q)) {
 		polymode = !polymode;
 	}
 	
