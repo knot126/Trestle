@@ -48,14 +48,7 @@ void gameplay_update(World *world) {
 	
 	float lspeed = speed * g_deltaTime;
 	
-// 	if (getKeyPressed(GLFW_KEY_UP)) {
-// 		transf->pos = DgVec3Add(transf->pos, DgVec3New(0.0f, 0.0f, -lspeed));
-// 	}
-// 	
-// 	if (getKeyPressed(GLFW_KEY_DOWN)) {
-// 		transf->pos = DgVec3Add(transf->pos, DgVec3New(0.0f, 0.0f, lspeed));
-// 	}
-	
+	// Increse or decrase speed
 	if (getKeyPressed(GLFW_KEY_UP)) {
 		speed = speed + g_deltaTime;
 	}
@@ -64,18 +57,28 @@ void gameplay_update(World *world) {
 		speed = speed - g_deltaTime;
 	}
 	
+	// Move player forward
 	transf->pos = DgVec3Add(transf->pos, DgVec3New(0.0f, 0.0f, -lspeed));
 	
+	// Move player side to side
 	if (getKeyPressed(GLFW_KEY_LEFT)) {
-		transf->pos = DgVec3Add(transf->pos, DgVec3New(-lspeed, 0.0f, 0.0f));
+		transf->pos = DgVec3Add(transf->pos, DgVec3New(-2.5f * g_deltaTime, 0.0f, 0.0f));
 	}
 	
 	if (getKeyPressed(GLFW_KEY_RIGHT)) {
-		transf->pos = DgVec3Add(transf->pos, DgVec3New(lspeed, 0.0f, 0.0f));
+		transf->pos = DgVec3Add(transf->pos, DgVec3New(2.5f * g_deltaTime, 0.0f, 0.0f));
 	}
 	
-	if (getKeyPressed(GLFW_KEY_SPACE)) {
-		phys->Fpos = DgVec3Add(phys->Fpos, DgVec3New(0.0f, speed * speed, 0.0f));
+	// Jumping control
+	static int8_t jump_control_frame;
+	
+	if (getKeyPressed(GLFW_KEY_SPACE) && ((phys->flags & QR_PHYS_GROUNDED) == QR_PHYS_GROUNDED) && jump_control_frame == 0) {
+		phys->Fpos = DgVec3Add(phys->Fpos, DgVec3New(0.0f, 1500.0f, 0.0f));
+		jump_control_frame = 15;
+	}
+	
+	if (jump_control_frame > 0) {
+		jump_control_frame--;
 	}
 	
 	// CAMERA
@@ -96,9 +99,6 @@ void gameplay_update(World *world) {
 			printf("Player pos: (%.3f, %.3f, %.3f)\n", ppos->pos.x, ppos->pos.y, ppos->pos.z);
 			last = 0.0f;
 		}
-	}
-	else {
-		printf("player not found\n");
 	}
 	
 	CTransform *cpos = NULL;

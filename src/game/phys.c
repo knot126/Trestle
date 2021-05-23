@@ -56,6 +56,7 @@ void phys_update(World *world, float delta) {
 		phys->Frot = DgVec3New(0.0f, 0.0f, 0.0f);
 		
 		if ((phys->flags & QR_PHYS_ENABLE_RESPONSE) == QR_PHYS_ENABLE_RESPONSE) {
+			phys->flags = (phys->flags & (~QR_PHYS_GROUNDED));
 			CTransform *shape = trans;
 			
 			DgVec3 aHigh = DgVec3Add(shape->pos, shape->scale);
@@ -74,10 +75,9 @@ void phys_update(World *world, float delta) {
 					&& (bHigh.z >= aLow.z) && (aHigh.z >= bLow.z);
 				
 				if (res) {
-// 					printf("Collision!!\n");
+					phys->flags = phys->flags | QR_PHYS_GROUNDED;
 					
 					DgVec3 force_out = DgVec3Subtract(world->CTransforms[i].pos, shape->pos);
-// 					printf("Difference: (%f, %f, %f) | %f\n", force_out.x, force_out.y, force_out.z, world->CTransforms[i].scale.y - force_out.y);
 					trans->pos.y += bHigh.y - aLow.y;
 					
 					if (!((phys->flags & QR_PHYS_DISABLE_GRAVITY) == QR_PHYS_DISABLE_GRAVITY)) {

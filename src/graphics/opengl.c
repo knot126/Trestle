@@ -35,7 +35,7 @@
 #include "glutils.h"
 
 void gl_set_window_size(GLFWwindow* window, int w, int h) {
-	glViewport(16, 16, w, h);
+	glViewport(0, 0, w, h);
 }
 
 DgOpenGLContext* gl_graphics_init(void) {
@@ -158,7 +158,6 @@ DgOpenGLContext* gl_graphics_init(void) {
 		20, 21, 22,
 		20, 22, 23,
 	};
-	*/
 	
 	// Write a file with the cube mesh
 	DgFileStream *s = DgFileStreamOpen("./cube.bin", "wb");
@@ -172,6 +171,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	DgFileStreamWrite(s, sizeof(indicies), indicies);
 	
 	DgFileStreamClose(s);
+	*/
 	
 	// Load shaders
 	gl->programs = (GLuint *) DgAlloc(sizeof(GLuint) * 1);

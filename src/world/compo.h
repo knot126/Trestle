@@ -27,12 +27,12 @@ typedef struct {
 
 typedef struct {
 	ComponentBase_t base;
-	bool updated; // Putting this here *should* avoid wasted space due to padding. (NO!)
 	float * vert;
 	uint32_t * index;
 	uint32_t vert_count;
 	uint32_t index_count;
 	uint32_t vbo, ebo;
+	bool updated;
 } CMesh;
 
 typedef struct {
@@ -46,9 +46,12 @@ typedef struct {
 } CCamera;
 
 enum {
+	// For writing state
 	QR_PHYS_DISABLE_GRAVITY = (1<<0),
-//	QR_PHYS_ENABLE_PRESENCE = (1<<1),
 	QR_PHYS_ENABLE_RESPONSE = (1<<2),
+	
+	// For reading state
+	QR_PHYS_GROUNDED = (1<<16),
 };
 
 typedef struct {
