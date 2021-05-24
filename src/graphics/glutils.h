@@ -81,7 +81,7 @@ GLuint gl_load_shader(char* filename, GLenum type) {
 	return shader;
 }
 
-GLenum gl_error_check(char* file, int line) {
+void gl_error_check(char* file, int line) {
 	GLenum e = glGetError();
 	
 	if (e) {
@@ -109,63 +109,81 @@ GLenum gl_error_check(char* file, int line) {
 	}
 }
 
-GLuint gl_make_program(DgOpenGLContext *gl, char* source_path) {
-	// Create program, add shaders to it and link it
+uint32_t graphicsLoadShader(DgOpenGLContext *gl, char* source_path) {
+	/**
+	 * Load shader(s) from a GLSL shader file and mark it as the active program.
+	 * 
+	 * This now adds the program to the list of programs automatically.
+	 * 
+	 * Returns 0 on success, returns 1 on non-fatal failure, returns 2 on fatal
+	 * failure where the game needs to exit (because resources have been lost)
+	 */
+	
+	// Vertex Shader
 	GLuint vertex = gl_load_shader(source_path, GL_VERTEX_SHADER);
 	if (!vertex) {
-		return 0;
+		return 1;
 	}
 	
+	(gl->shader_count)++;
+	gl->shaders = DgRealloc(gl->shaders, sizeof(GLuint) * gl->shader_count);
+	
+	if (!gl->shaders) {
+		DgLog(DG_LOG_ERROR, "Failed to allocate memory for shaders list.");
+		return 2;
+	}
+	
+	gl->shaders[gl->shader_count - 1] = vertex;
+	
+	// Fragment Shader
 	GLuint fragment = gl_load_shader(source_path, GL_FRAGMENT_SHADER);
 	if (!fragment) {
-		return 0;
+		return 1;
 	}
 	
-	gl->shader_count += 2;
-	
-	// Allocate memory to store shader IDs
-	if (!gl->shaders) {
-		gl->shaders = DgAlloc(sizeof(GLuint) * gl->shader_count);
-	}
-	else {
-		gl->shaders = DgRealloc(gl->shaders, sizeof(GLuint) * gl->shader_count);
-	}
+	(gl->shader_count)++;
+	gl->shaders = DgRealloc(gl->shaders, sizeof(GLuint) * gl->shader_count);\
 	
 	if (!gl->shaders) {
-		DgFail("Error: Failed to allocate memory for shaders list. Abort!!", 100);
-		return 0;
-	}
-	else {
-		gl->shaders[gl->shader_count - 2] = vertex;
-		gl->shaders[gl->shader_count - 1] = fragment;
+		DgLog(DG_LOG_ERROR, "Failed to allocate memory for shaders list.");
+		return 2;
 	}
 	
-	GLuint program_id = glCreateProgram();
+	gl->shaders[gl->shader_count - 1] = fragment;
 	
-	glAttachShader(program_id, vertex);
-	glAttachShader(program_id, fragment);
+	/* *** Creating the actual program *** */
 	
-	glLinkProgram(program_id);
+	GLuint id = glCreateProgram();
+	
+	glAttachShader(id, vertex);
+	glAttachShader(id, fragment);
+	
+	glLinkProgram(id);
 	
 	// Check for any errors making program
 	GLint link_stat;
-	glGetProgramiv(program_id, GL_LINK_STATUS, &link_stat);
+	glGetProgramiv(id, GL_LINK_STATUS, &link_stat);
 	
 	if (!link_stat) {
 		char mesg[1024];
-		glGetProgramInfoLog(program_id, 1024, NULL, mesg);
+		glGetProgramInfoLog(id, 1024, NULL, mesg);
 		if (mesg[0]) {
 			printf("%s\n", mesg);
 		}
-		return 0;
+		return 1;
 	}
 	
-	glUseProgram(program_id);
+	glUseProgram(id);
 	
-	return program_id;
+	// Add to the list
+	++(gl->programs_count);
+	gl->programs = DgRealloc(gl->programs, sizeof(GLuint) * gl->programs_count);
+	gl->programs[gl->programs_count - 1] = id;
+	
+	return 0;
 }
 
-static void gl_load_texture(DgOpenGLContext *gl, char *path, GLenum active_texture) {
+static void graphicsLoadTexture(DgOpenGLContext *gl, char *path, GLenum active_texture) {
 	glActiveTexture(active_texture);
 	glBindTexture(GL_TEXTURE_2D, gl->textures[texture_count]);
 	texture_count++;
@@ -189,7 +207,7 @@ static void gl_load_texture(DgOpenGLContext *gl, char *path, GLenum active_textu
 	DgFreeImage(&image);
 }
 
-static void gl_load_texture_buffer(DgOpenGLContext *gl, DgBitmap *bitmap, GLenum active_texture) {
+static void graphicsLoadTextureFromBuffer(DgOpenGLContext *gl, DgBitmap *bitmap, GLenum active_texture) {
 	glActiveTexture(active_texture);
 	glBindTexture(GL_TEXTURE_2D, gl->textures[texture_count]);
 	texture_count++;
@@ -210,6 +228,25 @@ static void gl_load_texture_buffer(DgOpenGLContext *gl, DgBitmap *bitmap, GLenum
 	glGenerateMipmap(GL_TEXTURE_2D);
 	
 	printf("Info: Loaded image with id %d.\n", texture_count);
+}
+
+static uint32_t graphicsCreateVAO(DgOpenGLContext *gl) {
+	/**
+	 * Create a Vertex Array Object and bind it as the current VAO.
+	 */
+	
+	(gl->vaos_count)++;
+	gl->vaos = (GLuint *) DgAlloc(sizeof(GLuint) * gl->vaos_count);
+	
+	if (!gl->vaos) {
+		DgLog(DG_LOG_FATAL, "Could not allocate memory for vertex array objects");
+		return 1;
+	}
+	
+	glGenVertexArrays(1, &gl->vaos[gl->vaos_count - 1]);
+	glBindVertexArray(gl->vaos[gl->vaos_count - 1]);
+	
+	return 0;
 }
 
 static void gl_set_format(DgOpenGLContext *gl) {

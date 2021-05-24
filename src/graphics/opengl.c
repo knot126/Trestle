@@ -78,8 +78,8 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	int ret = gladLoadGLLoader( (GLADloadproc) &glfwGetProcAddress );
 	if (!ret) {
-		return NULL;
 		DgLog(DG_LOG_FATAL, "Failed to load GLAD");
+		return NULL;
 	}
 	
 	glfwSwapInterval(0);
@@ -101,7 +101,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 		printf("\033[1;33mWarning:\033[0m Could not set window icon.\n");
 	}
 	
-	gl_error_check(__FILE__, __LINE__);
+	// gl_error_check(__FILE__, __LINE__);
 	
 	/*
 	float data1[] = {
@@ -174,28 +174,26 @@ DgOpenGLContext* gl_graphics_init(void) {
 	*/
 	
 	// Load shaders
-	gl->programs = (GLuint *) DgAlloc(sizeof(GLuint) * 1);
-	gl->programs[0] = gl_make_program(gl, "assets://shaders/main.glsl");
+	uint32_t res = graphicsLoadShader(gl, "assets://shaders/main.glsl");
+	if (res) {
+		// failed to load shader
+		// if 2 the error affects other parts too and is fatal
+	}
+	
+	res = graphicsLoadShader(gl, "assets://shaders/text.glsl");
+	if (res) {
+		// failed to load shader
+		// if 2 the error affects other parts too and is fatal
+	}
+	
+	glUseProgram(gl->programs[0]);
 	
 	// Delete shaders, they are not needed anymore
 	for (int i = 0; i < gl->shader_count; i++) {
 		glDeleteShader(gl->shaders[i]);
 	}
 	
-	// Allocate memory for the various types of data
-	gl->vaos = (GLuint *) DgAlloc(sizeof(GLuint) * 2);
-	gl->vaos_count = 2;
-	
-	if (!gl->vaos) {
-		DgLog(DG_LOG_FATAL, "Could not allocate memory for vertex array objects");
-		return NULL;
-	}
-	
-	// Create a VAOs
-	glGenVertexArrays(gl->vaos_count, gl->vaos);
-	
-	// Make sure first VAO is the active one
-	glBindVertexArray(gl->vaos[0]);
+	graphicsCreateVAO(gl);
 	
 	// Check for errors
 	gl_error_check(__FILE__, __LINE__);
@@ -214,7 +212,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	// Making textures
 	DgBitmap *bmp = DgBitmapGenTiles(256, 256, 128);
 	if (bmp) {
-		gl_load_texture_buffer(gl, bmp, GL_TEXTURE0);
+		graphicsLoadTextureFromBuffer(gl, bmp, GL_TEXTURE0);
 		DgBitmapFree(bmp);
 	}
 	

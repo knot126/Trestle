@@ -57,10 +57,30 @@ enum {
 typedef struct {
 	ComponentBase_t base;
 	float mass;
-	int flags;
+	uint32_t flags;
 	DgVec3 Vpos;
 	DgVec3 Fpos;
 	DgVec3 Vrot;
 	DgVec3 Frot;
 	uint32_t col_object;
 } CPhysics;
+
+typedef struct SC_UIBox {
+	DgVec2 pos;
+	DgVec2 size;
+	uint32_t flags;
+} SC_UIBox;
+
+typedef struct SC_UIText {
+	const char *text;
+	DgVec2 pos;
+	uint8_t align_h;
+	uint8_t align_v;
+	uint16_t font;
+} SC_UIText;
+
+typedef struct C_UIButton {
+	ComponentBase_t base;
+	SC_UIBox box;
+	SC_UIText text;
+} C_UIButton;
