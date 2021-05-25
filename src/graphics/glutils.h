@@ -10,8 +10,6 @@
 #ifndef TRESTLE_OPENGL_UTILITIES_INCLUDED
 #define TRESTLE_OPENGL_UTILITIES_INCLUDED
 
-int texture_count = 0;
-
 GLuint gl_load_shader(char* filename, GLenum type) {
 	/* 
 	 * Load and create an OpenGL shader `filename`, of type `type`.
@@ -183,10 +181,19 @@ uint32_t graphicsLoadShader(DgOpenGLContext *gl, char* source_path) {
 	return 0;
 }
 
-static void graphicsLoadTexture(DgOpenGLContext *gl, char *path, GLenum active_texture) {
+static void graphicsLoadTextureFromFile(DgOpenGLContext *gl, char *path, GLenum active_texture) {
+	(gl->textures_count)++;
+	gl->textures = (GLuint *) DgRealloc(gl->textures, sizeof(GLuint) * gl->textures_count);
+	
+	if (!gl->textures) {
+		DgLog(DG_LOG_FATAL, "Texture list allocation failure");
+		return;
+	}
+	
+	glGenTextures(1, &gl->textures[gl->textures_count - 1]);
+	
 	glActiveTexture(active_texture);
-	glBindTexture(GL_TEXTURE_2D, gl->textures[texture_count]);
-	texture_count++;
+	glBindTexture(GL_TEXTURE_2D, gl->textures[gl->textures_count - 1]);
 	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -202,15 +209,22 @@ static void graphicsLoadTexture(DgOpenGLContext *gl, char *path, GLenum active_t
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width, image.height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	
-	printf("Info: Loaded image with id %d.\n", texture_count);
-	
 	DgFreeImage(&image);
 }
 
 static void graphicsLoadTextureFromBuffer(DgOpenGLContext *gl, DgBitmap *bitmap, GLenum active_texture) {
+	(gl->textures_count)++;
+	gl->textures = (GLuint *) DgRealloc(gl->textures, sizeof(GLuint) * gl->textures_count);
+	
+	if (!gl->textures) {
+		DgLog(DG_LOG_FATAL, "Texture list allocation failure");
+		return;
+	}
+	
+	glGenTextures(1, &gl->textures[gl->textures_count - 1]);
+	
 	glActiveTexture(active_texture);
-	glBindTexture(GL_TEXTURE_2D, gl->textures[texture_count]);
-	texture_count++;
+	glBindTexture(GL_TEXTURE_2D, gl->textures[gl->textures_count - 1]);
 	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -226,8 +240,6 @@ static void graphicsLoadTextureFromBuffer(DgOpenGLContext *gl, DgBitmap *bitmap,
 	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bitmap->width, bitmap->height, 0, GL_RGB, GL_UNSIGNED_BYTE, bitmap->src);
 	glGenerateMipmap(GL_TEXTURE_2D);
-	
-	printf("Info: Loaded image with id %d.\n", texture_count);
 }
 
 static void gl_set_format(DgOpenGLContext *gl) {

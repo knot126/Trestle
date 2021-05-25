@@ -196,23 +196,14 @@ DgOpenGLContext* gl_graphics_init(void) {
 	// Check for errors
 	gl_error_check(__FILE__, __LINE__);
 	
-	// Making a texture
-	gl->textures_count = 2;
-	gl->textures = (GLuint *) DgAlloc(sizeof(GLuint) * gl->textures_count);
-	
-	if (!gl->textures) {
-		DgLog(DG_LOG_FATAL, "Texture list allocation failure");
-		return NULL;
-	}
-	
-	glGenTextures(gl->textures_count, gl->textures);
-	
 	// Making textures
 	DgBitmap *bmp = DgBitmapGenTiles(256, 256, 128);
 	if (bmp) {
 		graphicsLoadTextureFromBuffer(gl, bmp, GL_TEXTURE0);
 		DgBitmapFree(bmp);
 	}
+	
+	graphicsLoadTextureFromFile(gl, "assets://gfx/font.png", GL_TEXTURE1);
 	
 	glUniform1i(glGetUniformLocation(gl->programs[0], "image"), 0);
 	glUseProgram(0);
@@ -240,6 +231,7 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
+	// Use the first progam
 	glUseProgram(gl->programs[0]);
 	
 	// Calculate the projection matrix
@@ -268,8 +260,8 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	// Bind the currently active textures for this shader
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gl->textures[0]);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, gl->textures[1]);
+// 	glActiveTexture(GL_TEXTURE1);
+// 	glBindTexture(GL_TEXTURE_2D, gl->textures[1]);
 	
 	for (size_t i = 0; i < world->CMeshs_count; i++) {
 		uint32_t id = world->CMeshs[i].base.id;
@@ -335,6 +327,15 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 		glDrawElements(GL_TRIANGLES, world->CMeshs[i].index_count, GL_UNSIGNED_INT, 0);
 		
 		gl_error_check(__FILE__, __LINE__);
+	}
+	
+	glUseProgram(gl->programs[1]);
+	
+	// Make sure the UI world exsists and that there is at least more than one box
+	if (world->ui && world->ui->box_count > 0) {
+		for (uint32_t i = 0; i < world->ui->box_count; i++) {
+			uint32_t id = world->ui->box[i].base.id;
+		}
 	}
 	
 	glBindVertexArray(0);

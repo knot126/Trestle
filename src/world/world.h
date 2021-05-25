@@ -35,6 +35,18 @@ typedef struct {
 } PlayerWorld;
 
 typedef struct {
+	/**
+	 * The world for all UI elements.
+	 */
+	
+	SC_UIText *text;
+	uint32_t text_count;
+	
+	SC_UIBox *box;
+	uint32_t box_count;
+} UIWorld;
+
+typedef struct {
 	// Masks and entities
 	mask_t  *mask;
 	uint32_t mask_count;
@@ -58,6 +70,7 @@ typedef struct {
 	
 	PlayerWorld player_info;
 	uint64_t STAT_COUNT_BYTES_;
+	UIWorld *ui;
 	
 } World;
 
