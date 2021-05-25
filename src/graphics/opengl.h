@@ -15,16 +15,12 @@ typedef unsigned int GLuint;
 
 typedef struct DgOpenGLContext {
 	GLFWwindow* window;
-	GLuint* vaos;
-	size_t vaos_count;
 	GLuint* programs;
 	size_t programs_count;
 	GLuint* shaders;
 	size_t shader_count;
 	GLuint* textures;
 	size_t textures_count;
-	
-	size_t element_count; // number of elements in loaded data
 } DgOpenGLContext;
 
 DgOpenGLContext* gl_graphics_init(void);

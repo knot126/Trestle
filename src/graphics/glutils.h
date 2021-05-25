@@ -230,25 +230,6 @@ static void graphicsLoadTextureFromBuffer(DgOpenGLContext *gl, DgBitmap *bitmap,
 	printf("Info: Loaded image with id %d.\n", texture_count);
 }
 
-static uint32_t graphicsCreateVAO(DgOpenGLContext *gl) {
-	/**
-	 * Create a Vertex Array Object and bind it as the current VAO.
-	 */
-	
-	(gl->vaos_count)++;
-	gl->vaos = (GLuint *) DgAlloc(sizeof(GLuint) * gl->vaos_count);
-	
-	if (!gl->vaos) {
-		DgLog(DG_LOG_FATAL, "Could not allocate memory for vertex array objects");
-		return 1;
-	}
-	
-	glGenVertexArrays(1, &gl->vaos[gl->vaos_count - 1]);
-	glBindVertexArray(gl->vaos[gl->vaos_count - 1]);
-	
-	return 0;
-}
-
 static void gl_set_format(DgOpenGLContext *gl) {
 	// Tell OpenGL about this vertex data
 	GLint attr_Position = glGetAttribLocation(gl->programs[0], "position");

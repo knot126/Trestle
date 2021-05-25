@@ -193,8 +193,6 @@ DgOpenGLContext* gl_graphics_init(void) {
 		glDeleteShader(gl->shaders[i]);
 	}
 	
-	graphicsCreateVAO(gl);
-	
 	// Check for errors
 	gl_error_check(__FILE__, __LINE__);
 	
@@ -253,18 +251,11 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "proj"), 1, GL_TRUE, &proj.ax);
 	
 	// Calculate view matrix (camera transform)
-	// TODO: I think either the perspective view is still messing things up or
-	// I have somehow done this wrong. See the this is broken near the pitch in
-	// input processing function to get an idea of what is going on.
 	DgMat4 camera;
 	
 	// Do the camera
 	if (world->CCameras_active[0] != 0) {
 		uint32_t tid = world->CCameras_active[0] - 1, cid = world->CCameras_active[1] - 1;
-// 		printf("Camera pos = (%f, %f, %f)\n", 
-// 			   world->CTransforms[tid].pos.x,
-// 			   world->CTransforms[tid].pos.y,
-// 			   world->CTransforms[tid].pos.z);
 		camera = DgTransfromBasicCamera(world->CTransforms[tid].pos, world->CTransforms[tid].rot);
 	}
 	else {
@@ -280,11 +271,8 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, gl->textures[1]);
 	
-	glBindVertexArray(gl->vaos[0]);
-	
 	for (size_t i = 0; i < world->CMeshs_count; i++) {
 		uint32_t id = world->CMeshs[i].base.id;
-// 		printf("Info: Rendering entity %d with mesh node.\n", id);
 		
 		// Push new verticies if needed
 		if (world->CMeshs[i].updated) {
@@ -296,19 +284,25 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 				glGenBuffers(1, &world->CMeshs[i].ebo);
 			}
 			
+			if (!world->CMeshs[i].vao) {
+				glGenVertexArrays(1, &world->CMeshs[i].vao);
+			}
+			
+			glBindVertexArray(world->CMeshs[i].vao);
 			glBindBuffer(GL_ARRAY_BUFFER, world->CMeshs[i].vbo);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world->CMeshs[i].ebo);
 			
 			glBufferData(GL_ARRAY_BUFFER, world->CMeshs[i].vert_count * 32, world->CMeshs[i].vert, GL_STATIC_DRAW);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, world->CMeshs[i].index_count * sizeof(uint32_t), world->CMeshs[i].index, GL_STATIC_DRAW);
 			
+			gl_set_format(gl);
+			
 			gl_error_check(__FILE__, __LINE__);
 		}
 		
+		glBindVertexArray(world->CMeshs[i].vao);
 		glBindBuffer(GL_ARRAY_BUFFER, world->CMeshs[i].vbo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world->CMeshs[i].ebo);
-		
-		gl_set_format(gl);
 		
 		// Find the transform
 		DgVec3 translate = DgVec3New(0.0f, 0.0f, 0.0f);
@@ -343,6 +337,7 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 		gl_error_check(__FILE__, __LINE__);
 	}
 	
+	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glUseProgram(0);
@@ -381,7 +376,6 @@ void gl_graphics_free(DgOpenGLContext* gl) {
 	
 	DgFree(gl->textures);
 	DgFree(gl->shaders);
-	DgFree(gl->vaos);
 	DgFree(gl);
 }
 
