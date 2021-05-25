@@ -23,6 +23,11 @@ typedef enum {
 	QR_COMPONENT_AABB = (1 << 4),
 } ComponentMaskEnum;
 
+typedef enum {
+	QR_ELEMUI_BOX = (1 << 0),
+	QR_ELEMUI_TEXT = (1 << 1),
+} UIElementMaskEnum;
+
 typedef struct {
 	uint32_t transform;
 	uint32_t mesh;
@@ -39,11 +44,11 @@ typedef struct {
 	 * The world for all UI elements.
 	 */
 	
-	SC_UIText *text;
-	uint32_t text_count;
-	
-	SC_UIBox *box;
+	C_UIBox *box;
 	uint32_t box_count;
+	
+	C_UIText *text;
+	uint32_t text_count;
 } UIWorld;
 
 typedef struct {
@@ -69,7 +74,6 @@ typedef struct {
 	uint32_t  CPhysicss_count;
 	
 	PlayerWorld player_info;
-	uint64_t STAT_COUNT_BYTES_;
 	UIWorld *ui;
 	
 } World;

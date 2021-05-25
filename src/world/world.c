@@ -13,6 +13,7 @@
 #include "../util/fail.h"
 #include "../util/xml.h"
 #include "../util/maths.h"
+#include "../util/log.h"
 
 #include "world.h"
 
@@ -51,6 +52,18 @@ void world_destroy(World *world) {
 	if (world->CCameras) {
 		DgFree(world->CCameras);
 	}
+	
+	if (world->ui) {
+		if (world->ui->text) {
+			DgFree(world->ui->text);
+		}
+		
+		if (world->ui->box) {
+			DgFree(world->ui->box);
+		}
+		
+		DgFree(world->ui);
+	}
 }
 
 uint32_t world_create_entity(World *world, mask_t mask) {
@@ -58,7 +71,6 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 	 * Create a new entity in a given world and return its ID
 	 */
 	world->mask_count++;
-	uint64_t new_bytes = 0;
 	
 	// NOTE: nullptr passed to realloc works like alloc, so we do not need to
 	// consider a case where the list has not been initialised.
@@ -83,8 +95,6 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 		
 		memset((world->CTransforms + (world->CTransforms_count - 1)), 0, sizeof(CTransform));
 		world->CTransforms[world->CTransforms_count - 1].base.id = world->mask_count;
-		
-		new_bytes += sizeof(CTransform);
 	}
 	
 	// Mesh
@@ -98,8 +108,6 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 		
 		memset((world->CMeshs + (world->CMeshs_count - 1)), 0, sizeof(CMesh));
 		world->CMeshs[world->CMeshs_count - 1].base.id = world->mask_count;
-		
-		new_bytes += sizeof(CMesh);
 	}
 	
 	// Camera
@@ -113,8 +121,6 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 		
 		memset((world->CCameras + (world->CCameras_count - 1)), 0, sizeof(CCamera));
 		world->CCameras[world->CCameras_count - 1].base.id = world->mask_count;
-		
-		new_bytes += sizeof(CCamera);
 	}
 	
 	// Physics
@@ -128,11 +134,64 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 		
 		memset((world->CPhysicss + (world->CPhysicss_count - 1)), 0, sizeof(CPhysics));
 		world->CPhysicss[world->CPhysicss_count - 1].base.id = world->mask_count;
-		
-		new_bytes += sizeof(CPhysics);
 	}
 	
-	world->STAT_COUNT_BYTES_ += new_bytes;
+	return world->mask_count;
+}
+
+uint32_t world_create_ui_element(World * const restrict world, mask_t mask) {
+	/**
+	 * Create a new entity in the UI subworld and init if it does not exist yet,
+	 * returns its element id.
+	 */
+	world->mask_count += 1;
+	
+	// Reallocate the masks list
+	world->mask = DgRealloc(world->mask, sizeof(mask_t) * world->mask_count);
+	
+	if (!world->mask) {
+		DgFail("Allocation error: world->mask.\n", 403);
+	}
+	
+	world->mask[world->mask_count - 1] = mask;
+	
+	// Create the UI world if it does not exist
+	if (!world->ui) {
+		world->ui = DgAlloc(sizeof(UIWorld));
+		
+		if (!world->ui) {
+			DgLog(DG_LOG_FATAL, "Failed to allocate memory for UI element world.");
+			return 0;
+		}
+		
+		memset(world->ui, 0, sizeof(UIWorld));
+	}
+	
+	if ((mask & QR_ELEMUI_BOX) == QR_ELEMUI_BOX) {
+		world->ui->box_count += 1;
+		world->ui->box = DgRealloc(world->ui->box, sizeof(C_UIBox) * world->ui->box_count);
+		
+		if (!world->ui->box) {
+			DgLog(DG_LOG_FATAL, "Failed to allocate memory for UI box element.");
+			return 0;
+		}
+		
+		memset(&world->ui->box[world->ui->box_count - 1], 0, sizeof(C_UIBox));
+		world->ui->box[world->ui->box_count - 1].base.id = world->mask_count;
+	}
+	
+	if ((mask & QR_ELEMUI_TEXT) == QR_ELEMUI_TEXT) {
+		world->ui->text_count += 1;
+		world->ui->text = DgRealloc(world->ui->text, sizeof(C_UIText) * world->ui->text_count);
+		
+		if (!world->ui->text) {
+			DgLog(DG_LOG_FATAL, "Failed to allocate memory for UI text element.");
+			return 0;
+		}
+		
+		memset(&world->ui->text[world->ui->text_count - 1], 0, sizeof(C_UIText));
+		world->ui->text[world->ui->text_count - 1].base.id = world->mask_count;
+	}
 	
 	return world->mask_count;
 }

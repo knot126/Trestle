@@ -20,6 +20,7 @@ typedef struct {
 
 typedef struct {
 	ComponentBase_t base;
+	// ================== //
 	DgVec3 pos;
 	DgVec3 rot;
 	DgVec3 scale;
@@ -27,6 +28,7 @@ typedef struct {
 
 typedef struct {
 	ComponentBase_t base;
+	// ================== //
 	float * vert;
 	uint32_t * index;
 	uint32_t vert_count;
@@ -37,6 +39,7 @@ typedef struct {
 
 typedef struct {
 	ComponentBase_t base;
+	// ================== //
 	enum {
 		QR_CAM_MOVE = 1,
 		QR_CAM_ORTHO = 2,
@@ -56,6 +59,7 @@ enum {
 
 typedef struct {
 	ComponentBase_t base;
+	// ================== //
 	float mass;
 	uint32_t flags;
 	DgVec3 Vpos;
@@ -65,28 +69,30 @@ typedef struct {
 	uint32_t col_object;
 } CPhysics;
 
-typedef struct SC_UIBox {
+typedef struct C_UIBox {
 	ComponentBase_t base;
+	// ================== //
 	DgVec2 pos;
 	DgVec2 size;
 	uint32_t flags;
-} SC_UIBox;
+} C_UIBox;
 
-typedef struct SC_UIText {
+typedef struct C_UIText {
 	ComponentBase_t base;
+	// ================== //
 	const char *text;
 	DgVec2 pos;
 	float size;
-	uint8_t align_h;
-	uint8_t align_v;
-	uint16_t font;
-	
 	float vertex_cache;
 	uint32_t vertex_count;
-} SC_UIText;
+	uint8_t align_h;
+	uint8_t align_v;
+	bool updated;
+} C_UIText;
 
 typedef struct C_UIButton {
 	ComponentBase_t base;
-	SC_UIBox *box;
-	SC_UIText *text;
+	// ================== //
+	C_UIBox *box;
+	C_UIText *text;
 } C_UIButton;
