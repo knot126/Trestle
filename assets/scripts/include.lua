@@ -22,7 +22,7 @@ function new_cube(x, y, z, sx, sy, sz, phys, pflags)
 	if phys then
 		flags = flags | QR_COMPONENT_PHYSICS
 	end
-	ent = mgCreateEntity(flags)
+	ent = mgEntity(flags)
 	
 	mgTransform(ent, x, y, z, 0.0, 0.0, 0.0, sx, sy, sz)
 	mgMesh(ent, "assets://mesh/cube2.bin")

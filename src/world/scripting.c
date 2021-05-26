@@ -26,6 +26,14 @@ static int scripted_CreateEntity(lua_State *script) {
 	return 1;
 }
 
+static int scripted_CreateUIElement(lua_State *script) {
+	uint32_t flags = lua_tointeger(script, 1);
+	
+	lua_pushinteger(script, world_create_ui_element(QuickRunActiveWorld, flags));
+	
+	return 1;
+}
+
 static int scripted_SetTransform(lua_State *script) {
 	uint32_t id = lua_tointeger(script, 1);
 	uint32_t stack = (uint32_t) lua_gettop(script);
@@ -186,7 +194,8 @@ static int scripted_SetPlayer(lua_State *script) {
 
 void registerWorldScriptFunctions(DgScript *script) {
 	/*  Low-Level Entities  */
-	lua_register(script->state, "mgCreateEntity", &scripted_CreateEntity);
+	lua_register(script->state, "mgEntity", &scripted_CreateEntity);
+	lua_register(script->state, "mgUIElement", &scripted_CreateEntity);
 	lua_register(script->state, "mgTransform", &scripted_SetTransform);
 	lua_register(script->state, "mgMesh", &scripted_LoadMesh);
 	lua_register(script->state, "mgForce", &scripted_AddForce);

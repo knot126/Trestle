@@ -24,6 +24,7 @@ typedef struct {
 		DG_XML_UNKNOWN,
 		DG_XML_TAG_NAME,
 		DG_XML_TAG_END,
+		DG_XML_TEXT_START,
 		DG_XML_NAME,
 		DG_XML_STRING,
 		DG_XML_ASSOC,
@@ -99,7 +100,7 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 	 * Main tokeniser loop
 	 */
 	for (size_t i = 0; i < content_size; i++) {
-		if (is_whitespace(&content[i]) || is_tag_end(&content[i]) == 1) {
+		if (is_whitespace(&content[i])) {
 			continue;
 		}
 		
@@ -143,6 +144,13 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 			tokens[token_count - 1].text = DgStrdupl(&content[start], i - start);
 		}
 		
+		else if (is_tag_end(&content[i]) == 1) {
+			expand_tokens(&tokens, &token_count);
+			
+			tokens[token_count - 1].type = DG_XML_TEXT_START;
+			tokens[token_count - 1].text = NULL;
+		}
+		
 		else if (is_tag_end(&content[i]) == 2 || is_tag_start(&content[i]) == 2) {
 			expand_tokens(&tokens, &token_count);
 			
@@ -178,7 +186,7 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 	/**
 	 * Debug: Print out all the tokens in a nice format.
 	 */
-#if 0
+#if 1
 	for (size_t i = 0; i < token_count; i++) {
 		printf("[ %.3d ] %d -> %s\n", i, tokens[i].type, tokens[i].text);
 	}
@@ -230,7 +238,7 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 			//printf("%d: %s\n", depth, current->name);
 			
 			// Peek the next token to see if we have attributes
-			// If it is name name, we certinaly have attributes
+			// If it is name 'name,' we certinaly have attributes
 			while ((i + 1) < token_count && tokens[i + 1].type == DG_XML_NAME) {
 				i++;
 				

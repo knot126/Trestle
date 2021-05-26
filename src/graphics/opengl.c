@@ -205,7 +205,11 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	graphicsLoadTextureFromFile(gl, "assets://gfx/font.png", GL_TEXTURE1);
 	
-	glUniform1i(glGetUniformLocation(gl->programs[0], "image"), 0);
+	glUniform1i(glGetUniformLocation(gl->programs[0], "image"), gl->textures[0] - 1);
+	
+	glUseProgram(gl->programs[1]);
+	glUniform1i(glGetUniformLocation(gl->programs[1], "font"), gl->textures[1] - 1);
+	
 	glUseProgram(0);
 	
 	// Alpha blending
@@ -260,8 +264,6 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	// Bind the currently active textures for this shader
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gl->textures[0]);
-// 	glActiveTexture(GL_TEXTURE1);
-// 	glBindTexture(GL_TEXTURE_2D, gl->textures[1]);
 	
 	for (size_t i = 0; i < world->CMeshs_count; i++) {
 		uint32_t id = world->CMeshs[i].base.id;
@@ -288,6 +290,8 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, world->CMeshs[i].index_count * sizeof(uint32_t), world->CMeshs[i].index, GL_STATIC_DRAW);
 			
 			gl_set_format(gl);
+			
+			world->CMeshs[i].updated = false;
 			
 			gl_error_check(__FILE__, __LINE__);
 		}
@@ -331,10 +335,142 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	
 	glUseProgram(gl->programs[1]);
 	
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, gl->textures[1]);
+	
 	// Make sure the UI world exsists and that there is at least more than one box
-	if (world->ui && world->ui->box_count > 0) {
-		for (uint32_t i = 0; i < world->ui->box_count; i++) {
-			uint32_t id = world->ui->box[i].base.id;
+	if (world->ui && world->ui->text_count > 0) {
+		for (uint32_t i = 0; i < world->ui->text_count; i++) {
+			uint32_t id = world->ui->text[i].base.id;
+			C_UIText *element = &world->ui->text[i];
+			
+			if (world->ui->text[i].updated) {
+				// Create buffers
+				if (!world->ui->text[i].vbo) {
+					glGenBuffers(1, &world->ui->text[i].vbo);
+				}
+				
+				if (!world->ui->text[i].ebo) {
+					glGenBuffers(1, &world->ui->text[i].ebo);
+				}
+				
+				if (!world->ui->text[i].vao) {
+					glGenVertexArrays(1, &world->ui->text[i].vao);
+				}
+				
+				glBindVertexArray(world->ui->text[i].vao);
+				glBindBuffer(GL_ARRAY_BUFFER, world->ui->text[i].vbo);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world->ui->text[i].ebo);
+				
+				gl_error_check(__FILE__, __LINE__);
+				
+				// Compute new vertex data...
+				uint32_t string_len = strlen(world->ui->text[i].text);
+				
+				if (element->vertex) {
+					DgFree(element->vertex);
+				}
+				
+				element->vertex = DgAlloc(element->vertex_count * sizeof(DgVec4) * 4);
+				
+				if (!element->vertex) {
+					DgLog(DG_LOG_ERROR, "Failed to allocate memory for vertex cache.");
+					continue;
+				}
+				
+				element->vertex_count = string_len * 4;
+				
+				if (element->index) {
+					DgFree(element->index);
+				}
+				
+				element->index = DgAlloc(sizeof(uint32_t) * string_len * 6);
+				
+				if (!element->index) {
+					DgLog(DG_LOG_ERROR, "Failed to allocate memory for index cache.");
+				}
+				
+				element->index_count = string_len * 6;
+				
+				// NOTE: Here is where we make the vertex data...
+				for (uint32_t c = 0; c < string_len; c++) {
+					float size = element->size;
+					DgVec2 pos = element->pos;
+					
+					float tex_u = (float) (element->text[c] % 16) / 16.0f;
+					float tex_v = (float) (element->text[c] / 8) / 8.0f;
+					
+					element->vertex[(c * 4) + 0].x = pos.x;
+					element->vertex[(c * 4) + 0].y = pos.y;
+					element->vertex[(c * 4) + 0].z = tex_u;
+					element->vertex[(c * 4) + 0].w = tex_v;
+					
+					element->vertex[(c * 4) + 1].x = pos.x;
+					element->vertex[(c * 4) + 1].y = pos.y - size;
+					element->vertex[(c * 4) + 1].z = tex_u;
+					element->vertex[(c * 4) + 1].w = tex_v - (1.0f / 8.0f);
+					
+					element->vertex[(c * 4) + 2].x = pos.x - (size / 2.0f);
+					element->vertex[(c * 4) + 2].y = pos.y;
+					element->vertex[(c * 4) + 2].z = tex_u - (1.0f / 16.0f);
+					element->vertex[(c * 4) + 2].w = tex_v;
+					
+					element->vertex[(c * 4) + 3].x = pos.x - (size / 2.0f);
+					element->vertex[(c * 4) + 3].y = pos.y - size;
+					element->vertex[(c * 4) + 3].z = tex_u - (1.0f / 16.0f);
+					element->vertex[(c * 4) + 3].w = tex_v - (1.0f / 8.0f);
+					
+					element->index[(c * 6) + 0] = 0 + (c * 4);
+					element->index[(c * 6) + 1] = 1 + (c * 4);
+					element->index[(c * 6) + 2] = 2 + (c * 4);
+					element->index[(c * 6) + 3] = 0 + (c * 4);
+					element->index[(c * 6) + 4] = 2 + (c * 4);
+					element->index[(c * 6) + 5] = 3 + (c * 4);
+				}
+				
+				// Push the data to the GPU
+				glBufferData(GL_ARRAY_BUFFER, element->vertex_count, element->vertex, GL_STATIC_DRAW);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, element->index_count, element->index, GL_STATIC_DRAW);
+				
+				gl_error_check(__FILE__, __LINE__);
+				
+				// Specify how OpenGL should get the data
+				GLuint attr;
+				
+				attr = glGetAttribLocation(gl->programs[1], "position");
+				glVertexAttribPointer(
+					attr,
+					2,
+					GL_FLOAT,
+					GL_FALSE,
+					sizeof(float) * 4,
+					(void *) 0
+				);
+				glEnableVertexAttribArray(attr);
+				
+				attr = glGetAttribLocation(gl->programs[1], "position");
+				glVertexAttribPointer(
+					attr,
+					2,
+					GL_FLOAT,
+					GL_FALSE,
+					sizeof(float) * 4,
+					(void *) (2 * sizeof(float))
+				);
+				glEnableVertexAttribArray(attr);
+				
+				gl_error_check(__FILE__, __LINE__);
+				
+				element->updated = false;
+			}
+			
+			glBindVertexArray(world->ui->text[i].vao);
+			glBindBuffer(GL_ARRAY_BUFFER, world->ui->text[i].vbo);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world->ui->text[i].ebo);
+			
+			glDrawElements(GL_TRIANGLES, world->ui->text[i].vertex_count, GL_UNSIGNED_INT, 0);
+			
+			gl_error_check(__FILE__, __LINE__);
 		}
 	}
 	
@@ -371,7 +507,7 @@ void gl_handle_input(DgOpenGLContext* gl) {
 void gl_graphics_free(DgOpenGLContext* gl) {
 	glfwTerminate();
 	
-	for (int i = 0; i < gl->programs_count; i++) {
+	for (uint32_t i = 0; i < gl->programs_count; i++) {
 		glDeleteProgram(gl->programs[i]);
 	}
 	

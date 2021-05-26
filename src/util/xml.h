@@ -9,6 +9,13 @@
 
 #include <inttypes.h>
 
+typedef enum {
+	DG_XML_NODE_ELEMENT = 1,
+	DG_XML_NODE_PROCESS = 2,
+	DG_XML_NODE_COMMENT = 3,
+	DG_XML_NODE_TEXT = 4,
+} DgXMLNodeType;
+
 typedef struct {
 	char *key;
 	char *value;

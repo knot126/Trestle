@@ -1,4 +1,5 @@
 <config item1="item1" item2="item2" this_is_a_setting="this is a result">
+<!-- 	<something>This is yet another test!!</something> -->
 	<test>
 		<subitem kind="configObject"/>
 		<entity name="baby">
