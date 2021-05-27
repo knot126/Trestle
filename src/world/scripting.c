@@ -203,6 +203,29 @@ static int scripted_SetText(lua_State *script) {
 	return 1;
 }
 
+static int scripted_SetTextPos(lua_State *script) {
+	uint32_t id = lua_tointeger(script, 1);
+	float x = (float) lua_tonumber(script, 2);
+	float y = (float) lua_tonumber(script, 3);
+	
+	bool success = ui_element_set_text_pos(QuickRunActiveWorld, id, DgVec2New(x, y));
+	
+	lua_pushboolean(script, success);
+	
+	return 1;
+}
+
+static int scripted_SetTextSize(lua_State *script) {
+	uint32_t id = lua_tointeger(script, 1);
+	float size = (float) lua_tonumber(script, 2);
+	
+	bool success = ui_element_set_text_size(QuickRunActiveWorld, id, size);
+	
+	lua_pushboolean(script, success);
+	
+	return 1;
+}
+
 void registerWorldScriptFunctions(DgScript *script) {
 	/*  Low-Level Entities  */
 	lua_register(script->state, "mgEntity", &scripted_CreateEntity);
@@ -215,6 +238,8 @@ void registerWorldScriptFunctions(DgScript *script) {
 	/* UI based entites */
 	lua_register(script->state, "mgUIElement", &scripted_CreateUIElement);
 	lua_register(script->state, "mgUIText", &scripted_SetText);
+	lua_register(script->state, "mgUITextPos", &scripted_SetTextPos);
+	lua_register(script->state, "mgUITextSize", &scripted_SetTextSize);
 	
 	/*  Segment and Level Management  */
 	lua_register(script->state, "mgSegment", &scripted_LoadSegment);

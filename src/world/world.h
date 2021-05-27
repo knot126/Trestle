@@ -98,3 +98,5 @@ bool entity_phys_set_mass(World * const restrict world, const uint32_t id, const
 bool entity_phys_add_force(World * const restrict world, const uint32_t id, const DgVec3 pos, const DgVec3 rot);
 
 bool ui_element_set_text(World * const restrict world, const uint32_t id, const char * const restrict text);
+bool ui_element_set_text_pos(World * const restrict world, const uint32_t id, const DgVec2 pos);
+bool ui_element_set_text_size(World * const restrict world, const uint32_t id, const float size);

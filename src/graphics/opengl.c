@@ -405,30 +405,33 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 				// Compute new vertex data...
 				uint32_t string_len = strlen(world->ui->text[i].text);
 				
+				element->vertex_count = string_len * 4;
+				
 				if (element->vertex) {
 					DgFree(element->vertex);
 				}
 				
-				element->vertex = DgAlloc(element->vertex_count * sizeof(DgVec4) * 4);
+				element->vertex = (float *) DgAlloc(element->vertex_count * sizeof(float) * 4);
 				
 				if (!element->vertex) {
 					DgLog(DG_LOG_ERROR, "Failed to allocate memory for vertex cache.");
 					continue;
 				}
 				
-				element->vertex_count = string_len * 4;
+				// Allocate for index data...
+				element->index_count = string_len * 6;
 				
 				if (element->index) {
 					DgFree(element->index);
 				}
 				
-				element->index = DgAlloc(sizeof(uint32_t) * string_len * 6);
+				element->index = DgAlloc(element->index_count * sizeof(uint32_t));
 				
 				if (!element->index) {
 					DgLog(DG_LOG_ERROR, "Failed to allocate memory for index cache.");
 				}
 				
-				element->index_count = string_len * 6;
+				printf("Text: size=(%.3f), pos=(%.3f,%.3f)\n", element->size, element->pos.x, element->pos.y);
 				
 				// NOTE: Here is where we make the vertex data...
 				for (uint32_t c = 0; c < string_len; c++) {
@@ -438,25 +441,25 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 					float tex_u = (float) (element->text[c] % 16) / 16.0f;
 					float tex_v = (float) (element->text[c] / 8) / 8.0f;
 					
-					element->vertex[(c * 4) + 0].x = pos.x;
-					element->vertex[(c * 4) + 0].y = pos.y;
-					element->vertex[(c * 4) + 0].z = tex_u;
-					element->vertex[(c * 4) + 0].w = tex_v;
+					element->vertex[(c * 4) + 0] = pos.x;
+					element->vertex[(c * 4) + 1] = pos.y;
+					element->vertex[(c * 4) + 2] = tex_u;
+					element->vertex[(c * 4) + 3] = tex_v;
 					
-					element->vertex[(c * 4) + 1].x = pos.x;
-					element->vertex[(c * 4) + 1].y = pos.y - size;
-					element->vertex[(c * 4) + 1].z = tex_u;
-					element->vertex[(c * 4) + 1].w = tex_v - (1.0f / 8.0f);
+					element->vertex[(c * 4) + 4] = pos.x;
+					element->vertex[(c * 4) + 5] = pos.y - size;
+					element->vertex[(c * 4) + 6] = tex_u;
+					element->vertex[(c * 4) + 7] = tex_v;
 					
-					element->vertex[(c * 4) + 2].x = pos.x - (size / 2.0f);
-					element->vertex[(c * 4) + 2].y = pos.y;
-					element->vertex[(c * 4) + 2].z = tex_u - (1.0f / 16.0f);
-					element->vertex[(c * 4) + 2].w = tex_v;
+					element->vertex[(c * 4) + 8] = pos.x + size;
+					element->vertex[(c * 4) + 9] = pos.y - size;
+					element->vertex[(c * 4) + 10] = tex_u;
+					element->vertex[(c * 4) + 11] = tex_v;
 					
-					element->vertex[(c * 4) + 3].x = pos.x - (size / 2.0f);
-					element->vertex[(c * 4) + 3].y = pos.y - size;
-					element->vertex[(c * 4) + 3].z = tex_u - (1.0f / 16.0f);
-					element->vertex[(c * 4) + 3].w = tex_v - (1.0f / 8.0f);
+					element->vertex[(c * 4) + 12] = pos.x + size;
+					element->vertex[(c * 4) + 13] = pos.y;
+					element->vertex[(c * 4) + 14] = tex_u;
+					element->vertex[(c * 4) + 15] = tex_v;
 					
 					element->index[(c * 6) + 0] = 0 + (c * 4);
 					element->index[(c * 6) + 1] = 1 + (c * 4);
@@ -464,6 +467,10 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 					element->index[(c * 6) + 3] = 0 + (c * 4);
 					element->index[(c * 6) + 4] = 2 + (c * 4);
 					element->index[(c * 6) + 5] = 3 + (c * 4);
+				}
+				
+				for (uint32_t v = 0; v < element->vertex_count; v++) {
+					printf("vertex %d = (%.3f, %.3f), (%.3f, %.3f)\n", v, element->vertex[(v * 4) + 0], element->vertex[(v * 4) + 1], element->vertex[(v * 4) + 2], element->vertex[(v * 4) + 3]);
 				}
 				
 				// Push the data to the GPU

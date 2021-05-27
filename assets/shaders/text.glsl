@@ -14,8 +14,9 @@ out vec3 Colour;
 
 void main() {
 	Texture = texpos;
+	Colour = vec3(1.0, 1.0, 1.0);
 	
-	gl_Position = vec4(position.x, position.y, 0.0, 1.0);
+	gl_Position = vec4(position, 0.0, 1.0);
 }
 #endif
 

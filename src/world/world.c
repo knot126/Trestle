@@ -410,7 +410,6 @@ bool ui_element_set_text(World * const restrict world, const uint32_t id, const 
 	}
 	
 	for (uint32_t i = 0; i < world->ui->text_count; i++) {
-		printf("%d\n", id);
 		if (world->ui->text[i].base.id == id) {
 			element = &world->ui->text[i];
 			break;
@@ -436,3 +435,52 @@ bool ui_element_set_text(World * const restrict world, const uint32_t id, const 
 	return true;
 }
 
+bool ui_element_set_text_pos(World * const restrict world, const uint32_t id, const DgVec2 pos) {
+	C_UIText *element = NULL;
+	
+	if (!world->ui) {
+		return false;
+	}
+	
+	for (uint32_t i = 0; i < world->ui->text_count; i++) {
+		if (world->ui->text[i].base.id == id) {
+			element = &world->ui->text[i];
+			break;
+		}
+	}
+	
+	if (!element) {
+		return false;
+	}
+	
+	element->pos = pos;
+	
+	element->updated = true;
+	
+	return true;
+}
+
+bool ui_element_set_text_size(World * const restrict world, const uint32_t id, const float size) {
+	C_UIText *element = NULL;
+	
+	if (!world->ui) {
+		return false;
+	}
+	
+	for (uint32_t i = 0; i < world->ui->text_count; i++) {
+		if (world->ui->text[i].base.id == id) {
+			element = &world->ui->text[i];
+			break;
+		}
+	}
+	
+	if (!element) {
+		return false;
+	}
+	
+	element->size = size;
+	
+	element->updated = true;
+	
+	return true;
+}
