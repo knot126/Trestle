@@ -404,7 +404,12 @@ bool entity_phys_add_force(World * const restrict world, const uint32_t id, cons
 bool ui_element_set_text(World * const restrict world, const uint32_t id, const char * const restrict text) {
 	C_UIText *element = NULL;
 	
+	if (!world->ui) {
+		return false;
+	}
+	
 	for (uint32_t i = 0; i < world->ui->text_count; i++) {
+		printf("%d\n", id);
 		if (world->ui->text[i].base.id == id) {
 			element = &world->ui->text[i];
 			break;
