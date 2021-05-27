@@ -145,16 +145,6 @@ uint32_t world_create_ui_element(World * const restrict world, mask_t mask) {
 	 * Create a new entity in the UI subworld and init if it does not exist yet,
 	 * returns its element id.
 	 */
-	world->mask_count += 1;
-	
-	// Reallocate the masks list
-	world->mask = DgRealloc(world->mask, sizeof(mask_t) * world->mask_count);
-	
-	if (!world->mask) {
-		DgFail("Allocation error: world->mask.\n", 403);
-	}
-	
-	world->mask[world->mask_count - 1] = mask;
 	
 	// Create the UI world if it does not exist
 	if (!world->ui) {
@@ -167,6 +157,17 @@ uint32_t world_create_ui_element(World * const restrict world, mask_t mask) {
 		
 		memset(world->ui, 0, sizeof(UIWorld));
 	}
+	
+	world->ui->mask_count += 1;
+	
+	// Reallocate the masks list
+	world->ui->mask = DgRealloc(world->ui->mask, sizeof(mask_t) * world->ui->mask_count);
+	
+	if (!world->ui->mask) {
+		DgFail("Allocation error: world->ui->mask.\n", 403);
+	}
+	
+	world->ui->mask[world->ui->mask_count - 1] = mask;
 	
 	if ((mask & QR_ELEMUI_BOX) == QR_ELEMUI_BOX) {
 		world->ui->box_count += 1;

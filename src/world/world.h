@@ -44,6 +44,9 @@ typedef struct {
 	 * The world for all UI elements.
 	 */
 	
+	mask_t  *mask;
+	uint32_t mask_count;
+	
 	C_UIBox *box;
 	uint32_t box_count;
 	

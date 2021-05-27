@@ -213,7 +213,7 @@ void registerWorldScriptFunctions(DgScript *script) {
 	lua_register(script->state, "mgPhysFlags", &scripted_SetPhysicsFlags);
 	
 	/* UI based entites */
-	lua_register(script->state, "mgUIElement", &scripted_CreateEntity);
+	lua_register(script->state, "mgUIElement", &scripted_CreateUIElement);
 	lua_register(script->state, "mgUIText", &scripted_SetText);
 	
 	/*  Segment and Level Management  */

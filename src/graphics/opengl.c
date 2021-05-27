@@ -305,12 +305,18 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 				glGenVertexArrays(1, &world->CMeshs[i].vao);
 			}
 			
+			gl_error_check(__FILE__, __LINE__);
+			
 			glBindVertexArray(world->CMeshs[i].vao);
 			glBindBuffer(GL_ARRAY_BUFFER, world->CMeshs[i].vbo);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world->CMeshs[i].ebo);
 			
+			gl_error_check(__FILE__, __LINE__);
+			
 			glBufferData(GL_ARRAY_BUFFER, world->CMeshs[i].vert_count * 32, world->CMeshs[i].vert, GL_STATIC_DRAW);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, world->CMeshs[i].index_count * sizeof(uint32_t), world->CMeshs[i].index, GL_STATIC_DRAW);
+			
+			gl_error_check(__FILE__, __LINE__);
 			
 			gl_set_format(gl);
 			
@@ -322,6 +328,8 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 		glBindVertexArray(world->CMeshs[i].vao);
 		glBindBuffer(GL_ARRAY_BUFFER, world->CMeshs[i].vbo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world->CMeshs[i].ebo);
+		
+		gl_error_check(__FILE__, __LINE__);
 		
 		// Find the transform
 		DgVec3 translate = DgVec3New(0.0f, 0.0f, 0.0f);
@@ -351,10 +359,17 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 			);
 		glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
 		
+		gl_error_check(__FILE__, __LINE__);
+		
 		glDrawElements(GL_TRIANGLES, world->CMeshs[i].index_count, GL_UNSIGNED_INT, 0);
 		
 		gl_error_check(__FILE__, __LINE__);
 	}
+	
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glUseProgram(0);
 	
 	glUseProgram(gl->programs[1]);
 	

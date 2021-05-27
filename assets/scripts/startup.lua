@@ -28,7 +28,7 @@ function init()
 	buildWallsAndFloor(5.0, 8.0, 100.0)
 	
 	ent = mgUIElement(QR_ELEMUI_TEXT)
-	mgUIText(ent, "Testing!!")
+	--mgUIText(ent, "Testing!!")
 end
 
 init()
