@@ -5,6 +5,8 @@
  * OpenGL-related graphics stuff
  */
 
+//#define QR_OPENGL_DEBUG 1
+
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
@@ -38,6 +40,12 @@ void gl_set_window_size(GLFWwindow* window, int w, int h) {
 	glViewport(0, 0, w, h);
 }
 
+#if defined(QR_OPENGL_DEBUG)
+void APIENTRY gl_debug_write(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char *message, const void *userParam) {
+	printf("%d: %s\n", id, message);
+}
+#endif
+
 DgOpenGLContext* gl_graphics_init(void) {
 	/*
 	 * Initialise any global OpenGL graphics state. In the future, this should 
@@ -60,6 +68,9 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+#if defined(QR_OPENGL_DEBUG)
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+#endif
 	
 	int w_width = atol(DgINIGet(g_quickRunConfig, "Main", "window_width", "1280"));
 	int w_height = atol(DgINIGet(g_quickRunConfig, "Main", "window_height", "720"));
@@ -84,6 +95,18 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	glfwSwapInterval(0);
 	glfwSetFramebufferSizeCallback(gl->window, gl_set_window_size);
+	
+#if defined(QR_OPENGL_DEBUG)
+	int flags;
+	glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+	if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
+		glEnable(GL_DEBUG_OUTPUT);
+		glEnable(GL_DEBUG_OUTPUT_SYNCRONOUS);
+		glDebugMessageCallback(&gl_debug_write, NULL);
+		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	}
+#endif
+	
 	glViewport(0, 0, w_width, w_height);
 	
 	// set window icon
@@ -448,7 +471,7 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 				);
 				glEnableVertexAttribArray(attr);
 				
-				attr = glGetAttribLocation(gl->programs[1], "position");
+				attr = glGetAttribLocation(gl->programs[1], "texpos");
 				glVertexAttribPointer(
 					attr,
 					2,
@@ -468,7 +491,7 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 			glBindBuffer(GL_ARRAY_BUFFER, world->ui->text[i].vbo);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world->ui->text[i].ebo);
 			
-			glDrawElements(GL_TRIANGLES, world->ui->text[i].vertex_count, GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, world->ui->text[i].index_count, GL_UNSIGNED_INT, 0);
 			
 			gl_error_check(__FILE__, __LINE__);
 		}

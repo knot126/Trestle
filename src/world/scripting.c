@@ -192,15 +192,29 @@ static int scripted_SetPlayer(lua_State *script) {
 	return 1;
 }
 
+static int scripted_SetText(lua_State *script) {
+	uint32_t id = lua_tointeger(script, 1);
+	const char *string = lua_tostring(script, 2);
+	
+	bool success = ui_element_set_text(QuickRunActiveWorld, id, string);
+	
+	lua_pushboolean(script, success);
+	
+	return 1;
+}
+
 void registerWorldScriptFunctions(DgScript *script) {
 	/*  Low-Level Entities  */
 	lua_register(script->state, "mgEntity", &scripted_CreateEntity);
-	lua_register(script->state, "mgUIElement", &scripted_CreateEntity);
 	lua_register(script->state, "mgTransform", &scripted_SetTransform);
 	lua_register(script->state, "mgMesh", &scripted_LoadMesh);
 	lua_register(script->state, "mgForce", &scripted_AddForce);
 	lua_register(script->state, "mgMass", &scripted_SetMass);
 	lua_register(script->state, "mgPhysFlags", &scripted_SetPhysicsFlags);
+	
+	/* UI based entites */
+	lua_register(script->state, "mgUIElement", &scripted_CreateEntity);
+	lua_register(script->state, "mgUIText", &scripted_SetText);
 	
 	/*  Segment and Level Management  */
 	lua_register(script->state, "mgSegment", &scripted_LoadSegment);

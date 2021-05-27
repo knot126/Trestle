@@ -14,6 +14,7 @@
 #include "../util/xml.h"
 #include "../util/maths.h"
 #include "../util/log.h"
+#include "../util/str.h"
 
 #include "world.h"
 
@@ -396,6 +397,35 @@ bool entity_phys_add_force(World * const restrict world, const uint32_t id, cons
 	
 	phys->Fpos = DgVec3Scale(phys->mass, pos);
 	phys->Frot = DgVec3Scale(phys->mass, rot);
+	
+	return true;
+}
+
+bool ui_element_set_text(World * const restrict world, const uint32_t id, const char * const restrict text) {
+	C_UIText *element = NULL;
+	
+	for (uint32_t i = 0; i < world->ui->text_count; i++) {
+		if (world->ui->text[i].base.id == id) {
+			element = &world->ui->text[i];
+			break;
+		}
+	}
+	
+	if (!element) {
+		return false;
+	}
+	
+	if (element->text) {
+		DgFree((char *) element->text);
+	}
+	
+	element->text = DgStrdup((char *) text);
+	
+	if (!element->text) {
+		return false;
+	}
+	
+	element->updated = true;
 	
 	return true;
 }
