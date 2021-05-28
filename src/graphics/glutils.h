@@ -206,7 +206,7 @@ static void graphicsLoadTextureFromFile(DgOpenGLContext *gl, char *path, GLenum 
 		DgFail("Error: Failed to load texture.\n", 100);
 	}
 	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.width, image.height, 0, GL_RGB, GL_UNSIGNED_BYTE, image.data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	
 	DgFreeImage(&image);

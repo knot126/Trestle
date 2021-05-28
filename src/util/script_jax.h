@@ -28,25 +28,18 @@ typedef enum DgJaxScriptType {
 	JAX_SCRIPT_STRING = 4,
 } DgJaxScriptType;
 
-typedef union DgJaxScriptValue {
-#if defined(DG_JAX_SCRIPT_OPTION_128BIT_VARIABLES)
-	int128_t integer;
-	float128_t number;
-#else
-	int64_t integer;
-	long double number;
-#endif
-	bool boolean;
-	const char *string;
-} DgJaxScriptValue;
-
 typedef struct DgJaxScriptSymbol {
-	char *name;
 	DgJaxScriptType type;
+	void *data;
 } DgJaxScriptSymbol;
 
+typedef struct DgJaxScriptSymbolPair {
+	char *key;
+	DgJaxScriptSymbol *value;
+} DgJaxScriptSymbolPair;
+
 typedef struct DgJaxScript {
-	DgJaxScriptSymbol *symbols;
+	DgJaxScriptSymbolPair *symbols;
 	size_t symbol_count;
 } DgJaxScript;
 

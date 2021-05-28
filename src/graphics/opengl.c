@@ -228,10 +228,17 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	graphicsLoadTextureFromFile(gl, "assets://gfx/font.png", GL_TEXTURE1);
 	
-	glUniform1i(glGetUniformLocation(gl->programs[0], "image"), gl->textures[0] - 1);
+	gl_error_check(__FILE__, __LINE__);
+	
+	glUseProgram(gl->programs[0]);
+	glUniform1i(glGetUniformLocation(gl->programs[0], "image"), 0);
+	
+	gl_error_check(__FILE__, __LINE__);
 	
 	glUseProgram(gl->programs[1]);
-	glUniform1i(glGetUniformLocation(gl->programs[1], "font"), gl->textures[1] - 1);
+	glUniform1i(glGetUniformLocation(gl->programs[1], "font"), 1);
+	
+	gl_error_check(__FILE__, __LINE__);
 	
 	glUseProgram(0);
 	
@@ -285,8 +292,8 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "camera"), 1, GL_TRUE, &camera.ax);
 	
 	// Bind the currently active textures for this shader
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, gl->textures[0]);
+// 	glActiveTexture(GL_TEXTURE0);
+// 	glBindTexture(GL_TEXTURE_2D, gl->textures[0]);
 	
 	for (size_t i = 0; i < world->CMeshs_count; i++) {
 		uint32_t id = world->CMeshs[i].base.id;
@@ -373,8 +380,8 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	
 	glUseProgram(gl->programs[1]);
 	
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, gl->textures[1]);
+//	glActiveTexture(GL_TEXTURE1);
+//	glBindTexture(GL_TEXTURE_2D, gl->textures[1]);
 	
 	// Make sure the UI world exsists and that there is at least more than one box
 	if (world->ui && world->ui->text_count > 0) {
@@ -431,35 +438,36 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 					DgLog(DG_LOG_ERROR, "Failed to allocate memory for index cache.");
 				}
 				
-				printf("Text: size=(%.3f), pos=(%.3f,%.3f)\n", element->size, element->pos.x, element->pos.y);
+// 				printf("Text: size=(%.3f), pos=(%.3f,%.3f)\n", element->size, element->pos.x, element->pos.y);
 				
 				// NOTE: Here is where we make the vertex data...
+				const float size = element->size;
+				const DgVec2 pos = element->pos;
+				DgVec2 next = pos;
+				
 				for (uint32_t c = 0; c < string_len; c++) {
-					float size = element->size;
-					DgVec2 pos = element->pos;
-					
 					float tex_u = (float) (element->text[c] % 16) / 16.0f;
 					float tex_v = (float) (element->text[c] / 8) / 8.0f;
 					
-					element->vertex[(c * 4) + 0] = pos.x;
-					element->vertex[(c * 4) + 1] = pos.y;
-					element->vertex[(c * 4) + 2] = tex_u;
-					element->vertex[(c * 4) + 3] = tex_v;
+					element->vertex[(c * 16) + 0] = next.x;
+					element->vertex[(c * 16) + 1] = next.y;
+					element->vertex[(c * 16) + 2] = tex_u;
+					element->vertex[(c * 16) + 3] = tex_v;
 					
-					element->vertex[(c * 4) + 4] = pos.x;
-					element->vertex[(c * 4) + 5] = pos.y - size;
-					element->vertex[(c * 4) + 6] = tex_u;
-					element->vertex[(c * 4) + 7] = tex_v;
+					element->vertex[(c * 16) + 4] = next.x;
+					element->vertex[(c * 16) + 5] = next.y - size;
+					element->vertex[(c * 16) + 6] = tex_u;
+					element->vertex[(c * 16) + 7] = tex_v - (1.0f / 8.0f);
 					
-					element->vertex[(c * 4) + 8] = pos.x + size;
-					element->vertex[(c * 4) + 9] = pos.y - size;
-					element->vertex[(c * 4) + 10] = tex_u;
-					element->vertex[(c * 4) + 11] = tex_v;
+					element->vertex[(c * 16) + 8] = next.x + (size / 2.0f);
+					element->vertex[(c * 16) + 9] = next.y - size;
+					element->vertex[(c * 16) + 10] = tex_u + ((1.0f / 16.0f) / 2.0f);
+					element->vertex[(c * 16) + 11] = tex_v - (1.0f / 8.0f);
 					
-					element->vertex[(c * 4) + 12] = pos.x + size;
-					element->vertex[(c * 4) + 13] = pos.y;
-					element->vertex[(c * 4) + 14] = tex_u;
-					element->vertex[(c * 4) + 15] = tex_v;
+					element->vertex[(c * 16) + 12] = next.x + (size / 2.0f);
+					element->vertex[(c * 16) + 13] = next.y;
+					element->vertex[(c * 16) + 14] = tex_u + ((1.0f / 16.0f) / 2.0f);
+					element->vertex[(c * 16) + 15] = tex_v;
 					
 					element->index[(c * 6) + 0] = 0 + (c * 4);
 					element->index[(c * 6) + 1] = 1 + (c * 4);
@@ -467,15 +475,17 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 					element->index[(c * 6) + 3] = 0 + (c * 4);
 					element->index[(c * 6) + 4] = 2 + (c * 4);
 					element->index[(c * 6) + 5] = 3 + (c * 4);
+					
+					next.x += (size / 2.0f);
 				}
 				
-				for (uint32_t v = 0; v < element->vertex_count; v++) {
-					printf("vertex %d = (%.3f, %.3f), (%.3f, %.3f)\n", v, element->vertex[(v * 4) + 0], element->vertex[(v * 4) + 1], element->vertex[(v * 4) + 2], element->vertex[(v * 4) + 3]);
-				}
+// 				for (uint32_t v = 0; v < element->vertex_count; v++) {
+// 					printf("vertex %d = (%.3f, %.3f), (%.3f, %.3f)\n", v, element->vertex[(v * 4) + 0], element->vertex[(v * 4) + 1], element->vertex[(v * 4) + 2], element->vertex[(v * 4) + 3]);
+// 				}
 				
 				// Push the data to the GPU
-				glBufferData(GL_ARRAY_BUFFER, element->vertex_count, element->vertex, GL_STATIC_DRAW);
-				glBufferData(GL_ELEMENT_ARRAY_BUFFER, element->index_count, element->index, GL_STATIC_DRAW);
+				glBufferData(GL_ARRAY_BUFFER, element->vertex_count * sizeof(float) * 4, element->vertex, GL_STATIC_DRAW);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, element->index_count * sizeof(uint32_t), element->index, GL_STATIC_DRAW);
 				
 				gl_error_check(__FILE__, __LINE__);
 				
