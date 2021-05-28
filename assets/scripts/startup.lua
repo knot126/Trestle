@@ -28,8 +28,8 @@ function init()
 	buildWallsAndFloor(5.0, 8.0, 100.0)
 	
 	ent = mgUIElement(QR_ELEMUI_TEXT)
-	mgUIText(ent, "Testing!!")
-	mgUITextPos(ent, 0.0, 0.0)
+	mgUIText(ent, "What is even going on!?")
+	mgUITextPos(ent, -0.9, 0.9)
 	mgUITextSize(ent, 0.1)
 end
 

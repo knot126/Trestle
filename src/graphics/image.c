@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <inttypes.h>
+#include <stdint.h>
 
 #include "../util/alloc.h"
 
@@ -31,6 +32,8 @@ DgImageInfo DgLoadImage(char* path) {
 	DgImageInfo info;
 	
 	char *res_path = DgEvalPath(path);
+	
+	stbi_set_flip_vertically_on_load(1);
 	
 	info.data = (byte *) stbi_load(res_path, &info.width, &info.height, &info.channels, 0);
 	

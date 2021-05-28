@@ -446,8 +446,8 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 				DgVec2 next = pos;
 				
 				for (uint32_t c = 0; c < string_len; c++) {
-					float tex_u = (float) (element->text[c] % 16) / 16.0f;
-					float tex_v = (float) (element->text[c] / 8) / 8.0f;
+					float tex_u = (float) ((element->text[c] % 16) / 16.0f);
+					float tex_v = 1.0f - ((element->text[c] / 16) / 8.0f);
 					
 					element->vertex[(c * 16) + 0] = next.x;
 					element->vertex[(c * 16) + 1] = next.y;
@@ -461,12 +461,12 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 					
 					element->vertex[(c * 16) + 8] = next.x + (size / 2.0f);
 					element->vertex[(c * 16) + 9] = next.y - size;
-					element->vertex[(c * 16) + 10] = tex_u + ((1.0f / 16.0f) / 2.0f);
+					element->vertex[(c * 16) + 10] = tex_u + (1.0f / 16.0f);
 					element->vertex[(c * 16) + 11] = tex_v - (1.0f / 8.0f);
 					
 					element->vertex[(c * 16) + 12] = next.x + (size / 2.0f);
 					element->vertex[(c * 16) + 13] = next.y;
-					element->vertex[(c * 16) + 14] = tex_u + ((1.0f / 16.0f) / 2.0f);
+					element->vertex[(c * 16) + 14] = tex_u + (1.0f / 16.0f);
 					element->vertex[(c * 16) + 15] = tex_v;
 					
 					element->index[(c * 6) + 0] = 0 + (c * 4);
