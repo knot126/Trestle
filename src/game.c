@@ -102,6 +102,8 @@ static int game_loop(World *world, SystemStates *systems) {
 			printf("FPS: %d (%fms)\n", (int) (1 / frame_time), frame_time * 1000.0f);
 			show_fps = 0.0f;
 		}
+		
+		DgScriptCall(systems->scripts, "tick");
 	} // while (should_keep_open)
 	
 	return 0;
@@ -148,7 +150,7 @@ int game_main(int argc, char* argv[]) {
 	registerWorldScriptFunctions(&script);
 	DgScriptLoad(&script, DgINIGet(&initconf, "Main", "include_script_path", "assets://scripts/include.lua"));
 	DgScriptLoad(&script, DgINIGet(&initconf, "Main", "startup_script_path", "assets://scripts/startup.lua"));
-	DgScriptFree(&script);
+	DgScriptCall(&script, "init");
 	
 	// Load systems state
 	// 
@@ -158,6 +160,7 @@ int game_main(int argc, char* argv[]) {
 	printf("\033[0;35mInfo:\033[0m Initialising systems...\n");
 	SystemStates systems;
 	sys_init(&systems);
+	systems.scripts = &script;
 	
 	/**
 	 * 
@@ -174,6 +177,8 @@ int game_main(int argc, char* argv[]) {
 	 * POST OF MAIN-LOOP (ENGINE DESTRUCTION)
 	 * 
 	 */
+	
+	DgScriptFree(&script);
 	
 	// Systems destruction
 	printf("\033[0;35mInfo:\033[0m Destroying systems...\n");

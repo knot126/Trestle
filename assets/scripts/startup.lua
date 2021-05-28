@@ -5,32 +5,24 @@
 -- Game Startup Script
 -- 
 
--- cubes = {}
--- for z = 0.0, 16.0, 1.0 do
--- 	cubes[#cubes + 1] = new_cube(
--- 		(mgRandFloat() - 0.5) * 5.0, (mgRandFloat() - 0.5) * 5.0, -z,
--- 		mgRandFloat(), mgRandFloat(), mgRandFloat(),
--- 		true, nil)
--- 	--print("Crated cube with entity ID ", ent)
--- end
-
 cam = mgCamera()
-
--- a = new_cube(0.0, 0.0, -16.0, 5.0, 0.5, 32.0, false, nil)
--- b = new_cube(-2.5, 2.0, -16.0, 0.5, 4.0, 32.0, false, nil)
--- c = new_cube(2.5, 2.0, -16.0, 0.5, 4.0, 32.0, false, nil)
+frame = 0
+ent = 0
 
 function init()
 	-- player init
-	player = new_cube(0.0, 1.5, 0.0, 1.0, 1.0, 1.0, true, QR_PHYS_ENABLE_RESPONSE)
+	local player = new_cube(0.0, 1.5, 0.0, 1.0, 1.0, 1.0, true, QR_PHYS_ENABLE_RESPONSE)
 	mgActivePlayer(player)
 	
 	buildWallsAndFloor(5.0, 8.0, 100.0)
 	
 	ent = mgUIElement(QR_ELEMUI_TEXT)
-	mgUIText(ent, "What is even going on!?")
-	mgUITextPos(ent, -0.9, 0.9)
+	mgUIText(ent, "Quick Run, version 0.1.1")
+	mgUITextPos(ent, -1.0, 1.0)
 	mgUITextSize(ent, 0.1)
 end
 
-init()
+function tick()
+	frame = frame + 1
+	mgUIText(ent, "Frame " .. tostring(frame) .. ", " .. tostring(mgEntCount()) .. " Entities")
+end

@@ -380,8 +380,7 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	
 	glUseProgram(gl->programs[1]);
 	
-//	glActiveTexture(GL_TEXTURE1);
-//	glBindTexture(GL_TEXTURE_2D, gl->textures[1]);
+	float screen_ratio = (float) h / (float) w;
 	
 	// Make sure the UI world exsists and that there is at least more than one box
 	if (world->ui && world->ui->text_count > 0) {
@@ -438,8 +437,6 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 					DgLog(DG_LOG_ERROR, "Failed to allocate memory for index cache.");
 				}
 				
-// 				printf("Text: size=(%.3f), pos=(%.3f,%.3f)\n", element->size, element->pos.x, element->pos.y);
-				
 				// NOTE: Here is where we make the vertex data...
 				const float size = element->size;
 				const DgVec2 pos = element->pos;
@@ -459,12 +456,12 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 					element->vertex[(c * 16) + 6] = tex_u;
 					element->vertex[(c * 16) + 7] = tex_v - (1.0f / 8.0f);
 					
-					element->vertex[(c * 16) + 8] = next.x + (size / 2.0f);
+					element->vertex[(c * 16) + 8] = next.x + (size / 2.0f * screen_ratio);
 					element->vertex[(c * 16) + 9] = next.y - size;
 					element->vertex[(c * 16) + 10] = tex_u + (1.0f / 16.0f);
 					element->vertex[(c * 16) + 11] = tex_v - (1.0f / 8.0f);
 					
-					element->vertex[(c * 16) + 12] = next.x + (size / 2.0f);
+					element->vertex[(c * 16) + 12] = next.x + (size / 2.0f * screen_ratio);
 					element->vertex[(c * 16) + 13] = next.y;
 					element->vertex[(c * 16) + 14] = tex_u + (1.0f / 16.0f);
 					element->vertex[(c * 16) + 15] = tex_v;
@@ -476,12 +473,8 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 					element->index[(c * 6) + 4] = 2 + (c * 4);
 					element->index[(c * 6) + 5] = 3 + (c * 4);
 					
-					next.x += (size / 2.0f);
+					next.x += (size / 2.0f * screen_ratio);
 				}
-				
-// 				for (uint32_t v = 0; v < element->vertex_count; v++) {
-// 					printf("vertex %d = (%.3f, %.3f), (%.3f, %.3f)\n", v, element->vertex[(v * 4) + 0], element->vertex[(v * 4) + 1], element->vertex[(v * 4) + 2], element->vertex[(v * 4) + 3]);
-// 				}
 				
 				// Push the data to the GPU
 				glBufferData(GL_ARRAY_BUFFER, element->vertex_count * sizeof(float) * 4, element->vertex, GL_STATIC_DRAW);

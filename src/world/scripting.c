@@ -226,6 +226,12 @@ static int scripted_SetTextSize(lua_State *script) {
 	return 1;
 }
 
+static int scripted_GetEntCount(lua_State *script) {
+	lua_pushinteger(script, QuickRunActiveWorld->mask_count);
+	
+	return 1;
+}
+
 void registerWorldScriptFunctions(DgScript *script) {
 	/*  Low-Level Entities  */
 	lua_register(script->state, "mgEntity", &scripted_CreateEntity);
@@ -234,6 +240,7 @@ void registerWorldScriptFunctions(DgScript *script) {
 	lua_register(script->state, "mgForce", &scripted_AddForce);
 	lua_register(script->state, "mgMass", &scripted_SetMass);
 	lua_register(script->state, "mgPhysFlags", &scripted_SetPhysicsFlags);
+	lua_register(script->state, "mgEntCount", &scripted_GetEntCount);
 	
 	/* UI based entites */
 	lua_register(script->state, "mgUIElement", &scripted_CreateUIElement);
