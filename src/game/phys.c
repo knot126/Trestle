@@ -25,15 +25,15 @@ void phys_update(World *world, float delta) {
 	 * that have physics.
 	 */
 	
-	for (uint32_t i = 0; i < world->CPhysicss_count; i++) {
-		uint32_t id = world->CPhysicss[i].base.id;
-		CPhysics *phys = &world->CPhysicss[i];
-		CTransform *trans = NULL;
+	for (uint32_t i = 0; i < world->phys_count; i++) {
+		uint32_t id = world->phys[i].base.id;
+		C_Physics *phys = &world->phys[i];
+		C_Transform *trans = NULL;
 		
 		// Find the transfrom component
-		for (uint32_t i = 0; i < world->CTransforms_count; i++) {
-			if (world->CTransforms[i].base.id == id) {
-				trans = &world->CTransforms[i];
+		for (uint32_t i = 0; i < world->trans_count; i++) {
+			if (world->trans[i].base.id == id) {
+				trans = &world->trans[i];
 				break;
 			}
 		}
@@ -57,18 +57,18 @@ void phys_update(World *world, float delta) {
 		
 		if ((phys->flags & QR_PHYS_ENABLE_RESPONSE) == QR_PHYS_ENABLE_RESPONSE) {
 			phys->flags = (phys->flags & (~QR_PHYS_GROUNDED));
-			CTransform *shape = trans;
+			C_Transform *shape = trans;
 			
 			DgVec3 aHigh = DgVec3Add(shape->pos, shape->scale);
 			DgVec3 aLow = DgVec3Subtract(shape->pos, shape->scale);
 			
-			for (uint32_t i = 0; i < world->CTransforms_count; i++) {
-				if (shape->base.id == world->CTransforms[i].base.id) {
+			for (uint32_t i = 0; i < world->trans_count; i++) {
+				if (shape->base.id == world->trans[i].base.id) {
 					continue;
 				}
 				
-				DgVec3 bHigh = DgVec3Add(world->CTransforms[i].pos, world->CTransforms[i].scale);
-				DgVec3 bLow = DgVec3Subtract(world->CTransforms[i].pos, world->CTransforms[i].scale);
+				DgVec3 bHigh = DgVec3Add(world->trans[i].pos, world->trans[i].scale);
+				DgVec3 bLow = DgVec3Subtract(world->trans[i].pos, world->trans[i].scale);
 				
 				bool res = (bHigh.x >= aLow.x) && (aHigh.x >= bLow.x)
 					&& (bHigh.y >= aLow.y) && (aHigh.y >= bLow.y)
@@ -77,7 +77,7 @@ void phys_update(World *world, float delta) {
 				if (res) {
 					phys->flags = phys->flags | QR_PHYS_GROUNDED;
 					
-					DgVec3 force_out = DgVec3Subtract(world->CTransforms[i].pos, shape->pos);
+					DgVec3 force_out = DgVec3Subtract(world->trans[i].pos, shape->pos);
 					trans->pos.y += bHigh.y - aLow.y;
 					
 					if (!((phys->flags & QR_PHYS_DISABLE_GRAVITY) == QR_PHYS_DISABLE_GRAVITY)) {

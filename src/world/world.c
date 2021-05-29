@@ -42,16 +42,16 @@ void world_destroy(World *world) {
 		DgFree(world->mask);
 	}
 	
-	if (world->CTransforms) {
-		DgFree(world->CTransforms);
+	if (world->trans) {
+		DgFree(world->trans);
 	}
 	
-	if (world->CMeshs) {
-		DgFree(world->CMeshs);
+	if (world->mesh) {
+		DgFree(world->mesh);
 	}
 	
-	if (world->CCameras) {
-		DgFree(world->CCameras);
+	if (world->cam) {
+		DgFree(world->cam);
 	}
 	
 	if (world->ui) {
@@ -87,54 +87,54 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 	
 	// Transform
 	if ((mask & QR_COMPONENT_TRANSFORM) == QR_COMPONENT_TRANSFORM) {
-		world->CTransforms_count++;
-		world->CTransforms = DgRealloc(world->CTransforms, sizeof(CTransform) * world->CTransforms_count);
+		world->trans_count++;
+		world->trans = DgRealloc(world->trans, sizeof(C_Transform) * world->trans_count);
 		
-		if (!world->CTransforms) {
-			DgFail("Allocation error: world->CTransforms.\n", 400);
+		if (!world->trans) {
+			DgFail("Allocation error: world->trans.\n", 400);
 		}
 		
-		memset((world->CTransforms + (world->CTransforms_count - 1)), 0, sizeof(CTransform));
-		world->CTransforms[world->CTransforms_count - 1].base.id = world->mask_count;
+		memset((world->trans + (world->trans_count - 1)), 0, sizeof(C_Transform));
+		world->trans[world->trans_count - 1].base.id = world->mask_count;
 	}
 	
 	// Mesh
 	if ((mask & QR_COMPONENT_MESH) == QR_COMPONENT_MESH) {
-		world->CMeshs_count++;
-		world->CMeshs = DgRealloc(world->CMeshs, sizeof(CMesh) * world->CMeshs_count);
+		world->mesh_count++;
+		world->mesh = DgRealloc(world->mesh, sizeof(C_Mesh) * world->mesh_count);
 		
-		if (!world->CMeshs) {
-			DgFail("Allocation error: world->CMeshs.\n", 401);
+		if (!world->mesh) {
+			DgFail("Allocation error: world->mesh.\n", 401);
 		}
 		
-		memset((world->CMeshs + (world->CMeshs_count - 1)), 0, sizeof(CMesh));
-		world->CMeshs[world->CMeshs_count - 1].base.id = world->mask_count;
+		memset((world->mesh + (world->mesh_count - 1)), 0, sizeof(C_Mesh));
+		world->mesh[world->mesh_count - 1].base.id = world->mask_count;
 	}
 	
 	// Camera
 	if ((mask & QR_COMPONENT_CAMERA) == QR_COMPONENT_CAMERA) {
-		world->CCameras_count++;
-		world->CCameras = DgRealloc(world->CCameras, sizeof(CCamera) * world->CCameras_count);
+		world->cam_count++;
+		world->cam = DgRealloc(world->cam, sizeof(C_Camera) * world->cam_count);
 		
-		if (!world->CCameras) {
-			DgFail("Allocation error: world->CCameras\n", 402);
+		if (!world->cam) {
+			DgFail("Allocation error: world->cam\n", 402);
 		}
 		
-		memset((world->CCameras + (world->CCameras_count - 1)), 0, sizeof(CCamera));
-		world->CCameras[world->CCameras_count - 1].base.id = world->mask_count;
+		memset((world->cam + (world->cam_count - 1)), 0, sizeof(C_Camera));
+		world->cam[world->cam_count - 1].base.id = world->mask_count;
 	}
 	
 	// Physics
 	if ((mask & QR_COMPONENT_PHYSICS) == QR_COMPONENT_PHYSICS) {
-		world->CPhysicss_count++;
-		world->CPhysicss = DgRealloc(world->CPhysicss, sizeof(CPhysics) * world->CPhysicss_count);
+		world->phys_count++;
+		world->phys = DgRealloc(world->phys, sizeof(C_Physics) * world->phys_count);
 		
-		if (!world->CPhysicss) {
-			DgFail("Allocation error: world->CPhysicss\n", 402);
+		if (!world->phys) {
+			DgFail("Allocation error: world->phys\n", 402);
 		}
 		
-		memset((world->CPhysicss + (world->CPhysicss_count - 1)), 0, sizeof(CPhysics));
-		world->CPhysicss[world->CPhysicss_count - 1].base.id = world->mask_count;
+		memset((world->phys + (world->phys_count - 1)), 0, sizeof(C_Physics));
+		world->phys[world->phys_count - 1].base.id = world->mask_count;
 	}
 	
 	return world->mask_count;
@@ -208,11 +208,11 @@ bool entity_load_mesh(World * const restrict world, uint32_t id, char * const re
 	 */
 	
 	// Find the mesh component
-	CMesh *mesh = NULL;
+	C_Mesh *mesh = NULL;
 	
-	for (int i = 0; i < world->CMeshs_count; i++) {
-		if (world->CMeshs[i].base.id == id) {
-			mesh = &world->CMeshs[i];
+	for (int i = 0; i < world->mesh_count; i++) {
+		if (world->mesh[i].base.id == id) {
+			mesh = &world->mesh[i];
 			break;
 		}
 	}
@@ -304,31 +304,31 @@ void world_set_camera(World * const restrict world, const uint32_t id) {
 	 * Implementation note: We add one to I so that we can check if no camera
 	 * has been set and use default matrix in that case.
 	 */
-	for (size_t i = 0; i < world->CTransforms_count; i++) {
-		if (world->CTransforms[i].base.id == id) {
-			world->CCameras_active[0] = i + 1;
+	for (size_t i = 0; i < world->trans_count; i++) {
+		if (world->trans[i].base.id == id) {
+			world->cam_active[0] = i + 1;
 			break;
 		}
 	}
 	
-	for (size_t i = 0; i < world->CCameras_count; i++) {
-		if (world->CCameras[i].base.id == id) {
-			world->CCameras_active[1] = i + 1;
+	for (size_t i = 0; i < world->cam_count; i++) {
+		if (world->cam[i].base.id == id) {
+			world->cam_active[1] = i + 1;
 			break;
 		}
 	}
 	
-	world->CCameras_active[2] = id;
+	world->cam_active[2] = id;
 }
 
 
 bool entity_set_transform(World * const restrict world, const uint32_t id, const DgVec3 pos, const DgVec3 rot, const DgVec3 scale) {
-	CTransform *trans = NULL;
+	C_Transform *trans = NULL;
 	
 	// Find the transfrom
-	for (uint32_t i = 0; i < world->CTransforms_count; i++) {
-		if (world->CTransforms[i].base.id == id) {
-			trans = (world->CTransforms + i);
+	for (uint32_t i = 0; i < world->trans_count; i++) {
+		if (world->trans[i].base.id == id) {
+			trans = (world->trans + i);
 			break;
 		}
 	}
@@ -345,12 +345,12 @@ bool entity_set_transform(World * const restrict world, const uint32_t id, const
 }
 
 bool entity_phys_set_flags(World * const restrict world, const uint32_t id, const int flags) {
-	CPhysics *phys = NULL;
+	C_Physics *phys = NULL;
 	
 	// Find it
-	for (uint32_t i = 0; i < world->CPhysicss_count; i++) {
-		if (world->CPhysicss[i].base.id == id) {
-			phys = (world->CPhysicss + i);
+	for (uint32_t i = 0; i < world->phys_count; i++) {
+		if (world->phys[i].base.id == id) {
+			phys = (world->phys + i);
 			break;
 		}
 	}
@@ -365,12 +365,12 @@ bool entity_phys_set_flags(World * const restrict world, const uint32_t id, cons
 }
 
 bool entity_phys_set_mass(World * const restrict world, const uint32_t id, const float mass) {
-	CPhysics *phys = NULL;
+	C_Physics *phys = NULL;
 	
 	// Find it
-	for (uint32_t i = 0; i < world->CPhysicss_count; i++) {
-		if (world->CPhysicss[i].base.id == id) {
-			phys = (world->CPhysicss + i);
+	for (uint32_t i = 0; i < world->phys_count; i++) {
+		if (world->phys[i].base.id == id) {
+			phys = (world->phys + i);
 			break;
 		}
 	}
@@ -385,12 +385,12 @@ bool entity_phys_set_mass(World * const restrict world, const uint32_t id, const
 }
 
 bool entity_phys_add_force(World * const restrict world, const uint32_t id, const DgVec3 pos, const DgVec3 rot) {
-	CPhysics *phys = NULL;
+	C_Physics *phys = NULL;
 	
 	// Find it
-	for (uint32_t i = 0; i < world->CPhysicss_count; i++) {
-		if (world->CPhysicss[i].base.id == id) {
-			phys = (world->CPhysicss + i);
+	for (uint32_t i = 0; i < world->phys_count; i++) {
+		if (world->phys[i].base.id == id) {
+			phys = (world->phys + i);
 			break;
 		}
 	}

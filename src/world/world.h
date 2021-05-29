@@ -60,21 +60,21 @@ typedef struct {
 	uint32_t mask_count;
 	
 	// Transform Components
-	CTransform *CTransforms;
-	uint32_t    CTransforms_count;
+	C_Transform *trans;
+	uint32_t    trans_count;
 	
 	// Mesh Components
-	CMesh   *CMeshs;
-	uint32_t CMeshs_count;
+	C_Mesh   *mesh;
+	uint32_t mesh_count;
 	
 	// Camera Components
-	CCamera *CCameras;
-	uint32_t CCameras_count;
-	uint32_t CCameras_active[3];
+	C_Camera *cam;
+	uint32_t cam_count;
+	uint32_t cam_active[3];
 	
 	// Physics Components
-	CPhysics *CPhysicss;
-	uint32_t  CPhysicss_count;
+	C_Physics *phys;
+	uint32_t  phys_count;
 	
 	PlayerWorld player_info;
 	UIWorld *ui;

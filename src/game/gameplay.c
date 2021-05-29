@@ -26,19 +26,19 @@ void gameplay_update(World *world) {
 	
 	// PLAYER
 	
-	CTransform *transf = NULL;
-	CPhysics *phys = NULL;
+	C_Transform *transf = NULL;
+	C_Physics *phys = NULL;
 	
-	for (size_t i = 0; i < world->CTransforms_count; i++) {
-		if (world->CTransforms[i].base.id == world->player_info.id) {
-			transf = &world->CTransforms[i];
+	for (size_t i = 0; i < world->trans_count; i++) {
+		if (world->trans[i].base.id == world->player_info.id) {
+			transf = &world->trans[i];
 			break;
 		}
 	}
 	
-	for (size_t i = 0; i < world->CPhysicss_count; i++) {
-		if (world->CPhysicss[i].base.id == world->player_info.id) {
-			phys = &world->CPhysicss[i];
+	for (size_t i = 0; i < world->phys_count; i++) {
+		if (world->phys[i].base.id == world->player_info.id) {
+			phys = &world->phys[i];
 			break;
 		}
 	}
@@ -84,11 +84,11 @@ void gameplay_update(World *world) {
 	
 	// CAMERA
 	
-	CTransform *ppos = NULL;
+	C_Transform *ppos = NULL;
 	
-	for (size_t i = 0; i < world->CTransforms_count; i++) {
-		if (world->CTransforms[i].base.id == world->player_info.id) {
-			ppos = &world->CTransforms[i];
+	for (size_t i = 0; i < world->trans_count; i++) {
+		if (world->trans[i].base.id == world->player_info.id) {
+			ppos = &world->trans[i];
 			break;
 		}
 	}
@@ -102,11 +102,11 @@ void gameplay_update(World *world) {
 		}
 	}
 	
-	CTransform *cpos = NULL;
+	C_Transform *cpos = NULL;
 	
-	for (size_t i = 0; i < world->CTransforms_count; i++) {
-		if (world->CTransforms[i].base.id == world->CCameras_active[2]) {
-			cpos = &world->CTransforms[i];
+	for (size_t i = 0; i < world->trans_count; i++) {
+		if (world->trans[i].base.id == world->cam_active[2]) {
+			cpos = &world->trans[i];
 			break;
 		}
 	}

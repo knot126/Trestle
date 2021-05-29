@@ -24,7 +24,7 @@ typedef struct {
 	DgVec3 pos;
 	DgVec3 rot;
 	DgVec3 scale;
-} CTransform;
+} C_Transform;
 
 typedef struct {
 	ComponentBase_t base;
@@ -35,7 +35,7 @@ typedef struct {
 	uint32_t index_count;
 	uint32_t vbo, ebo, vao;
 	bool updated;
-} CMesh;
+} C_Mesh;
 
 typedef struct {
 	ComponentBase_t base;
@@ -46,7 +46,7 @@ typedef struct {
 		QR_CAM_EDITOR = 3,
 		QR_CAM_BASE = 4,
 	} mode;
-} CCamera;
+} C_Camera;
 
 enum {
 	// For writing state
@@ -67,7 +67,7 @@ typedef struct {
 	DgVec3 Vrot;
 	DgVec3 Frot;
 	uint32_t col_object;
-} CPhysics;
+} C_Physics;
 
 typedef struct C_UIBox {
 	ComponentBase_t base;
