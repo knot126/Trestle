@@ -14,6 +14,7 @@
 #include "../util/xml.h"
 #include "../util/fs.h"
 #include "../util/maths.h"
+#include "../util/log.h"
 
 float next;
 
@@ -33,7 +34,7 @@ float segment_load(const char * const path) {
 	
 	// Make sure this is a segment file
 	if (strcmp(segment.name, "segment")) {
-		printf("\033[1;33mWarning:\033[0m Failed to load segment at %s: not a segment file.\n", path);
+		DgLog(DG_LOG_WARNING, "Failed to load segment at %s: not a segment file.", path);
 		return 0.0f;
 	}
 	

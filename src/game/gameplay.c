@@ -12,6 +12,7 @@
 
 #include "../input/input.h"
 #include "../util/maths.h"
+#include "../util/log.h"
 #include "../world/world.h"
 #include "../world/compo.h"
 #include "../types.h"
@@ -96,7 +97,7 @@ void gameplay_update(World *world) {
 		static float last;
 		last += g_deltaTime;
 		if (last > 1.0f) {
-			printf("Player pos: (%.3f, %.3f, %.3f)\n", ppos->pos.x, ppos->pos.y, ppos->pos.z);
+			DgLog(DG_LOG_VERBOSE, "Player pos: (%.3f, %.3f, %.3f)", ppos->pos.x, ppos->pos.y, ppos->pos.z);
 			last = 0.0f;
 		}
 	}

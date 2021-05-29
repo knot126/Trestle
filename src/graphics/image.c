@@ -5,7 +5,6 @@
  * Image Tools
  */
 
-#include <stdio.h>
 #include <inttypes.h>
 #include <stdint.h>
 
@@ -20,6 +19,7 @@
 #include "../util/fs.h"
 #include "../util/types.h"
 #include "../util/rand.h"
+#include "../util/log.h"
 
 #include "image.h"
 
@@ -38,8 +38,8 @@ DgImageInfo DgLoadImage(char* path) {
 	
 	info.data = (byte *) stbi_load(res_path, &info.width, &info.height, &info.channels, 0);
 	
-	if (info.data) {
-		printf("Info: ImageModule: Loaded image at '%s'.\n", path);
+	if (!info.data) {
+		DgLog(DG_LOG_ERROR, "DgLoadImage: Loaded image at '%s'.", path);
 	}
 	
 	DgFree(res_path); // Free pathname

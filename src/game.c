@@ -112,7 +112,7 @@ static int game_loop(World *world, SystemStates *systems) {
 		
 		show_fps = show_fps + frame_time;
 		if (show_fps > 1.0f) {
-			printf("FPS: %d (%fms)\n", (int) (1 / frame_time), frame_time * 1000.0f);
+			DgLog(DG_LOG_VERBOSE, "Frame Time: %fms (%f FPS)", frame_time * 1000.0f, 1.0f / frame_time);
 			show_fps = 0.0f;
 		}
 		

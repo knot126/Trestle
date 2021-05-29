@@ -121,7 +121,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 		DgFreeImage(&icon);
 	}
 	else {
-		printf("\033[1;33mWarning:\033[0m Could not set window icon.\n");
+		DgLog(DG_LOG_ERROR, "Could not set window icon.");
 	}
 	
 	// gl_error_check(__FILE__, __LINE__);

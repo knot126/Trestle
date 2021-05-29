@@ -8,7 +8,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "log.h"
+
 void DgFail(const char *msg, int err) {
-	printf(msg);
+	DgLog(DG_LOG_FATAL, msg);
 	exit(err);
 }

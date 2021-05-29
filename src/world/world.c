@@ -218,7 +218,7 @@ bool entity_load_mesh(World * const restrict world, uint32_t id, char * const re
 	}
 	
 	if (!mesh) {
-		printf("Failed to load mesh or model '%s' to entity %d.\n", path, id);
+		DgLog(DG_LOG_ERROR, "Failed to load mesh or model '%s' to entity %d.", path, id);
 		return false;
 	}
 	
@@ -228,7 +228,7 @@ bool entity_load_mesh(World * const restrict world, uint32_t id, char * const re
 	DgFree(real_path);
 	
 	if (!s) {
-		printf("Failed to load file '%s'.\n", path);
+		DgLog(DG_LOG_ERROR, "Failed to load file '%s'.", path);
 		return false;
 	}
 	
@@ -236,7 +236,8 @@ bool entity_load_mesh(World * const restrict world, uint32_t id, char * const re
 	DgFileStreamReadInt32(s, &mesh->vert_count);
 	mesh->vert = DgAlloc(mesh->vert_count * 32);
 	if (!mesh->vert) {
-		printf("Failed to allocate memory whilst trying to load a mesh file.\n");
+		DgFileStreamClose(s);
+		DgLog(DG_LOG_ERROR, "Failed to allocate memory whilst trying to load a mesh file.");
 		return false;
 	}
 	DgFileStreamRead(s, mesh->vert_count * 32, mesh->vert);
@@ -245,7 +246,9 @@ bool entity_load_mesh(World * const restrict world, uint32_t id, char * const re
 	DgFileStreamReadInt32(s, &mesh->index_count);
 	mesh->index = DgAlloc(mesh->index_count * 4);
 	if (!mesh->index) {
-		printf("Failed to allocate memory whilst trying to load a mesh file.\n");
+		DgFileStreamClose(s);
+		DgFree(mesh->vert);
+		DgLog(DG_LOG_ERROR, "Failed to allocate memory whilst trying to load a mesh file.");
 		return false;
 	}
 	DgFileStreamRead(s, mesh->index_count * 4, mesh->index);
@@ -450,6 +453,7 @@ bool ui_element_set_text_pos(World * const restrict world, const uint32_t id, co
 	}
 	
 	if (!element) {
+		DgLog(DG_LOG_ERROR, "Failed to find text for UI element: %d", id);
 		return false;
 	}
 	
@@ -475,6 +479,7 @@ bool ui_element_set_text_size(World * const restrict world, const uint32_t id, c
 	}
 	
 	if (!element) {
+		DgLog(DG_LOG_ERROR, "Failed to find text for UI element: %d", id);
 		return false;
 	}
 	

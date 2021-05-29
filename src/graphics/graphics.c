@@ -14,6 +14,7 @@
 #include "../graphics/opengl.h"
 #include "../util/alloc.h"
 #include "../util/load.h"
+#include "../util/log.h"
 
 #include "graphics.h"
 
@@ -27,7 +28,7 @@ GraphicsInitInfo graphics_init(void) {
 	info.type = DG_GRAPHICS_TYPE_OPENGL;
 	
 	if (!info.info) {
-		printf("Error: Pointer to graphics info is null.\n");
+		DgLog(DG_LOG_ERROR, "Pointer to graphics info is null.");
 		exit(1);
 	}
 	

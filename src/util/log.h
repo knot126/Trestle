@@ -13,6 +13,7 @@
 #include "fs.h"
 
 typedef enum DgLogLevel {
+	DG_LOG_VERBOSE = -1,
 	DG_LOG_INFO = 0,
 	DG_LOG_WARNING = 1,
 	DG_LOG_ERROR = 2,
