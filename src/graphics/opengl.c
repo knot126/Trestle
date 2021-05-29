@@ -373,6 +373,7 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 		gl_error_check(__FILE__, __LINE__);
 	}
 	
+	// Unbind everything
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -384,10 +385,12 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	
 	// Make sure the UI world exsists and that there is at least more than one box
 	if (world->ui && world->ui->text_count > 0) {
+		// ~= foreach ( C_UIText element : world->ui->text )
 		for (uint32_t i = 0; i < world->ui->text_count; i++) {
 			uint32_t id = world->ui->text[i].base.id;
 			C_UIText *element = &world->ui->text[i];
 			
+			// Update the text if it was changed last frame in some ways
 			if (world->ui->text[i].updated) {
 				// Create buffers
 				if (!world->ui->text[i].vbo) {
@@ -512,6 +515,8 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 				element->updated = false;
 			}
 			
+			// And of course draw at the end...
+			
 			glBindVertexArray(world->ui->text[i].vao);
 			glBindBuffer(GL_ARRAY_BUFFER, world->ui->text[i].vbo);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world->ui->text[i].ebo);
@@ -522,6 +527,7 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 		}
 	}
 	
+	// Unbind everything
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

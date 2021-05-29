@@ -23,4 +23,4 @@ typedef struct DgLogger {
 	DgFile *log_file;
 } DgLogger;
 
-void DgLog(DgLogLevel level, const char * const format, ...);
+void DgLog(const DgLogLevel level, const char * const format, ...);

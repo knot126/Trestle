@@ -7,60 +7,68 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 
 #include "str.h"
 #include "fs.h"
 
 #include "log.h"
 
-// enum { DG_LOG_BUFFER_SIZE = 256 };
+enum { DG_LOG_BUFFER_SIZE = 256 };
 
 // DgLogger *DG_MAIN_LOGGER__;
 
-static void DgLogDumpBuffer(DgLogLevel level, const char * const buf) {
+static void DgLogPushMessage(const DgLogLevel level, const char * const buf) {
+	// Firstly, write to console
 	
+	switch (level) {
+		case DG_LOG_INFO:
+			printf("\033[1;34mINFO: \033[0m");
+			break;
+			
+		case DG_LOG_WARNING:
+			printf("\033[1;33mWARNING: \033[0m");
+			break;
+			
+		case DG_LOG_ERROR:
+			printf("\033[1;31mERROR: \033[0m");
+			break;
+			
+		case DG_LOG_FATAL:
+			printf("\033[1;38;5;168mFATAL: ");
+			break;
+	}
+	
+	printf(buf);
+	
+	if (level == DG_LOG_FATAL) {
+		printf("\033[0m");
+	}
+	
+	printf("\n");
 }
 
-void DgLog(DgLogLevel level, const char * const format, ...) {
-#if 0
+void DgLog(const DgLogLevel level, const char * const format, ...) {
+	/**
+	 * Log a message given a format paramter, arguments and the level.
+	 */
 	va_list args;
-	int argc = 0;
-	
 	char buf[DG_LOG_BUFFER_SIZE] = { 0 };
-	uint32_t buf_head = 0;
 	
-	// Find the count of params
-	for (size_t i = 0; format[i] != '\0'; i++) {
+	int l = strlen(format);
+	int argc = 0;
+	for (int i = 0; i < l; i++) {
 		if (format[i] == '%') {
-			if (format[i + 1] == '%') {
-				i++; // skip that one too
-				continue;
+			i++;
+			if (format[i] != '%') {
+				argc++;
 			}
-			argc++;
 		}
 	}
 	
 	va_start(args, argc);
+	vsnprintf(buf, DG_LOG_BUFFER_SIZE, format, args);
+	va_end(args);
 	
-	for (size_t i = 0; format[i] != '\0'; i++) {
-		if (format[i] == '%') {
-			i++;
-			
-			if (format[i] == '%') {
-				continue;
-			}
-			
-			else if (format[i] == 'f') {
-				
-			}
-		}
-		
-		else {
-			
-		}
-	}
-#endif
-	
-	puts(format);
-	puts("\n");
+	DgLogPushMessage(level, buf);
 }

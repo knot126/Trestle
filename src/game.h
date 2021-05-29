@@ -13,7 +13,7 @@
 
 typedef struct {
 	GraphicsInitInfo graphics;
-	DgScript *scripts;
+	DgScript game_script;
 } SystemStates;
 
 int game_main(int argc, char* argv[]);

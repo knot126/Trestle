@@ -21,11 +21,11 @@ QR_PHYS_DISABLE_GRAVITY = (1 << 0)
 QR_PHYS_ENABLE_RESPONSE = (1 << 2)
 
 function new_cube(x, y, z, sx, sy, sz, phys, pflags)
-	flags = QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH
+	local flags = QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH
 	if phys then
 		flags = flags | QR_COMPONENT_PHYSICS
 	end
-	ent = mgEntity(flags)
+	local ent = mgEntity(flags)
 	
 	mgTransform(ent, x, y, z, 0.0, 0.0, 0.0, sx, sy, sz)
 	mgMesh(ent, "assets://mesh/cube2.bin")
@@ -54,4 +54,13 @@ function buildWallsAndFloor(w, h, l)
 		new_cube(w - 0.5, (h / 2.0) - 0.75, -z, 0.5, h, 0.5, false, nil)
 		new_cube(w - 1.0, 0.25, -z, 0.5, 0.5, 0.5, false, nil)
 	end
+end
+
+function createUIText(text, x, y, size)
+	local e = mgUIElement(QR_ELEMUI_TEXT)
+	mgUIText(e, text)
+	mgUITextPos(e, x, y)
+	mgUITextSize(e, size)
+	
+	return e
 end

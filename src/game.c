@@ -28,6 +28,7 @@
 #include "util/script.h"
 #include "util/rand.h"
 #include "util/str.h"
+#include "util/log.h"
 #include "graphics/graphics.h"
 #include "game/gameplay.h"
 #include "game/phys.h"
@@ -36,7 +37,7 @@
 #include "game.h"
 
 static void print_info(void) {
-	printf("\033[3mEngine compiled on %s at %s.\033[0m\n", __DATE__, __TIME__);
+	DgLog(DG_LOG_INFO, "Engine compiled on %s at %s.", __DATE__, __TIME__);
 }
 
 static void sys_init(SystemStates *sys) {
@@ -44,17 +45,29 @@ static void sys_init(SystemStates *sys) {
 	memset(sys, 0, sizeof(SystemStates));
 	
 	// Graphics initialisation
-	printf("\033[0;35mInfo:\033[0m Init graphics subsystem...\n");
+	DgLog(DG_LOG_INFO, "Init graphics subsystem...");
 	sys->graphics = graphics_init();
 	
 	// Input initialisation
-	printf("\033[0;35mInfo:\033[0m Init input system...\n");
+	DgLog(DG_LOG_INFO, "Init input system...");
 	input_init(sys->graphics);
+	
+	// Testing lua loader
+	DgLog(DG_LOG_INFO, "Loading main game script...");
+	DgScriptInit(&sys->game_script);
+	DgRegisterRandFuncs(&sys->game_script);
+	registerWorldScriptFunctions(&sys->game_script);
+	DgScriptLoad(&sys->game_script, DgINIGet(g_quickRunConfig, "Main", "include_script_path", "assets://scripts/include.lua"));
+	DgScriptLoad(&sys->game_script, DgINIGet(g_quickRunConfig, "Main", "startup_script_path", "assets://scripts/startup.lua"));
+	DgScriptCall(&sys->game_script, "init");
 }
 
 static void sys_destroy(SystemStates *sys) {
-	printf("\033[0;35mInfo:\033[0m Destroying graphics subsystem...\n");
+	DgLog(DG_LOG_INFO, "Freeing graphics subsystem...");
 	graphics_free(sys->graphics);
+	
+	DgLog(DG_LOG_INFO, "Freeing resources used by main script...");
+	DgScriptFree(&sys->game_script);
 }
 
 static int game_loop(World *world, SystemStates *systems) {
@@ -103,7 +116,7 @@ static int game_loop(World *world, SystemStates *systems) {
 			show_fps = 0.0f;
 		}
 		
-		DgScriptCall(systems->scripts, "tick");
+		DgScriptCall(&systems->game_script, "tick");
 	} // while (should_keep_open)
 	
 	return 0;
@@ -120,11 +133,11 @@ int game_main(int argc, char* argv[]) {
 	DgInitTime();
 	
 	// File system module init
-	printf("\033[0;35mInfo:\033[0m Initialising file system paths...\n");
+	DgLog(DG_LOG_INFO, "Initialising file system paths...");
 	DgInitPaths();
 	
 	// Load config
-	printf("\033[0;35mInfo:\033[0m Loading engine configuration file...\n");
+	DgLog(DG_LOG_INFO, "Loading engine configuration file...");
 	
 	DgINIDocument initconf;
 	uint32_t initconf_status = DgINILoad(&initconf, "assets://config.ini");
@@ -137,30 +150,19 @@ int game_main(int argc, char* argv[]) {
 	}
 	
 	// Load world
-	printf("\033[0;35mInfo:\033[0m Initialising main world...\n");
+	DgLog(DG_LOG_INFO, "Initialising main world...");
 	World main_world;
 	world_init(&main_world, 0);
 	SetActiveWorld(&main_world);
-	
-	// Testing lua loader
-	printf("\033[0;35mInfo:\033[0m Running startup script...\n");
-	DgScript script;
-	DgScriptInit(&script);
-	DgRegisterRandFuncs(&script);
-	registerWorldScriptFunctions(&script);
-	DgScriptLoad(&script, DgINIGet(&initconf, "Main", "include_script_path", "assets://scripts/include.lua"));
-	DgScriptLoad(&script, DgINIGet(&initconf, "Main", "startup_script_path", "assets://scripts/startup.lua"));
-	DgScriptCall(&script, "init");
 	
 	// Load systems state
 	// 
 	// This is only for the really big systems in the game and not for anything
 	// that can basically manage itself (for example, utility functions), though
 	// perhaps they should be ported to use system init as well.
-	printf("\033[0;35mInfo:\033[0m Initialising systems...\n");
+	DgLog(DG_LOG_INFO, "Initialising systems...");
 	SystemStates systems;
 	sys_init(&systems);
-	systems.scripts = &script;
 	
 	/**
 	 * 
@@ -169,7 +171,7 @@ int game_main(int argc, char* argv[]) {
 	 */
 	
 	// Main loop
-	printf("\033[0;35mInfo:\033[0m Starting the main loop...\n");
+	DgLog(DG_LOG_INFO, "Starting the main loop...");
 	game_loop(&main_world, &systems);
 	
 	/**
@@ -178,19 +180,17 @@ int game_main(int argc, char* argv[]) {
 	 * 
 	 */
 	
-	DgScriptFree(&script);
-	
 	// Systems destruction
-	printf("\033[0;35mInfo:\033[0m Destroying systems...\n");
+	DgLog(DG_LOG_INFO, "Destroying systems...");
 	sys_destroy(&systems);
 	
 	// World destruction
-	printf("\033[0;35mInfo:\033[0m Destroying main world...\n");
+	DgLog(DG_LOG_INFO, "Destroying main world...");
 	world_destroy(&main_world);
 	
 	// Cleanup main config file
 	if (!initconf_status) {
-		printf("\033[0;35mInfo:\033[0m Freeing memory used by config...\n");
+		DgLog(DG_LOG_INFO, "Freeing memory used by config...");
 		DgINIFree(&initconf);
 	}
 	

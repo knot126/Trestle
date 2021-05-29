@@ -20,6 +20,13 @@ function init()
 	mgUIText(ent, "Quick Run, version 0.1.1")
 	mgUITextPos(ent, -1.0, 1.0)
 	mgUITextSize(ent, 0.1)
+	
+-- 	ent2 = mgUIElement(QR_ELEMUI_TEXT)
+-- 	mgUIText(ent2, "Quick Run, version 0.1.1")
+-- 	mgUITextPos(ent2, -0.9, 0.9)
+-- 	mgUITextSize(ent2, 0.1)
+-- 	
+	--ui_scoreText = createUIText("Socre", -0.9, 0.9, 0.075)
 end
 
 function tick()
