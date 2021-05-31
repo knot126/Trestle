@@ -17,6 +17,8 @@
 #include "../world/compo.h"
 #include "../types.h"
 
+#include "gameplay.h"
+
 float speed = 2.0f;
 
 void gameplay_update(World *world) {

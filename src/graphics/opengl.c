@@ -5,17 +5,11 @@
  * OpenGL-related graphics stuff
  */
 
-//#define QR_OPENGL_DEBUG 1
-
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
 
-#if !defined(DG_GLEW_INCLUDED_OK)
-	#include "glad.h"
-	#define DG_GLEW_INCLUDED_OK 1
-#endif
-#include <GLFW/glfw3.h>
+#include "gl_incl.h"
 
 #include "../world/world.h"
 #include "../util/alloc.h"
@@ -29,7 +23,9 @@
 #include "../util/bitmap.h"
 #include "../util/log.h"
 #include "../types.h" // For g_deltaTime
+
 #include "image.h"
+//#include "mgmt_texture.c"
 
 #include "opengl.h"
 
@@ -39,12 +35,6 @@
 void gl_set_window_size(GLFWwindow* window, int w, int h) {
 	glViewport(0, 0, w, h);
 }
-
-#if defined(QR_OPENGL_DEBUG)
-void APIENTRY gl_debug_write(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char *message, const void *userParam) {
-	printf("%d: %s\n", id, message);
-}
-#endif
 
 DgOpenGLContext* gl_graphics_init(void) {
 	/*
@@ -68,9 +58,6 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-#if defined(QR_OPENGL_DEBUG)
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-#endif
 	
 	int w_width = atol(DgINIGet(g_quickRunConfig, "Main", "window_width", "1280"));
 	int w_height = atol(DgINIGet(g_quickRunConfig, "Main", "window_height", "720"));
@@ -95,17 +82,6 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	glfwSwapInterval(0);
 	glfwSetFramebufferSizeCallback(gl->window, gl_set_window_size);
-	
-#if defined(QR_OPENGL_DEBUG)
-	int flags;
-	glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-	if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
-		glEnable(GL_DEBUG_OUTPUT);
-		glEnable(GL_DEBUG_OUTPUT_SYNCRONOUS);
-		glDebugMessageCallback(&gl_debug_write, NULL);
-		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
-	}
-#endif
 	
 	glViewport(0, 0, w_width, w_height);
 	
@@ -390,29 +366,33 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 			uint32_t id = world->ui->text[i].base.id;
 			C_UIText *element = &world->ui->text[i];
 			
+			if (!element->text || element->size <= 0.0f) {
+				continue;
+			}
+			
 			// Update the text if it was changed last frame in some ways
-			if (world->ui->text[i].updated) {
+			if (element->updated) {
 				// Create buffers
-				if (!world->ui->text[i].vbo) {
-					glGenBuffers(1, &world->ui->text[i].vbo);
+				if (!element->vbo) {
+					glGenBuffers(1, &element->vbo);
 				}
 				
-				if (!world->ui->text[i].ebo) {
-					glGenBuffers(1, &world->ui->text[i].ebo);
+				if (!element->ebo) {
+					glGenBuffers(1, &element->ebo);
 				}
 				
-				if (!world->ui->text[i].vao) {
-					glGenVertexArrays(1, &world->ui->text[i].vao);
+				if (!element->vao) {
+					glGenVertexArrays(1, &element->vao);
 				}
 				
-				glBindVertexArray(world->ui->text[i].vao);
-				glBindBuffer(GL_ARRAY_BUFFER, world->ui->text[i].vbo);
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world->ui->text[i].ebo);
+				glBindVertexArray(element->vao);
+				glBindBuffer(GL_ARRAY_BUFFER, element->vbo);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element->ebo);
 				
 				gl_error_check(__FILE__, __LINE__);
 				
 				// Compute new vertex data...
-				uint32_t string_len = strlen(world->ui->text[i].text);
+				uint32_t string_len = strlen(element->text);
 				
 				element->vertex_count = string_len * 4;
 				
@@ -517,16 +497,16 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 			
 			// And of course draw at the end...
 			
-			glBindVertexArray(world->ui->text[i].vao);
-			glBindBuffer(GL_ARRAY_BUFFER, world->ui->text[i].vbo);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world->ui->text[i].ebo);
+			glBindVertexArray(element->vao);
+			glBindBuffer(GL_ARRAY_BUFFER, element->vbo);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element->ebo);
 			
-			if (world->ui->text[i].index_count == 0) {
+			if (element->index_count == 0) {
 				DgLog(DG_LOG_WARNING, "Text {i = %d} does not have any vertex indicies...", i);
 				continue;
 			}
 			
-			glDrawElements(GL_TRIANGLES, world->ui->text[i].index_count, GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, element->index_count, GL_UNSIGNED_INT, 0);
 			
 			gl_error_check(__FILE__, __LINE__);
 		}

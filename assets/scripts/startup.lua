@@ -19,17 +19,18 @@ function init()
 	
 	ent = mgUIElement(QR_ELEMUI_TEXT)
 	mgUIText(ent, "[text about in-game statistics will appear here shortly...]")
-	mgUITextPos(ent, -1.0, 1.0)
+	mgUITextPos(ent, -1.0, -0.9)
 	mgUITextSize(ent, 0.1)
 	
-	ent2 = mgUIElement(QR_ELEMUI_TEXT)
-	mgUIText(ent2, "Quick Run, version 0.1.1")
-	mgUITextPos(ent2, -1.0, 0.9)
-	mgUITextSize(ent2, 0.1)
+	ui_LivesCountText = mgUIElement(QR_ELEMUI_TEXT)
+	mgUIText(ui_LivesCountText, "Lives Count")
+	mgUITextPos(ui_LivesCountText, -0.95, 0.95)
+	mgUITextSize(ui_LivesCountText, 0.06)
 	
-	--print("ent = ", ent, " and ent2 = ", ent2)
-	
-	--ui_scoreText = createUIText("Socre", -0.9, 0.9, 0.075)
+	ui_LivesCount = mgUIElement(QR_ELEMUI_TEXT)
+	mgUIText(ui_LivesCount, "13")
+	mgUITextPos(ui_LivesCount, -0.95, 0.88)
+	mgUITextSize(ui_LivesCount, 0.09)
 end
 
 function tick()
