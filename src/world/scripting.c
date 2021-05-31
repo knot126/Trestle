@@ -232,6 +232,18 @@ static int scripted_GetEntCount(lua_State *script) {
 	return 1;
 }
 
+static int scripted_GetPlayerPos(lua_State *script) {
+	uint32_t id = lua_tointeger(script, 1);
+	
+	DgVec3 pos = world_get_player_position(QuickRunActiveWorld);
+	
+	lua_pushnumber(script, pos.x);
+	lua_pushnumber(script, pos.y);
+	lua_pushnumber(script, pos.z);
+	
+	return 3;
+}
+
 void registerWorldScriptFunctions(DgScript *script) {
 	/*  Low-Level Entities  */
 	lua_register(script->state, "mgEntity", &scripted_CreateEntity);
@@ -255,4 +267,5 @@ void registerWorldScriptFunctions(DgScript *script) {
 	/*  Higher-Level Entities  */
 	lua_register(script->state, "mgCamera", &scripted_CreateCamera);
 	lua_register(script->state, "mgActivePlayer", &scripted_SetPlayer);
+	lua_register(script->state, "mgPlayerPos", &scripted_GetPlayerPos);
 }

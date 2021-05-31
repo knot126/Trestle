@@ -489,3 +489,17 @@ bool ui_element_set_text_size(World * const restrict world, const uint32_t id, c
 	
 	return true;
 }
+
+DgVec3 world_get_player_position(World * const restrict world) {
+	DgVec3 pos = DgVec3New(0.0f, 0.0f, 0.0f);
+	C_Transform *trans;
+	
+	for (uint32_t i = 0; i < world->trans_count; i++) {
+		if (world->trans[i].base.id == world->player_info.id) {
+			pos = world->trans[i].pos;
+			break;
+		}
+	}
+	
+	return pos;
+}

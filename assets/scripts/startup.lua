@@ -8,6 +8,7 @@
 cam = mgCamera()
 frame = 0
 ent = 0
+next_pos = 100.0
 
 function init()
 	-- player init
@@ -31,5 +32,12 @@ end
 
 function tick()
 	frame = frame + 1
-	mgUIText(ent, "Frame " .. tostring(frame) .. ", " .. tostring(mgEntCount()) .. " Entities")
+	local x, y, z = mgPlayerPos()
+	mgUIText(ent, "Frame " .. tostring(frame) .. ", " .. tostring(mgEntCount()) .. " Entities, Position: " .. "(" .. x .. ", " .. y .. ", " .. z .. ")")
+	
+	-- build more walls as the player moves forward
+	if z < -next_pos then 
+		buildWallsAndFloor(5.0, mgRandFloat() * 4.0 + 4.0, 100.0, next_pos)
+		next_pos = next_pos + 100.0
+	end
 end
