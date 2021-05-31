@@ -18,15 +18,17 @@ function init()
 	buildWallsAndFloor(5.0, 8.0, 100.0)
 	
 	ent = mgUIElement(QR_ELEMUI_TEXT)
-	mgUIText(ent, "Quick Run, version 0.1.1")
+	mgUIText(ent, "[text about in-game statistics will appear here shortly...]")
 	mgUITextPos(ent, -1.0, 1.0)
 	mgUITextSize(ent, 0.1)
 	
--- 	ent2 = mgUIElement(QR_ELEMUI_TEXT)
--- 	mgUIText(ent2, "Quick Run, version 0.1.1")
--- 	mgUITextPos(ent2, -0.9, 0.9)
--- 	mgUITextSize(ent2, 0.1)
--- 	
+	ent2 = mgUIElement(QR_ELEMUI_TEXT)
+	mgUIText(ent2, "Quick Run, version 0.1.1")
+	mgUITextPos(ent2, -1.0, 0.9)
+	mgUITextSize(ent2, 0.1)
+	
+	--print("ent = ", ent, " and ent2 = ", ent2)
+	
 	--ui_scoreText = createUIText("Socre", -0.9, 0.9, 0.075)
 end
 

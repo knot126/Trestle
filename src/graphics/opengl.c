@@ -521,6 +521,11 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 			glBindBuffer(GL_ARRAY_BUFFER, world->ui->text[i].vbo);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world->ui->text[i].ebo);
 			
+			if (world->ui->text[i].index_count == 0) {
+				DgLog(DG_LOG_WARNING, "Text {i = %d} does not have any vertex indicies...", i);
+				continue;
+			}
+			
 			glDrawElements(GL_TRIANGLES, world->ui->text[i].index_count, GL_UNSIGNED_INT, 0);
 			
 			gl_error_check(__FILE__, __LINE__);

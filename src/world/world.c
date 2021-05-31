@@ -179,7 +179,7 @@ uint32_t world_create_ui_element(World * const restrict world, mask_t mask) {
 		}
 		
 		memset(&world->ui->box[world->ui->box_count - 1], 0, sizeof(C_UIBox));
-		world->ui->box[world->ui->box_count - 1].base.id = world->mask_count;
+		world->ui->box[world->ui->box_count - 1].base.id = world->ui->mask_count;
 	}
 	
 	if ((mask & QR_ELEMUI_TEXT) == QR_ELEMUI_TEXT) {
@@ -192,10 +192,10 @@ uint32_t world_create_ui_element(World * const restrict world, mask_t mask) {
 		}
 		
 		memset(&world->ui->text[world->ui->text_count - 1], 0, sizeof(C_UIText));
-		world->ui->text[world->ui->text_count - 1].base.id = world->mask_count;
+		world->ui->text[world->ui->text_count - 1].base.id = world->ui->mask_count;
 	}
 	
-	return world->mask_count;
+	return world->ui->mask_count;
 }
 
 void SetActiveWorld(World *world) {

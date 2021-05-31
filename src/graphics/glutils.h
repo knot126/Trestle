@@ -83,27 +83,27 @@ void gl_error_check(char* file, int line) {
 	GLenum e = glGetError();
 	
 	if (e) {
-		printf("At line [%s] in [%d]: ", file, line);
-	}
-	
-	switch (e) {
-		case GL_NO_ERROR:
-			break;
-		case GL_INVALID_ENUM:
-			printf("Error: OpenGL: Invalid enum: a bad enum was passed to a function.\n");
-			break;
-		case GL_INVALID_VALUE:
-			printf("Error: OpenGL: Invalid value: a bad value was passed to a function.\n");
-			break;
-		case GL_INVALID_OPERATION:
-			printf("Error: OpenGL: Invalid operation: the operation is not allowed in the current state.\n");
-			break;
-		case GL_INVALID_FRAMEBUFFER_OPERATION:
-			printf("Error: OpenGL: Framebuffer not ready: the framebuffer was not ready for the operation.\n");
-			break;
-		case GL_OUT_OF_MEMORY:
-			printf("Error: OpenGL: Out of memory: the system has run out of memory.\n");
-			break;
+		char *msg;
+		
+		switch (e) {
+			case GL_INVALID_ENUM:
+				msg = "[OpenGL] Invalid enum: a bad enum was passed to a function.";
+				break;
+			case GL_INVALID_VALUE:
+				msg = "[OpenGL] Invalid value: a bad value was passed to a function.";
+				break;
+			case GL_INVALID_OPERATION:
+				msg = "[OpenGL] Invalid operation: the operation is not allowed in the current state.";
+				break;
+			case GL_INVALID_FRAMEBUFFER_OPERATION:
+				msg = "[OpenGL] Framebuffer not ready: the framebuffer was not ready for the operation.";
+				break;
+			case GL_OUT_OF_MEMORY:
+				msg = "[OpenGL] Out of memory: the system has run out of memory.";
+				break;
+		}
+		
+		DgLog(DG_LOG_ERROR, "%s (Line %d, File %s)", msg, line, file);
 	}
 }
 
