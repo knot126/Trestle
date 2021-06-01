@@ -8,6 +8,9 @@
 cam = mgCamera()
 frame = 0
 ent = 0
+lives = {}
+lives.count = 5
+lives.updated = true
 next_pos = 100.0
 
 function init()
@@ -28,7 +31,7 @@ function init()
 	mgUITextSize(ui_LivesCountText, 0.06)
 	
 	ui_LivesCount = mgUIElement(QR_ELEMUI_TEXT)
-	mgUIText(ui_LivesCount, "13")
+	mgUIText(ui_LivesCount, "quickrun")
 	mgUITextPos(ui_LivesCount, -0.95, 0.88)
 	mgUITextSize(ui_LivesCount, 0.09)
 end
@@ -42,5 +45,16 @@ function tick()
 	if z < -next_pos then 
 		buildWallsAndFloor(5.0, mgRandFloat() * 4.0 + 4.0, 100.0, next_pos)
 		next_pos = next_pos + 100.0
+	end
+	
+	if lives.updated then
+		mgUIText(ui_LivesCount, tostring(lives.count))
+		lives.updated = false
+	end
+	
+	if y < -1.5 then
+		mgResetPlayer()
+		lives.updated = true
+		lives.count = lives.count - 1
 	end
 end

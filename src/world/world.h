@@ -102,3 +102,4 @@ bool ui_element_set_text_pos(World * const restrict world, const uint32_t id, co
 bool ui_element_set_text_size(World * const restrict world, const uint32_t id, const float size);
 
 DgVec3 world_get_player_position(World * const restrict world);
+bool world_reset_player(World * const restrict world);

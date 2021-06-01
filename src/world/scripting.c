@@ -244,6 +244,12 @@ static int scripted_GetPlayerPos(lua_State *script) {
 	return 3;
 }
 
+static int scripted_ResetPlayer(lua_State *script) {
+	lua_pushboolean(script, world_reset_player(QuickRunActiveWorld));
+	
+	return 1;
+}
+
 void registerWorldScriptFunctions(DgScript *script) {
 	/*  Low-Level Entities  */
 	lua_register(script->state, "mgEntity", &scripted_CreateEntity);
@@ -268,4 +274,5 @@ void registerWorldScriptFunctions(DgScript *script) {
 	lua_register(script->state, "mgCamera", &scripted_CreateCamera);
 	lua_register(script->state, "mgActivePlayer", &scripted_SetPlayer);
 	lua_register(script->state, "mgPlayerPos", &scripted_GetPlayerPos);
+	lua_register(script->state, "mgResetPlayer", &scripted_ResetPlayer);
 }

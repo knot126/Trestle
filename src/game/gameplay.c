@@ -49,19 +49,17 @@ void gameplay_update(World *world) {
 		return;
 	}
 	
-	float lspeed = speed * g_deltaTime;
-	
 	// Increse or decrase speed
 	if (getKeyPressed(GLFW_KEY_UP)) {
-		speed = speed + g_deltaTime;
+		speed = speed + (g_deltaTime * 2.0f);
 	}
 	
 	if (getKeyPressed(GLFW_KEY_DOWN)) {
-		speed = speed - g_deltaTime;
+		speed = speed - (g_deltaTime * 2.0f);
 	}
 	
 	// Move player forward
-	transf->pos = DgVec3Add(transf->pos, DgVec3New(0.0f, 0.0f, -lspeed));
+	transf->pos = DgVec3Add(transf->pos, DgVec3New(0.0f, 0.0f, -speed * g_deltaTime));
 	
 	// Move player side to side
 	if (getKeyPressed(GLFW_KEY_LEFT)) {

@@ -163,8 +163,8 @@ uint32_t graphicsLoadShader(DgOpenGLContext *gl, char* source_path) {
 	glGetProgramiv(id, GL_LINK_STATUS, &link_stat);
 	
 	if (!link_stat) {
-		char mesg[1024];
-		glGetProgramInfoLog(id, 1024, NULL, mesg);
+		char mesg[1536];
+		glGetProgramInfoLog(id, 1536, NULL, mesg);
 		if (mesg[0]) {
 			printf("%s\n", mesg);
 		}

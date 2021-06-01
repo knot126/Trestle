@@ -67,6 +67,20 @@ void world_destroy(World *world) {
 	}
 }
 
+// TODO: Replace this with a code geneartion script at some point
+#define QR_WORLD_ADDCOMPONENT(MASK, TYPE, LIST, LISTCOUNT) \
+	if ((mask & MASK) == MASK) { \
+		world->LISTCOUNT++; \
+		world->LIST = DgRealloc(world->LIST, sizeof(TYPE) * world->LISTCOUNT); \
+		 \
+		if (!world->LIST) { \
+			DgFail("Allocation error for world component list.\n", 2); \
+		} \
+		 \
+		memset((world->LIST + (world->LISTCOUNT - 1)), 0, sizeof(TYPE)); \
+		world->LIST[world->LISTCOUNT - 1].base.id = world->mask_count; \
+	}
+
 uint32_t world_create_entity(World *world, mask_t mask) {
 	/*
 	 * Create a new entity in a given world and return its ID
@@ -86,59 +100,66 @@ uint32_t world_create_entity(World *world, mask_t mask) {
 	// Allocate the nessicary components
 	
 	// Transform
-	if ((mask & QR_COMPONENT_TRANSFORM) == QR_COMPONENT_TRANSFORM) {
-		world->trans_count++;
-		world->trans = DgRealloc(world->trans, sizeof(C_Transform) * world->trans_count);
-		
-		if (!world->trans) {
-			DgFail("Allocation error: world->trans.\n", 400);
-		}
-		
-		memset((world->trans + (world->trans_count - 1)), 0, sizeof(C_Transform));
-		world->trans[world->trans_count - 1].base.id = world->mask_count;
-	}
+// 	if ((mask & QR_COMPONENT_TRANSFORM) == QR_COMPONENT_TRANSFORM) {
+// 		world->trans_count++;
+// 		world->trans = DgRealloc(world->trans, sizeof(C_Transform) * world->trans_count);
+// 		
+// 		if (!world->trans) {
+// 			DgFail("Allocation error: world->trans.\n", 400);
+// 		}
+// 		
+// 		memset((world->trans + (world->trans_count - 1)), 0, sizeof(C_Transform));
+// 		world->trans[world->trans_count - 1].base.id = world->mask_count;
+// 	}
 	
 	// Mesh
-	if ((mask & QR_COMPONENT_MESH) == QR_COMPONENT_MESH) {
-		world->mesh_count++;
-		world->mesh = DgRealloc(world->mesh, sizeof(C_Mesh) * world->mesh_count);
-		
-		if (!world->mesh) {
-			DgFail("Allocation error: world->mesh.\n", 401);
-		}
-		
-		memset((world->mesh + (world->mesh_count - 1)), 0, sizeof(C_Mesh));
-		world->mesh[world->mesh_count - 1].base.id = world->mask_count;
-	}
+// 	if ((mask & QR_COMPONENT_MESH) == QR_COMPONENT_MESH) {
+// 		world->mesh_count++;
+// 		world->mesh = DgRealloc(world->mesh, sizeof(C_Mesh) * world->mesh_count);
+// 		
+// 		if (!world->mesh) {
+// 			DgFail("Allocation error: world->mesh.\n", 401);
+// 		}
+// 		
+// 		memset((world->mesh + (world->mesh_count - 1)), 0, sizeof(C_Mesh));
+// 		world->mesh[world->mesh_count - 1].base.id = world->mask_count;
+// 	}
 	
 	// Camera
-	if ((mask & QR_COMPONENT_CAMERA) == QR_COMPONENT_CAMERA) {
-		world->cam_count++;
-		world->cam = DgRealloc(world->cam, sizeof(C_Camera) * world->cam_count);
-		
-		if (!world->cam) {
-			DgFail("Allocation error: world->cam\n", 402);
-		}
-		
-		memset((world->cam + (world->cam_count - 1)), 0, sizeof(C_Camera));
-		world->cam[world->cam_count - 1].base.id = world->mask_count;
-	}
+// 	if ((mask & QR_COMPONENT_CAMERA) == QR_COMPONENT_CAMERA) {
+// 		world->cam_count++;
+// 		world->cam = DgRealloc(world->cam, sizeof(C_Camera) * world->cam_count);
+// 		
+// 		if (!world->cam) {
+// 			DgFail("Allocation error: world->cam\n", 402);
+// 		}
+// 		
+// 		memset((world->cam + (world->cam_count - 1)), 0, sizeof(C_Camera));
+// 		world->cam[world->cam_count - 1].base.id = world->mask_count;
+// 	}
 	
 	// Physics
-	if ((mask & QR_COMPONENT_PHYSICS) == QR_COMPONENT_PHYSICS) {
-		world->phys_count++;
-		world->phys = DgRealloc(world->phys, sizeof(C_Physics) * world->phys_count);
-		
-		if (!world->phys) {
-			DgFail("Allocation error: world->phys\n", 402);
-		}
-		
-		memset((world->phys + (world->phys_count - 1)), 0, sizeof(C_Physics));
-		world->phys[world->phys_count - 1].base.id = world->mask_count;
-	}
+// 	if ((mask & QR_COMPONENT_PHYSICS) == QR_COMPONENT_PHYSICS) {
+// 		world->phys_count++;
+// 		world->phys = DgRealloc(world->phys, sizeof(C_Physics) * world->phys_count);
+// 		
+// 		if (!world->phys) {
+// 			DgFail("Allocation error: world->phys\n", 402);
+// 		}
+// 		
+// 		memset((world->phys + (world->phys_count - 1)), 0, sizeof(C_Physics));
+// 		world->phys[world->phys_count - 1].base.id = world->mask_count;
+// 	}
+	
+	QR_WORLD_ADDCOMPONENT(QR_COMPONENT_TRANSFORM, C_Transform, trans, trans_count);
+	QR_WORLD_ADDCOMPONENT(QR_COMPONENT_MESH, C_Mesh, mesh, mesh_count);
+	QR_WORLD_ADDCOMPONENT(QR_COMPONENT_CAMERA, C_Camera, cam, cam_count);
+	QR_WORLD_ADDCOMPONENT(QR_COMPONENT_PHYSICS, C_Physics, phys, phys_count);
 	
 	return world->mask_count;
 }
+
+#undef QR_WORLD_ADDCOMPONENT
 
 uint32_t world_create_ui_element(World * const restrict world, mask_t mask) {
 	/**
@@ -192,7 +213,10 @@ uint32_t world_create_ui_element(World * const restrict world, mask_t mask) {
 		}
 		
 		memset(&world->ui->text[world->ui->text_count - 1], 0, sizeof(C_UIText));
-		world->ui->text[world->ui->text_count - 1].base.id = world->ui->mask_count;
+		C_UIText *element = &world->ui->text[world->ui->text_count - 1];
+		element->base.id = world->ui->mask_count;
+		element->size = 0.1f;
+		element->pos = DgVec2New(-1.0f, 1.0f);
 	}
 	
 	return world->ui->mask_count;
@@ -502,4 +526,17 @@ DgVec3 world_get_player_position(World * const restrict world) {
 	}
 	
 	return pos;
+}
+
+bool world_reset_player(World * const restrict world) {
+	C_Transform *trans;
+	
+	for (uint32_t i = 0; i < world->trans_count; i++) {
+		if (world->trans[i].base.id == world->player_info.id) {
+			world->trans[i].pos = DgVec3New(0.0f, 2.0f, world->trans[i].pos.z);
+			return true;
+		}
+	}
+	
+	return false;
 }
