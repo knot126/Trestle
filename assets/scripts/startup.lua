@@ -43,6 +43,7 @@ function tick()
 	
 	-- build more walls as the player moves forward
 	if z < -next_pos then 
+		mgClearWorld()
 		buildWallsAndFloor(5.0, mgRandFloat() * 4.0 + 4.0, 100.0, next_pos)
 		next_pos = next_pos + 100.0
 	end

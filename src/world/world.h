@@ -83,9 +83,9 @@ typedef struct {
 
 extern World *QuickRunActiveWorld;
 
-void world_init(World *world, size_t prealloc_count);
-void world_destroy(World *world);
-uint32_t world_create_entity(World *world, mask_t mask);
+void world_init(World * const restrict world, size_t prealloc_count);
+void world_destroy(World * const restrict world);
+uint32_t world_create_entity(World * const restrict world, mask_t mask);
 uint32_t world_create_ui_element(World * const restrict world, mask_t mask);
 void SetActiveWorld(World *world);
 

@@ -20,20 +20,14 @@
 
 World *QuickRunActiveWorld;
 
-void world_init(World *world, size_t prealloc_count) {
+void world_init(World * const restrict world, size_t prealloc_count) {
 	/*
 	 * Creates a world full of entities
 	 */
 	memset(world, 0, sizeof(World));
-	
-	if (prealloc_count == 0) {
-		return;
-	}
-	
-	// prealloc is disabled for now...
 }
 
-void world_destroy(World *world) {
+void world_destroy(World * const restrict world) {
 	/* 
 	 * Frees the a world and its exsiting resources
 	 */
@@ -47,6 +41,10 @@ void world_destroy(World *world) {
 	}
 	
 	if (world->mesh) {
+		for (uint32_t i = 0; i < world->mesh_count; i++) {
+			world_free_mesh_component(&world->mesh[i]);
+		}
+		
 		DgFree(world->mesh);
 	}
 	
@@ -56,6 +54,10 @@ void world_destroy(World *world) {
 	
 	if (world->ui) {
 		if (world->ui->text) {
+			for (uint32_t i = 0; i < world->ui->text_count; i++) {
+				world_ui_free_text(&world->ui->text[i]);
+			}
+			
 			DgFree(world->ui->text);
 		}
 		
@@ -64,6 +66,12 @@ void world_destroy(World *world) {
 		}
 		
 		DgFree(world->ui);
+	}
+	
+	// Basically memset(world, 0, sizeof(World))
+	uint8_t *b = (uint8_t *) world;
+	for (size_t i = 0; i < sizeof(World); i++) {
+		b[i] = 0;
 	}
 }
 
@@ -81,7 +89,7 @@ void world_destroy(World *world) {
 		world->LIST[world->LISTCOUNT - 1].base.id = world->mask_count; \
 	}
 
-uint32_t world_create_entity(World *world, mask_t mask) {
+uint32_t world_create_entity(World * const restrict world, mask_t mask) {
 	/*
 	 * Create a new entity in a given world and return its ID
 	 */

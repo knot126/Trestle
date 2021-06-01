@@ -37,15 +37,17 @@ typedef struct {
 	bool updated;
 } C_Mesh;
 
+void world_free_mesh_component(C_Mesh * const restrict mesh);
+
 typedef struct {
 	ComponentBase_t base;
 	// ================== //
-	enum {
-		QR_CAM_MOVE = 1,
-		QR_CAM_ORTHO = 2,
-		QR_CAM_EDITOR = 3,
-		QR_CAM_BASE = 4,
-	} mode;
+// 	enum {
+// 		QR_CAM_MOVE = 1,
+// 		QR_CAM_ORTHO = 2,
+// 		QR_CAM_EDITOR = 3,
+// 		QR_CAM_BASE = 4,
+// 	} mode;
 } C_Camera;
 
 enum {
@@ -91,6 +93,8 @@ typedef struct C_UIText {
 	uint32_t vbo, ebo, vao;
 	bool updated;
 } C_UIText;
+
+void world_ui_free_text(C_UIText * const restrict text);
 
 typedef struct C_UIButton {
 	ComponentBase_t base;

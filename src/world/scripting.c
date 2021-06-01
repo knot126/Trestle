@@ -250,6 +250,12 @@ static int scripted_ResetPlayer(lua_State *script) {
 	return 1;
 }
 
+static int scripted_ClearWorld(lua_State *script) {
+	world_destroy(QuickRunActiveWorld);
+	
+	return 0;
+}
+
 void registerWorldScriptFunctions(DgScript *script) {
 	/*  Low-Level Entities  */
 	lua_register(script->state, "mgEntity", &scripted_CreateEntity);
@@ -259,6 +265,7 @@ void registerWorldScriptFunctions(DgScript *script) {
 	lua_register(script->state, "mgMass", &scripted_SetMass);
 	lua_register(script->state, "mgPhysFlags", &scripted_SetPhysicsFlags);
 	lua_register(script->state, "mgEntCount", &scripted_GetEntCount);
+	lua_register(script->state, "mgClearWorld", &scripted_ClearWorld);
 	
 	/* UI based entites */
 	lua_register(script->state, "mgUIElement", &scripted_CreateUIElement);

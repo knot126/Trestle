@@ -105,6 +105,7 @@ set(EXEC_FILES
 	${LUA_FILES}
 	${MELON_FILES}
 	#lib/glew/glew.c
+	src/world/compo.c
 	src/world/world.c
 	src/world/scripting.c
 	src/world/seg.c
