@@ -533,7 +533,7 @@ bool world_reset_player(World * const restrict world) {
 	
 	for (uint32_t i = 0; i < world->trans_count; i++) {
 		if (world->trans[i].base.id == world->player_info.id) {
-			world->trans[i].pos = DgVec3New(0.0f, 2.0f, world->trans[i].pos.z);
+			world->trans[i].pos = DgVec3New(0.0f, 2.0f, world->trans[i].pos.z - 10.0f);
 			return true;
 		}
 	}

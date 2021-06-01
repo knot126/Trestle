@@ -36,6 +36,14 @@
 
 #include "game.h"
 
+#define QR_EXPRIMENTAL_THREADING
+
+typedef struct GameLoopArgs {
+	bool *keep_open;
+	World *world;
+	SystemStates *systems;
+} GameLoopArgs;
+
 static void print_info(void) {
 	DgLog(DG_LOG_INFO, "Engine compiled on %s at %s.", __DATE__, __TIME__);
 }
@@ -70,6 +78,32 @@ static void sys_destroy(SystemStates *sys) {
 	DgScriptFree(&sys->game_script);
 }
 
+#ifdef QR_EXPRIMENTAL_THREADING
+static void *physics_loop(void *args_) {
+	/**
+	 * The loop that updates the physics system.
+	 */
+	GameLoopArgs *args = (GameLoopArgs *) args_;
+	World *world = args->world;
+	SystemStates *systems = args->systems;
+	
+	float accumulate = 0.0f;
+	
+	while (*args->keep_open) {
+		float frame_time = (float) DgTime();
+		
+		if (accumulate > g_physicsDelta) {
+			phys_update(world, g_physicsDelta);
+			accumulate = 0.0f;
+		}
+		
+		_mm_pause();
+		
+		accumulate += (DgTime() - frame_time);
+	}
+}
+#endif
+
 static int game_loop(World *world, SystemStates *systems) {
 	/* 
 	 * The main loop.
@@ -79,7 +113,19 @@ static int game_loop(World *world, SystemStates *systems) {
 	float show_fps = 0.0;
 	
 	// We will accumulate and update physics when time is right.
+#ifndef QR_EXPRIMENTAL_THREADING
 	float accumulate = 0.0f;
+#endif
+	
+#ifdef QR_EXPRIMENTAL_THREADING
+	GameLoopArgs loopargs;
+	loopargs.world = world;
+	loopargs.systems = systems;
+	loopargs.keep_open = &should_keep_open;
+	DgThread thrd;
+	
+	DgThreadNew(&thrd, &physics_loop, &loopargs);
+#endif
 	
 	while (should_keep_open) {
 		float frame_time = DgTime();
@@ -92,14 +138,14 @@ static int game_loop(World *world, SystemStates *systems) {
 		graphics_update(world, systems->graphics);
 		input_update(systems->graphics);
 		
+#ifndef QR_EXPRIMENTAL_THREADING
 		if (accumulate > g_physicsDelta) {
 			phys_update(world, g_physicsDelta);
 			accumulate = 0.0f;
 		}
+#endif
 		
 		gameplay_update(world);
-		
-		//DgThreadJoin(&th_graphics);
 		
 		// Update frame time
 		frame_time = DgTime() - frame_time;
@@ -108,7 +154,9 @@ static int game_loop(World *world, SystemStates *systems) {
 		g_deltaTime = frame_time;
 		
 		// Update accumulator
+#ifndef QR_EXPRIMENTAL_THREADING
 		accumulate += frame_time;
+#endif
 		
 		show_fps = show_fps + frame_time;
 		if (show_fps > 1.0f) {
@@ -119,7 +167,17 @@ static int game_loop(World *world, SystemStates *systems) {
 		DgScriptCall(&systems->game_script, "tick");
 	} // while (should_keep_open)
 	
+#ifdef QR_EXPRIMENTAL_THREADING
+	DgThreadJoin(&thrd);
+#endif
+	
 	return 0;
+}
+
+void *at(void *data) {
+	while (true) {
+		DgLog(DG_LOG_VERBOSE, "Hello from thread %d!", *(int *)data);
+	}
 }
 
 int game_main(int argc, char* argv[]) {

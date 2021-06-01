@@ -13,6 +13,7 @@
 #include "../input/input.h"
 #include "../util/maths.h"
 #include "../util/log.h"
+#include "../util/ini.h"
 #include "../world/world.h"
 #include "../world/compo.h"
 #include "../types.h"
@@ -20,6 +21,8 @@
 #include "gameplay.h"
 
 float speed = 2.0f;
+float speed_max = 10.0f;
+float speed_min = 1.0f;
 
 void gameplay_update(World *world) {
 	/*
@@ -56,6 +59,15 @@ void gameplay_update(World *world) {
 	
 	if (getKeyPressed(GLFW_KEY_DOWN)) {
 		speed = speed - (g_deltaTime * 2.0f);
+	}
+	
+	// Check speed range
+	if (speed < speed_min) {
+		speed = speed_min;
+	}
+	
+	if (speed > speed_max) {
+		speed = speed_max;
 	}
 	
 	// Move player forward

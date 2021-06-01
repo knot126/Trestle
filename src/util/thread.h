@@ -17,5 +17,6 @@ typedef struct DgThread {
 #endif
 } DgThread;
 
-int DgThreadCreate(DgThread* thread, void *(*func)(void *), void *arg);
+int DgThreadNew(DgThread* thread, void *(*func)(void *), void *arg);
+int DgThreadStart(DgThread* thread, void *(*func)(void *), void *arg);
 int DgThreadJoin(DgThread* thread);
