@@ -97,7 +97,9 @@ static void *physics_loop(void *args_) {
 			accumulate = 0.0f;
 		}
 		
-		_mm_pause();
+#if defined(__GNUC__) && defined(__x86_64__)
+		__asm__ ( "pause;" );
+#endif
 		
 		accumulate += (DgTime() - frame_time);
 	}
