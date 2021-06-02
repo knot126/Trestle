@@ -28,7 +28,7 @@ function new_cube(x, y, z, sx, sy, sz, phys, pflags)
 	local ent = mgEntity(flags)
 	
 	mgTransform(ent, x, y, z, 0.0, 0.0, 0.0, sx, sy, sz)
-	mgMesh(ent, "assets://mesh/cube2.bin")
+	mgMesh(ent, "assets://mesh/cube2.xml")
 	if phys then
 		mgMass(ent, 1.0)
 		mgForce(ent, 0.0, 0.0, -100.0, 0.0, 0.0, 0.0)

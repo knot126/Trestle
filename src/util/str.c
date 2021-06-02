@@ -11,6 +11,7 @@
 #include <stdbool.h>
 
 #include "alloc.h"
+#include "log.h"
 
 char *DgStrcad(const char * const src1, const char * const src2) {
 	/**
@@ -197,8 +198,11 @@ char *DgStrtokr(char *src, const char * const restrict delim, char **saveptr) {
 	return ret;
 }
 
+#if 0
 static void DgTestStrtokr(void) {
-	// Testing strtok
+	/**
+	 * Testing custom implementation of strtok
+	 */
 	char myString[] = "This is a test, of doing a lot or?the of strings   in a system test.\n";
 	char *save;
 	char *next;
@@ -209,4 +213,42 @@ static void DgTestStrtokr(void) {
 //		printf("'%s'\n", next);
 		next = DgStrtokr(NULL, "?,.\n ", &save);
 	}
+}
+#endif
+
+uint32_t *DgInt32ListFromString(char * restrict str, size_t * const restrict size) {
+	/**
+	 * Converts a string to a list of 32-bit integers, writes the size of the
+	 * list out to (size_t) size.
+	 */
+	
+	if (!str) {
+		return NULL;
+	}
+	
+	*size = (size_t) 0;
+	
+	char *next = NULL;
+	uint32_t *list = NULL;
+	
+	while (true) {
+		if (str == next) {
+			break;
+		}
+		
+		uint32_t result = strtol(str, &next, 10);
+		
+		(*size)++;
+		list = DgRealloc(list, size[0] * sizeof(uint32_t));
+		
+		if (!list) {
+			return NULL;
+		}
+		
+		list[(*size) - 1] = result;
+		
+		str = next;
+	}
+	
+	return list;
 }

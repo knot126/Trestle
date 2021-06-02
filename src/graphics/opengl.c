@@ -273,6 +273,11 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	
 	for (size_t i = 0; i < world->mesh_count; i++) {
 		uint32_t id = world->mesh[i].base.id;
+		C_Mesh *mesh = &world->mesh[i];
+		
+		if (!mesh->vert_count || !mesh->index_count || !mesh->vert || !mesh->index) {
+			continue;
+		}
 		
 		// Push new verticies if needed
 		if (world->mesh[i].updated) {

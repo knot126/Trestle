@@ -91,6 +91,24 @@ inline DgVec2 DgVec2New(float x, float y) {
 	return c;
 }
 
+inline DgVec2 DgVec2FromString(const char * const s) {
+	DgVec2 c = DgVec2New(0.0f, 0.0f);
+	
+	// Return zero vector on null string
+	if (!s) {
+		return c;
+	}
+	
+	char * t = (char *) s;
+	
+	c.x = strtof(t, &t);
+	if (t) {
+		c.y = strtof(t, NULL);
+	}
+	
+	return c;
+}
+
 /* 
  * DgVec3 
  */

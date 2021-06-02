@@ -107,58 +107,6 @@ uint32_t world_create_entity(World * const restrict world, mask_t mask) {
 	
 	// Allocate the nessicary components
 	
-	// Transform
-// 	if ((mask & QR_COMPONENT_TRANSFORM) == QR_COMPONENT_TRANSFORM) {
-// 		world->trans_count++;
-// 		world->trans = DgRealloc(world->trans, sizeof(C_Transform) * world->trans_count);
-// 		
-// 		if (!world->trans) {
-// 			DgFail("Allocation error: world->trans.\n", 400);
-// 		}
-// 		
-// 		memset((world->trans + (world->trans_count - 1)), 0, sizeof(C_Transform));
-// 		world->trans[world->trans_count - 1].base.id = world->mask_count;
-// 	}
-	
-	// Mesh
-// 	if ((mask & QR_COMPONENT_MESH) == QR_COMPONENT_MESH) {
-// 		world->mesh_count++;
-// 		world->mesh = DgRealloc(world->mesh, sizeof(C_Mesh) * world->mesh_count);
-// 		
-// 		if (!world->mesh) {
-// 			DgFail("Allocation error: world->mesh.\n", 401);
-// 		}
-// 		
-// 		memset((world->mesh + (world->mesh_count - 1)), 0, sizeof(C_Mesh));
-// 		world->mesh[world->mesh_count - 1].base.id = world->mask_count;
-// 	}
-	
-	// Camera
-// 	if ((mask & QR_COMPONENT_CAMERA) == QR_COMPONENT_CAMERA) {
-// 		world->cam_count++;
-// 		world->cam = DgRealloc(world->cam, sizeof(C_Camera) * world->cam_count);
-// 		
-// 		if (!world->cam) {
-// 			DgFail("Allocation error: world->cam\n", 402);
-// 		}
-// 		
-// 		memset((world->cam + (world->cam_count - 1)), 0, sizeof(C_Camera));
-// 		world->cam[world->cam_count - 1].base.id = world->mask_count;
-// 	}
-	
-	// Physics
-// 	if ((mask & QR_COMPONENT_PHYSICS) == QR_COMPONENT_PHYSICS) {
-// 		world->phys_count++;
-// 		world->phys = DgRealloc(world->phys, sizeof(C_Physics) * world->phys_count);
-// 		
-// 		if (!world->phys) {
-// 			DgFail("Allocation error: world->phys\n", 402);
-// 		}
-// 		
-// 		memset((world->phys + (world->phys_count - 1)), 0, sizeof(C_Physics));
-// 		world->phys[world->phys_count - 1].base.id = world->mask_count;
-// 	}
-	
 	QR_WORLD_ADDCOMPONENT(QR_COMPONENT_TRANSFORM, C_Transform, trans, trans_count);
 	QR_WORLD_ADDCOMPONENT(QR_COMPONENT_MESH, C_Mesh, mesh, mesh_count);
 	QR_WORLD_ADDCOMPONENT(QR_COMPONENT_CAMERA, C_Camera, cam, cam_count);
@@ -292,40 +240,126 @@ bool entity_load_mesh(World * const restrict world, uint32_t id, char * const re
 	return true;
 }
 
-bool entity_load_xmesh(World * const restrict world, uint32_t id, const char * const restrict path) {
+bool entity_load_xml_mesh(World * const restrict world, uint32_t id, const char * const restrict path) {
 	/**
 	 * Load and generate an XML format mesh to an entity
 	 */
+	
+	// Find the mesh component
+	C_Mesh *mesh = NULL;
+	
+	for (int i = 0; i < world->mesh_count; i++) {
+		if (world->mesh[i].base.id == id) {
+			mesh = &world->mesh[i];
+			break;
+		}
+	}
+	
+	if (!mesh) {
+		DgLog(DG_LOG_ERROR, "Failed to load xml mesh or model '%s' to entity %d.", path, id);
+		return false;
+	}
+	
+	// Start loading the XML doucment
 	DgXMLNode doc;
 	
 	uint32_t status = DgXMLLoad(&doc, path);
 	
 	if (status) {
+		DgXMLNodeFree(&doc);
 		return false;
 	}
 	
 	// Calculate size needed to be allocated
-	// Using: Number of planes * Number of verticies per plane * Number of floats per vertex
-	float *data = (float *) DgAlloc(doc.sub_count * 4 * 8);
+	// Using: Number of vertexes * Number of floats per vertex
+	size_t vertex_count = 0;
+	size_t index_count = 0;
 	
-	if (!data) {
+	for (size_t i = 0; i < doc.sub_count; i++) {
+		if (doc.sub[i].sub_count != 4) {
+			// fail assert
+		}
+		index_count += 6;
+		vertex_count += 4;
+	}
+	
+	// Allocate memory for mesh and indexes
+	float *vertex = (float *) DgAlloc(vertex_count * 8 * sizeof(float));
+	
+	if (!vertex) {
+		DgLog(DG_LOG_ERROR, "Failed to load xml mesh or model '%s' to entity %d.", path, id);
+		DgXMLNodeFree(&doc);
 		return false;
 	}
 	
+	uint32_t *index = (uint32_t *) DgAlloc(index_count * sizeof(uint32_t));
+	
+	if (!index) {
+		DgLog(DG_LOG_ERROR, "Failed to load xml mesh or model '%s' to entity %d.", path, id);
+		DgXMLNodeFree(&doc);
+		DgFree(vertex);
+		return false;
+	}
+	
+	// Traverse the XML document and load the data
 	for (size_t i = 0; i < doc.sub_count; i++) {
 		if (!strcmp(doc.sub[i].name, "plane")) {
-			DgVec3 pos = DgVec3FromString(DgXMLGetAttrib(&doc, "pos", NULL));
-			DgVec3 size = DgVec3FromString(DgXMLGetAttrib(&doc, "size", NULL));
-			DgVec3 colour = DgVec3FromString(DgXMLGetAttrib(&doc, "colour", NULL));
+			DgXMLNode *plane = &doc.sub[i];
 			
-			data[((i + 0) * 32) + 0] = pos.x + size.x;
-			data[((i + 0) * 32) + 1] = pos.y + size.y;
-			data[((i + 0) * 32) + 2] = pos.z + size.z;
+			size_t index_offsets_size;
+			uint32_t *index_offsets = DgInt32ListFromString(DgXMLGetAttrib(plane, "indexOffsets", NULL), &index_offsets_size);
 			
-			// TODO: Finish this, I am going to work on something else now ...
+			if (index_offsets) {
+				if (index_offsets_size >= 6) {
+					index[(i * 6) + 0] = (i * 4) + index_offsets[0];
+					index[(i * 6) + 1] = (i * 4) + index_offsets[1];
+					index[(i * 6) + 2] = (i * 4) + index_offsets[2];
+					index[(i * 6) + 3] = (i * 4) + index_offsets[3];
+					index[(i * 6) + 4] = (i * 4) + index_offsets[4];
+					index[(i * 6) + 5] = (i * 4) + index_offsets[5];
+				}
+				
+				DgFree(index_offsets);
+			}
+			
+			for (size_t j = 0; j < plane->sub_count; j++) {
+				DgXMLNode *vtxnode = &plane->sub[i];
+				
+				if (!strcmp(vtxnode->name, "vertex")) {
+					DgVec3 pos = DgVec3FromString(DgXMLGetAttrib(vtxnode, "pos", NULL));
+					DgVec2 texturepos = DgVec2FromString(DgXMLGetAttrib(vtxnode, "texturepos", NULL));
+					DgVec3 colour = DgVec3FromString(DgXMLGetAttrib(vtxnode, "colour", NULL));
+					
+					DgLog(DG_LOG_VERBOSE, "(%.3f, %.3f, %.3f)", pos.x, pos.y, pos.z);
+					
+					printf("%u %u %u %u %u %u %u %u", (i * 32) + (j * 8) + 0, (i * 32) + (j * 8) + 1, (i * 32) + (j * 8) + 2, (i * 32) + (j * 8) + 3, (i * 32) + (j * 8) + 4, (i * 32) + (j * 8) + 5, (i * 32) + (j * 8) + 6, (i * 32) + (j * 8) + 7);
+					
+					vertex[(i * 32) + (j * 8) + 0] = pos.x;
+					vertex[(i * 32) + (j * 8) + 1] = pos.y;
+					vertex[(i * 32) + (j * 8) + 2] = pos.z;
+					
+					vertex[(i * 32) + (j * 8) + 3] = texturepos.x;
+					vertex[(i * 32) + (j * 8) + 4] = texturepos.y;
+					
+					vertex[(i * 32) + (j * 8) + 5] = colour.x;
+					vertex[(i * 32) + (j * 8) + 6] = colour.y;
+					vertex[(i * 32) + (j * 8) + 7] = colour.z;
+				}
+			}
 		}
 	}
 	
+	DgLog(DG_LOG_VERBOSE, "Vertexes %u / Indexes %u", vertex_count, index_count);
+	
+	// Set the mesh component values
+	mesh->vert = vertex;
+	mesh->vert_count = vertex_count;
+	mesh->index = index;
+	mesh->index_count = index_count;
+	
+	mesh->updated = true;
+	
+	// Free XML document
 	DgXMLNodeFree(&doc);
 }
 

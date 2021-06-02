@@ -116,6 +116,15 @@ static int scripted_LoadMesh(lua_State *script) {
 	return 0;
 }
 
+static int scripted_LoadXMLMesh(lua_State *script) {
+	uint32_t id = lua_tointeger(script, 1);
+	const char *path = lua_tostring(script, 2);
+	
+	entity_load_xml_mesh(QuickRunActiveWorld, id, (char *) path);
+	
+	return 0;
+}
+
 static int scripted_LoadSegment(lua_State *script) {
 	if (lua_gettop(script) != 1) {
 		lua_pushnumber(script, 0.0);
@@ -261,6 +270,7 @@ void registerWorldScriptFunctions(DgScript *script) {
 	lua_register(script->state, "mgEntity", &scripted_CreateEntity);
 	lua_register(script->state, "mgTransform", &scripted_SetTransform);
 	lua_register(script->state, "mgMesh", &scripted_LoadMesh);
+	lua_register(script->state, "mgMesh2", &scripted_LoadXMLMesh);
 	lua_register(script->state, "mgForce", &scripted_AddForce);
 	lua_register(script->state, "mgMass", &scripted_SetMass);
 	lua_register(script->state, "mgPhysFlags", &scripted_SetPhysicsFlags);
