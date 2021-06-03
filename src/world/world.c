@@ -323,16 +323,12 @@ bool entity_load_xml_mesh(World * const restrict world, uint32_t id, const char 
 			}
 			
 			for (size_t j = 0; j < plane->sub_count; j++) {
-				DgXMLNode *vtxnode = &plane->sub[i];
+				DgXMLNode *vtxnode = &plane->sub[j];
 				
 				if (!strcmp(vtxnode->name, "vertex")) {
 					DgVec3 pos = DgVec3FromString(DgXMLGetAttrib(vtxnode, "pos", NULL));
 					DgVec2 texturepos = DgVec2FromString(DgXMLGetAttrib(vtxnode, "texturepos", NULL));
 					DgVec3 colour = DgVec3FromString(DgXMLGetAttrib(vtxnode, "colour", NULL));
-					
-					DgLog(DG_LOG_VERBOSE, "(%.3f, %.3f, %.3f)", pos.x, pos.y, pos.z);
-					
-					printf("%u %u %u %u %u %u %u %u", (i * 32) + (j * 8) + 0, (i * 32) + (j * 8) + 1, (i * 32) + (j * 8) + 2, (i * 32) + (j * 8) + 3, (i * 32) + (j * 8) + 4, (i * 32) + (j * 8) + 5, (i * 32) + (j * 8) + 6, (i * 32) + (j * 8) + 7);
 					
 					vertex[(i * 32) + (j * 8) + 0] = pos.x;
 					vertex[(i * 32) + (j * 8) + 1] = pos.y;
@@ -348,8 +344,6 @@ bool entity_load_xml_mesh(World * const restrict world, uint32_t id, const char 
 			}
 		}
 	}
-	
-	DgLog(DG_LOG_VERBOSE, "Vertexes %u / Indexes %u", vertex_count, index_count);
 	
 	// Set the mesh component values
 	mesh->vert = vertex;

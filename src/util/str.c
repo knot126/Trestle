@@ -232,11 +232,11 @@ uint32_t *DgInt32ListFromString(char * restrict str, size_t * const restrict siz
 	uint32_t *list = NULL;
 	
 	while (true) {
+		uint32_t result = strtol(str, &next, 10);
+		
 		if (str == next) {
 			break;
 		}
-		
-		uint32_t result = strtol(str, &next, 10);
 		
 		(*size)++;
 		list = DgRealloc(list, size[0] * sizeof(uint32_t));

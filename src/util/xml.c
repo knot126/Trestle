@@ -186,7 +186,7 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 	/**
 	 * Debug: Print out all the tokens in a nice format.
 	 */
-#if 1
+#if 0
 	for (size_t i = 0; i < token_count; i++) {
 		printf("[ %.3d ] %d -> %s\n", i, tokens[i].type, tokens[i].text);
 	}
