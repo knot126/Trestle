@@ -93,6 +93,7 @@ set(MELON_FILES
 	src/util/script_jax.c
 	src/util/socket.c
 	src/util/str.c
+	src/util/stream.c
 	src/util/thread.c
 	src/util/time.c
 	src/util/value.c
