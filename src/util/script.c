@@ -6,7 +6,9 @@
  */
 
 #include <stdbool.h>
+#include <inttypes.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "lua.h"
 #include "lualib.h"
@@ -21,6 +23,9 @@ void DgScriptInit(DgScript *script) {
 	/*
 	 * Initialise the script
 	 */
+	
+	memset(script, 0, sizeof(DgScript));
+	
 	script->state = luaL_newstate();
 	
 	luaL_openlibs(script->state);
@@ -64,4 +69,12 @@ void DgScriptFree(DgScript *script) {
 	 * Free script resources
 	 */
 	lua_close(script->state);
+}
+
+void DgScriptRegister(DgScript *script, const char * name, int (*function)(DgScript *)) {
+	/**
+	 * Register a C function of type (int (*)(DgScript *)) for calling.
+	 */
+	
+	lua_register(script->state, name, (int (*)(lua_State *)) function);
 }

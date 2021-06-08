@@ -49,16 +49,24 @@ static int is_tag_start(const char * const seq) {
 	/**
 	 * Returns 0 if none, 1 if normal open, 2 if close tag
 	 */
-	if ((seq[0] == '<') && (seq[1] == '/')) { return 2; }
-	return (*seq == '<');
+	if ((seq[0] == '<') && (seq[1] == '/')) 
+		{ return 2; }
+	else if (*seq == '<') 
+		{ return 1; }
+	else 
+		{ return 0; }
 }
 
 static int is_tag_end(const char * const seq) {
 	/**
 	 * Returns 0 if not any, 1 if normal close, 2 for self-closing
 	 */
-	if ((seq[0] == '/') && (seq[1] == '>')) { return 2; }
-	return (*seq == '>');
+	if ((seq[0] == '/') && (seq[1] == '>'))
+		{ return 2; }
+	else if (*seq == '>')
+		{ return 1; }
+	else
+		{ return 0; }
 }
 
 static bool is_assoc(const char * const seq) {
