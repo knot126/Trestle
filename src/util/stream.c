@@ -18,7 +18,7 @@
 
 _Static_assert(sizeof(uint8_t) == 1);
 
-static void DgStreamInit(DgStream *stream, void *buffer, size_t prealloc) {
+static void DgStreamInit(DgStream *stream, void * restrict buffer, size_t prealloc) {
 	/**
 	 * Initialises a stream based on the contents of buffer and prealloc.
 	 * 
@@ -205,7 +205,7 @@ void DgStreamRead(DgStream *stream, size_t size, void *buffer) {
 	}
 	
 	// Copy data to the buffer
-	memcpy(buffer, (void *) stream->data + size, size);
+	memcpy(buffer, (void *) stream->data + stream->head, size);
 	
 	// Advance the head by size
 	stream->head += size;
@@ -235,5 +235,8 @@ void DgStreamWrite(DgStream *stream, size_t size, void *buffer) {
 	}
 	
 	// Copy the memory
-	memcpy(stream->data + stream->head, buffer, size);
+	memcpy((void *) stream->data + stream->head, buffer, size);
+	
+	// Advance the head
+	stream->head += size;
 }

@@ -29,6 +29,7 @@
 #include "util/rand.h"
 #include "util/str.h"
 #include "util/log.h"
+#include "util/stream.h"
 #include "graphics/graphics.h"
 #include "game/gameplay.h"
 #include "game/phys.h"
@@ -208,6 +209,31 @@ int game_main(int argc, char* argv[]) {
 	else {
 		g_quickRunConfig = &initconf;
 	}
+	
+	// Memory stream tests
+	DgStream *s = DgStreamCreate();
+	
+	DgLog(DG_LOG_INFO, "Stream Pos = %llu", DgStreamGetpos(s));
+	
+	char c[] = "This is a test string!!";
+	DgStreamWrite(s, sizeof(c) - 1, c);
+	
+	char d[] = "Another thing!!!";
+	DgStreamWrite(s, sizeof(d) - 1, d);
+	
+	if (DgStreamError(s)) {
+		DgLog(DG_LOG_ERROR, "Stream Error!");
+	}
+	
+	DgLog(DG_LOG_INFO, "Stream Pos = %llu", DgStreamGetpos(s));
+	DgStreamSetpos(s, DG_STRM_SET, 0);
+	
+	char buf[10];
+	DgStreamRead(s, sizeof(buf) - 1, buf);
+	buf[sizeof(buf) - 1] = '\0';
+	DgLog(DG_LOG_INFO, "Read '%s' !", buf);
+	
+	DgStreamFree(s);
 	
 	// Load world
 	DgLog(DG_LOG_INFO, "Initialising main world...");
