@@ -232,6 +232,7 @@ int game_main(int argc, char* argv[]) {
 	DgStreamRead(s, sizeof(buf) - 1, buf);
 	buf[sizeof(buf) - 1] = '\0';
 	DgLog(DG_LOG_INFO, "Read '%s' !", buf);
+	DgLog(DG_LOG_INFO, "Next four bytes as UInt64: %lld", DgStreamReadUInt64(s));
 	
 	DgStreamFree(s);
 	

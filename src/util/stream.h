@@ -52,3 +52,25 @@ void DgStreamRewind(DgStream *stream);
 
 void DgStreamRead(DgStream *stream, size_t size, void *buffer);
 void DgStreamWrite(DgStream *stream, size_t size, void *buffer);
+
+int8_t DgStreamReadInt8(DgStream *stream);
+uint8_t DgStreamReadUInt8(DgStream *stream);
+int16_t DgStreamReadInt16(DgStream *stream);
+uint16_t DgStreamReadUInt16(DgStream *stream);
+int32_t DgStreamReadInt32(DgStream *stream);
+uint32_t DgStreamReadUInt32(DgStream *stream);
+int64_t DgStreamReadInt64(DgStream *stream);
+uint64_t DgStreamReadUInt64(DgStream *stream);
+float DgStreamReadFloat(DgStream *stream);
+double DgStreamReadDouble(DgStream *stream);
+
+void DgStreamWriteInt8(DgStream *stream, int8_t *data);
+void DgStreamWriteUInt8(DgStream *stream, uint8_t *data);
+void DgStreamWriteInt16(DgStream *stream, int16_t *data);
+void DgStreamWriteUInt16(DgStream *stream, uint16_t *data);
+void DgStreamWriteInt32(DgStream *stream, int32_t *data);
+void DgStreamWriteUInt32(DgStream *stream, uint32_t *data);
+void DgStreamWriteInt64(DgStream *stream, int64_t *data);
+void DgStreamWriteUInt64(DgStream *stream, uint64_t *data);
+void DgStreamWriteFloat(DgStream *stream, float *data);
+void DgStreamWriteDouble(DgStream *stream, double *data);
