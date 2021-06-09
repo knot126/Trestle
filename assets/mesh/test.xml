@@ -1,38 +1,7 @@
 <mesh>
-	<plane indexOffsets="0 1 2 0 2 3" name="front">
-		<vertex index="0" pos="-1.0 1.0 1.0" texturepos="0.0 0.0" colour="1.0 1.0 1.0" />
-		<vertex index="1" pos="-1.0 -1.0 1.0" texturepos="1.0 0.0" colour="1.0 1.0 1.0" />
-		<vertex index="2" pos="1.0 -1.0 1.0" texturepos="1.0 1.0" colour="1.0 1.0 1.0" />
-		<vertex index="3" pos="1.0 1.0 1.0" texturepos="0.0 1.0" colour="1.0 1.0 1.0" />
-	</plane>
-	<plane indexOffsets="0 1 2 0 2 3" name="back">
-		<vertex index="0" pos="-1.0 1.0 -1.0" texturepos="0.0 0.0" colour="1.0 1.0 1.0" />
-		<vertex index="1" pos="-1.0 -1.0 -1.0" texturepos="1.0 0.0" colour="1.0 1.0 1.0" />
-		<vertex index="2" pos="1.0 -1.0 -1.0" texturepos="1.0 1.0" colour="1.0 1.0 1.0" />
-		<vertex index="3" pos="1.0 1.0 -1.0" texturepos="0.0 1.0" colour="1.0 1.0 1.0" />
-	</plane>
-	<plane indexOffsets="0 1 2 0 2 3" name="top">
-		<vertex index="0" pos="-1.0 1.0 1.0" texturepos="0.0 0.0" colour="0.6 0.6 0.6" />
-		<vertex index="1" pos="-1.0 1.0 -1.0" texturepos="1.0 0.0" colour="0.6 0.6 0.6" />
-		<vertex index="2" pos="1.0 1.0 -1.0" texturepos="1.0 1.0" colour="0.6 0.6 0.6" />
-		<vertex index="3" pos="1.0 1.0 1.0" texturepos="0.0 1.0" colour="0.6 0.6 0.6" />
-	</plane>
-	<plane indexOffsets="0 1 2 0 2 3" name="bottom">
-		<vertex index="0" pos="-1.0 -1.0 1.0" texturepos="0.0 0.0" colour="0.6 0.6 0.6" />
-		<vertex index="1" pos="-1.0 -1.0 -1.0" texturepos="1.0 0.0" colour="0.6 0.6 0.6" />
-		<vertex index="2" pos="1.0 -1.0 -1.0" texturepos="1.0 1.0" colour="0.6 0.6 0.6" />
-		<vertex index="3" pos="1.0 -1.0 1.0" texturepos="0.0 1.0" colour="0.6 0.6 0.6" />
-	</plane>
-	<plane indexOffsets="0 1 2 0 2 3" name="right">
-		<vertex index="0" pos="1.0 1.0 -1.0" texturepos="0.0 0.0" colour="0.8 0.8 0.8" />
-		<vertex index="1" pos="1.0 -1.0 -1.0" texturepos="1.0 0.0" colour="0.8 0.8 0.8" />
-		<vertex index="2" pos="1.0 -1.0 1.0" texturepos="1.0 1.0" colour="0.8 0.8 0.8" />
-		<vertex index="3" pos="1.0 1.0 1.0" texturepos="0.0 1.0" colour="0.8 0.8 0.8" />
-	</plane>
-	<plane indexOffsets="0 1 2 0 2 3" name="left">
-		<vertex index="0" pos="-1.0 1.0 -1.0" texturepos="0.0 0.0" colour="0.8 0.8 0.8" />
-		<vertex index="1" pos="-1.0 -1.0 -1.0" texturepos="1.0 0.0" colour="0.8 0.8 0.8" />
-		<vertex index="2" pos="-1.0 -1.0 1.0" texturepos="1.0 1.0" colour="0.8 0.8 0.8" />
-		<vertex index="3" pos="-1.0 1.0 1.0" texturepos="0.0 1.0" colour="0.8 0.8 0.8" />
-	</plane>
+	<face indexOffsets="0 1 2" name="test">
+		<vertex pos="-1.0 -1.0 1.0" texturepos="0.0 0.0" colour="1.0 1.0 1.0" />
+		<vertex pos="-1.0 1.0 -1.0" texturepos="1.0 0.0" colour="1.0 1.0 1.0" />
+		<vertex pos="1.0 1.0 -1.0" texturepos="1.0 1.0" colour="1.0 1.0 1.0" />
+	</face>
 </mesh>

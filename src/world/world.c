@@ -289,9 +289,11 @@ bool entity_load_xml_mesh(World * const restrict world, uint32_t id, const char 
 		return false;
 	}
 	
+	size_t processed_vertex_count = 0;
+	
 	// Traverse the XML document and load the data
 	for (size_t i = 0; i < doc.sub_count; i++) {
-		if (!strcmp(doc.sub[i].name, "plane")) {
+		if (!strcmp(doc.sub[i].name, "plane") || !strcmp(doc.sub[i].name, "face")) {
 			DgXMLNode *plane = &doc.sub[i];
 			
 			// Prepare the index offsets
@@ -299,25 +301,8 @@ bool entity_load_xml_mesh(World * const restrict world, uint32_t id, const char 
 			uint32_t *index_offsets = DgInt32ListFromString(DgXMLGetAttrib(plane, "indexOffsets", NULL), &index_offsets_size);
 			
 			if (index_offsets) {
-				if (index_offsets_size >= 6) {
-					uint32_t z;
-					
-					z = (i * 4) + index_offsets[0];
-					DgStreamWriteUInt32(index, &z);
-					
-					z = (i * 4) + index_offsets[1];
-					DgStreamWriteUInt32(index, &z);
-					
-					z = (i * 4) + index_offsets[2];
-					DgStreamWriteUInt32(index, &z);
-					
-					z = (i * 4) + index_offsets[3];
-					DgStreamWriteUInt32(index, &z);
-					
-					z = (i * 4) + index_offsets[4];
-					DgStreamWriteUInt32(index, &z);
-					
-					z = (i * 4) + index_offsets[5];
+				for (uint32_t j = 0; j < index_offsets_size; j++) {
+					uint32_t z = processed_vertex_count + index_offsets[j];
 					DgStreamWriteUInt32(index, &z);
 				}
 				
@@ -343,6 +328,8 @@ bool entity_load_xml_mesh(World * const restrict world, uint32_t id, const char 
 					DgStreamWriteFloat(vertex, &colour.x);
 					DgStreamWriteFloat(vertex, &colour.y);
 					DgStreamWriteFloat(vertex, &colour.z);
+					
+					processed_vertex_count += 1;
 				}
 			}
 		}

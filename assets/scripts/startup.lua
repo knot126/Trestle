@@ -11,6 +11,7 @@ ent = 0
 lives = {}
 lives.count = 5
 lives.updated = true
+ui = {}
 next_pos = 100.0
 
 function init()
@@ -25,31 +26,42 @@ function init()
 	mgUITextPos(ent, -1.0, -0.9)
 	mgUITextSize(ent, 0.1)
 	
-	ui_LivesCountText = mgUIElement(QR_ELEMUI_TEXT)
-	mgUIText(ui_LivesCountText, "Lives Count")
-	mgUITextPos(ui_LivesCountText, -0.95, 0.95)
-	mgUITextSize(ui_LivesCountText, 0.06)
+	ui.LivesCountText = mgUIElement(QR_ELEMUI_TEXT)
+	mgUIText(ui.LivesCountText, "Lives")
+	mgUITextPos(ui.LivesCountText, -0.95, 0.95)
+	mgUITextSize(ui.LivesCountText, 0.06)
 	
-	ui_LivesCount = mgUIElement(QR_ELEMUI_TEXT)
-	mgUIText(ui_LivesCount, "quickrun")
-	mgUITextPos(ui_LivesCount, -0.95, 0.88)
-	mgUITextSize(ui_LivesCount, 0.09)
+	ui.LivesCount = mgUIElement(QR_ELEMUI_TEXT)
+	mgUIText(ui.LivesCount, "quickrun")
+	mgUITextPos(ui.LivesCount, -0.95, 0.88)
+	mgUITextSize(ui.LivesCount, 0.09)
+	
+	ui.DistanceText = mgUIElement(QR_ELEMUI_TEXT)
+	mgUIText(ui.DistanceText, "Distance")
+	mgUITextPos(ui.DistanceText, -0.75, 0.95)
+	mgUITextSize(ui.DistanceText, 0.06)
+	
+	ui.Distance = mgUIElement(QR_ELEMUI_TEXT)
+	mgUIText(ui.Distance, "quickrun")
+	mgUITextPos(ui.Distance, -0.75, 0.88)
+	mgUITextSize(ui.Distance, 0.09)
 end
 
 function tick()
 	frame = frame + 1
 	local x, y, z = mgPlayerPos()
 	mgUIText(ent, "Frame " .. tostring(frame) .. ", " .. tostring(mgEntCount()) .. " Entities, Position: " .. "(" .. x .. ", " .. y .. ", " .. z .. ")")
+	mgUIText(ui.Distance, tostring(math.floor(-z)))
 	
 	-- build more walls as the player moves forward
 	if z < -next_pos then 
-		mgClearWorld()
+-- 		mgClearWorld()
 		buildWallsAndFloor(5.0, mgRandFloat() * 4.0 + 4.0, 100.0, next_pos)
 		next_pos = next_pos + 100.0
 	end
 	
 	if lives.updated then
-		mgUIText(ui_LivesCount, tostring(lives.count))
+		mgUIText(ui.LivesCount, tostring(lives.count))
 		lives.updated = false
 	end
 	
