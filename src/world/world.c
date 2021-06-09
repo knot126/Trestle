@@ -15,6 +15,7 @@
 #include "../util/maths.h"
 #include "../util/log.h"
 #include "../util/str.h"
+#include "../util/stream.h"
 
 #include "world.h"
 
@@ -270,21 +271,8 @@ bool entity_load_xml_mesh(World * const restrict world, uint32_t id, const char 
 		return false;
 	}
 	
-	// Calculate size needed to be allocated
-	// Using: Number of vertexes * Number of floats per vertex
-	size_t vertex_count = 0;
-	size_t index_count = 0;
-	
-	for (size_t i = 0; i < doc.sub_count; i++) {
-		if (doc.sub[i].sub_count != 4) {
-			// fail assert
-		}
-		index_count += 6;
-		vertex_count += 4;
-	}
-	
 	// Allocate memory for mesh and indexes
-	float *vertex = (float *) DgAlloc(vertex_count * 8 * sizeof(float));
+	DgStream *vertex = DgStreamCreate();
 	
 	if (!vertex) {
 		DgLog(DG_LOG_ERROR, "Failed to load xml mesh or model '%s' to entity %d.", path, id);
@@ -292,12 +280,12 @@ bool entity_load_xml_mesh(World * const restrict world, uint32_t id, const char 
 		return false;
 	}
 	
-	uint32_t *index = (uint32_t *) DgAlloc(index_count * sizeof(uint32_t));
+	DgStream *index = DgStreamCreate();
 	
 	if (!index) {
 		DgLog(DG_LOG_ERROR, "Failed to load xml mesh or model '%s' to entity %d.", path, id);
 		DgXMLNodeFree(&doc);
-		DgFree(vertex);
+		DgStreamFree(vertex);
 		return false;
 	}
 	
@@ -306,22 +294,37 @@ bool entity_load_xml_mesh(World * const restrict world, uint32_t id, const char 
 		if (!strcmp(doc.sub[i].name, "plane")) {
 			DgXMLNode *plane = &doc.sub[i];
 			
+			// Prepare the index offsets
 			size_t index_offsets_size;
 			uint32_t *index_offsets = DgInt32ListFromString(DgXMLGetAttrib(plane, "indexOffsets", NULL), &index_offsets_size);
 			
 			if (index_offsets) {
 				if (index_offsets_size >= 6) {
-					index[(i * 6) + 0] = (i * 4) + index_offsets[0];
-					index[(i * 6) + 1] = (i * 4) + index_offsets[1];
-					index[(i * 6) + 2] = (i * 4) + index_offsets[2];
-					index[(i * 6) + 3] = (i * 4) + index_offsets[3];
-					index[(i * 6) + 4] = (i * 4) + index_offsets[4];
-					index[(i * 6) + 5] = (i * 4) + index_offsets[5];
+					uint32_t z;
+					
+					z = (i * 4) + index_offsets[0];
+					DgStreamWriteUInt32(index, &z);
+					
+					z = (i * 4) + index_offsets[1];
+					DgStreamWriteUInt32(index, &z);
+					
+					z = (i * 4) + index_offsets[2];
+					DgStreamWriteUInt32(index, &z);
+					
+					z = (i * 4) + index_offsets[3];
+					DgStreamWriteUInt32(index, &z);
+					
+					z = (i * 4) + index_offsets[4];
+					DgStreamWriteUInt32(index, &z);
+					
+					z = (i * 4) + index_offsets[5];
+					DgStreamWriteUInt32(index, &z);
 				}
 				
 				DgFree(index_offsets);
 			}
 			
+			// Loop around the vertexes in the plane
 			for (size_t j = 0; j < plane->sub_count; j++) {
 				DgXMLNode *vtxnode = &plane->sub[j];
 				
@@ -330,26 +333,50 @@ bool entity_load_xml_mesh(World * const restrict world, uint32_t id, const char 
 					DgVec2 texturepos = DgVec2FromString(DgXMLGetAttrib(vtxnode, "texturepos", NULL));
 					DgVec3 colour = DgVec3FromString(DgXMLGetAttrib(vtxnode, "colour", NULL));
 					
-					vertex[(i * 32) + (j * 8) + 0] = pos.x;
-					vertex[(i * 32) + (j * 8) + 1] = pos.y;
-					vertex[(i * 32) + (j * 8) + 2] = pos.z;
+					DgStreamWriteFloat(vertex, &pos.x);
+					DgStreamWriteFloat(vertex, &pos.y);
+					DgStreamWriteFloat(vertex, &pos.z);
 					
-					vertex[(i * 32) + (j * 8) + 3] = texturepos.x;
-					vertex[(i * 32) + (j * 8) + 4] = texturepos.y;
+					DgStreamWriteFloat(vertex, &texturepos.x);
+					DgStreamWriteFloat(vertex, &texturepos.y);
 					
-					vertex[(i * 32) + (j * 8) + 5] = colour.x;
-					vertex[(i * 32) + (j * 8) + 6] = colour.y;
-					vertex[(i * 32) + (j * 8) + 7] = colour.z;
+					DgStreamWriteFloat(vertex, &colour.x);
+					DgStreamWriteFloat(vertex, &colour.y);
+					DgStreamWriteFloat(vertex, &colour.z);
 				}
 			}
 		}
 	}
 	
 	// Set the mesh component values
-	mesh->vert = vertex;
-	mesh->vert_count = vertex_count;
-	mesh->index = index;
-	mesh->index_count = index_count;
+	float *ptr_vertex;
+	size_t ptr_vertex_size;
+	DgBufferFromStream(vertex, (void *) &ptr_vertex, &ptr_vertex_size);
+	
+	uint32_t *ptr_index;
+	size_t    ptr_index_size;
+	DgBufferFromStream(index, (void *) &ptr_index, &ptr_index_size);
+	
+	mesh->vert = ptr_vertex;
+	mesh->vert_count = ptr_vertex_size / (sizeof(float) * 8);
+	mesh->index = ptr_index;
+	mesh->index_count = ptr_index_size / sizeof(uint32_t);
+	
+#if 0
+	DgLog(DG_LOG_VERBOSE, "Got %d verticies and %d indexes.", mesh->vert_count, mesh->index_count);
+	
+	if (!mesh->vert || !mesh->index) {
+		DgLog(DG_LOG_ERROR, "Index or vert ptr is null");
+	}
+	
+	for (int i = 0; i < mesh->vert_count; i++) {
+		DgLog(DG_LOG_VERBOSE, "V: pos = (%.3f, %.3f, %.3f)", mesh->vert[(i * 8) + 0], mesh->vert[(i * 8) + 1], mesh->vert[(i * 8) + 2]);
+	}
+	
+	for (int i = 0; i < mesh->index_count; i++) {
+		DgLog(DG_LOG_VERBOSE, "I: %d", mesh->index[i]);
+	}
+#endif
 	
 	mesh->updated = true;
 	

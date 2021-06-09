@@ -97,7 +97,13 @@ void DgBufferFromStream(DgStream *stream, void **pointer, size_t *size) {
 	/**
 	 * Degrade the stream to a pointer to memory and size. This will free the
 	 * memory allocated for the management of the stream.
+	 * 
+	 * This will also resize the memory block to the requested size. Should this
+	 * fail, 'pointer' is set the fail result of DgRealloc, which is usually
+	 * NULL.
 	 */
+	
+	stream->data = DgRealloc(stream->data, stream->size);
 	
 	*pointer = (void *) stream->data;
 	*size = stream->size;
