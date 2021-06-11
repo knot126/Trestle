@@ -43,7 +43,7 @@ char *DgStrcadf(char *src1, const char * const src2) {
 	return string;
 }
 
-char *DgStrdup(char *source) {
+char *DgStrdup(const char * const source) {
 	/*
 	 * Duplicate a string
 	 */

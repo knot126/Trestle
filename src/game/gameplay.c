@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 
-#include <GLFW/glfw3.h>
+#include "graphics/gl_incl.h"
 
 #include "../input/input.h"
 #include "../util/maths.h"

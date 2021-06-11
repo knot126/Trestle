@@ -105,7 +105,6 @@ set(MELON_FILES
 set(EXEC_FILES 
 	${LUA_FILES}
 	${MELON_FILES}
-	#lib/glew/glew.c
 	src/world/compo.c
 	src/world/world.c
 	src/world/scripting.c
@@ -113,6 +112,7 @@ set(EXEC_FILES
 	src/graphics/glad.c
 	src/graphics/graphics.c
 	src/graphics/opengl.c
+	src/graphics/texture.c
 	src/graphics/image.c
 	src/game/gameplay.c
 	src/game/phys.c

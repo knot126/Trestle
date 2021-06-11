@@ -74,8 +74,6 @@ GLuint gl_load_shader(char* filename, GLenum type) {
 		return 0;
 	}
 	
-	//printf("Loaded shader from '%s'.\n", filename);
-	
 	return shader;
 }
 
@@ -181,6 +179,7 @@ uint32_t graphicsLoadShader(DgOpenGLContext *gl, char* source_path) {
 	return 0;
 }
 
+/*
 static void graphicsLoadTextureFromFile(DgOpenGLContext *gl, char *path, GLenum active_texture) {
 	(gl->textures_count)++;
 	gl->textures = (GLuint *) DgRealloc(gl->textures, sizeof(GLuint) * gl->textures_count);
@@ -211,7 +210,9 @@ static void graphicsLoadTextureFromFile(DgOpenGLContext *gl, char *path, GLenum 
 	
 	DgFreeImage(&image);
 }
+*/
 
+/*
 static void graphicsLoadTextureFromBuffer(DgOpenGLContext *gl, DgBitmap *bitmap, GLenum active_texture) {
 	(gl->textures_count)++;
 	gl->textures = (GLuint *) DgRealloc(gl->textures, sizeof(GLuint) * gl->textures_count);
@@ -233,14 +234,16 @@ static void graphicsLoadTextureFromBuffer(DgOpenGLContext *gl, DgBitmap *bitmap,
 	
 	GLenum mode;
 	
-	if (bitmap->chan == 1) mode = GL_RED;
-	if (bitmap->chan == 2) mode = GL_RG;
-	if (bitmap->chan == 3) mode = GL_RGB;
-	if (bitmap->chan == 4) mode = GL_RGBA;
+	if (bitmap->chan == 1) { mode = GL_RED; }
+	else if (bitmap->chan == 2) { mode = GL_RG; }
+	else if (bitmap->chan == 3) { mode = GL_RGB; }
+	else if (bitmap->chan == 4) { mode = GL_RGBA; }
+	else { DgLog(DG_LOG_ERROR, "Could not determine feilds in bitmap!!"); }
 	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bitmap->width, bitmap->height, 0, GL_RGB, GL_UNSIGNED_BYTE, bitmap->src);
+	glTexImage2D(GL_TEXTURE_2D, 0, mode, bitmap->width, bitmap->height, 0, mode, GL_UNSIGNED_BYTE, bitmap->src);
 	glGenerateMipmap(GL_TEXTURE_2D);
 }
+*/
 
 static void gl_set_format(DgOpenGLContext *gl) {
 	// Tell OpenGL about this vertex data

@@ -4,23 +4,25 @@
  * 
  * OpenGL-related graphics stuff
  */
+
 #pragma once
 
 #include <stdbool.h>
-#include <GLFW/glfw3.h>
 
 #include "../world/world.h"
+#include "texture.h"
+#include "gl_incl.h"
 
 typedef unsigned int GLuint;
 
 typedef struct DgOpenGLContext {
 	GLFWwindow* window;
+	OpenGLTextureManager texture;
+	
 	GLuint* programs;
 	size_t programs_count;
 	GLuint* shaders;
 	size_t shader_count;
-	GLuint* textures;
-	size_t textures_count;
 } DgOpenGLContext;
 
 DgOpenGLContext* gl_graphics_init(void);

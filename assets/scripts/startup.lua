@@ -7,10 +7,7 @@
 
 cam = mgCamera()
 frame = 0
-ent = 0
 lives = {}
-lives.count = 5
-lives.updated = true
 ui = {}
 next_pos = 100.0
 
@@ -21,10 +18,10 @@ function init()
 	
 	buildWallsAndFloor(5.0, 8.0, 100.0)
 	
-	ent = mgUIElement(QR_ELEMUI_TEXT)
-	mgUIText(ent, "[text about in-game statistics will appear here shortly...]")
-	mgUITextPos(ent, -1.0, -0.9)
-	mgUITextSize(ent, 0.1)
+	ui.stats = mgUIElement(QR_ELEMUI_TEXT)
+	mgUIText(ui.stats, "[text about in-game statistics will appear here shortly...]")
+	mgUITextPos(ui.stats, -1.0, -0.9)
+	mgUITextSize(ui.stats, 0.1)
 	
 	ui.LivesCountText = mgUIElement(QR_ELEMUI_TEXT)
 	mgUIText(ui.LivesCountText, "Lives")
@@ -45,12 +42,15 @@ function init()
 	mgUIText(ui.Distance, "quickrun")
 	mgUITextPos(ui.Distance, -0.75, 0.88)
 	mgUITextSize(ui.Distance, 0.09)
+	
+	lives.count = 5
+	lives.updated = true
 end
 
 function tick()
 	frame = frame + 1
 	local x, y, z = mgPlayerPos()
-	mgUIText(ent, "Frame " .. tostring(frame) .. ", " .. tostring(mgEntCount()) .. " Entities, Position: " .. "(" .. x .. ", " .. y .. ", " .. z .. ")")
+	mgUIText(ui.stats, "Frame " .. tostring(frame) .. ", " .. tostring(mgEntCount()) .. " Entities, Position: " .. "(" .. x .. ", " .. y .. ", " .. z .. ")")
 	mgUIText(ui.Distance, tostring(math.floor(-z)))
 	
 	-- build more walls as the player moves forward

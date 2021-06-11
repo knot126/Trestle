@@ -25,7 +25,7 @@
 #include "../types.h" // For g_deltaTime
 
 #include "image.h"
-//#include "mgmt_texture.c"
+#include "texture.h"
 
 #include "opengl.h"
 
@@ -195,15 +195,27 @@ DgOpenGLContext* gl_graphics_init(void) {
 	// Check for errors
 	gl_error_check(__FILE__, __LINE__);
 	
+	// Create texture manager
+	gltexture_init(&gl->texture);
+	
 	// Making textures
 	DgBitmap *bmp = DgBitmapGenTiles(256, 256, 64);
 	if (bmp) {
-		graphicsLoadTextureFromBuffer(gl, bmp, GL_TEXTURE0);
+		gltexture_load_buffer(&gl->texture, "placeholder", bmp);
+		gltexture_set_unit(&gl->texture, "placeholder", GL_TEXTURE0);
 		DgBitmapFree(bmp);
 	}
+	else {
+		DgLog(DG_LOG_ERROR, "Failed to generate placeholder texture.");
+	}
 	
-	graphicsLoadTextureFromFile(gl, "assets://gfx/font.png", GL_TEXTURE1);
+	gltexture_load_file(&gl->texture, "font", "assets://gfx/inconsolata.png");
+	gltexture_set_unit(&gl->texture, "font", GL_TEXTURE1);
 	
+	gltexture_load_file(&gl->texture, "font2", "assets://gfx/font.png");
+	gltexture_set_unit(&gl->texture, "font2", GL_TEXTURE2);
+	
+	// Setting texture uniforms in shaders
 	gl_error_check(__FILE__, __LINE__);
 	
 	glUseProgram(gl->programs[0]);
@@ -212,7 +224,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	gl_error_check(__FILE__, __LINE__);
 	
 	glUseProgram(gl->programs[1]);
-	glUniform1i(glGetUniformLocation(gl->programs[1], "font"), 1);
+	glUniform1i(glGetUniformLocation(gl->programs[1], "font"), 0);
 	
 	gl_error_check(__FILE__, __LINE__);
 	
@@ -268,8 +280,8 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "camera"), 1, GL_TRUE, &camera.ax);
 	
 	// Bind the currently active textures for this shader
-// 	glActiveTexture(GL_TEXTURE0);
-// 	glBindTexture(GL_TEXTURE_2D, gl->textures[0]);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, gltexture_get_name(&gl->texture, "placeholder"));
 	
 	for (size_t i = 0; i < world->mesh_count; i++) {
 		uint32_t id = world->mesh[i].base.id;
@@ -360,7 +372,15 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glUseProgram(0);
 	
+	// -------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
+	
 	glUseProgram(gl->programs[1]);
+	
+	// Bind the currently active textures for this shader
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, gltexture_get_name(&gl->texture, "font"));
 	
 	float screen_ratio = (float) h / (float) w;
 	
@@ -555,7 +575,8 @@ void gl_graphics_free(DgOpenGLContext* gl) {
 		glDeleteProgram(gl->programs[i]);
 	}
 	
-	DgFree(gl->textures);
+	gltexture_free(&gl->texture);
+	
 	DgFree(gl->shaders);
 	DgFree(gl);
 }
