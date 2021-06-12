@@ -47,7 +47,13 @@ char *DgStrdup(const char * const source) {
 	/*
 	 * Duplicate a string
 	 */
+	
 	char *dest = DgAlloc(strlen(source) + 1);
+	
+	if (!dest) {
+		return NULL;
+	}
+	
 	return strcpy(dest, source);
 }
 

@@ -212,8 +212,14 @@ DgOpenGLContext* gl_graphics_init(void) {
 	gltexture_load_file(&gl->texture, "font", "assets://gfx/inconsolata.png");
 	gltexture_set_unit(&gl->texture, "font", GL_TEXTURE1);
 	
-	gltexture_load_file(&gl->texture, "font2", "assets://gfx/font.png");
+	gltexture_load_file(&gl->texture, "font2", "assets://gfx/notomono.png");
 	gltexture_set_unit(&gl->texture, "font2", GL_TEXTURE2);
+	
+	gltexture_load_file(&gl->texture, "font3", "assets://gfx/dosis.png");
+	gltexture_set_unit(&gl->texture, "font3", GL_TEXTURE2);
+	
+	gltexture_load_file(&gl->texture, "decentix", "assets://gfx/splash.png");
+	gltexture_set_unit(&gl->texture, "decentix", GL_TEXTURE3);
 	
 	// Setting texture uniforms in shaders
 	gl_error_check(__FILE__, __LINE__);
@@ -378,10 +384,6 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	
 	glUseProgram(gl->programs[1]);
 	
-	// Bind the currently active textures for this shader
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, gltexture_get_name(&gl->texture, "font"));
-	
 	float screen_ratio = (float) h / (float) w;
 	
 	// Make sure the UI world exsists and that there is at least more than one box
@@ -519,6 +521,14 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 				
 				element->updated = false;
 			}
+			
+			// Bind the currently active textures for this shader
+			char *font_name = "font";
+			if (element->font) {
+				font_name = element->font;
+			}
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, gltexture_get_name(&gl->texture, font_name));
 			
 			// And of course draw at the end...
 			

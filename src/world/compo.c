@@ -31,4 +31,8 @@ void world_ui_free_text(C_UIText * const restrict text) {
 	if (text->index) {
 		DgFree(text->index);
 	}
+	
+	if (text->font) {
+		DgFree(text->font);
+	}
 }

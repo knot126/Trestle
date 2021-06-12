@@ -564,6 +564,38 @@ bool ui_element_set_text_size(World * const restrict world, const uint32_t id, c
 	return true;
 }
 
+bool ui_element_set_text_font(World * const restrict world, const uint32_t id, const char * const restrict font) {
+	C_UIText *element = NULL;
+	
+	if (!world->ui) {
+		return false;
+	}
+	
+	for (uint32_t i = 0; i < world->ui->text_count; i++) {
+		if (world->ui->text[i].base.id == id) {
+			element = &world->ui->text[i];
+			break;
+		}
+	}
+	
+	if (!element) {
+		DgLog(DG_LOG_ERROR, "Failed to find text for UI element: %d", id);
+		return false;
+	}
+	
+	if (element->font) {
+		DgFree(element->font);
+	}
+	
+	element->font = DgStrdup(font);
+	
+	// NOTE:
+	// We don't need to set the updated feild for fonts, since that can be applied
+	// without changing vertex data...
+	
+	return true;
+}
+
 DgVec3 world_get_player_position(World * const restrict world) {
 	DgVec3 pos = DgVec3New(0.0f, 0.0f, 0.0f);
 	C_Transform *trans;

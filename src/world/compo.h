@@ -83,12 +83,15 @@ typedef struct C_UIText {
 	ComponentBase_t base;
 	// ================== //
 	const char *text;
+	
 	DgVec2 pos;
 	float size;
 	// ================== //
 	float *vertex;
-	uint32_t vertex_count;
 	uint32_t *index;
+	char *font;
+	
+	uint32_t vertex_count;
 	uint32_t index_count;
 	uint32_t vbo, ebo, vao;
 	bool updated;

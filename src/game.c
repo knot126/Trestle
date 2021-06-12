@@ -30,6 +30,7 @@
 #include "util/str.h"
 #include "util/log.h"
 #include "util/stream.h"
+#include "util/args.h"
 #include "graphics/graphics.h"
 #include "game/gameplay.h"
 #include "game/phys.h"
@@ -190,6 +191,10 @@ int game_main(int argc, char* argv[]) {
 	 */
 	print_info();
 	
+	// Parse command line arguments
+	DgLog(DG_LOG_INFO, "Parsing command line arguments...");
+	DgArgParse(argc, argv);
+	
 	// Initialise the clock
 	DgInitTime();
 	
@@ -197,11 +202,22 @@ int game_main(int argc, char* argv[]) {
 	DgLog(DG_LOG_INFO, "Initialising file system paths...");
 	DgInitPaths();
 	
+	// Print help
+	if (DgArgGetFlag("help")) {
+		DgLog(DG_LOG_INFO, "Quick Run (run as %s)", argv[0]);
+		DgLog(DG_LOG_INFO, "");
+		DgLog(DG_LOG_INFO, "\t--config [path]         Specify a custom engine config file to load.");
+		DgLog(DG_LOG_INFO, "\t--assets [path1;path2]  Specify a custom assets ZIP filesystem.");
+		DgLog(DG_LOG_INFO, "\t--help                  Print this help message.");
+		DgLog(DG_LOG_INFO, "");
+		return 0;
+	}
+	
 	// Load config
 	DgLog(DG_LOG_INFO, "Loading engine configuration file...");
 	
 	DgINIDocument initconf;
-	uint32_t initconf_status = DgINILoad(&initconf, "assets://config.ini");
+	uint32_t initconf_status = DgINILoad(&initconf, (char *) DgArgGetValue2("config", "assets://config.ini"));
 	
 	if (initconf_status) {
 		DgFail("Error: Failed to load configuration file.\n", 200);

@@ -80,6 +80,7 @@ set(LUA_INCLUDE_FILES
 # Melon Source files
 set(MELON_FILES
 	src/util/alloc.c
+	src/util/args.c
 	src/util/bag.c
 	src/util/bitmap.c
 	src/util/fail.c

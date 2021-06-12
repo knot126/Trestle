@@ -18,30 +18,34 @@ function init()
 	
 	buildWallsAndFloor(5.0, 8.0, 100.0)
 	
-	ui.stats = mgUIElement(QR_ELEMUI_TEXT)
-	mgUIText(ui.stats, "[text about in-game statistics will appear here shortly...]")
-	mgUITextPos(ui.stats, -1.0, -0.9)
-	mgUITextSize(ui.stats, 0.1)
+	ui.Statistics = mgUIElement(QR_ELEMUI_TEXT)
+	mgUIText(ui.Statistics, "[text about in-game statistics will appear here shortly...]")
+	mgUITextPos(ui.Statistics, -1.0, -0.9)
+	mgUITextSize(ui.Statistics, 0.1)
 	
 	ui.LivesCountText = mgUIElement(QR_ELEMUI_TEXT)
 	mgUIText(ui.LivesCountText, "Lives")
 	mgUITextPos(ui.LivesCountText, -0.95, 0.95)
 	mgUITextSize(ui.LivesCountText, 0.06)
+	mgUITextFont(ui.LivesCountText, "font3")
 	
 	ui.LivesCount = mgUIElement(QR_ELEMUI_TEXT)
 	mgUIText(ui.LivesCount, "quickrun")
 	mgUITextPos(ui.LivesCount, -0.95, 0.88)
 	mgUITextSize(ui.LivesCount, 0.09)
+	mgUITextFont(ui.LivesCount, "font3")
 	
 	ui.DistanceText = mgUIElement(QR_ELEMUI_TEXT)
 	mgUIText(ui.DistanceText, "Distance")
 	mgUITextPos(ui.DistanceText, -0.75, 0.95)
 	mgUITextSize(ui.DistanceText, 0.06)
+	mgUITextFont(ui.DistanceText, "font3")
 	
 	ui.Distance = mgUIElement(QR_ELEMUI_TEXT)
 	mgUIText(ui.Distance, "quickrun")
 	mgUITextPos(ui.Distance, -0.75, 0.88)
 	mgUITextSize(ui.Distance, 0.09)
+	mgUITextFont(ui.Distance, "font3")
 	
 	lives.count = 5
 	lives.updated = true
@@ -50,7 +54,7 @@ end
 function tick()
 	frame = frame + 1
 	local x, y, z = mgPlayerPos()
-	mgUIText(ui.stats, "Frame " .. tostring(frame) .. ", " .. tostring(mgEntCount()) .. " Entities, Position: " .. "(" .. x .. ", " .. y .. ", " .. z .. ")")
+	mgUIText(ui.Statistics, "Frame " .. tostring(frame) .. ", " .. tostring(mgEntCount()) .. " Entities, Position: " .. "(" .. x .. ", " .. y .. ", " .. z .. ")")
 	mgUIText(ui.Distance, tostring(math.floor(-z)))
 	
 	-- build more walls as the player moves forward
