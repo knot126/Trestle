@@ -1,7 +1,8 @@
 <!-- XML listing of all the textures in the game and their names.
      These will be loaded on the initial game loading. -->
 <textures>
-	<texture path="assets://gfx/inconsolata.png" name="font" />
-	<texture path="assets://gfx/font.png" name="font2" />
 	<texture path="assets://gfx/splash.png" name="decentix" />
+	<texture path="assets://gfx/inconsolata.png" name="font" />
+	<texture path="assets://gfx/notomono.png" name="font2" />
+	<texture path="assets://gfx/dosis.png" name="font3" />
 </textures>

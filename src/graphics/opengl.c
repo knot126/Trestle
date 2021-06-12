@@ -86,7 +86,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glViewport(0, 0, w_width, w_height);
 	
 	// set window icon
-	DgImageInfo icon = DgLoadImage("assets://icon.png");
+	DgImageInfo icon = DgLoadImage(DgINIGet(g_quickRunConfig, "Window", "window_icon", "assets://icon.png"));
 	if (icon.data) {
 		GLFWimage icons[1];
 		icons[0].pixels = (unsigned char *) icon.data;
@@ -209,17 +209,18 @@ DgOpenGLContext* gl_graphics_init(void) {
 		DgLog(DG_LOG_ERROR, "Failed to generate placeholder texture.");
 	}
 	
-	gltexture_load_file(&gl->texture, "font", "assets://gfx/inconsolata.png");
-	gltexture_set_unit(&gl->texture, "font", GL_TEXTURE1);
-	
-	gltexture_load_file(&gl->texture, "font2", "assets://gfx/notomono.png");
-	gltexture_set_unit(&gl->texture, "font2", GL_TEXTURE2);
-	
-	gltexture_load_file(&gl->texture, "font3", "assets://gfx/dosis.png");
-	gltexture_set_unit(&gl->texture, "font3", GL_TEXTURE2);
-	
-	gltexture_load_file(&gl->texture, "decentix", "assets://gfx/splash.png");
-	gltexture_set_unit(&gl->texture, "decentix", GL_TEXTURE3);
+// 	gltexture_load_file(&gl->texture, "font", "assets://gfx/inconsolata.png");
+// 	gltexture_set_unit(&gl->texture, "font", GL_TEXTURE0);
+// 	
+// 	gltexture_load_file(&gl->texture, "font2", "assets://gfx/notomono.png");
+// 	gltexture_set_unit(&gl->texture, "font2", GL_TEXTURE0);
+// 	
+// 	gltexture_load_file(&gl->texture, "font3", "assets://gfx/dosis.png");
+// 	gltexture_set_unit(&gl->texture, "font3", GL_TEXTURE0);
+// 	
+// 	gltexture_load_file(&gl->texture, "decentix", "assets://gfx/splash.png");
+// 	gltexture_set_unit(&gl->texture, "decentix", GL_TEXTURE0);
+	gltexture_load_list(&gl->texture, "assets://gfx/textures.xml");
 	
 	// Setting texture uniforms in shaders
 	gl_error_check(__FILE__, __LINE__);
@@ -288,6 +289,7 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	// Bind the currently active textures for this shader
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gltexture_get_name(&gl->texture, "placeholder"));
+// 	gltexture_set_unit(&gl->texture, "placeholder", GL_TEXTURE0);
 	
 	for (size_t i = 0; i < world->mesh_count; i++) {
 		uint32_t id = world->mesh[i].base.id;
@@ -529,6 +531,7 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 			}
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, gltexture_get_name(&gl->texture, font_name));
+// 			gltexture_set_unit(&gl->texture, font_name, GL_TEXTURE0);
 			
 			// And of course draw at the end...
 			

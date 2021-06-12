@@ -14,6 +14,7 @@
 #include "util/alloc.h"
 #include "util/types.h"
 #include "util/bitmap.h"
+#include "util/xml.h"
 
 #include "gl_incl.h"
 #include "image.h"
@@ -185,4 +186,51 @@ uint32_t gltexture_get_name(OpenGLTextureManager *resman, const char * const nam
 	DgLog(DG_LOG_ERROR, "Could not find texture by name: '%s'.", name);
 	
 	return 0;
+}
+
+void gltexture_load_list(OpenGLTextureManager *resman, const char * const path) {
+	/**
+	 * Load a list of textures from an XML document containing a list of all the
+	 * textures in the game that need to be loaded.
+	 */
+	
+	DgXMLNode root;
+	if (DgXMLLoad(&root, "assets://gfx/textures.xml")) {
+		DgXMLNodeFree(&root);
+		DgLog(DG_LOG_ERROR, "Failed parsing textures XML document.");
+		return;
+	}
+	
+	if (!!strcmp(root.name, "textures")) {
+		DgXMLNodeFree(&root);
+		DgLog(DG_LOG_ERROR, "Did not load textures from list: not a textures file.");
+		return;
+	}
+	
+	for (size_t i = 0; i < root.sub_count; i++) {
+		if (!strcmp(root.sub[i].name, "texture")) {
+			const     char *name = DgXMLGetAttrib(&root.sub[i], "name", NULL);
+			/*const*/ char *path = DgXMLGetAttrib(&root.sub[i], "path", NULL);
+			
+			if (!path) {
+				DgLog(DG_LOG_WARNING, "Texture node does not have path, skipping...");
+			}
+			
+			if (!name) {
+				DgLog(DG_LOG_WARNING, "Texture node does not have name, skipping...");
+			}
+			
+			if (!name || !path) {
+				continue;
+			}
+			
+			gltexture_load_file(resman, name, path);
+			gltexture_set_unit(resman, name, GL_TEXTURE0);
+		}
+		else {
+			DgLog(DG_LOG_WARNING, "Skipping element in texture file not named texture.");
+		}
+	}
+	
+	DgXMLNodeFree(&root);
 }

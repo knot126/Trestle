@@ -30,3 +30,4 @@ uint32_t gltexture_load_file(OpenGLTextureManager *resman, const char * const na
 uint32_t gltexture_load_buffer(OpenGLTextureManager *resman, const char * const name, DgBitmap *buffer);
 void gltexture_set_unit(OpenGLTextureManager *resman, const char * const name, GLenum unit);
 uint32_t gltexture_get_name(OpenGLTextureManager *resman, const char * const name);
+void gltexture_load_list(OpenGLTextureManager *resman, const char * const path);
