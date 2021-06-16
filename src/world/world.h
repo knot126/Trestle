@@ -94,7 +94,10 @@ bool entity_load_mesh(World * const restrict world, uint32_t id, char * const re
 bool entity_load_xml_mesh(World * const restrict world, uint32_t id, const char * const restrict path);
 void world_set_camera(World * const restrict world, const uint32_t id);
 
+bool entity_generate_box(World * const restrict world, const DgVec3 pos, const DgVec3 size, const DgVec3 colour);
+
 bool entity_set_transform(World * const restrict world, const uint32_t id, const DgVec3 pos, const DgVec3 rot, const DgVec3 scale);
+
 bool entity_phys_set_flags(World * const restrict world, const uint32_t id, const int flags);
 bool entity_phys_set_mass(World * const restrict world, const uint32_t id, const float mass);
 bool entity_phys_add_force(World * const restrict world, const uint32_t id, const DgVec3 pos, const DgVec3 rot);

@@ -48,6 +48,8 @@ function init()
 	mgUITextSize(ui.Distance, 0.09)
 	mgUITextFont(ui.Distance, "font3")
 	
+	mgBox(0.0, 0.0, -10.5, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0)
+	
 	lives.count = 5
 	lives.updated = true
 end

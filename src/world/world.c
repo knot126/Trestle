@@ -76,6 +76,12 @@ void world_destroy(World * const restrict world) {
 	}
 }
 
+/**
+ * -----------------------------------------------------------------------------
+ * Entity creation and destruction
+ * -----------------------------------------------------------------------------
+ */
+
 // TODO: Replace this with a code geneartion script at some point
 #define QR_WORLD_ADDCOMPONENT(MASK, TYPE, LIST, LISTCOUNT) \
 	if ((mask & MASK) == MASK) { \
@@ -179,9 +185,40 @@ uint32_t world_create_ui_element(World * const restrict world, mask_t mask) {
 	return world->ui->mask_count;
 }
 
+/**
+ * -----------------------------------------------------------------------------
+ * Helper functions
+ * -----------------------------------------------------------------------------
+ */
+
+C_Mesh *entity_find_mesh(const World * const restrict world, uint32_t id) {
+	C_Mesh *mesh = NULL;
+	
+	for (int i = 0; i < world->mesh_count; i++) {
+		if (world->mesh[i].base.id == id) {
+			mesh = &world->mesh[i];
+			break;
+		}
+	}
+	
+	return mesh;
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * Active world setters and getters
+ * -----------------------------------------------------------------------------
+ */
+
 void SetActiveWorld(World *world) {
 	QuickRunActiveWorld = world;
 }
+
+/**
+ * -----------------------------------------------------------------------------
+ * Mesh utilities
+ * -----------------------------------------------------------------------------
+ */
 
 bool entity_load_mesh(World * const restrict world, uint32_t id, char * const restrict path) {
 	/*
@@ -374,6 +411,123 @@ bool entity_load_xml_mesh(World * const restrict world, uint32_t id, const char 
 	
 	// Free XML document
 	DgXMLNodeFree(&doc);
+	
+	return true;
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * Higher level entity generation
+ * -----------------------------------------------------------------------------
+ */
+
+bool entity_generate_box(World * const restrict world, const DgVec3 pos, const DgVec3 size, const DgVec3 colour) {
+	uint32_t ent = world_create_entity(world, QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH);
+	
+	if (ent == 0) {
+		DgLog(DG_LOG_ERROR, "Failed to find mesh for entity %d.", ent);
+		return false;
+	}
+	
+	// Find the mesh component
+	C_Mesh *mesh = entity_find_mesh(world, ent);
+	
+	if (!mesh) {
+		DgLog(DG_LOG_ERROR, "Failed to find mesh for entity %d.", ent);
+		return false;
+	}
+	
+	// Set the transform
+	if (!entity_set_transform(world, ent, pos, DgVec3New(0.0f, 0.0f, 0.0f), size)) {
+		DgLog(DG_LOG_ERROR, "Failed to find mesh for entity %d.", ent);
+		return false;
+	}
+	
+	// Generate box mesh
+	const float s_BoxData[] = {
+		// X      Y      Z     U     V     R     G     B
+		-1.0f,  1.0f,  1.0f, 1.0f, 0.0f, 0.85f, 0.85f, 0.85f,
+		-1.0f, -1.0f,  1.0f, 1.0f, 1.0f, 0.85f, 0.85f, 0.85f,
+		 1.0f, -1.0f,  1.0f, 0.0f, 1.0f, 0.85f, 0.85f, 0.85f,
+		 1.0f,  1.0f,  1.0f, 0.0f, 0.0f, 0.85f, 0.85f, 0.85f,
+		 
+		-1.0f,  1.0f, -1.0f, 1.0f, 0.0f, 0.85f, 0.85f, 0.85f,
+		-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 0.85f, 0.85f, 0.85f,
+		 1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.85f, 0.85f, 0.85f,
+		 1.0f,  1.0f, -1.0f, 0.0f, 0.0f, 0.85f, 0.85f, 0.85f,
+		
+		-1.0f,  1.0f,  1.0f, 1.0f, 0.0f, 0.95f, 0.95f, 0.95f,
+		-1.0f,  1.0f, -1.0f, 1.0f, 1.0f, 0.95f, 0.95f, 0.95f,
+		 1.0f,  1.0f, -1.0f, 0.0f, 1.0f, 0.95f, 0.95f, 0.95f,
+		 1.0f,  1.0f,  1.0f, 0.0f, 0.0f, 0.95f, 0.95f, 0.95f,
+		 
+		-1.0f, -1.0f,  1.0f, 1.0f, 0.0f, 0.95f, 0.95f, 0.95f,
+		-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 0.95f, 0.95f, 0.95f,
+		 1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.95f, 0.95f, 0.95f,
+		 1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 0.95f, 0.95f, 0.95f,
+		 
+		 1.0f, -1.0f,  1.0f, 1.0f, 0.0f, 0.75f, 0.75f, 0.75f,
+		 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 0.75f, 0.75f, 0.75f,
+		 1.0f,  1.0f, -1.0f, 0.0f, 1.0f, 0.75f, 0.75f, 0.75f,
+		 1.0f,  1.0f,  1.0f, 0.0f, 0.0f, 0.75f, 0.75f, 0.75f,
+		
+		-1.0f, -1.0f,  1.0f, 1.0f, 0.0f, 0.75f, 0.75f, 0.75f,
+		-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 0.75f, 0.75f, 0.75f,
+		-1.0f,  1.0f, -1.0f, 0.0f, 1.0f, 0.75f, 0.75f, 0.75f,
+		-1.0f,  1.0f,  1.0f, 0.0f, 0.0f, 0.75f, 0.75f, 0.75f,
+	};
+	
+	const uint32_t s_IndexData[] = {
+		0, 1, 2,
+		0, 2, 3,
+		4, 5, 6,
+		4, 6, 7,
+		8, 9, 10,
+		8, 10, 11,
+		12, 13, 14,
+		12, 14, 15,
+		16, 17, 18,
+		16, 18, 19,
+		20, 21, 22,
+		20, 22, 23,
+	};
+	
+	float *vertex = (float *) DgAlloc(sizeof(s_BoxData));
+	
+	if (!vertex) {
+		DgLog(DG_LOG_ERROR, "Failed to find mesh for entity %d.", ent);
+		return false;
+	}
+	
+	memcpy(vertex, s_BoxData, sizeof(s_BoxData));
+	
+	uint32_t *index = (uint32_t *) DgAlloc(sizeof(s_IndexData));
+	
+	if (!index) {
+		DgLog(DG_LOG_ERROR, "Failed to find mesh for entity %d.", ent);
+		DgFree(vertex);
+		return false;
+	}
+	
+	memcpy(index, s_IndexData, sizeof(s_IndexData));
+	
+	// Set mesh data in mesh component
+	mesh->vert = vertex;
+	mesh->vert_count = 24;
+	
+	mesh->index = index;
+	mesh->index_count = sizeof(s_IndexData) / sizeof(float);
+	
+	mesh->updated = true;
+	
+	// Update vertex data
+	for (uint32_t i = 0; i < 24; i++) {
+		vertex[(i * 8) + 5] = colour.x;
+		vertex[(i * 8) + 6] = colour.y;
+		vertex[(i * 8) + 7] = colour.z;
+	}
+	
+	return true;
 }
 
 void world_set_camera(World * const restrict world, const uint32_t id) {
@@ -400,6 +554,11 @@ void world_set_camera(World * const restrict world, const uint32_t id) {
 	world->cam_active[2] = id;
 }
 
+/**
+ * -----------------------------------------------------------------------------
+ * Transform related functions
+ * -----------------------------------------------------------------------------
+ */
 
 bool entity_set_transform(World * const restrict world, const uint32_t id, const DgVec3 pos, const DgVec3 rot, const DgVec3 scale) {
 	C_Transform *trans = NULL;
@@ -422,6 +581,12 @@ bool entity_set_transform(World * const restrict world, const uint32_t id, const
 	
 	return true;
 }
+
+/**
+ * -----------------------------------------------------------------------------
+ * Physics component related functions
+ * -----------------------------------------------------------------------------
+ */
 
 bool entity_phys_set_flags(World * const restrict world, const uint32_t id, const int flags) {
 	C_Physics *phys = NULL;
@@ -483,6 +648,12 @@ bool entity_phys_add_force(World * const restrict world, const uint32_t id, cons
 	
 	return true;
 }
+
+/**
+ * -----------------------------------------------------------------------------
+ * UI Text
+ * -----------------------------------------------------------------------------
+ */
 
 bool ui_element_set_text(World * const restrict world, const uint32_t id, const char * const restrict text) {
 	C_UIText *element = NULL;
@@ -600,6 +771,12 @@ bool ui_element_set_text_font(World * const restrict world, const uint32_t id, c
 	
 	return true;
 }
+
+/**
+ * -----------------------------------------------------------------------------
+ * Player and game management
+ * -----------------------------------------------------------------------------
+ */
 
 DgVec3 world_get_player_position(World * const restrict world) {
 	DgVec3 pos = DgVec3New(0.0f, 0.0f, 0.0f);

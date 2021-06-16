@@ -168,7 +168,10 @@ static int scripted_CreateCamera(lua_State *script) {
 static int scripted_AddBox(lua_State *script) {
 	int top = lua_gettop(script);
 	
-	float px = 0.0f, py = 0.0f, pz = 0.0f, sx = 1.0f, sy = 1.0f, sz = 1.0f;
+	float 
+		px = 0.0f, py = 0.0f, pz = 0.0f, 
+		sx = 1.0f, sy = 1.0f, sz = 1.0f,
+		cr = 1.0f, cg = 1.0f, cb = 1.0f;
 	
 	if (top >= 3) {
 		px = (float) lua_tonumber(script, 1);
@@ -182,11 +185,15 @@ static int scripted_AddBox(lua_State *script) {
 		sz = (float) lua_tonumber(script, 6);
 	}
 	
-	uint32_t ent = world_create_entity(QuickRunActiveWorld, QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH);
-	entity_load_mesh(QuickRunActiveWorld, ent, "assets://mesh/cube2.bin");
-	entity_set_transform(QuickRunActiveWorld, ent, DgVec3New(px, py, pz), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(sx, sy, sz));
+	if (top >= 9) {
+		cr = (float) lua_tonumber(script, 7);
+		cg = (float) lua_tonumber(script, 8);
+		cb = (float) lua_tonumber(script, 9);
+	}
 	
-	lua_pushinteger(script, ent);
+	bool status = entity_generate_box(QuickRunActiveWorld, DgVec3New(px, py, pz), DgVec3New(sx, sy, sz), DgVec3New(cr, cg, cb));
+	
+	lua_pushboolean(script, status);
 	
 	return 1;
 }
