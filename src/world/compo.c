@@ -17,6 +17,10 @@ void world_free_mesh_component(C_Mesh * const restrict mesh) {
 	if (mesh->index) {
 		DgFree(mesh->index);
 	}
+	
+	if (mesh->texture) {
+		DgFree((void *) mesh->texture);
+	}
 }
 
 void world_ui_free_text(C_UIText * const restrict text) {

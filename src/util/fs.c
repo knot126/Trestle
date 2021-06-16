@@ -18,6 +18,7 @@
 
 #include "alloc.h"
 #include "types.h"
+#include "log.h"
 
 #include "fs.h"
 
@@ -109,7 +110,7 @@ DgFileStream* DgFileStreamOpen(char* path, char* permissions) {
 	FILE *f;
 	f = fopen(path, permissions);
 	if (!f) {
-		printf("Failed to open file stream at %s.\n", path);
+		DgLog(DG_LOG_ERROR, "Failed to open file stream at %s.", path);
 		return 0;
 	}
 	DgFileStream *s = (DgFileStream *) DgAlloc(sizeof(DgFileStream));
@@ -165,7 +166,7 @@ void DgMkdir(char* path) {
 #if defined(__linux__)
 	mkdir(path, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 #else
-	printf("Warning: Function DgMkdir() is not implemented for this platform.\n");
+	DgLog(DG_LOG_WARNING, "Function DgMkdir() is not implemented for this platform.\n");
 #endif
 }
 
@@ -175,6 +176,8 @@ bool DgIsDir(const char* dir) {
 	if (d) {
 		return true;
 	}
+#else
+	DgLog(DG_LOG_WARNING, "Function DgIsDir is not implemented for this platform.\n");
 #endif
 	return false;
 }
@@ -184,25 +187,29 @@ char *DgGetUserDir() {
 }
 
 void DgDeleteFile(char* path) {
-	/* Delete a file */
+	/** 
+	 * Delete a file 
+	 */
 	int status = remove(path);
 	
 	if (status) {
-		printf("Failed to remove file %s.", path);
+		DgLog(DG_LOG_ERROR, "Failed to remove file %s.", path);
 	}
 }
 
 void DgMoveFile(char* src, char* dest) {
-	/* Move a file */
+	/** 
+	 * Move a file 
+	 */
 	int status = rename(src, dest);
 	
 	if (status) {
-		printf("Failed to rename file %s.", src);
+		DgLog(DG_LOG_ERROR, "Failed to rename file %s.", src);
 	}
 }
 
 void DgCopyFile(char* src, char* dest) {
-	
+	DgLog(DG_LOG_WARNING, "Function DgCopyFile() is not implemented.");
 }
 
 /* =============================================================================

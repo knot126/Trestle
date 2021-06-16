@@ -349,6 +349,11 @@ bool entity_load_xml_mesh(World * const restrict world, uint32_t id, const char 
 	mesh->index = ptr_index;
 	mesh->index_count = ptr_index_size / sizeof(uint32_t);
 	
+	const char *tn = DgXMLGetAttrib(&doc, "texture", NULL);
+	if (tn) {
+		mesh->texture = DgStrdup(tn);
+	}
+	
 #if 0
 	DgLog(DG_LOG_VERBOSE, "Got %d verticies and %d indexes.", mesh->vert_count, mesh->index_count);
 	
@@ -615,10 +620,14 @@ bool world_reset_player(World * const restrict world) {
 	
 	for (uint32_t i = 0; i < world->trans_count; i++) {
 		if (world->trans[i].base.id == world->player_info.id) {
-			world->trans[i].pos = DgVec3New(0.0f, 2.0f, world->trans[i].pos.z - 10.0f);
+			world->trans[i].pos = DgVec3New(0.0f, 2.0f, world->trans[i].pos.z + 10.0f);
 			return true;
 		}
 	}
 	
 	return false;
+}
+
+void world_set_pause(World * const restrict world, bool paused) {
+	world->paused = paused;
 }

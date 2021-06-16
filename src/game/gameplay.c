@@ -29,6 +29,10 @@ void gameplay_update(World *world) {
 	 * Gameplay/game specific realted updates
 	 */
 	
+	if (world->paused) {
+		return;
+	}
+	
 	// PLAYER
 	
 	C_Transform *transf = NULL;

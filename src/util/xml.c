@@ -12,6 +12,7 @@
 #include "alloc.h"
 #include "str.h"
 #include "fs.h"
+#include "log.h"
 
 #include "xml.h"
 
@@ -232,7 +233,7 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 				current->sub = DgRealloc(current->sub, current->sub_count * sizeof(DgXMLNode));
 				
 				if (!current->sub) {
-					printf("\033[1;33mWarning:\033[0m XML Parser Error: Failed to allocate memory for subnodes.\n");
+					DgLog(DG_LOG_ERROR, "[XML Parser] Failed to allocate memory for subnodes.\n");
 					return 3;
 				}
 				
@@ -265,7 +266,7 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 						current->attrib = DgRealloc(current->attrib, current->attrib_count * sizeof(DgXMLPair));
 						
 						if (!current->attrib) {
-							printf("\033[1;33mWarning:\033[0m XML Parser Error: Failed to allocate memory for attributes.\n");
+							DgLog(DG_LOG_ERROR, "[XML Parser] Failed to allocate memory for attributes.\n");
 							return 5;
 						}
 						
@@ -273,12 +274,12 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 						current->attrib[current->attrib_count - 1].value = value;
 					}
 					else {
-						printf("\033[1;33mWarning:\033[0m XML Parser Error: Expected string, got other type or end of document.\n");
+						DgLog(DG_LOG_ERROR, "[XML Parser] Expected string, got other type or end of document.\n");
 						return 4;
 					}
 				}
 				else {
-					printf("\033[1;33mWarning:\033[0m XML Parser Error: Expected assocatior, got other type or end of document.\n");
+					DgLog(DG_LOG_ERROR, "[XML Parser] Expected assocatior, got other type or end of document.\n");
 					return 2;
 				}
 			}
@@ -294,7 +295,7 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 	DgFree(tokens);
 	
 	if (depth != 0) {
-		printf("\033[1;33mWarning:\033[0m XML Parser Error: The depth after loading the doucment is not zero; could the document not have its tags closed properly?\n");
+		DgLog(DG_LOG_ERROR, "[XML Parser] The depth after loading the doucment is not zero; could the document not have its tags closed properly?\n");
 		return 1;
 	}
 	
@@ -312,14 +313,14 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char * const path) {
 	char *real_path = (char *) DgEvalPath((char *) path);
 	
 	if (!real_path) {
-		printf("Warning: XML Parser Error: Could not load file at %s.\n", real_path);
+		DgLog(DG_LOG_ERROR, "[XML Parser] Could not load file at %s.\n", real_path);
 		return 1;
 	}
 	
 	DgFileStream *stream = DgFileStreamOpen(real_path, "rb");
 	
 	if (!stream) {
-		printf("Warning: XML Parser Error: Could not load file at %s.\n", real_path);
+		DgLog(DG_LOG_ERROR, "[XML Parser] Could not load file at %s.\n", real_path);
 		return 1;
 	}
 	
@@ -329,7 +330,7 @@ uint32_t DgXMLLoad(DgXMLNode *doc, const char * const path) {
 	tmp_content = DgAlloc(doc_size);
 	
 	if (!tmp_content) {
-		printf("Warning: XML Parser Error: Could not allocate memory to load file.\n");
+		DgLog(DG_LOG_ERROR, "[XML Parser] Could not allocate memory to load file.\n");
 		return 1;
 	}
 	

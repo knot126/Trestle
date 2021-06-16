@@ -31,6 +31,8 @@ typedef struct {
 	// ================== //
 	float * vert;
 	uint32_t * index;
+	const char * texture;
+	
 	uint32_t vert_count;
 	uint32_t index_count;
 	uint32_t vbo, ebo, vao;

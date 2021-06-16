@@ -14,7 +14,7 @@
 
 #include "phys.h"
 
-const float GRAVITY_FORCE = -9.81f;
+const float GRAVITY_FORCE = -9.81f * 1.1f;
 
 void phys_update(World *world, float delta) {
 	/**
@@ -24,6 +24,10 @@ void phys_update(World *world, float delta) {
 	 * This function will update game physics for a given world on all entities
 	 * that have physics.
 	 */
+	
+	if (world->paused) {
+		return;
+	}
 	
 	for (uint32_t i = 0; i < world->phys_count; i++) {
 		uint32_t id = world->phys[i].base.id;

@@ -286,10 +286,6 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	// Push our matris to the GPU
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "camera"), 1, GL_TRUE, &camera.ax);
 	
-	// Bind the currently active textures for this shader
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, gltexture_get_name(&gl->texture, "placeholder"));
-// 	gltexture_set_unit(&gl->texture, "placeholder", GL_TEXTURE0);
 	
 	for (size_t i = 0; i < world->mesh_count; i++) {
 		uint32_t id = world->mesh[i].base.id;
@@ -332,6 +328,14 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 			
 			gl_error_check(__FILE__, __LINE__);
 		}
+		
+		// Bind the currently active textures for this shader
+		const char * texture_name = mesh->texture;
+		if (!texture_name) {
+			texture_name = "placeholder";
+		}
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, gltexture_get_name(&gl->texture, texture_name));
 		
 		glBindVertexArray(world->mesh[i].vao);
 		glBindBuffer(GL_ARRAY_BUFFER, world->mesh[i].vbo);

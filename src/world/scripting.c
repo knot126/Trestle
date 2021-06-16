@@ -276,6 +276,12 @@ static int scripted_ClearWorld(lua_State *script) {
 	return 0;
 }
 
+static int scripted_SetPaused(lua_State *script) {
+	world_set_pause(QuickRunActiveWorld, lua_toboolean(script, 1));
+	
+	return 0;
+}
+
 void registerWorldScriptFunctions(DgScript *script) {
 	/*  Low-Level Entities  */
 	lua_register(script->state, "mgEntity", &scripted_CreateEntity);
@@ -287,6 +293,7 @@ void registerWorldScriptFunctions(DgScript *script) {
 	lua_register(script->state, "mgPhysFlags", &scripted_SetPhysicsFlags);
 	lua_register(script->state, "mgEntCount", &scripted_GetEntCount);
 	lua_register(script->state, "mgClearWorld", &scripted_ClearWorld);
+	lua_register(script->state, "mgPaused", &scripted_SetPaused);
 	
 	/* UI based entites */
 	lua_register(script->state, "mgUIElement", &scripted_CreateUIElement);

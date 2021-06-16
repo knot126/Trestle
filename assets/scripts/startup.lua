@@ -5,7 +5,7 @@
 -- Game Startup Script
 -- 
 
-cam = mgCamera()
+cam = mgCamera(0.0, 0.0, 0.0, 0.0875, 0.0, 0.0)
 frame = 0
 lives = {}
 ui = {}
@@ -13,10 +13,11 @@ next_pos = 100.0
 
 function init()
 	-- player init
-	local player = new_cube(0.0, 1.5, 0.0, 1.0, 1.0, 1.0, true, QR_PHYS_ENABLE_RESPONSE)
+	local player = new_cube(0.0, 1.5, 0.0, 0.9, 0.9, 0.9, true, QR_PHYS_ENABLE_RESPONSE, "assets://mesh/player.xml")
 	mgActivePlayer(player)
 	
-	buildWallsAndFloor(5.0, 8.0, 100.0)
+	--buildWallsAndFloor(5.0, 8.0, 100.0)
+	buildFloorTest(5.0, 12.0, 100.0)
 	
 	ui.Statistics = mgUIElement(QR_ELEMUI_TEXT)
 	mgUIText(ui.Statistics, "[text about in-game statistics will appear here shortly...]")
@@ -60,7 +61,8 @@ function tick()
 	-- build more walls as the player moves forward
 	if z < -next_pos then 
 -- 		mgClearWorld()
-		buildWallsAndFloor(5.0, mgRandFloat() * 4.0 + 4.0, 100.0, next_pos)
+		--buildWallsAndFloor(5.0, mgRandFloat() * 4.0 + 4.0, 100.0, next_pos)
+		buildFloorTest(5.0, 12.0, 100.0, next_pos)
 		next_pos = next_pos + 100.0
 	end
 	
@@ -73,5 +75,15 @@ function tick()
 		mgResetPlayer()
 		lives.updated = true
 		lives.count = lives.count - 1
+	end
+	
+	if lives.count < 0 and not lives.hasBeenDead then
+		lives.hasBeenDead = true
+		ui.Dead = mgUIElement(QR_ELEMUI_TEXT)
+		mgUIText(ui.Dead, "Player dead !")
+		mgUITextPos(ui.Dead, -0.95, 0.25)
+		mgUITextSize(ui.Dead, 0.5)
+		mgUITextFont(ui.Dead, "font3")
+		mgPaused(true)
 	end
 end

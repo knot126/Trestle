@@ -1,7 +1,8 @@
-<mesh>
-	<face indexOffsets="0 1 2" name="test">
-		<vertex pos="-1.0 -1.0 1.0" texturepos="0.0 0.0" colour="1.0 1.0 1.0" />
-		<vertex pos="-1.0 1.0 -1.0" texturepos="1.0 0.0" colour="1.0 1.0 1.0" />
-		<vertex pos="1.0 1.0 -1.0" texturepos="1.0 1.0" colour="1.0 1.0 1.0" />
+<mesh texture="decentix">
+	<face indexOffsets="0 1 2 0 2 3" name="test">
+		<vertex pos="-1.0 1.0 0.0" texturepos="0.0 1.0" colour="1.0 1.0 1.0" />
+		<vertex pos="-1.0 -1.0 0.0" texturepos="0.0 0.0" colour="1.0 1.0 1.0" />
+		<vertex pos="1.0 -1.0 0.0" texturepos="1.0 0.0" colour="1.0 1.0 1.0" />
+		<vertex pos="1.0 1.0 0.0" texturepos="1.0 1.0" colour="1.0 1.0 1.0" />
 	</face>
 </mesh>

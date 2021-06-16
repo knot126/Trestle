@@ -5,4 +5,5 @@
 	<texture path="assets://gfx/inconsolata.png" name="font" />
 	<texture path="assets://gfx/notomono.png" name="font2" />
 	<texture path="assets://gfx/dosis.png" name="font3" />
+	<texture path="assets://gfx/0.jpg" name="player_temp" />
 </textures>
