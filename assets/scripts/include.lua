@@ -45,16 +45,16 @@ function buildWallsAndFloor(w, h, l, offset)
 	
 	-- walls and floor
 	-- new_cube(0.0, -0.75, -l / 2.0 - offset, w, 0.5, l, false, nil, "assets://mesh/cube4.xml")
-	new_cube(-w, (h / 2.0) - 0.75, -l / 2.0 - offset, 0.5, h, l, false, nil, "assets://mesh/cube4.xml")
-	new_cube(w, (h / 2.0) - 0.75, -l / 2.0 - offset, 0.5, h, l, false, nil, "assets://mesh/cube4.xml")
+	mgBox(-w, (h / 2.0) - 0.75, -l / 2.0 - offset, 0.5, h, l)
+	mgBox(w, (h / 2.0) - 0.75, -l / 2.0 - offset, 0.5, h, l)
 	
 	-- decor
 	for z = 1.0, tonumber(l), 2.0 do
-		new_cube(-w + 0.5, (h / 2.0) - 0.75, -z - offset, 0.5, h, 0.5, false, nil, "assets://mesh/cube4.xml")
-		new_cube(-w + 1.0, 0.25, -z - offset, 0.5, 0.5, 0.5, false, nil, "assets://mesh/cube4.xml")
+		mgBox(-w + 0.5, (h / 2.0) - 0.75, -z - offset, 0.5, h, 0.5)
+		mgBox(-w + 1.0, 0.25, -z - offset, 0.5, 0.5, 0.5)
 		
-		new_cube(w - 0.5, (h / 2.0) - 0.75, -z - offset, 0.5, h, 0.5, false, nil, "assets://mesh/cube4.xml")
-		new_cube(w - 1.0, 0.25, -z - offset, 0.5, 0.5, 0.5, false, nil, "assets://mesh/cube4.xml")
+		mgBox(w - 0.5, (h / 2.0) - 0.75, -z - offset, 0.5, h, 0.5)
+		mgBox(w - 1.0, 0.25, -z - offset, 0.5, 0.5, 0.5)
 	end
 end
 
@@ -65,8 +65,17 @@ function buildFloorTest(w, h, l, offset)
 	
 	while last <= l + offset do
 		local length = (mgRandFloat() - 0.5) * w + w
-		--new_cube(mgRandFloat() * w, -0.75, -last - length / 2.0, length, 0.5, length, false, nil, "assets://mesh/cube4.xml")
-		new_cube(((mgRandFloat() * w) - (w / 2.0)) * 2.0, mgRandFloat() - 0.5, -last - length / 2.0, 1.5, 0.5, 1.5, false, nil, "assets://mesh/cube4.xml")
+		mgBox(
+			((mgRandFloat() * w) - (w / 2.0)) * 2.0, 
+			mgRandFloat() - 0.5, 
+			-last - length / 2.0, 
+			mgRandFloat() + 1.5, 
+			mgRandFloat() + 0.5, 
+			mgRandFloat() + 1.5, 
+			mgRandFloat(), 
+			mgRandFloat(), 
+			mgRandFloat(),
+			"tile0")
 		last = last + length
 	end
 end

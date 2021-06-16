@@ -173,6 +173,8 @@ static int scripted_AddBox(lua_State *script) {
 		sx = 1.0f, sy = 1.0f, sz = 1.0f,
 		cr = 1.0f, cg = 1.0f, cb = 1.0f;
 	
+	const char *texture = NULL;
+	
 	if (top >= 3) {
 		px = (float) lua_tonumber(script, 1);
 		py = (float) lua_tonumber(script, 2);
@@ -191,7 +193,11 @@ static int scripted_AddBox(lua_State *script) {
 		cb = (float) lua_tonumber(script, 9);
 	}
 	
-	bool status = entity_generate_box(QuickRunActiveWorld, DgVec3New(px, py, pz), DgVec3New(sx, sy, sz), DgVec3New(cr, cg, cb));
+	if (top >= 10) {
+		texture = lua_tostring(script, 10);
+	}
+	
+	bool status = entity_generate_box(QuickRunActiveWorld, DgVec3New(px, py, pz), DgVec3New(sx, sy, sz), DgVec3New(cr, cg, cb), texture);
 	
 	lua_pushboolean(script, status);
 	

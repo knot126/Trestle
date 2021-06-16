@@ -421,7 +421,7 @@ bool entity_load_xml_mesh(World * const restrict world, uint32_t id, const char 
  * -----------------------------------------------------------------------------
  */
 
-bool entity_generate_box(World * const restrict world, const DgVec3 pos, const DgVec3 size, const DgVec3 colour) {
+bool entity_generate_box(World * const restrict world, const DgVec3 pos, const DgVec3 size, const DgVec3 colour, const char * const texture) {
 	uint32_t ent = world_create_entity(world, QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH);
 	
 	if (ent == 0) {
@@ -446,6 +446,7 @@ bool entity_generate_box(World * const restrict world, const DgVec3 pos, const D
 	// Generate box mesh
 	const float s_BoxData[] = {
 		// X      Y      Z     U     V     R     G     B
+		// Front and Back
 		-1.0f,  1.0f,  1.0f, 1.0f, 0.0f, 0.85f, 0.85f, 0.85f,
 		-1.0f, -1.0f,  1.0f, 1.0f, 1.0f, 0.85f, 0.85f, 0.85f,
 		 1.0f, -1.0f,  1.0f, 0.0f, 1.0f, 0.85f, 0.85f, 0.85f,
@@ -456,6 +457,7 @@ bool entity_generate_box(World * const restrict world, const DgVec3 pos, const D
 		 1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.85f, 0.85f, 0.85f,
 		 1.0f,  1.0f, -1.0f, 0.0f, 0.0f, 0.85f, 0.85f, 0.85f,
 		
+		// Top and bottom
 		-1.0f,  1.0f,  1.0f, 1.0f, 0.0f, 0.95f, 0.95f, 0.95f,
 		-1.0f,  1.0f, -1.0f, 1.0f, 1.0f, 0.95f, 0.95f, 0.95f,
 		 1.0f,  1.0f, -1.0f, 0.0f, 1.0f, 0.95f, 0.95f, 0.95f,
@@ -466,6 +468,7 @@ bool entity_generate_box(World * const restrict world, const DgVec3 pos, const D
 		 1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.95f, 0.95f, 0.95f,
 		 1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 0.95f, 0.95f, 0.95f,
 		 
+		// Left and right
 		 1.0f, -1.0f,  1.0f, 1.0f, 0.0f, 0.75f, 0.75f, 0.75f,
 		 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 0.75f, 0.75f, 0.75f,
 		 1.0f,  1.0f, -1.0f, 0.0f, 1.0f, 0.75f, 0.75f, 0.75f,
@@ -525,6 +528,68 @@ bool entity_generate_box(World * const restrict world, const DgVec3 pos, const D
 		vertex[(i * 8) + 5] = colour.x;
 		vertex[(i * 8) + 6] = colour.y;
 		vertex[(i * 8) + 7] = colour.z;
+	}
+	
+	// Front and back
+	vertex[(0 * 8) + 3] *= size.x;
+	vertex[(0 * 8) + 4] *= size.y;
+	vertex[(1 * 8) + 3] *= size.x;
+	vertex[(1 * 8) + 4] *= size.y;
+	vertex[(2 * 8) + 3] *= size.x;
+	vertex[(2 * 8) + 4] *= size.y;
+	vertex[(3 * 8) + 3] *= size.x;
+	vertex[(3 * 8) + 4] *= size.y;
+	
+	vertex[(4 * 8) + 3] *= size.x;
+	vertex[(4 * 8) + 4] *= size.y;
+	vertex[(5 * 8) + 3] *= size.x;
+	vertex[(5 * 8) + 4] *= size.y;
+	vertex[(6 * 8) + 3] *= size.x;
+	vertex[(6 * 8) + 4] *= size.y;
+	vertex[(7 * 8) + 3] *= size.x;
+	vertex[(7 * 8) + 4] *= size.y;
+	
+	// Top and bottom
+	vertex[(8 * 8) + 3] *= size.x;
+	vertex[(8 * 8) + 4] *= size.z;
+	vertex[(9 * 8) + 3] *= size.x;
+	vertex[(9 * 8) + 4] *= size.z;
+	vertex[(10 * 8) + 3] *= size.x;
+	vertex[(10 * 8) + 4] *= size.z;
+	vertex[(11 * 8) + 3] *= size.x;
+	vertex[(11 * 8) + 4] *= size.z;
+	
+	vertex[(12 * 8) + 3] *= size.x;
+	vertex[(12 * 8) + 4] *= size.z;
+	vertex[(13 * 8) + 3] *= size.x;
+	vertex[(13 * 8) + 4] *= size.z;
+	vertex[(14 * 8) + 3] *= size.x;
+	vertex[(14 * 8) + 4] *= size.z;
+	vertex[(15 * 8) + 3] *= size.x;
+	vertex[(15 * 8) + 4] *= size.z;
+	
+	// Sides
+	vertex[(16 * 8) + 3] *= size.y;
+	vertex[(16 * 8) + 4] *= size.z;
+	vertex[(17 * 8) + 3] *= size.y;
+	vertex[(17 * 8) + 4] *= size.z;
+	vertex[(18 * 8) + 3] *= size.y;
+	vertex[(18 * 8) + 4] *= size.z;
+	vertex[(19 * 8) + 3] *= size.y;
+	vertex[(19 * 8) + 4] *= size.z;
+	
+	vertex[(20 * 8) + 3] *= size.y;
+	vertex[(20 * 8) + 4] *= size.z;
+	vertex[(21 * 8) + 3] *= size.y;
+	vertex[(21 * 8) + 4] *= size.z;
+	vertex[(22 * 8) + 3] *= size.y;
+	vertex[(22 * 8) + 4] *= size.z;
+	vertex[(23 * 8) + 3] *= size.y;
+	vertex[(23 * 8) + 4] *= size.z;
+	
+	// Texture
+	if (texture) {
+		mesh->texture = DgStrdup(texture);
 	}
 	
 	return true;

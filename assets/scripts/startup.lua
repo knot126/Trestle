@@ -48,7 +48,7 @@ function init()
 	mgUITextSize(ui.Distance, 0.09)
 	mgUITextFont(ui.Distance, "font3")
 	
-	mgBox(0.0, 0.0, -10.5, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0)
+	-- mgBox(0.0, 0.0, -10.5, 1.0, 1.0, 1.0, mgRandFloat(), mgRandFloat(), mgRandFloat())
 	
 	lives.count = 5
 	lives.updated = true
@@ -61,7 +61,7 @@ function tick()
 	mgUIText(ui.Distance, tostring(math.floor(-z)))
 	
 	-- build more walls as the player moves forward
-	if z < -next_pos then 
+	if z < -(next_pos - 20.0) then 
 -- 		mgClearWorld()
 		--buildWallsAndFloor(5.0, mgRandFloat() * 4.0 + 4.0, 100.0, next_pos)
 		buildFloorTest(5.0, 12.0, 100.0, next_pos)
