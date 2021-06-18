@@ -58,6 +58,28 @@ function buildWallsAndFloor(w, h, l, offset)
 	end
 end
 
+function buildFloorTest2(w, h, l, offset)
+	if offset == nil then offset = 0.0 end
+	
+	local last = offset
+	
+	while last <= l + offset do
+		local length = (mgRandFloat() - 0.5) * w + w
+		mgBox(
+			math.floor(((mgRandFloat() * w) - (w / 2.0)) * 2.0), 
+			math.floor(mgRandFloat() - 0.5), 
+			math.floor(-last - length / 2.0), 
+			math.floor(mgRandFloat() + 1.5), 
+			math.floor(mgRandFloat() + 1.5) * 0.2, 
+			math.floor(mgRandFloat() + 1.5), 
+			mgRandFloat(), 
+			mgRandFloat(), 
+			mgRandFloat(),
+			"tile1")
+		last = last + length
+	end
+end
+
 function buildFloorTest(w, h, l, offset)
 	if offset == nil then offset = 0.0 end
 	
@@ -66,19 +88,19 @@ function buildFloorTest(w, h, l, offset)
 	while last <= l + offset do
 		local length = (mgRandFloat() - 0.5) * w + w
 		mgBox(
-			((mgRandFloat() * w) - (w / 2.0)) * 2.0, 
-			mgRandFloat() - 0.5, 
-			-last - length / 2.0, 
-			mgRandFloat() + 1.5, 
-			mgRandFloat() + 0.5, 
-			mgRandFloat() + 1.5, 
+			math.floor(((mgRandFloat() * w) - (w / 2.0)) * 2.0), 
+			math.floor(mgRandFloat() - 0.5), 
+			math.floor(-last - length / 2.0), 
+			math.floor(mgRandFloat() + 1.5), 
+			math.floor(mgRandFloat() + 1.5) * 0.2, 
+			math.floor(mgRandFloat() + 1.5), 
 			mgRandFloat(), 
 			mgRandFloat(), 
 			mgRandFloat(),
-			"tile0")
-		last = last + length
+			"tile1")
+		last = last + length + 2.0
 	end
-end
+end 
 
 function createUIText(text, x, y, size)
 	local e = mgUIElement(QR_ELEMUI_TEXT)
