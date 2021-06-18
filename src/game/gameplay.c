@@ -112,5 +112,5 @@ void gameplay_update(World *world) {
 		return;
 	}
 	
-	cpos->pos = DgVec3New(transf->pos.x * 0.2f, transf->pos.y + 4.0f, transf->pos.z + 4.0f);
+	cpos->pos = DgVec3New(transf->pos.x * 0.2f, (transf->pos.y * 0.5f) + 4.0f, transf->pos.z + 4.0f);
 }
