@@ -340,7 +340,7 @@ bool entity_phys_add_force(World * const restrict world, const uint32_t id, cons
  * -----------------------------------------------------------------------------
  */
 
-DgVec3 world_get_player_position(World * const restrict world) {
+DgVec3 world_get_player_position(const World * const restrict world) {
 	DgVec3 pos = DgVec3New(0.0f, 0.0f, 0.0f);
 	C_Transform *trans;
 	
@@ -354,6 +354,10 @@ DgVec3 world_get_player_position(World * const restrict world) {
 	return pos;
 }
 
+float world_get_player_speed(const World * const restrict world) {
+	return world->player_info.speed;
+}
+
 bool world_reset_player(World * const restrict world) {
 	C_Transform *trans = entity_find_trans(world, world->player_info.id);
 	
@@ -365,6 +369,45 @@ bool world_reset_player(World * const restrict world) {
 	return false;
 }
 
+/**
+ * -----------------------------------------------------------------------------
+ * Pausing and game state
+ * -----------------------------------------------------------------------------
+ */
+
 void world_set_pause(World * const restrict world, bool paused) {
 	world->paused = paused;
+}
+
+bool world_get_pause(World * const restrict world) {
+	return world->paused;
+}
+
+void world_get_speed(const World * const restrict world, float * restrict min, float * restrict max) {
+	/**
+	 * Get the min and max speed.
+	 */
+	
+	*min = world->game.speed_min;
+	*max = world->game.speed_max;
+}
+
+void world_set_speed(World * const restrict world, const float min, const float max) {
+	/**
+	 * Set speed range and map it.
+	 */
+	
+	// Get the old speed
+	const float cmin = world->game.speed_min;
+	const float cmax = world->game.speed_max;
+	
+	// Set new speed
+	world->game.speed_min = min;
+	world->game.speed_max = max;
+	
+	// Compute player's new speed (scale it)
+	const float player_speed = world->player_info.speed;
+	const float n = (player_speed - cmin) * (1.0f / (cmax - cmin)); // now in rage [0.0, 1.0]
+	
+	world->player_info.speed = (n * (max - min)) + min; // make it up to speed again
 }

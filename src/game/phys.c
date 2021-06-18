@@ -25,7 +25,7 @@ void phys_update(World *world, float delta) {
 	 * that have physics.
 	 */
 	
-	if (world->paused) {
+	if (world_get_pause(world)) {
 		return;
 	}
 	

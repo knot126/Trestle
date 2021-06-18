@@ -28,16 +28,22 @@ typedef enum {
 	QR_ELEMUI_TEXT = (1 << 1),
 } UIElementMaskEnum;
 
-typedef struct {
-	uint32_t transform;
-	uint32_t mesh;
-	uint32_t camera;
-	uint32_t physics;
-} EntIndex;
+// typedef struct {
+// 	uint32_t transform;
+// 	uint32_t mesh;
+// 	uint32_t camera;
+// 	uint32_t physics;
+// } EntIndex;
 
 typedef struct {
 	uint32_t id;
+	float speed;
 } PlayerWorld;
+
+typedef struct {
+	float speed_min;
+	float speed_max;
+} GameState;
 
 typedef struct {
 	/**
@@ -76,7 +82,9 @@ typedef struct {
 	C_Physics *phys;
 	uint32_t  phys_count;
 	
+	// Other semiglobal state
 	PlayerWorld player_info;
+	GameState game;
 	UIWorld *ui;
 	bool paused;
 	
@@ -90,6 +98,12 @@ void world_init(World * const restrict world, size_t prealloc_count);
 void world_destroy(World * const restrict world);
 uint32_t world_create_entity(World * const restrict world, mask_t mask);
 uint32_t world_create_ui_element(World * const restrict world, mask_t mask);
+
+// Helper functions
+C_Transform *entity_find_trans(const World * const restrict world, const uint32_t id);
+C_Mesh *entity_find_mesh(const World * const restrict world, const uint32_t id);
+C_Camera *entity_find_cam(const World * const restrict world, const uint32_t id);
+C_Physics *entity_find_phys(const World * const restrict world, const uint32_t id);
 
 // Active world
 void SetActiveWorld(World *world);
@@ -117,11 +131,15 @@ bool ui_element_set_text_size(World * const restrict world, const uint32_t id, c
 bool ui_element_set_text_font(World * const restrict world, const uint32_t id, const char * const restrict font);
 
 // Player position
-DgVec3 world_get_player_position(World * const restrict world);
+DgVec3 world_get_player_position(const World * const restrict world);
+float world_get_player_speed(const World * const restrict world);
 bool world_reset_player(World * const restrict world);
 
-// Pausing
+// Pausing and game state
 void world_set_pause(World * const restrict world, bool paused);
+bool world_get_pause(World * const restrict world);
+void world_get_speed(const World * const restrict world, float * restrict min, float * restrict max);
+void world_set_speed(World * const restrict world, const float min, const float max);
 
 // Box generation
 bool entity_generate_box(World * const restrict world, const DgVec3 pos, const DgVec3 size, const DgVec3 colour, const char * const texture);

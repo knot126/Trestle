@@ -277,6 +277,21 @@ static int scripted_GetPlayerPos(lua_State *script) {
 	return 3;
 }
 
+static int scripted_GetPlayerSpeed(lua_State *script) {
+	lua_pushnumber(script, world_get_player_speed(QuickRunActiveWorld));
+	
+	return 1;
+}
+
+static int scripted_SetPlayerSpeed(lua_State *script) {
+	float min = lua_tonumber(script, 1);
+	float max = lua_tonumber(script, 2);
+	
+	world_set_speed(QuickRunActiveWorld, min, max);
+	
+	return 0;
+}
+
 static int scripted_ResetPlayer(lua_State *script) {
 	lua_pushboolean(script, world_reset_player(QuickRunActiveWorld));
 	
@@ -324,4 +339,7 @@ void registerWorldScriptFunctions(DgScript *script) {
 	lua_register(script->state, "mgActivePlayer", &scripted_SetPlayer);
 	lua_register(script->state, "mgPlayerPos", &scripted_GetPlayerPos);
 	lua_register(script->state, "mgResetPlayer", &scripted_ResetPlayer);
+	
+	lua_register(script->state, "mgGetSpeed", &scripted_GetPlayerSpeed);
+	lua_register(script->state, "mgSetSpeed", &scripted_SetPlayerSpeed);
 }

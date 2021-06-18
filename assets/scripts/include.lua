@@ -98,7 +98,7 @@ function buildFloorTest(w, h, l, offset)
 			mgRandFloat(), 
 			mgRandFloat(),
 			"tile1")
-		last = last + length + 2.0
+		last = last + length + 1.0
 	end
 end 
 

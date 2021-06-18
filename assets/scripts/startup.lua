@@ -16,6 +16,15 @@ function init()
 	local player = new_cube(0.0, 1.5, 0.0, 0.9, 0.9, 0.9, true, QR_PHYS_ENABLE_RESPONSE, "assets://mesh/player.xml")
 	mgActivePlayer(player)
 	
+	mgSetSpeed(1.0, 10.0)
+	
+	-- spawn
+	mgBox(
+		0.0, 0.0, -8.0,
+		6.0, 0.25, 8.0,
+		mgRandFloat(), mgRandFloat(), mgRandFloat(), "tile0"
+	)
+	
 	buildFloorTest(5.0, 12.0, 100.0)
 	
 	ui.Statistics = mgUIElement(QR_ELEMUI_TEXT)
@@ -47,8 +56,24 @@ function init()
 	mgUITextSize(ui.Distance, 0.09)
 	mgUITextFont(ui.Distance, "font3")
 	
+	ui.SpeedText = mgUIElement(QR_ELEMUI_TEXT)
+	mgUIText(ui.SpeedText, "Speed")
+	mgUITextPos(ui.SpeedText, -0.55, 0.95)
+	mgUITextSize(ui.SpeedText, 0.06)
+	mgUITextFont(ui.SpeedText, "font3")
+	
+	ui.Speed = mgUIElement(QR_ELEMUI_TEXT)
+	mgUIText(ui.Speed, "quickrun")
+	mgUITextPos(ui.Speed, -0.55, 0.88)
+	mgUITextSize(ui.Speed, 0.09)
+	mgUITextFont(ui.Speed, "font3")
+	
 	lives.count = 5
 	lives.updated = true
+end
+
+function room()
+	return next_pos / 100.0
 end
 
 function tick()
@@ -56,11 +81,13 @@ function tick()
 	local x, y, z = mgPlayerPos()
 	mgUIText(ui.Statistics, "Frame " .. tostring(frame) .. ", " .. tostring(mgEntCount()) .. " Entities, Position: " .. "(" .. x .. ", " .. y .. ", " .. z .. ")")
 	mgUIText(ui.Distance, tostring(math.floor(-z)))
+	mgUIText(ui.Speed, tostring(mgGetSpeed()))
 	
 	-- build more walls as the player moves forward
 	if z < -(next_pos - 20.0) then 
 		buildFloorTest(5.0, 12.0, 100.0, next_pos)
 		next_pos = next_pos + 100.0
+		mgSetSpeed((room() / 10.0) + 1.0, room() + 10.0)
 	end
 	
 	if lives.updated then
@@ -72,6 +99,9 @@ function tick()
 		mgResetPlayer()
 		lives.updated = true
 		lives.count = lives.count - 1
+		
+		-- respawn area
+		mgBox(0.0, 0.0, -8.0 + z + 10.0, 6.0, 0.25, 8.0, mgRandFloat(), mgRandFloat(), mgRandFloat(), "tile0")
 	end
 	
 	if lives.count < 0 and not lives.hasBeenDead then

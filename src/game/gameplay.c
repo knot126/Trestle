@@ -20,37 +20,29 @@
 
 #include "gameplay.h"
 
-float speed = 2.0f;
-float speed_max = 10.0f;
-float speed_min = 1.0f;
-
 void gameplay_update(World *world) {
 	/*
 	 * Gameplay/game specific realted updates
 	 */
 	
-	if (world->paused) {
+	static bool initial = true;
+	if (initial) {
+		world->player_info.speed = world->game.speed_min;
+		initial = false;
+	}
+	
+	float speed = world->player_info.speed;
+	float speed_min, speed_max;
+	
+	world_get_speed(world, &speed_min, &speed_max);
+	
+	if (world_get_pause(world)) {
 		return;
 	}
 	
 	// PLAYER
-	
-	C_Transform *transf = NULL;
-	C_Physics *phys = NULL;
-	
-	for (size_t i = 0; i < world->trans_count; i++) {
-		if (world->trans[i].base.id == world->player_info.id) {
-			transf = &world->trans[i];
-			break;
-		}
-	}
-	
-	for (size_t i = 0; i < world->phys_count; i++) {
-		if (world->phys[i].base.id == world->player_info.id) {
-			phys = &world->phys[i];
-			break;
-		}
-	}
+	C_Transform *transf = entity_find_trans(world, world->player_info.id);
+	C_Physics *phys = entity_find_phys(world, world->player_info.id);
 	
 	if (!transf || !phys) {
 		return;
@@ -67,12 +59,18 @@ void gameplay_update(World *world) {
 	
 	// Check speed range
 	if (speed < speed_min) {
+// 		printf("speed < speed_min\n");
 		speed = speed_min;
 	}
 	
 	if (speed > speed_max) {
+// 		printf("speed > speed_max\n");
 		speed = speed_max;
 	}
+	
+	// Set speed if changed
+	world->player_info.speed = speed;
+// 	printf("Speed: %f, %f\n", world->player_info.speed, speed);
 	
 	// Move player forward
 	transf->pos = DgVec3Add(transf->pos, DgVec3New(0.0f, 0.0f, -speed * g_deltaTime));
@@ -98,38 +96,21 @@ void gameplay_update(World *world) {
 		jump_control_frame--;
 	}
 	
-	// CAMERA
-	
-	C_Transform *ppos = NULL;
-	
-	for (size_t i = 0; i < world->trans_count; i++) {
-		if (world->trans[i].base.id == world->player_info.id) {
-			ppos = &world->trans[i];
-			break;
-		}
-	}
-	
-	if (ppos) {
+	// Print player position log every second
+	{
 		static float last;
 		last += g_deltaTime;
 		if (last > 1.0f) {
-			DgLog(DG_LOG_VERBOSE, "Player pos: (%.3f, %.3f, %.3f)", ppos->pos.x, ppos->pos.y, ppos->pos.z);
+			DgLog(DG_LOG_VERBOSE, "Player pos: (%.3f, %.3f, %.3f)", transf->pos.x, transf->pos.y, transf->pos.z);
 			last = 0.0f;
 		}
 	}
 	
-	C_Transform *cpos = NULL;
+	C_Transform *cpos = entity_find_trans(world, world->cam_active[2]);
 	
-	for (size_t i = 0; i < world->trans_count; i++) {
-		if (world->trans[i].base.id == world->cam_active[2]) {
-			cpos = &world->trans[i];
-			break;
-		}
-	}
-	
-	if (!ppos || !cpos) {
+	if (!cpos) {
 		return;
 	}
 	
-	cpos->pos = DgVec3New(ppos->pos.x * 0.2f, ppos->pos.y + 4.0f, ppos->pos.z + 4.0f);
+	cpos->pos = DgVec3New(transf->pos.x * 0.2f, transf->pos.y + 4.0f, transf->pos.z + 4.0f);
 }
