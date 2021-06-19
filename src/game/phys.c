@@ -71,18 +71,32 @@ void phys_update(World *world, float delta) {
 					continue;
 				}
 				
-				DgVec3 bHigh = DgVec3Add(world->trans[i].pos, world->trans[i].scale);
-				DgVec3 bLow = DgVec3Subtract(world->trans[i].pos, world->trans[i].scale);
+				C_Transform *ot = &world->trans[i];
 				
+				DgVec3 bHigh = DgVec3Add(ot->pos, ot->scale);
+				DgVec3 bLow = DgVec3Subtract(ot->pos, ot->scale);
+				
+				// Determine if they are colliding
 				bool res = (bHigh.x >= aLow.x) && (aHigh.x >= bLow.x)
 					&& (bHigh.y >= aLow.y) && (aHigh.y >= bLow.y)
 					&& (bHigh.z >= aLow.z) && (aHigh.z >= bLow.z);
 				
 				if (res) {
-					phys->flags = phys->flags | QR_PHYS_GROUNDED;
+					// Find out how much each penerates eachother
+					DgVec3 d = DgVec3Subtract(bHigh, aLow);
+					char smallest = 0;
 					
-					DgVec3 force_out = DgVec3Subtract(world->trans[i].pos, shape->pos);
-					trans->pos.y += bHigh.y - aLow.y;
+					// Determine which axe has the smallest penetration
+					if      (d.x < d.y && d.x < d.z) { smallest = 1; }
+					else if (d.y < d.x && d.y < d.z) { smallest = 2; }
+					else if (d.z < d.x && d.z < d.y) { smallest = 3; }
+					
+					// Do it.
+					switch (smallest) {
+						case 1: trans->pos.x += d.x; break;
+						case 2: trans->pos.y += d.y; phys->flags = phys->flags | QR_PHYS_GROUNDED; break;
+						case 3: trans->pos.z += d.z; break;
+					}
 					
 					if (!((phys->flags & QR_PHYS_DISABLE_GRAVITY) == QR_PHYS_DISABLE_GRAVITY)) {
 						phys->Fpos = DgVec3Add(phys->Fpos, DgVec3New(0.0f, -GRAVITY_FORCE * phys->mass, 0.0f));
