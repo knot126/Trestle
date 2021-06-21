@@ -129,6 +129,7 @@ bool ui_element_set_text(World * const restrict world, const uint32_t id, const 
 bool ui_element_set_text_pos(World * const restrict world, const uint32_t id, const DgVec2 pos);
 bool ui_element_set_text_size(World * const restrict world, const uint32_t id, const float size);
 bool ui_element_set_text_font(World * const restrict world, const uint32_t id, const char * const restrict font);
+bool ui_element_set_text_colour(World * const restrict world, const uint32_t id, const DgVec4 colour);
 
 // Player position
 DgVec3 world_get_player_position(const World * const restrict world);

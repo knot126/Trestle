@@ -87,6 +87,7 @@ typedef struct C_UIText {
 	const char *text;
 	
 	DgVec2 pos;
+	DgVec4 colour;
 	float size;
 	// ================== //
 	float *vertex;

@@ -127,3 +127,32 @@ bool ui_element_set_text_font(World * const restrict world, const uint32_t id, c
 	
 	return true;
 }
+
+bool ui_element_set_text_colour(World * const restrict world, const uint32_t id, const DgVec4 colour) {
+	C_UIText *element = NULL;
+	
+	if (!world->ui) {
+		return false;
+	}
+	
+	for (uint32_t i = 0; i < world->ui->text_count; i++) {
+		if (world->ui->text[i].base.id == id) {
+			element = &world->ui->text[i];
+			break;
+		}
+	}
+	
+	if (!element) {
+		DgLog(DG_LOG_ERROR, "Failed to find text for UI element: %d", id);
+		return false;
+	}
+	
+	element->colour = colour;
+	
+	// NOTE:
+	// We don't need to set the updated feild for fonts, since that can be applied
+	// without changing vertex data...
+	
+	return true;
+}
+

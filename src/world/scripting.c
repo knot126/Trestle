@@ -259,6 +259,20 @@ static int scripted_SetTextFont(lua_State *script) {
 	return 1;
 }
 
+static int scripted_SetTextColour(lua_State *script) {
+	uint32_t id = lua_tointeger(script, 1);
+	float r = (float) lua_tonumber(script, 2);
+	float g = (float) lua_tonumber(script, 3);
+	float b = (float) lua_tonumber(script, 4);
+	float a = (float) lua_tonumber(script, 5);
+	
+	bool success = ui_element_set_text_colour(QuickRunActiveWorld, id, DgVec4New(r, g, b, a));
+	
+	lua_pushboolean(script, success);
+	
+	return 1;
+}
+
 static int scripted_GetEntCount(lua_State *script) {
 	lua_pushinteger(script, QuickRunActiveWorld->mask_count);
 	
@@ -329,6 +343,7 @@ void registerWorldScriptFunctions(DgScript *script) {
 	lua_register(script->state, "mgUITextPos", &scripted_SetTextPos);
 	lua_register(script->state, "mgUITextSize", &scripted_SetTextSize);
 	lua_register(script->state, "mgUITextFont", &scripted_SetTextFont);
+	lua_register(script->state, "mgUITextColour", &scripted_SetTextColour);
 	
 	/*  Segment and Level Management  */
 	lua_register(script->state, "mgSegment", &scripted_LoadSegment);

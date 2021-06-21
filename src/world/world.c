@@ -180,6 +180,7 @@ uint32_t world_create_ui_element(World * const restrict world, mask_t mask) {
 		element->base.id = world->ui->mask_count;
 		element->size = 0.1f;
 		element->pos = DgVec2New(-1.0f, 1.0f);
+		element->colour = DgVec4New(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 	
 	return world->ui->mask_count;

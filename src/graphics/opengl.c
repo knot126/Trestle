@@ -232,6 +232,7 @@ DgOpenGLContext* gl_graphics_init(void) {
 	
 	glUseProgram(gl->programs[1]);
 	glUniform1i(glGetUniformLocation(gl->programs[1], "font"), 0);
+	glUniform4f(glGetUniformLocation(gl->programs[1], "colour"), 1.0, 1.0, 1.0, 1.0);
 	
 	gl_error_check(__FILE__, __LINE__);
 	
@@ -535,7 +536,9 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 			}
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, gltexture_get_name(&gl->texture, font_name));
-// 			gltexture_set_unit(&gl->texture, font_name, GL_TEXTURE0);
+			
+			// Set the text colour
+			glUniform4f(glGetUniformLocation(gl->programs[1], "colour"), element->colour.r, element->colour.g, element->colour.b, element->colour.a);
 			
 			// And of course draw at the end...
 			

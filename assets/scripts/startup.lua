@@ -31,6 +31,7 @@ function init()
 	mgUIText(ui.Statistics, "[text about in-game statistics will appear here shortly...]")
 	mgUITextPos(ui.Statistics, -1.0, -0.9)
 	mgUITextSize(ui.Statistics, 0.1)
+	mgUITextColour(ui.Statistics, 0.0, 1.0, 0.3, 1.0)
 	
 	ui.LivesCountText = mgUIElement(QR_ELEMUI_TEXT)
 	mgUIText(ui.LivesCountText, "Lives")
@@ -112,5 +113,9 @@ function tick()
 		mgUITextSize(ui.Dead, 0.5)
 		mgUITextFont(ui.Dead, "font3")
 		mgPaused(true)
+	end
+	
+	if lives.hasBeenDead then
+		mgUITextColour(ui.Dead, 1.0, 1.0 * math.sin(frame * 0.01), 1.0 * math.sin(frame * 0.01), 1.0)
 	end
 end
