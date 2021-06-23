@@ -292,40 +292,52 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 		uint32_t id = world->mesh[i].base.id;
 		C_Mesh *mesh = &world->mesh[i];
 		
-		if (!mesh->vert_count || !mesh->index_count || !mesh->vert || !mesh->index) {
+		// If there have been on vericies pushed to the GPU
+		if (!mesh->vert_count || !mesh->index_count) {
+			continue;
+		}
+		
+		// If the mesh is updated and the allocation of the mesh data failed
+		if ((!mesh->index || !mesh->vert) && mesh->updated) {
 			continue;
 		}
 		
 		// Push new verticies if needed
-		if (world->mesh[i].updated) {
-			if (!world->mesh[i].vbo) {
-				glGenBuffers(1, &world->mesh[i].vbo);
+		if (mesh->updated) {
+			if (!mesh->vbo) {
+				glGenBuffers(1, &mesh->vbo);
 			}
 			
-			if (!world->mesh[i].ebo) {
-				glGenBuffers(1, &world->mesh[i].ebo);
+			if (!mesh->ebo) {
+				glGenBuffers(1, &mesh->ebo);
 			}
 			
-			if (!world->mesh[i].vao) {
-				glGenVertexArrays(1, &world->mesh[i].vao);
+			if (!mesh->vao) {
+				glGenVertexArrays(1, &mesh->vao);
 			}
 			
 			gl_error_check(__FILE__, __LINE__);
 			
-			glBindVertexArray(world->mesh[i].vao);
-			glBindBuffer(GL_ARRAY_BUFFER, world->mesh[i].vbo);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world->mesh[i].ebo);
+			glBindVertexArray(mesh->vao);
+			glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ebo);
 			
 			gl_error_check(__FILE__, __LINE__);
 			
-			glBufferData(GL_ARRAY_BUFFER, world->mesh[i].vert_count * 32, world->mesh[i].vert, GL_STATIC_DRAW);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, world->mesh[i].index_count * sizeof(uint32_t), world->mesh[i].index, GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, mesh->vert_count * 32, mesh->vert, GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->index_count * sizeof(uint32_t), mesh->index, GL_STATIC_DRAW);
 			
 			gl_error_check(__FILE__, __LINE__);
 			
 			gl_set_format(gl);
 			
-			world->mesh[i].updated = false;
+			mesh->updated = false;
+			
+			DgFree(mesh->vert);
+			mesh->vert = NULL;
+			
+			DgFree(mesh->index);
+			mesh->index = NULL;
 			
 			gl_error_check(__FILE__, __LINE__);
 		}
@@ -338,9 +350,9 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, gltexture_get_name(&gl->texture, texture_name));
 		
-		glBindVertexArray(world->mesh[i].vao);
-		glBindBuffer(GL_ARRAY_BUFFER, world->mesh[i].vbo);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, world->mesh[i].ebo);
+		glBindVertexArray(mesh->vao);
+		glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ebo);
 		
 		gl_error_check(__FILE__, __LINE__);
 		
@@ -374,7 +386,7 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 		
 		gl_error_check(__FILE__, __LINE__);
 		
-		glDrawElements(GL_TRIANGLES, world->mesh[i].index_count, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, mesh->index_count, GL_UNSIGNED_INT, 0);
 		
 		gl_error_check(__FILE__, __LINE__);
 	}

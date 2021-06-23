@@ -116,6 +116,6 @@ function tick()
 	end
 	
 	if lives.hasBeenDead then
-		mgUITextColour(ui.Dead, 1.0, 1.0 * math.sin(frame * 0.01), 1.0 * math.sin(frame * 0.01), 1.0)
+		mgUITextColour(ui.Dead, 1.0, (math.sin(frame * 0.01) + 1.0) / 2.0, (math.sin(frame * 0.01) + 1.0) / 2.0, 1.0)
 	end
 end

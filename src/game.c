@@ -89,21 +89,34 @@ static void *physics_loop(void *args_) {
 	World *world = args->world;
 	SystemStates *systems = args->systems;
 	
-	float accumulate = 0.0f;
+	double accumulate = 0.0f;
+	double show_time = 0.0f;
 	
 	while (*args->keep_open) {
 		float frame_time = (float) DgTime();
 		
 		if (accumulate > g_physicsDelta) {
+			float time = DgTime();
+			
 			phys_update(world, g_physicsDelta);
 			accumulate = 0.0f;
+			
+			time = DgTime() - time;
+			
+			if (show_time > 1.0f) {
+				DgLog(DG_LOG_VERBOSE, "Physics frame time: %fms", time);
+				show_time = 0.0f;
+			}
 		}
+		
+		frame_time = DgTime() - frame_time;
+		
+		accumulate += frame_time;
+		show_time += frame_time;
 		
 #if defined(__GNUC__) && defined(__x86_64__)
 		__asm__ ( "pause;" );
 #endif
-		
-		accumulate += (DgTime() - frame_time);
 	}
 }
 #endif
@@ -114,7 +127,7 @@ static int game_loop(World *world, SystemStates *systems) {
 	 */
 	bool should_keep_open = true;
 	
-	float show_fps = 0.0;
+	float show_fps = 0.0f;
 	
 	// We will accumulate and update physics when time is right.
 #ifndef QR_EXPRIMENTAL_THREADING
