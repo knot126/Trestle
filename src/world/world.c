@@ -335,6 +335,8 @@ bool entity_phys_add_force(World * const restrict world, const uint32_t id, cons
 
 #include "world/uitext.h"
 
+#include "world/uibox.h"
+
 /**
  * -----------------------------------------------------------------------------
  * Player and game management

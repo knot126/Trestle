@@ -75,10 +75,16 @@ typedef struct {
 
 typedef struct C_UIBox {
 	ComponentBase_t base;
+	
 	// ================== //
 	DgVec2 pos;
 	DgVec2 size;
+	DgVec4 colour;
 	uint32_t flags;
+	
+	// ================== //
+	uint32_t vbo, ebo, vao;
+	bool updated;
 } C_UIBox;
 
 typedef struct C_UIText {

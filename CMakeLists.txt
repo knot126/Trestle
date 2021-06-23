@@ -81,6 +81,7 @@ set(LUA_INCLUDE_FILES
 set(MELON_FILES
 	src/util/alloc.c
 	src/util/args.c
+	src/util/audio.c
 	src/util/bag.c
 	src/util/bitmap.c
 	src/util/fail.c
@@ -149,3 +150,5 @@ target_link_libraries(${EXEC_NAME} GL)
 target_link_libraries(${EXEC_NAME} dl)
 target_link_libraries(${EXEC_NAME} glfw)
 target_link_libraries(${EXEC_NAME} pthread)
+target_link_libraries(${EXEC_NAME} pulse)
+target_link_libraries(${EXEC_NAME} pulse-simple)

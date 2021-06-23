@@ -69,6 +69,10 @@ function init()
 	mgUITextSize(ui.Speed, 0.09)
 	mgUITextFont(ui.Speed, "font3")
 	
+	ui.TestBox = mgUIElement(QR_ELEMUI_BOX)
+	if not mgUIBox(ui.TestBox, 0.0, 0.0, 0.5, 0.5) then print("box setting error") end
+	mgUIBoxColour(ui.TestBox, 0.0, 0.0, 0.0, 1.0)
+	
 	lives.count = 5
 	lives.updated = true
 end

@@ -100,86 +100,22 @@ DgOpenGLContext* gl_graphics_init(void) {
 		DgLog(DG_LOG_ERROR, "Could not set window icon.");
 	}
 	
-	// gl_error_check(__FILE__, __LINE__);
-	
-	/*
-	float data1[] = {
-		// X      Y      Z     U     V     R     G     B
-		-1.0f,  1.0f,  1.0f, 0.0f, 0.0f, 0.85f, 0.85f, 0.85f,
-		-1.0f, -1.0f,  1.0f, 2.0f, 0.0f, 0.85f, 0.85f, 0.85f,
-		 1.0f, -1.0f,  1.0f, 2.0f, 2.0f, 0.85f, 0.85f, 0.85f,
-		 1.0f,  1.0f,  1.0f, 0.0f, 2.0f, 0.85f, 0.85f, 0.85f,
-		 
-		-1.0f,  1.0f, -1.0f, 0.0f, 0.0f, 0.85f, 0.85f, 0.85f,
-		-1.0f, -1.0f, -1.0f, 2.0f, 0.0f, 0.85f, 0.85f, 0.85f,
-		 1.0f, -1.0f, -1.0f, 2.0f, 2.0f, 0.85f, 0.85f, 0.85f,
-		 1.0f,  1.0f, -1.0f, 0.0f, 2.0f, 0.85f, 0.85f, 0.85f,
-		
-		-1.0f,  1.0f,  1.0f, 0.0f, 0.0f, 0.95f, 0.95f, 0.95f,
-		-1.0f,  1.0f, -1.0f, 2.0f, 0.0f, 0.95f, 0.95f, 0.95f,
-		 1.0f,  1.0f, -1.0f, 2.0f, 2.0f, 0.95f, 0.95f, 0.95f,
-		 1.0f,  1.0f,  1.0f, 0.0f, 2.0f, 0.95f, 0.95f, 0.95f,
-		 
-		-1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 0.95f, 0.95f, 0.95f,
-		-1.0f, -1.0f, -1.0f, 2.0f, 0.0f, 0.95f, 0.95f, 0.95f,
-		 1.0f, -1.0f, -1.0f, 2.0f, 2.0f, 0.95f, 0.95f, 0.95f,
-		 1.0f, -1.0f,  1.0f, 0.0f, 2.0f, 0.95f, 0.95f, 0.95f,
-		 
-		 1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 0.75f, 0.75f, 0.75f,
-		 1.0f, -1.0f, -1.0f, 2.0f, 0.0f, 0.75f, 0.75f, 0.75f,
-		 1.0f,  1.0f, -1.0f, 2.0f, 2.0f, 0.75f, 0.75f, 0.75f,
-		 1.0f,  1.0f,  1.0f, 0.0f, 2.0f, 0.75f, 0.75f, 0.75f,
-		
-		-1.0f, -1.0f,  1.0f, 0.0f, 0.0f, 0.75f, 0.75f, 0.75f,
-		-1.0f, -1.0f, -1.0f, 2.0f, 0.0f, 0.75f, 0.75f, 0.75f,
-		-1.0f,  1.0f, -1.0f, 2.0f, 2.0f, 0.75f, 0.75f, 0.75f,
-		-1.0f,  1.0f,  1.0f, 0.0f, 2.0f, 0.75f, 0.75f, 0.75f,
-	};
-	
-	// Make random colours
-// 	for (int i = 0; i < 24; i++) {
-// 		data1[(i * 8) + 5] = DgRandFloat();
-// 		data1[(i * 8) + 6] = DgRandFloat();
-// 		data1[(i * 8) + 7] = DgRandFloat();
-// 	}
-	
-	const int indicies[] = {
-		0, 1, 2,
-		0, 2, 3,
-		4, 5, 6,
-		4, 6, 7,
-		8, 9, 10,
-		8, 10, 11,
-		12, 13, 14,
-		12, 14, 15,
-		16, 17, 18,
-		16, 18, 19,
-		20, 21, 22,
-		20, 22, 23,
-	};
-	
-	// Write a file with the cube mesh
-	DgFileStream *s = DgFileStreamOpen("./cube.bin", "wb");
-	
-	uint32_t temp;
-	temp = sizeof(data1) / 32;
-	DgFileStreamWriteInt32(s, &temp);
-	DgFileStreamWrite(s, sizeof(data1), data1);
-	temp = sizeof(indicies) / 4;
-	DgFileStreamWriteInt32(s, &temp);
-	DgFileStreamWrite(s, sizeof(indicies), indicies);
-	
-	DgFileStreamClose(s);
-	*/
-	
 	// Load shaders
-	uint32_t res = graphicsLoadShader(gl, "assets://shaders/main.glsl");
+	uint32_t res;
+	
+	res = graphicsLoadShader(gl, "assets://shaders/main.glsl");
 	if (res) {
 		// failed to load shader
 		// if 2 the error affects other parts too and is fatal
 	}
 	
 	res = graphicsLoadShader(gl, "assets://shaders/text.glsl");
+	if (res) {
+		// failed to load shader
+		// if 2 the error affects other parts too and is fatal
+	}
+	
+	res = graphicsLoadShader(gl, "assets://shaders/uibox.glsl");
 	if (res) {
 		// failed to load shader
 		// if 2 the error affects other parts too and is fatal
@@ -209,17 +145,6 @@ DgOpenGLContext* gl_graphics_init(void) {
 		DgLog(DG_LOG_ERROR, "Failed to generate placeholder texture.");
 	}
 	
-// 	gltexture_load_file(&gl->texture, "font", "assets://gfx/inconsolata.png");
-// 	gltexture_set_unit(&gl->texture, "font", GL_TEXTURE0);
-// 	
-// 	gltexture_load_file(&gl->texture, "font2", "assets://gfx/notomono.png");
-// 	gltexture_set_unit(&gl->texture, "font2", GL_TEXTURE0);
-// 	
-// 	gltexture_load_file(&gl->texture, "font3", "assets://gfx/dosis.png");
-// 	gltexture_set_unit(&gl->texture, "font3", GL_TEXTURE0);
-// 	
-// 	gltexture_load_file(&gl->texture, "decentix", "assets://gfx/splash.png");
-// 	gltexture_set_unit(&gl->texture, "decentix", GL_TEXTURE0);
 	gltexture_load_list(&gl->texture, "assets://gfx/textures.xml");
 	
 	// Setting texture uniforms in shaders
@@ -564,6 +489,147 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 			}
 			
 			glDrawElements(GL_TRIANGLES, element->index_count, GL_UNSIGNED_INT, 0);
+			
+			gl_error_check(__FILE__, __LINE__);
+		}
+	}
+	
+	// Unbind everything
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glUseProgram(0);
+	
+	// -------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
+	
+	glUseProgram(gl->programs[2]);
+	
+	// Make sure the UI world exsists and that there is at least more than one box
+	if (world->ui && world->ui->box_count > 0) {
+		// ~= foreach ( C_UIText element : world->ui->text )
+		for (uint32_t i = 0; i < world->ui->box_count; i++) {
+			uint32_t id = world->ui->box[i].base.id;
+			C_UIBox *element = &world->ui->box[i];
+			
+			// Update the box if it was changed last frame in some ways
+			if (element->updated) {
+				// Create buffers
+				if (!element->vbo) {
+					glGenBuffers(1, &element->vbo);
+				}
+				
+				if (!element->ebo) {
+					glGenBuffers(1, &element->ebo);
+				}
+				
+				if (!element->vao) {
+					glGenVertexArrays(1, &element->vao);
+				}
+				
+				glBindVertexArray(element->vao);
+				glBindBuffer(GL_ARRAY_BUFFER, element->vbo);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element->ebo);
+				
+				gl_error_check(__FILE__, __LINE__);
+				
+				// Compute new vertex data...
+				float vertex[4][8];
+				uint32_t index[6] = {
+					0, 1, 2,
+					0, 2, 3,
+				};
+				
+				vertex[0][0] = element->pos.x;
+				vertex[0][1] = element->pos.y;
+				vertex[0][2] = 0.0f;
+				vertex[0][3] = 0.0f;
+				vertex[0][4] = element->colour.r;
+				vertex[0][5] = element->colour.g;
+				vertex[0][6] = element->colour.b;
+				vertex[0][7] = element->colour.a;
+				
+				vertex[1][0] = element->pos.x;
+				vertex[1][1] = element->pos.y - element->size.y;
+				vertex[1][2] = 0.0f;
+				vertex[1][3] = 0.0f;
+				vertex[1][4] = element->colour.r;
+				vertex[1][5] = element->colour.g;
+				vertex[1][6] = element->colour.b;
+				vertex[1][7] = element->colour.a;
+				
+				vertex[2][0] = element->pos.x + element->size.x;
+				vertex[2][1] = element->pos.y - element->size.y;
+				vertex[2][2] = 0.0f;
+				vertex[2][3] = 0.0f;
+				vertex[2][4] = element->colour.r;
+				vertex[2][5] = element->colour.g;
+				vertex[2][6] = element->colour.b;
+				vertex[2][7] = element->colour.a;
+				
+				vertex[3][0] = element->pos.x + element->size.x;
+				vertex[3][1] = element->pos.y;
+				vertex[3][2] = 0.0f;
+				vertex[3][3] = 0.0f;
+				vertex[3][4] = element->colour.r;
+				vertex[3][5] = element->colour.g;
+				vertex[3][6] = element->colour.b;
+				vertex[3][7] = element->colour.a;
+				
+				// Push the data to the GPU
+				glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8 * 4, vertex, GL_STATIC_DRAW);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(uint32_t), index, GL_STATIC_DRAW);
+				
+				gl_error_check(__FILE__, __LINE__);
+				
+				// Specify how OpenGL should get the data
+				GLuint attr;
+				
+				attr = glGetAttribLocation(gl->programs[2], "position");
+				glVertexAttribPointer(
+					attr,
+					2,
+					GL_FLOAT,
+					GL_FALSE,
+					sizeof(float) * 8,
+					(void *) 0
+				);
+				glEnableVertexAttribArray(attr);
+				
+				attr = glGetAttribLocation(gl->programs[2], "texpos");
+				glVertexAttribPointer(
+					attr,
+					2,
+					GL_FLOAT,
+					GL_FALSE,
+					sizeof(float) * 8,
+					(void *) (2 * sizeof(float))
+				);
+				glEnableVertexAttribArray(attr);
+				
+				attr = glGetAttribLocation(gl->programs[2], "colour");
+				glVertexAttribPointer(
+					attr,
+					4,
+					GL_FLOAT,
+					GL_FALSE,
+					sizeof(float) * 8,
+					(void *) (4 * sizeof(float))
+				);
+				glEnableVertexAttribArray(attr);
+				
+				gl_error_check(__FILE__, __LINE__);
+				
+				element->updated = false;
+			}
+			
+			// And of course draw at the end...
+			glBindVertexArray(element->vao);
+			glBindBuffer(GL_ARRAY_BUFFER, element->vbo);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element->ebo);
+			
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			
 			gl_error_check(__FILE__, __LINE__);
 		}

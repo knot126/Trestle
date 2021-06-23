@@ -131,6 +131,10 @@ bool ui_element_set_text_size(World * const restrict world, const uint32_t id, c
 bool ui_element_set_text_font(World * const restrict world, const uint32_t id, const char * const restrict font);
 bool ui_element_set_text_colour(World * const restrict world, const uint32_t id, const DgVec4 colour);
 
+// UI Box 
+bool ui_element_set_box(World * const restrict world, const uint32_t id, const DgVec2 size, const DgVec2 pos);
+bool ui_element_set_box_colour(World * const restrict world, const uint32_t id, const DgVec4 colour);
+
 // Player position
 DgVec3 world_get_player_position(const World * const restrict world);
 float world_get_player_speed(const World * const restrict world);
