@@ -18,10 +18,16 @@ uint32_t DgAudioStreamNew(DgAudioStream *stream) {
 	 */
 	
 	stream->spec.format = PA_SAMPLE_FLOAT32LE;
-	stream->spec.channels = 1;
+	stream->spec.channels = 2;
 	stream->spec.rate = 44100;
 	
 	stream->backend = pa_simple_new(NULL, "Melon Software Framework", PA_STREAM_PLAYBACK, NULL, "Melon Software Framework", &stream->spec, NULL, NULL, NULL);
+	
+	if (!stream->backend) {
+		return 1;
+	}
+	
+	return 0;
 }
 
 void DgAudioStreamPush(DgAudioStream *stream, size_t size, void *data) {
