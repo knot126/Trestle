@@ -241,23 +241,23 @@ int game_main(int argc, char* argv[]) {
 	}
 	
 	// testing audio
-	DgAudioStream audio;
-	DgAudioStreamNew(&audio);
-	
-	float *audio_data = (float *) DgAlloc(sizeof *audio_data * 88200);
-	
-	if (audio_data) {
-		for (size_t i = 0; i < 44100; i++) {
-			float s = DgSin(i * (1.0f / (44100.0f / 440.0f)));
-			audio_data[i * 2] = s;
-			audio_data[i * 2 + 1] = s;
-		}
-		
-		DgAudioStreamPush(&audio, sizeof *audio_data * 88200, audio_data);
-		
-		DgFree(audio_data);
-		DgAudioStreamFree(&audio);
-	}
+// 	DgAudioStream audio;
+// 	DgAudioStreamNew(&audio);
+// 	
+// 	float *audio_data = (float *) DgAlloc(sizeof *audio_data * 88200);
+// 	
+// 	if (audio_data) {
+// 		for (size_t i = 0; i < 44100; i++) {
+// 			float s = DgSin(i * (1.0f / (44100.0f / 440.0f)));
+// 			audio_data[i * 2] = s;
+// 			audio_data[i * 2 + 1] = s;
+// 		}
+// 		
+// 		DgAudioStreamPush(&audio, sizeof *audio_data * 88200, audio_data);
+// 		
+// 		DgFree(audio_data);
+// 		DgAudioStreamFree(&audio);
+// 	}
 	
 	// Load world
 	DgLog(DG_LOG_INFO, "Initialising main world...");
