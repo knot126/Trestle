@@ -92,6 +92,7 @@ set(MELON_FILES
 	src/util/log.c
 	src/util/maths.c
 	src/util/rand.c
+	src/util/resource.c
 	src/util/script.c
 	src/util/script_jax.c
 	src/util/socket.c
