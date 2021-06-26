@@ -1,3 +1,5 @@
 <game>
-	<level name=""/>
+	<level name="test"/>
+	<level name="test2"/>
+	<level name="test3"/>
 </game>

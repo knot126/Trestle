@@ -35,6 +35,7 @@
 #include "graphics/graphics.h"
 #include "game/gameplay.h"
 #include "game/phys.h"
+#include "game/level.h"
 #include "types.h"
 
 #include "game.h"
@@ -63,7 +64,7 @@ static void sys_init(SystemStates *sys) {
 	DgLog(DG_LOG_INFO, "Init input system...");
 	input_init(sys->graphics);
 	
-	// Testing lua loader
+	// Run the main game script
 	DgLog(DG_LOG_INFO, "Loading main game script...");
 	DgScriptInit(&sys->game_script);
 	DgRegisterRandFuncs(&sys->game_script);
@@ -71,6 +72,10 @@ static void sys_init(SystemStates *sys) {
 	DgScriptLoad(&sys->game_script, DgINIGet(g_quickRunConfig, "Main", "include_script_path", "assets://scripts/include.lua"));
 	DgScriptLoad(&sys->game_script, DgINIGet(g_quickRunConfig, "Main", "startup_script_path", "assets://scripts/startup.lua"));
 	DgScriptCall(&sys->game_script, "init");
+	
+	// Init the level manager
+	DgLog(DG_LOG_INFO, "Initialising level manager...");
+	level_init(&sys->level_info, DgINIGet(g_quickRunConfig, "Resources", "level_index_path", "assets://game.xml"));
 }
 
 static void sys_destroy(SystemStates *sys) {
@@ -79,6 +84,9 @@ static void sys_destroy(SystemStates *sys) {
 	
 	DgLog(DG_LOG_INFO, "Freeing resources used by main script...");
 	DgScriptFree(&sys->game_script);
+	
+	DgLog(DG_LOG_INFO, "Freeing resources used by level manager...");
+	level_free(&sys->level_info);
 }
 
 #ifdef QR_EXPRIMENTAL_THREADING

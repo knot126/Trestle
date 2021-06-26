@@ -28,13 +28,6 @@ typedef enum {
 	QR_ELEMUI_TEXT = (1 << 1),
 } UIElementMaskEnum;
 
-// typedef struct {
-// 	uint32_t transform;
-// 	uint32_t mesh;
-// 	uint32_t camera;
-// 	uint32_t physics;
-// } EntIndex;
-
 typedef struct {
 	uint32_t id;
 	float speed;

@@ -119,6 +119,7 @@ set(EXEC_FILES
 	src/graphics/texture.c
 	src/graphics/image.c
 	src/game/gameplay.c
+	src/game/level.c
 	src/game/phys.c
 	src/input/input.c
 	src/input/glfwi.c
