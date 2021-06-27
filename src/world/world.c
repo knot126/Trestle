@@ -33,10 +33,6 @@ void world_destroy(World * const restrict world) {
 	 * Frees the a world and its exsiting resources
 	 */
 	
-	if (world->mask) {
-		DgFree(world->mask);
-	}
-	
 	if (world->trans) {
 		DgFree(world->trans);
 	}
@@ -104,13 +100,6 @@ uint32_t world_create_entity(World * const restrict world, mask_t mask) {
 	
 	// NOTE: nullptr passed to realloc works like alloc, so we do not need to
 	// consider a case where the list has not been initialised.
-	world->mask = DgRealloc(world->mask, sizeof(mask_t) * world->mask_count);
-	
-	if (!world->mask) {
-		DgFail("Allocation error: world->mask.\n", 403);
-	}
-	
-	world->mask[world->mask_count - 1] = mask;
 	
 	// Allocate the nessicary components
 	
@@ -143,15 +132,6 @@ uint32_t world_create_ui_element(World * const restrict world, mask_t mask) {
 	}
 	
 	world->ui->mask_count += 1;
-	
-	// Reallocate the masks list
-	world->ui->mask = DgRealloc(world->ui->mask, sizeof(mask_t) * world->ui->mask_count);
-	
-	if (!world->ui->mask) {
-		DgFail("Allocation error: world->ui->mask.\n", 403);
-	}
-	
-	world->ui->mask[world->ui->mask_count - 1] = mask;
 	
 	if ((mask & QR_ELEMUI_BOX) == QR_ELEMUI_BOX) {
 		world->ui->box_count += 1;

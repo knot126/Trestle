@@ -43,7 +43,6 @@ typedef struct {
 	 * The world for all UI elements.
 	 */
 	
-	mask_t  *mask;
 	uint32_t mask_count;
 	
 	C_UIBox *box;
@@ -55,7 +54,9 @@ typedef struct {
 
 typedef struct {
 	// Masks and entities
-	mask_t  *mask;
+	
+	// NOTE: As it turns out we don't need a mask list! We only need the current
+	// entity count to get a unique ID! This makes deletion much easier!
 	uint32_t mask_count;
 	
 	// Transform Components

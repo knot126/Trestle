@@ -13,6 +13,7 @@
 #include "util/xml.h"
 #include "util/str.h"
 #include "util/log.h"
+#include "world/world.h"
 
 #include "level.h"
 
@@ -66,4 +67,8 @@ void level_free(LevelSystem * restrict ls) {
 			DgFree(ls->room[i]);
 		}
 	}
+}
+
+void level_update(LevelSystem * restrict ls, World * restrict world) {
+	
 }
