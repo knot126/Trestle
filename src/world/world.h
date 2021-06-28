@@ -143,6 +143,8 @@ void world_set_pause(World * const restrict world, bool paused);
 bool world_get_pause(World * const restrict world);
 void world_get_speed(const World * const restrict world, float * restrict min, float * restrict max);
 void world_set_speed(World * const restrict world, const float min, const float max);
+void world_put_length(World * const restrict world, float number);
+float world_get_level_offset(const World * const restrict world);
 
 // Box generation
 bool entity_generate_box(World * const restrict world, const DgVec3 pos, const DgVec3 size, const DgVec3 colour, const char * const texture);

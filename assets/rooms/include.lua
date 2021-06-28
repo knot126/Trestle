@@ -4,8 +4,7 @@
 --
 -- Include Script
 --
--- * This script is included before most every script is run
--- * This should contain only helper functions in lua
+-- * This script should be included before any levels are loaded
 -- 
 
 QR_COMPONENT_TRANSFORM = (1 << 0)
@@ -87,7 +86,7 @@ function buildFloorTest(w, h, l, offset)
 	
 	while last <= l + offset do
 		local length = (mgRandFloat() - 0.5) * w + w
-		mgBox(
+		mgBoxLevel(
 			math.floor(((mgRandFloat() * w) - (w / 2.0)) * 2.0), 
 			math.floor(mgRandFloat() - 0.5), 
 			math.floor(-last - length / 2.0), 
@@ -102,11 +101,3 @@ function buildFloorTest(w, h, l, offset)
 	end
 end 
 
-function createUIText(text, x, y, size)
-	local e = mgUIElement(QR_ELEMUI_TEXT)
-	mgUIText(e, text)
-	mgUITextPos(e, x, y)
-	mgUITextSize(e, size)
-	
-	return e
-end

@@ -79,7 +79,7 @@ void level_free(LevelSystem * restrict ls) {
 	}
 }
 
-void level_update(LevelSystem * const restrict ls, World * const restrict world) {
+void level_update(World * const restrict world, LevelSystem * const restrict ls) {
 	/**
 	 * Update the level system and any levels in it.
 	 */
@@ -102,7 +102,7 @@ void level_update(LevelSystem * const restrict ls, World * const restrict world)
 				ls->room = (char **) DgRealloc(ls->room, sizeof *ls->room * ls->room_count);
 				
 				if (!ls->room) {
-					DgLog(DG_LOG_ERROR, "Failed to allocate memory.");
+					DgLog(DG_LOG_ERROR, "Failed to allocate memory (in loading level).");
 					return;
 				}
 				
@@ -113,7 +113,9 @@ void level_update(LevelSystem * const restrict ls, World * const restrict world)
 		DgXMLNodeFree(&root);
 		
 		// Pop the level off of the stack, unless it is the last one remaining
-// #error implement
+		if (ls->room_count > 1) {
+			
+		}
 	}
 	
 	// Start to load the next room when approaching it
@@ -130,9 +132,11 @@ void level_update(LevelSystem * const restrict ls, World * const restrict world)
 		char *a = DgStrcadf(DgStrcad("assets://rooms/", ls->room[0]), ".lua");
 		
 		if (!a) {
-			DgLog(DG_LOG_ERROR, "Failed to allocate memory.");
+			DgLog(DG_LOG_ERROR, "Failed to allocate memory (while loding room).");
 			return;
 		}
+		
+		DgLog(DG_LOG_INFO, "Loading room at '%s'.", a);
 		
 		DgScriptLoad(&ls->room_script[1].script, a);
 		DgFree(a);
@@ -152,14 +156,16 @@ void level_update(LevelSystem * const restrict ls, World * const restrict world)
 		ls->room = (char **) DgRealloc(ls->room, sizeof *ls->room * ls->room_count);
 		
 		if (!ls->room) {
-			DgLog(DG_LOG_ERROR, "Failed to allocate memory.");
+			DgLog(DG_LOG_WARNING, "Failed to allocate memory (list of rooms), or out of rooms for this level.");
 		}
 	}
 	
 	// Set that room as the primary room and delete the old one
 	if (-playerpos.z >= (world->game.load_next - 0.01f)) {
-		DgScriptCall(&ls->room_script[0].script, "free");
-		DgScriptFree(&ls->room_script[0].script);
+		if (ls->room_script[0].script.state) {
+			DgScriptCall(&ls->room_script[0].script, "free");
+			DgScriptFree(&ls->room_script[0].script);
+		}
 		ls->room_script[0] = ls->room_script[1];
 	}
 	

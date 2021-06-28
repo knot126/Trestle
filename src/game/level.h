@@ -26,3 +26,4 @@ typedef struct LevelSystem {
 
 uint32_t level_init(LevelSystem * restrict ls, const char * const restrict game);
 void level_free(LevelSystem * restrict ls);
+void level_update(World * const restrict world, LevelSystem * const restrict ls);

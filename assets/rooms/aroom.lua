@@ -2,7 +2,10 @@
 
 -- called on init
 function init()
-	buildFloorTest(12.0, 5.0, 150.0)
+	mgSetSpeed(1.0, 10.0)
+	
+	buildFloorTest(8.0, 5.0, 150.0)
+	
 	mgLength(150.0)
 end
 

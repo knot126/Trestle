@@ -420,6 +420,11 @@ void world_set_speed(World * const restrict world, const float min, const float 
 	const float n = (player_speed - cmin) * (1.0f / (cmax - cmin)); // now in rage [0.0, 1.0]
 	
 	world->player_info.speed = (n * (max - min)) + min; // make it up to speed again
+	
+	// check nan
+	if ((0x7F800000 & *(int *) &world->player_info.speed) == 0x7F800000) {
+		world->player_info.speed = 1.0f;
+	}
 }
 
 void world_put_length(World * const restrict world, float number) {
@@ -428,4 +433,12 @@ void world_put_length(World * const restrict world, float number) {
 	 */
 	
 	world->game.new_length = number;
+}
+
+float world_get_level_offset(const World * const restrict world) {
+	/**
+	 * Get the current level's Z offset.
+	 */
+	
+	return (world->game.load_next/* - world->game.new_length ?*/);
 }

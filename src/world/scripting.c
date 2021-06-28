@@ -11,7 +11,8 @@
 #include "lualib.h"
 #include "lauxlib.h"
 
-#include "../util/script.h"
+#include "util/script.h"
+#include "util/log.h"
 #include "compo.h"
 #include "world.h"
 #include "seg.h"
@@ -212,6 +213,49 @@ static int scripted_AddBox(lua_State *script) {
 	return 1;
 }
 
+static int scripted_AddBoxLevel(lua_State *script) {
+	/**
+	 * Adds a box to the level but makes sure that it is relitive to the start
+	 * of the level.
+	 */
+	int top = lua_gettop(script);
+	
+	float 
+		px = 0.0f, py = 0.0f, pz = 0.0f, 
+		sx = 1.0f, sy = 1.0f, sz = 1.0f,
+		cr = 1.0f, cg = 1.0f, cb = 1.0f;
+	
+	const char *texture = NULL;
+	
+	if (top >= 3) {
+		px = (float) lua_tonumber(script, 1);
+		py = (float) lua_tonumber(script, 2);
+		pz = (float) lua_tonumber(script, 3);
+	}
+	
+	if (top >= 6) {
+		sx = (float) lua_tonumber(script, 4);
+		sy = (float) lua_tonumber(script, 5);
+		sz = (float) lua_tonumber(script, 6);
+	}
+	
+	if (top >= 9) {
+		cr = (float) lua_tonumber(script, 7);
+		cg = (float) lua_tonumber(script, 8);
+		cb = (float) lua_tonumber(script, 9);
+	}
+	
+	if (top >= 10) {
+		texture = lua_tostring(script, 10);
+	}
+	
+	bool status = entity_generate_box(QuickRunActiveWorld, DgVec3New(px, py, pz - world_get_level_offset(world_active(NULL))), DgVec3New(sx, sy, sz), DgVec3New(cr, cg, cb), texture);
+	
+	lua_pushboolean(script, status);
+	
+	return 1;
+}
+
 static int scripted_SetPlayer(lua_State *script) {
 	uint32_t id = lua_tointeger(script, 1);
 	
@@ -334,8 +378,8 @@ static int scripted_GetPlayerSpeed(lua_State *script) {
 }
 
 static int scripted_SetPlayerSpeed(lua_State *script) {
-	float min = lua_tonumber(script, 1);
-	float max = lua_tonumber(script, 2);
+	float min = (float) lua_tonumber(script, 1);
+	float max = (float) lua_tonumber(script, 2);
 	
 	world_set_speed(QuickRunActiveWorld, min, max);
 	
@@ -361,7 +405,9 @@ static int scripted_SetPaused(lua_State *script) {
 }
 
 static int scripted_PutLength(lua_State *script) {
-	world_put_length(QuickRunActiveWorld, (float) lua_tonumber(script, 1));
+	float number = (float) lua_tonumber(script, 1);
+	
+	world_put_length(QuickRunActiveWorld, number);
 	
 	return 0;
 }
@@ -395,6 +441,7 @@ void registerWorldScriptFunctions(DgScript *script) {
 	/*  Segment and Level Management  */
 	lua_register(script->state, "mgSegment", &scripted_LoadSegment);
 	lua_register(script->state, "mgBox", &scripted_AddBox);
+	lua_register(script->state, "mgBoxLevel", &scripted_AddBoxLevel);
 	lua_register(script->state, "mgLength", &scripted_PutLength);
 	
 	/*  Higher-Level Entities  */

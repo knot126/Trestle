@@ -159,8 +159,6 @@ static int game_loop(World *world, SystemStates *systems) {
 		// Check if we should still be open
 		should_keep_open = get_should_keep_open(systems->graphics);
 		
-		DgThread th_graphics, th_physics;
-		
 		graphics_update(world, systems->graphics);
 		input_update(systems->graphics);
 		
@@ -189,6 +187,9 @@ static int game_loop(World *world, SystemStates *systems) {
 			DgLog(DG_LOG_VERBOSE, "Frame Time: %fms (%f FPS)", frame_time * 1000.0f, 1.0f / frame_time);
 			show_fps = 0.0f;
 		}
+		
+		// Update the level
+		level_update(world, &systems->level_info);
 		
 		DgScriptCall(&systems->game_script, "tick");
 	} // while (should_keep_open)
