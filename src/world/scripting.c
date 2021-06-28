@@ -34,6 +34,14 @@ static int scripted_CreateUIElement(lua_State *script) {
 	return 1;
 }
 
+static int scripted_DeleteOldEntity(lua_State *script) {
+	uint32_t id = lua_tointeger(script, 1);
+	
+	lua_pushboolean(script, world_delete_older_than(world_active(NULL), id));
+	
+	return 1;
+}
+
 static int scripted_SetTransform(lua_State *script) {
 	uint32_t id = lua_tointeger(script, 1);
 	uint32_t stack = (uint32_t) lua_gettop(script);
@@ -352,9 +360,16 @@ static int scripted_SetPaused(lua_State *script) {
 	return 0;
 }
 
+static int scripted_PutLength(lua_State *script) {
+	world_put_length(QuickRunActiveWorld, (float) lua_tonumber(script, 1));
+	
+	return 0;
+}
+
 void registerWorldScriptFunctions(DgScript *script) {
 	/*  Low-Level Entities  */
 	lua_register(script->state, "mgEntity", &scripted_CreateEntity);
+	lua_register(script->state, "mgDeleteOlder", &scripted_DeleteOldEntity);
 	lua_register(script->state, "mgTransform", &scripted_SetTransform);
 	lua_register(script->state, "mgMesh", &scripted_LoadMesh);
 	lua_register(script->state, "mgMesh2", &scripted_LoadXMLMesh);
@@ -380,6 +395,7 @@ void registerWorldScriptFunctions(DgScript *script) {
 	/*  Segment and Level Management  */
 	lua_register(script->state, "mgSegment", &scripted_LoadSegment);
 	lua_register(script->state, "mgBox", &scripted_AddBox);
+	lua_register(script->state, "mgLength", &scripted_PutLength);
 	
 	/*  Higher-Level Entities  */
 	lua_register(script->state, "mgCamera", &scripted_CreateCamera);

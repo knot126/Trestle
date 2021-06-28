@@ -11,8 +11,12 @@
 
 #include "util/script.h"
 
+typedef struct Room {
+	DgScript script;
+} Room;
+
 typedef struct LevelSystem {
-	DgScript level_script[2];
+	Room room_script[2];
 	char **level;
 	char **room;
 	

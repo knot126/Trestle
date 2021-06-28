@@ -166,6 +166,33 @@ uint32_t world_create_ui_element(World * const restrict world, mask_t mask) {
 	return world->ui->mask_count;
 }
 
+#define QR_FREE_OLD(TYPE, LIST, LISTCOUNT) for (size_t i = 1; i < world->LISTCOUNT; i++) {\
+		if (world->LIST[i - 1].base.id > id) {\
+			world->LISTCOUNT = i;\
+			world->LIST = (TYPE *) DgRealloc(world->LIST, sizeof *world->LIST * i);\
+			if (!world->LIST) {\
+				DgLog(DG_LOG_ERROR, "Failed to free some older items in the world!!");\
+				return false;\
+			}\
+			break;\
+		}\
+	}
+
+bool world_delete_older_than(World * const restrict world, uint32_t id) {
+	/**
+	 * Frees all entities with an ID that is higher than the given id.
+	 */
+	
+	QR_FREE_OLD(C_Transform, trans, trans_count);
+	QR_FREE_OLD(C_Mesh, mesh, mesh_count);
+	QR_FREE_OLD(C_Camera, cam, cam_count);
+	QR_FREE_OLD(C_Physics, phys, phys_count);
+	
+	return true;
+}
+
+#undef QR_FREE_OLD
+
 /**
  * -----------------------------------------------------------------------------
  * Helper functions
@@ -393,4 +420,12 @@ void world_set_speed(World * const restrict world, const float min, const float 
 	const float n = (player_speed - cmin) * (1.0f / (cmax - cmin)); // now in rage [0.0, 1.0]
 	
 	world->player_info.speed = (n * (max - min)) + min; // make it up to speed again
+}
+
+void world_put_length(World * const restrict world, float number) {
+	/**
+	 * Set speed range and map it.
+	 */
+	
+	world->game.new_length = number;
 }

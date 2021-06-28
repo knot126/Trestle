@@ -36,6 +36,9 @@ typedef struct {
 typedef struct {
 	float speed_min;
 	float speed_max;
+	
+	float load_next;
+	float new_length;
 } GameState;
 
 typedef struct {
@@ -92,6 +95,7 @@ void world_init(World * const restrict world, size_t prealloc_count);
 void world_destroy(World * const restrict world);
 uint32_t world_create_entity(World * const restrict world, mask_t mask);
 uint32_t world_create_ui_element(World * const restrict world, mask_t mask);
+bool world_delete_older_than(World * const restrict world, uint32_t id);
 
 // Helper functions
 C_Transform *entity_find_trans(const World * const restrict world, const uint32_t id);

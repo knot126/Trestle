@@ -7,6 +7,7 @@
 
 cam = mgCamera(0.0, 0.0, 0.0, 0.0875, 0.0, 0.0)
 frame = 0
+first = 0
 lives = {}
 ui = {}
 next_pos = 100.0
@@ -16,16 +17,16 @@ function init()
 	local player = new_cube(0.0, 1.5, 0.0, 0.9, 0.9, 0.9, true, QR_PHYS_ENABLE_RESPONSE, "assets://mesh/player.xml")
 	mgActivePlayer(player)
 	
-	mgSetSpeed(1.0, 10.0)
+-- 	mgSetSpeed(1.0, 10.0)
 	
 	-- spawn
-	mgBox(
-		0.0, 0.0, -8.0,
-		6.0, 0.25, 8.0,
-		mgRandFloat(), mgRandFloat(), mgRandFloat(), "tile0"
-	)
-	
-	buildFloorTest(5.0, 12.0, 100.0)
+-- 	mgBox(
+-- 		0.0, 0.0, -8.0,
+-- 		6.0, 0.25, 8.0,
+-- 		mgRandFloat(), mgRandFloat(), mgRandFloat(), "tile0"
+-- 	)
+-- 	
+-- 	buildFloorTest(5.0, 12.0, 100.0)
 	
 	ui.Statistics = mgUIElement(QR_ELEMUI_TEXT)
 	mgUIText(ui.Statistics, "[text about in-game statistics will appear here shortly...]")
@@ -75,6 +76,8 @@ function init()
 	
 	lives.count = 5
 	lives.updated = true
+	
+	first = mgEntity(0)
 end
 
 function room()
@@ -89,11 +92,12 @@ function tick()
 	mgUIText(ui.Speed, tostring(mgGetSpeed()))
 	
 	-- build more walls as the player moves forward
-	if z < -(next_pos - 20.0) then 
-		buildFloorTest(5.0, 12.0, 100.0, next_pos)
-		next_pos = next_pos + 100.0
-		mgSetSpeed((room() / 10.0) + 1.0, room() + 10.0)
-	end
+-- 	if z < -(next_pos - 20.0) then 
+-- 		mgDeleteOlder(first)
+-- 		buildFloorTest(5.0, 12.0, 100.0, next_pos)
+-- 		next_pos = next_pos + 100.0
+-- 		mgSetSpeed((room() / 10.0) + 1.0, room() + 10.0)
+-- 	end
 	
 	if lives.updated then
 		mgUIText(ui.LivesCount, tostring(lives.count))
@@ -113,12 +117,13 @@ function tick()
 		lives.hasBeenDead = true
 		ui.Dead = mgUIElement(QR_ELEMUI_TEXT)
 		mgUIText(ui.Dead, "Player dead !")
-		mgUITextPos(ui.Dead, -0.95, 0.25)
-		mgUITextSize(ui.Dead, 0.5)
+		mgUITextPos(ui.Dead, -0.85, 0.25)
+		mgUITextSize(ui.Dead, 0.35)
 		mgUITextFont(ui.Dead, "font3")
 		mgPaused(true)
 	end
 	
+	-- Pulse the text colour
 	if lives.hasBeenDead then
 		mgUITextColour(ui.Dead, 1.0, (math.sin(frame * 0.01) + 1.0) / 2.0, (math.sin(frame * 0.01) + 1.0) / 2.0, 1.0)
 	end

@@ -13,6 +13,8 @@
 #include "util/xml.h"
 #include "util/str.h"
 #include "util/log.h"
+#include "util/rand.h"
+#include "world/scripting.h"
 #include "world/world.h"
 
 #include "level.h"
@@ -38,7 +40,13 @@ uint32_t level_init(LevelSystem * restrict ls, const char * const restrict game)
 		if (!strcmp(root.sub[i].name, "level")) {
 			// Add the level to the list
 			ls->level_count++;
-			ls->level = DgRealloc(ls->level, sizeof *ls->level * ls->level_count);
+			ls->level = (char **) DgRealloc(ls->level, sizeof *ls->level * ls->level_count);
+			
+			if (!ls->level) {
+				DgLog(DG_LOG_ERROR, "Failed to allocate memory.");
+				return 1;
+			}
+			
 			ls->level[ls->level_count - 1] = DgStrdup(DgXMLGetAttrib(&root.sub[i], "name", ""));
 		}
 	}
@@ -49,6 +57,8 @@ uint32_t level_init(LevelSystem * restrict ls, const char * const restrict game)
 	}
 	
 	DgXMLNodeFree(&root);
+	
+	return 0;
 }
 
 void level_free(LevelSystem * restrict ls) {
@@ -69,6 +79,86 @@ void level_free(LevelSystem * restrict ls) {
 	}
 }
 
-void level_update(LevelSystem * restrict ls, World * restrict world) {
+void level_update(LevelSystem * const restrict ls, World * const restrict world) {
+	/**
+	 * Update the level system and any levels in it.
+	 */
 	
+	DgVec3 playerpos = world_get_player_position(world);
+	
+	// If there are no more rooms left, then load the next room file
+	if (!ls->room || !ls->room_count) {
+		DgXMLNode root;
+		
+		// Get the path name
+		char *a = DgStrcadf(DgStrcad("assets://levels/", ls->level[0]), ".xml");
+		DgXMLLoad(&root, a);
+		DgFree(a);
+		
+		// Find all the rooms
+		for (size_t i = 0; i < root.sub_count; i++) {
+			if (!strcmp(root.sub[i].name, "room")) {
+				ls->room_count++;
+				ls->room = (char **) DgRealloc(ls->room, sizeof *ls->room * ls->room_count);
+				
+				if (!ls->room) {
+					DgLog(DG_LOG_ERROR, "Failed to allocate memory.");
+					return;
+				}
+				
+				ls->room[ls->room_count - 1] = DgStrdup(DgXMLGetAttrib(&root.sub[i], "name", ""));
+			}
+		}
+		
+		DgXMLNodeFree(&root);
+		
+		// Pop the room off of the stack, unless it is the last one remaining
+	}
+	
+	// Start to load the next room when approaching it
+	if (-playerpos.z >= (world->game.load_next - 25.0f)) {
+		world->game.load_next += world->game.new_length;
+		
+		// Init script, register functions
+		DgScriptInit(&ls->room_script[1].script);
+		DgRegisterRandFuncs(&ls->room_script[1].script);
+		registerWorldScriptFunctions(&ls->room_script[1].script);
+		
+		// Load room at next then free
+		DgScriptLoad(&ls->room_script[1].script, "assets://rooms/include.lua");
+		char *a = DgStrcadf(DgStrcad("assets://rooms/", ls->room[0]), ".lua");
+		
+		if (!a) {
+			DgLog(DG_LOG_ERROR, "Failed to allocate memory.");
+			return;
+		}
+		
+		DgScriptLoad(&ls->room_script[1].script, a);
+		DgFree(a);
+		
+		// Call init
+		DgScriptCall(&ls->room_script[1].script, "init");
+		
+		// Pop the room off of the stack
+		ls->room_count--;
+		
+		if (ls->room_count > 0) {
+			memmove(ls->room, (ls->room + 1), sizeof *ls->room * ls->room_count);
+		}
+		
+		ls->room = (char **) DgRealloc(ls->room, sizeof *ls->room * ls->room_count);
+		
+		if (!ls->room) {
+			DgLog(DG_LOG_ERROR, "Failed to allocate memory.");
+		}
+	}
+	
+	// Set that room as the primary room and delete the old one
+	if (-playerpos.z >= (world->game.load_next - 0.01f)) {
+		DgScriptCall(&ls->room_script[0].script, "free");
+		DgScriptFree(&ls->room_script[0].script);
+		ls->room_script[0] = ls->room_script[1];
+	}
+	
+	DgScriptCall(&ls->room_script[0].script, "tick");
 }
