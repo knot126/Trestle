@@ -43,11 +43,12 @@ bool DgScriptLoad(DgScript *script, char * const path) {
 	
 	int stat = luaL_dofile(script->state, real_path);
 	
+	DgFree(real_path);
+	
 	if (stat) {
 		printf("\033[1;31mError:\033[0m Error whilst doing file %s, got errorcode %d.\n", path, stat);
+		return false;
 	}
-	
-	DgFree(real_path);
 	
 	return true;
 }

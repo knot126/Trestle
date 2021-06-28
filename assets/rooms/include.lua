@@ -43,17 +43,17 @@ function buildWallsAndFloor(w, h, l, offset)
 	if offset == nil then offset = 0.0 end
 	
 	-- walls and floor
-	-- new_cube(0.0, -0.75, -l / 2.0 - offset, w, 0.5, l, false, nil, "assets://mesh/cube4.xml")
-	mgBox(-w, (h / 2.0) - 0.75, -l / 2.0 - offset, 0.5, h, l)
-	mgBox(w, (h / 2.0) - 0.75, -l / 2.0 - offset, 0.5, h, l)
+	mgBoxLevel(0.0, -0.75, -l / 2.0 - offset, w, 0.5, l / 2.0, 1.0, 1.0, 1.0, "tile0")
+	mgBoxLevel(-w, (h / 2.0) - 0.75, -l / 2.0 - offset, 0.5, h, l / 2.0, 1.0, 1.0, 1.0, "tile0")
+	mgBoxLevel(w, (h / 2.0) - 0.75, -l / 2.0 - offset, 0.5, h, l / 2.0, 1.0, 1.0, 1.0, "tile0")
 	
 	-- decor
 	for z = 1.0, tonumber(l), 2.0 do
-		mgBox(-w + 0.5, (h / 2.0) - 0.75, -z - offset, 0.5, h, 0.5)
-		mgBox(-w + 1.0, 0.25, -z - offset, 0.5, 0.5, 0.5)
+		mgBoxLevel(-w + 0.5, (h / 2.0) - 0.75, -z - offset, 0.5, h, 0.5, 1.0, 1.0, 1.0, "tile0")
+		mgBoxLevel(-w + 1.0, 0.25, -z - offset, 0.5, 0.5, 0.5, 1.0, 1.0, 1.0, "tile0")
 		
-		mgBox(w - 0.5, (h / 2.0) - 0.75, -z - offset, 0.5, h, 0.5)
-		mgBox(w - 1.0, 0.25, -z - offset, 0.5, 0.5, 0.5)
+		mgBoxLevel(w - 0.5, (h / 2.0) - 0.75, -z - offset, 0.5, h, 0.5, 1.0, 1.0, 1.0, "tile0")
+		mgBoxLevel(w - 1.0, 0.25, -z - offset, 0.5, 0.5, 0.5, 1.0, 1.0, 1.0, "tile0")
 	end
 end
 

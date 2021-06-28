@@ -92,8 +92,12 @@ void level_update(World * const restrict world, LevelSystem * const restrict ls)
 		
 		// Get the path name
 		char *a = DgStrcadf(DgStrcad("assets://levels/", ls->level[0]), ".xml");
-		DgXMLLoad(&root, a);
+		uint32_t status = DgXMLLoad(&root, a);
 		DgFree(a);
+		
+		if (status) {
+			return;
+		}
 		
 		// Find all the rooms
 		for (size_t i = 0; i < root.sub_count; i++) {
@@ -113,8 +117,21 @@ void level_update(World * const restrict world, LevelSystem * const restrict ls)
 		DgXMLNodeFree(&root);
 		
 		// Pop the level off of the stack, unless it is the last one remaining
-		if (ls->room_count > 1) {
+		if (ls->level_count > 1) {
+			ls->level_count--;
 			
+			DgFree(ls->level[0]); // Free memory
+			
+			if (ls->level_count > 0) {
+				memmove(ls->level, (ls->level + 1), sizeof *ls->level * ls->level_count);
+			}
+			
+			ls->level = (char **) DgRealloc(ls->level, sizeof *ls->level * ls->level_count);
+			
+			if (!ls->level) {
+				DgLog(DG_LOG_WARNING, "Failed to allocate memory (list of levels).");
+				return;
+			}
 		}
 	}
 	
@@ -138,11 +155,11 @@ void level_update(World * const restrict world, LevelSystem * const restrict ls)
 		
 		DgLog(DG_LOG_INFO, "Loading room at '%s'.", a);
 		
-		DgScriptLoad(&ls->room_script[1].script, a);
+		if (DgScriptLoad(&ls->room_script[1].script, a)) {
+			// Call init
+			DgScriptCall(&ls->room_script[1].script, "init");
+		}
 		DgFree(a);
-		
-		// Call init
-		DgScriptCall(&ls->room_script[1].script, "init");
 		
 		// Pop the room off of the stack
 		ls->room_count--;

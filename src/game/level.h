@@ -22,6 +22,7 @@ typedef struct LevelSystem {
 	
 	uint32_t level_count;
 	uint32_t room_count;
+	uint32_t clear_after;
 } LevelSystem;
 
 uint32_t level_init(LevelSystem * restrict ls, const char * const restrict game);
