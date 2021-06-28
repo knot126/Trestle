@@ -312,5 +312,9 @@ int game_main(int argc, char* argv[]) {
 		DgINIFree(&initconf);
 	}
 	
+	// Cleanup arguments memory
+	DgLog(DG_LOG_INFO, "Freeing memory used by argument parser...");
+	DgArgFree();
+	
 	return 0;
 }

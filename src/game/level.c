@@ -86,7 +86,7 @@ void level_update(LevelSystem * const restrict ls, World * const restrict world)
 	
 	DgVec3 playerpos = world_get_player_position(world);
 	
-	// If there are no more rooms left, then load the next room file
+	// If there are no more rooms left, then load the next level file
 	if (!ls->room || !ls->room_count) {
 		DgXMLNode root;
 		
@@ -112,7 +112,8 @@ void level_update(LevelSystem * const restrict ls, World * const restrict world)
 		
 		DgXMLNodeFree(&root);
 		
-		// Pop the room off of the stack, unless it is the last one remaining
+		// Pop the level off of the stack, unless it is the last one remaining
+// #error implement
 	}
 	
 	// Start to load the next room when approaching it
@@ -142,6 +143,8 @@ void level_update(LevelSystem * const restrict ls, World * const restrict world)
 		// Pop the room off of the stack
 		ls->room_count--;
 		
+		DgFree(ls->room[0]); // Free memory
+		
 		if (ls->room_count > 0) {
 			memmove(ls->room, (ls->room + 1), sizeof *ls->room * ls->room_count);
 		}
@@ -160,5 +163,6 @@ void level_update(LevelSystem * const restrict ls, World * const restrict world)
 		ls->room_script[0] = ls->room_script[1];
 	}
 	
+	// Call the room's tick method
 	DgScriptCall(&ls->room_script[0].script, "tick");
 }
