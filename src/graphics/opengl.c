@@ -212,7 +212,6 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	// Push our matris to the GPU
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "camera"), 1, GL_TRUE, &camera.ax);
 	
-	
 	for (size_t i = 0; i < world->mesh_count; i++) {
 		uint32_t id = world->mesh[i].base.id;
 		C_Mesh *mesh = &world->mesh[i];
@@ -512,6 +511,8 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 		for (uint32_t i = 0; i < world->ui->box_count; i++) {
 			uint32_t id = world->ui->box[i].base.id;
 			C_UIBox *element = &world->ui->box[i];
+			
+// 			DgLog(DG_LOG_VERBOSE, "id %d, pos: (%.3f, %.3f), size: (%.3f, %.3f), colour: (%.3f, %.3f, %.3f, %.3f)", i, element->pos.x, element->pos.y, element->size.x, element->size.y, element->colour.r, element->colour.g, element->colour.b, element->colour.a);
 			
 			// Update the box if it was changed last frame in some ways
 			if (element->updated) {

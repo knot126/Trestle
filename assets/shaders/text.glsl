@@ -27,6 +27,10 @@ in vec2 Texture;
 out vec4 out_colour;
 
 void main() {
-	out_colour = texture(font, Texture) * colour;
+	vec4 inter = texture(font, Texture) * colour;
+	
+	if (inter.a <= 0.0) discard;
+	
+	out_colour = inter;
 }
 #endif

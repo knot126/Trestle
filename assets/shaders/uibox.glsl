@@ -30,6 +30,7 @@ in vec4 Colour;
 out vec4 out_colour;
 
 void main() {
-	out_colour = texture(image, Texture) * Colour;
+	vec4 a = texture(image, Texture); // only needed for not having black default texture
+	out_colour = Colour;
 }
 #endif
