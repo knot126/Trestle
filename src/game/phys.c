@@ -87,15 +87,39 @@ void phys_update(World *world, float delta) {
 					char smallest = 0;
 					
 					// Determine which axe has the smallest penetration
-					if      (d.x < d.y && d.x < d.z) { smallest = 1; }
-					else if (d.y < d.x && d.y < d.z) { smallest = 2; }
-					else if (d.z < d.x && d.z < d.y) { smallest = 3; }
+					if (d.x < d.y && d.x < d.z) {
+						if ((aLow.x - bHigh.x) >= (bLow.x - aHigh.x)) {
+							smallest = 1;
+						}
+						else {
+							smallest = 4;
+						}
+					}
+					else if (d.y < d.x && d.y < d.z) {
+						if ((aLow.y - bHigh.y) >= (bLow.y - aHigh.y)) {
+							smallest = 2;
+						}
+						else {
+							smallest = 5;
+						}
+					}
+					else if (d.z < d.x && d.z < d.y) {
+						if ((aLow.z - bHigh.z) >= (bLow.z - aHigh.z)) {
+							smallest = 3;
+						}
+						else {
+							smallest = 6;
+						}
+					}
 					
 					// Do it.
 					switch (smallest) {
 						case 1: trans->pos.x += d.x; break;
 						case 2: trans->pos.y += d.y; phys->flags = phys->flags | QR_PHYS_GROUNDED; break;
 						case 3: trans->pos.z += d.z; break;
+						case 4: trans->pos.x -= d.x; break;
+						case 5: trans->pos.y -= d.y; break;
+						case 6: trans->pos.z -= d.z; break;
 					}
 					
 					if (!((phys->flags & QR_PHYS_DISABLE_GRAVITY) == QR_PHYS_DISABLE_GRAVITY)) {
