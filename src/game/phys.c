@@ -16,6 +16,9 @@
 
 const float GRAVITY_FORCE = -9.81f * 1.1f;
 
+#define QR_ENABLE_OLD_PHYSICS
+
+#ifdef QR_ENABLE_OLD_PHYSICS
 void phys_update(World *world, float delta) {
 	/**
 	 * Update Game Physics
@@ -130,3 +133,4 @@ void phys_update(World *world, float delta) {
 		}
 	}
 }
+#endif

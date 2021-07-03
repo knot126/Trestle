@@ -21,15 +21,21 @@ void main() {
 #ifdef FRAGMENT
 uniform sampler2D font;
 uniform vec4 colour;
+uniform bool enableTexture;
 
 in vec2 Texture;
 
 out vec4 out_colour;
 
 void main() {
-	vec4 inter = texture(font, Texture) * colour;
+	vec4 inter;
 	
-	if (inter.a <= 0.0) discard;
+	if (enableTexture) {
+		inter = texture(font, Texture) * colour;
+	}
+	else {
+		inter = colour;
+	}
 	
 	out_colour = inter;
 }

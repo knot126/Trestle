@@ -87,6 +87,7 @@ set(MELON_FILES
 	src/util/fail.c
 	src/util/fs.c
 	src/util/hash.c
+	src/util/http.c
 	src/util/ini.c
 	src/util/load.c
 	src/util/log.c

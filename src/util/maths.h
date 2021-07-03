@@ -12,29 +12,45 @@
 float DgCos(float angle);
 float DgSin(float angle);
 float DgTan(float angle);
+float DgSqrt(float n);
 
 // DgVec**
 
 typedef struct DgVec2 {
-	float x, y;
+	union {
+		struct {
+			float x, y;
+		};
+		float data[2];
+	};
 } DgVec2;
 
 typedef struct DgVec3 {
-	float x, y, z;
+	union {
+		struct {
+			float x, y, z;
+		};
+		float data[3];
+	};
 } DgVec3;
 
 typedef struct DgVec4 {
 	union {
-		float x, r;
-	};
-	union {
-		float y, g;
-	};
-	union {
-		float z, b;
-	};
-	union {
-		float w, a;
+		struct {
+			union {
+				float x, r;
+			};
+			union {
+				float y, g;
+			};
+			union {
+				float z, b;
+			};
+			union {
+				float w, a;
+			};
+		};
+		float data[4];
 	};
 } DgVec4;
 
@@ -79,21 +95,36 @@ DgVec4 DgVec4New(float x, float y, float z, float w);
 // DgMat**
 
 typedef struct DgMat2 {
-	float ax, ay;
-	float bx, by;
+	union {
+		struct {
+			float ax, ay;
+			float bx, by;
+		};
+		float data[2][2];
+	};
 } DgMat2;
 
 typedef struct DgMat3 {
-	float ax, ay, az;
-	float bx, by, bz;
-	float cx, cy, cz;
+	union {
+		struct {
+			float ax, ay, az;
+			float bx, by, bz;
+			float cx, cy, cz;
+		};
+		float data[3][3];
+	};
 } DgMat3;
 
 typedef struct DgMat4 {
-	float ax, ay, az, aw;
-	float bx, by, bz, bw;
-	float cx, cy, cz, cw;
-	float dx, dy, dz, dw;
+	union {
+		struct {
+			float ax, ay, az, aw;
+			float bx, by, bz, bw;
+			float cx, cy, cz, cw;
+			float dx, dy, dz, dw;
+		};
+		float data[4][4];
+	};
 } DgMat4;
 
 // DgMat4

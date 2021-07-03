@@ -32,6 +32,10 @@ float DgTan(float angle) {
 	return (float) tan(angle * M_PI * 2.0f);
 }
 
+float DgSqrt(float n) {
+	return (float) sqrt(n);
+}
+
 /* 
  * DgVec2 
  */

@@ -186,6 +186,13 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
+	// -------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
+	
+	// Enable depth tests
+	glEnable(GL_DEPTH_TEST);
+	
 	// Use the first progam
 	glUseProgram(gl->programs[0]);
 	
@@ -321,12 +328,169 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glUseProgram(0);
 	
+	// =========================================================================
+	// UI Setup
+	// =========================================================================
+	
+	// Disable depth testing, this is only a pain with UIs
+	glDisable(GL_DEPTH_TEST);
+	
+	// -------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
+	
+	glUseProgram(gl->programs[2]);
+	
+	// Make sure the UI world exsists and that there is at least more than one box
+	if (world->ui && world->ui->box_count > 0) {
+		// ~= foreach ( C_UIText element : world->ui->text )
+		for (uint32_t i = 0; i < world->ui->box_count; i++) {
+			uint32_t id = world->ui->box[i].base.id;
+			C_UIBox *element = &world->ui->box[i];
+			
+			// Update the box if it was changed last frame in some ways
+			if (element->updated) {
+				// Create buffers
+				if (!element->vbo) {
+					glGenBuffers(1, &element->vbo);
+				}
+				
+				if (!element->ebo) {
+					glGenBuffers(1, &element->ebo);
+				}
+				
+				if (!element->vao) {
+					glGenVertexArrays(1, &element->vao);
+				}
+				
+				glBindVertexArray(element->vao);
+				glBindBuffer(GL_ARRAY_BUFFER, element->vbo);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element->ebo);
+				
+				gl_error_check(__FILE__, __LINE__);
+				
+				// Compute new vertex data...
+				float vertex[4][8];
+				uint32_t index[6] = {
+					0, 1, 2,
+					0, 2, 3,
+				};
+				
+				vertex[0][0] = element->pos.x;
+				vertex[0][1] = element->pos.y;
+				vertex[0][2] = 0.0f;
+				vertex[0][3] = 0.0f;
+				vertex[0][4] = element->colour.r;
+				vertex[0][5] = element->colour.g;
+				vertex[0][6] = element->colour.b;
+				vertex[0][7] = element->colour.a;
+				
+				vertex[1][0] = element->pos.x;
+				vertex[1][1] = element->pos.y - element->size.y;
+				vertex[1][2] = 0.0f;
+				vertex[1][3] = 0.0f;
+				vertex[1][4] = element->colour.r;
+				vertex[1][5] = element->colour.g;
+				vertex[1][6] = element->colour.b;
+				vertex[1][7] = element->colour.a;
+				
+				vertex[2][0] = element->pos.x + element->size.x;
+				vertex[2][1] = element->pos.y - element->size.y;
+				vertex[2][2] = 0.0f;
+				vertex[2][3] = 0.0f;
+				vertex[2][4] = element->colour.r;
+				vertex[2][5] = element->colour.g;
+				vertex[2][6] = element->colour.b;
+				vertex[2][7] = element->colour.a;
+				
+				vertex[3][0] = element->pos.x + element->size.x;
+				vertex[3][1] = element->pos.y;
+				vertex[3][2] = 0.0f;
+				vertex[3][3] = 0.0f;
+				vertex[3][4] = element->colour.r;
+				vertex[3][5] = element->colour.g;
+				vertex[3][6] = element->colour.b;
+				vertex[3][7] = element->colour.a;
+				
+				// Push the data to the GPU
+				glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8 * 4, vertex, GL_STATIC_DRAW);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(uint32_t), index, GL_STATIC_DRAW);
+				
+				gl_error_check(__FILE__, __LINE__);
+				
+				// Specify how OpenGL should get the data
+				GLuint attr;
+				
+				attr = glGetAttribLocation(gl->programs[2], "position");
+				glVertexAttribPointer(
+					attr,
+					2,
+					GL_FLOAT,
+					GL_FALSE,
+					sizeof(float) * 8,
+					(void *) 0
+				);
+				glEnableVertexAttribArray(attr);
+				
+				gl_error_check(__FILE__, __LINE__);
+				
+				attr = glGetAttribLocation(gl->programs[2], "texpos");
+				if (attr == -1) {
+					DgLog(DG_LOG_ERROR, "TEXPOS IS NOWHERE!!!");
+				}
+				glVertexAttribPointer(
+					attr,
+					2,
+					GL_FLOAT,
+					GL_FALSE,
+					sizeof(float) * 8,
+					(void *) (2 * sizeof(float))
+				);
+				gl_error_check(__FILE__, __LINE__);
+				glEnableVertexAttribArray(attr);
+				
+				gl_error_check(__FILE__, __LINE__);
+				
+				attr = glGetAttribLocation(gl->programs[2], "colour");
+				glVertexAttribPointer(
+					attr,
+					4,
+					GL_FLOAT,
+					GL_FALSE,
+					sizeof(float) * 8,
+					(void *) (4 * sizeof(float))
+				);
+				glEnableVertexAttribArray(attr);
+				
+				gl_error_check(__FILE__, __LINE__);
+				
+				element->updated = false;
+			}
+			
+			// And of course draw at the end...
+			glBindVertexArray(element->vao);
+			glBindBuffer(GL_ARRAY_BUFFER, element->vbo);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element->ebo);
+			
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			
+			gl_error_check(__FILE__, __LINE__);
+		}
+	}
+	
+	// Unbind everything
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glUseProgram(0);
+	
 	// -------------------------------------------------------------------------
 	// -------------------------------------------------------------------------
 	// -------------------------------------------------------------------------
 	
 	glUseProgram(gl->programs[1]);
 	
+	glUniform1i(glGetUniformLocation(gl->programs[1], "enableTexture"), 1);
 	float screen_ratio = (float) h / (float) w;
 	
 	// Make sure the UI world exsists and that there is at least more than one box
@@ -488,149 +652,6 @@ void gl_graphics_update(World *world, DgOpenGLContext *gl) {
 			}
 			
 			glDrawElements(GL_TRIANGLES, element->index_count, GL_UNSIGNED_INT, 0);
-			
-			gl_error_check(__FILE__, __LINE__);
-		}
-	}
-	
-	// Unbind everything
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glUseProgram(0);
-	
-	// -------------------------------------------------------------------------
-	// -------------------------------------------------------------------------
-	// -------------------------------------------------------------------------
-	
-	glUseProgram(gl->programs[2]);
-	
-	// Make sure the UI world exsists and that there is at least more than one box
-	if (world->ui && world->ui->box_count > 0) {
-		// ~= foreach ( C_UIText element : world->ui->text )
-		for (uint32_t i = 0; i < world->ui->box_count; i++) {
-			uint32_t id = world->ui->box[i].base.id;
-			C_UIBox *element = &world->ui->box[i];
-			
-// 			DgLog(DG_LOG_VERBOSE, "id %d, pos: (%.3f, %.3f), size: (%.3f, %.3f), colour: (%.3f, %.3f, %.3f, %.3f)", i, element->pos.x, element->pos.y, element->size.x, element->size.y, element->colour.r, element->colour.g, element->colour.b, element->colour.a);
-			
-			// Update the box if it was changed last frame in some ways
-			if (element->updated) {
-				// Create buffers
-				if (!element->vbo) {
-					glGenBuffers(1, &element->vbo);
-				}
-				
-				if (!element->ebo) {
-					glGenBuffers(1, &element->ebo);
-				}
-				
-				if (!element->vao) {
-					glGenVertexArrays(1, &element->vao);
-				}
-				
-				glBindVertexArray(element->vao);
-				glBindBuffer(GL_ARRAY_BUFFER, element->vbo);
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element->ebo);
-				
-				gl_error_check(__FILE__, __LINE__);
-				
-				// Compute new vertex data...
-				float vertex[4][8];
-				uint32_t index[6] = {
-					0, 1, 2,
-					0, 2, 3,
-				};
-				
-				vertex[0][0] = element->pos.x;
-				vertex[0][1] = element->pos.y;
-				vertex[0][2] = 0.0f;
-				vertex[0][3] = 0.0f;
-				vertex[0][4] = element->colour.r;
-				vertex[0][5] = element->colour.g;
-				vertex[0][6] = element->colour.b;
-				vertex[0][7] = element->colour.a;
-				
-				vertex[1][0] = element->pos.x;
-				vertex[1][1] = element->pos.y - element->size.y;
-				vertex[1][2] = 0.0f;
-				vertex[1][3] = 0.0f;
-				vertex[1][4] = element->colour.r;
-				vertex[1][5] = element->colour.g;
-				vertex[1][6] = element->colour.b;
-				vertex[1][7] = element->colour.a;
-				
-				vertex[2][0] = element->pos.x + element->size.x;
-				vertex[2][1] = element->pos.y - element->size.y;
-				vertex[2][2] = 0.0f;
-				vertex[2][3] = 0.0f;
-				vertex[2][4] = element->colour.r;
-				vertex[2][5] = element->colour.g;
-				vertex[2][6] = element->colour.b;
-				vertex[2][7] = element->colour.a;
-				
-				vertex[3][0] = element->pos.x + element->size.x;
-				vertex[3][1] = element->pos.y;
-				vertex[3][2] = 0.0f;
-				vertex[3][3] = 0.0f;
-				vertex[3][4] = element->colour.r;
-				vertex[3][5] = element->colour.g;
-				vertex[3][6] = element->colour.b;
-				vertex[3][7] = element->colour.a;
-				
-				// Push the data to the GPU
-				glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8 * 4, vertex, GL_STATIC_DRAW);
-				glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(uint32_t), index, GL_STATIC_DRAW);
-				
-				gl_error_check(__FILE__, __LINE__);
-				
-				// Specify how OpenGL should get the data
-				GLuint attr;
-				
-				attr = glGetAttribLocation(gl->programs[2], "position");
-				glVertexAttribPointer(
-					attr,
-					2,
-					GL_FLOAT,
-					GL_FALSE,
-					sizeof(float) * 8,
-					(void *) 0
-				);
-				glEnableVertexAttribArray(attr);
-				
-				attr = glGetAttribLocation(gl->programs[2], "texpos");
-				glVertexAttribPointer(
-					attr,
-					2,
-					GL_FLOAT,
-					GL_FALSE,
-					sizeof(float) * 8,
-					(void *) (2 * sizeof(float))
-				);
-				glEnableVertexAttribArray(attr);
-				
-				attr = glGetAttribLocation(gl->programs[2], "colour");
-				glVertexAttribPointer(
-					attr,
-					4,
-					GL_FLOAT,
-					GL_FALSE,
-					sizeof(float) * 8,
-					(void *) (4 * sizeof(float))
-				);
-				glEnableVertexAttribArray(attr);
-				
-				gl_error_check(__FILE__, __LINE__);
-				
-				element->updated = false;
-			}
-			
-			// And of course draw at the end...
-			glBindVertexArray(element->vao);
-			glBindBuffer(GL_ARRAY_BUFFER, element->vbo);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element->ebo);
-			
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			
 			gl_error_check(__FILE__, __LINE__);
 		}

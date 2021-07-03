@@ -70,9 +70,9 @@ function init()
 	mgUITextSize(ui.Speed, 0.09)
 	mgUITextFont(ui.Speed, "font3")
 	
--- 	ui.TestBox = mgUIElement(QR_ELEMUI_BOX)
--- 	mgUIBox(ui.TestBox, -1.0, 1.0, 2.0, 0.25)
--- 	mgUIBoxColour(ui.TestBox, 0.0, 0.0, 0.0, 0.75)
+	ui.TestBox = mgUIElement(QR_ELEMUI_BOX)
+	mgUIBox(ui.TestBox, -1.0, 1.0, 2.0, 0.25)
+	mgUIBoxColour(ui.TestBox, 0.0, 0.0, 0.0, 0.75)
 	
 	lives.count = 5
 	lives.updated = true

@@ -64,6 +64,7 @@ enum {
 typedef struct {
 	ComponentBase_t base;
 	// ================== //
+	
 	float mass;
 	uint32_t flags;
 	DgVec3 Vpos;
@@ -72,6 +73,29 @@ typedef struct {
 	DgVec3 Frot;
 	uint32_t col_object;
 } C_Physics;
+
+typedef struct AABBBox {
+	DgVec3 pos;
+	DgVec3 size;
+} AABBBox;
+
+typedef struct Sphere {
+	DgVec3 pos;
+	float radius;
+} Sphere;
+
+typedef struct {
+	ComponentBase_t base;
+	// ================== //
+	enum {
+		QR_AABB_BOX = 1,
+		QR_SPHERE = 2,
+	} type;
+	union {
+		AABBBox box;
+		Sphere sphere;
+	};
+} C_Shape;
 
 typedef struct C_UIBox {
 	ComponentBase_t base;
