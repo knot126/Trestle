@@ -186,3 +186,94 @@ void DgUISurfaceSetDefaultBase(DgUISurface *surface, DgUIElementBase *base);
 void DgUISurfaceSetDefaultFontMetrics(DgUISurface *surface, DgUIFontMetrics *metrics);
 void DgUISurfaceSetDefaultPanelMetrics(DgUISurface *surface, DgUIPanelMetrics *metrics);
 ```
+
+#### Create Simple Objects
+
+Simpler objects can be created using the "New" series of functions:
+
+```c
+DgUIElementBase DgUIElementBaseNew(DgVec2 pos, bool visible, bool enable);
+DgUIFontMetrics DgUIFontMetricsNew(DgVec4 colour, float size, int32_t font, uint32_t align);
+DgUIPanelMetrics DgUIPanelMetricsNew(DgVec4 colour, DgVec4 padding, DgVec2 size, float radius);
+DgUIActionSpec DgUIActionSpecNew(void *context, void (*callback)(void *context));
+```
+
+Examples:
+
+```c
+DgUIPanelMetrics pm = DgUIPanelMetricsNew(
+	DgVec4New(0.0f, 0.0f, 0.0f, 1.0f),
+	DgVec4New(0.05f, 0.05f, 0.05f, 0.05f),
+	DgVec2New(0.5f, 0.3f),
+	0.035f
+);
+```
+
+#### Create Elements (Complex Objects)
+
+More complex objects - like Elements - are created similarly but may require that memory be allocated or allow you to pass in a surface to get defaults.
+
+```c
+DgUIPanel DgUIPanelNew(
+	DgUISurface *surface, 
+	DgUIElementBase *base, 
+	DgUIPanelMetrics *panel);
+
+DgUILabel DgUILabelNew(
+	DgUISurface *surface, 
+	DgUIElementBase *base,
+	DgUIFontMetrics *font, 
+	const char * const content);
+
+DgUILineEdit DgUILineEditNew(
+	DgUISurface *surface, 
+	DgUIElementBase *base, 
+	DgUIFontMetrics *font, 
+	DgUIPanelMetrics *panel, 
+	const char * const placeholder, 
+	const char * const content, 
+	DgUIPanelMetrics *s_style);
+
+DgUIButton DgUIButtonNew(
+	DgUISurface *surface, 
+	DgUIElementBase *base, 
+	DgUIFontMetrics *font, 
+	DgUIPanelMetrics *panel, 
+	const char * const content,
+	DgUIActionSpec *action);
+```
+
+Example: 
+
+```c
+DgUILineEdit le = DgUILineEditNew(
+	NULL, 
+	&DgUIElementBaseNew(
+		DgVec2New(-1.0f, 1.0f), // top corner
+		true,
+		true
+	), 
+	&DgUIFontMetricsNew(
+		DgVec4New(1.0f, 1.0f, 1.0f, 0.975f),
+		0.05f,
+		0,
+		DG_UI_LEFT
+	), 
+	&DgUIPanelMetricsNew(
+		DgVec4New(0.0f, 0.0f, 0.0f, 0.5f),
+		DgVec4New(0.03f, 0.03f, 0.03f, 0.03f),
+		DgVec2New(0.2f, 0.1f),
+		0.035f
+	), 
+	"Type here...", 
+	"", 
+	&DgUIPanelMetricsNew(
+		DgVec4New(1.0f, 1.0f, 1.0f, 0.1f),
+		DgVec4New(0.0f, 0.0f, 0.0f, 0.0f),
+		DgVec2New(0.0f, 0.0f), // not used
+		0.035f
+	)
+);
+
+DgUISurfaceAddLineEdit(surface, &le);
+```
