@@ -51,7 +51,7 @@ typedef struct DgUIPanelMetrics {
 typedef struct DgUIActionSpec {
 	void *context;                     // Context to be passed to callback
 	void (*callback)(void *context);   // Callback to be called on action
-};
+} DgUIActionSpec;
 
 // Actual UI elements
 
@@ -59,7 +59,7 @@ typedef struct DgUIPanel {
 	DgUIElementBase base;
 	DgUIPanelMetrics panel;
 	// =========================================================================
-};
+} DgUIPanel;
 
 typedef struct DgUILabel {
 	DgUIElementBase base;
@@ -99,7 +99,7 @@ typedef struct DgUIButton {
 
 // Surfaces
 
-#define DG_UI_ELEMENT_LIST(TYPE_NAME, ACCESS_NAME, COUNT_NAME) TYPE_NAME ACCESS_NAME; size_t COUNT_NAME; 
+#define DG_UI_ELEMENT_LIST(TYPE_NAME, ACCESS_NAME, COUNT_NAME) TYPE_NAME *ACCESS_NAME; size_t COUNT_NAME; 
 
 typedef struct DgUISurface {
 	// The default for some styling elements
@@ -124,3 +124,36 @@ void DgUISurfaceFree(DgUISurface *surface);
 void DgUISurfaceSetDefaultBase(DgUISurface *surface, DgUIElementBase *base);
 void DgUISurfaceSetDefaultFontMetrics(DgUISurface *surface, DgUIFontMetrics *metrics);
 void DgUISurfaceSetDefaultPanelMetrics(DgUISurface *surface, DgUIPanelMetrics *metrics);
+
+DgUIElementBase DgUIElementBaseNew(DgVec2 pos, bool visible, bool enable);
+DgUIFontMetrics DgUIFontMetricsNew(DgVec4 colour, float size, int32_t font, uint32_t align);
+DgUIPanelMetrics DgUIPanelMetricsNew(DgVec4 colour, DgVec4 padding, DgVec2 size, float radius);
+DgUIActionSpec DgUIActionSpecNew(void *context, void (*callback)(void *context));
+
+DgUIPanel DgUIPanelNew(
+	DgUISurface *surface, 
+	DgUIElementBase *base, 
+	DgUIPanelMetrics *panel);
+
+DgUILabel DgUILabelNew(
+	DgUISurface *surface, 
+	DgUIElementBase *base,
+	DgUIFontMetrics *font, 
+	const char * const content);
+
+DgUILineEdit DgUILineEditNew(
+	DgUISurface *surface, 
+	DgUIElementBase *base, 
+	DgUIFontMetrics *font, 
+	DgUIPanelMetrics *panel, 
+	const char * const placeholder, 
+	const char * const content, 
+	DgUIPanelMetrics *s_style);
+
+DgUIButton DgUIButtonNew(
+	DgUISurface *surface, 
+	DgUIElementBase *base, 
+	DgUIFontMetrics *font, 
+	DgUIPanelMetrics *panel, 
+	const char * const content,
+	DgUIActionSpec *action);
