@@ -110,3 +110,23 @@ function createUIText(text, x, y, size)
 	
 	return e
 end
+
+-- prototyping menu
+
+function createMenu(options, x)
+	local m = {}
+	
+	for i = 0, #options do
+		m["T" .. tostring(i)] = createUIText(options[i], x, 1.0 - (i * 0.12), 0.1)
+	end
+	
+	m.current = 0
+	
+	return m
+end
+
+function updateMenu(m)
+	mgUITextColour(m["T" .. tostring(m.current)], 0.5, 0.5, 1.0, 1.0)
+	
+	return m
+end

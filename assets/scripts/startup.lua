@@ -12,22 +12,7 @@ lives = {}
 ui = {}
 next_pos = 100.0
 
-function init()
-	-- player init
-	local player = new_cube(0.0, 1.5, 0.0, 0.9, 0.9, 0.9, true, QR_PHYS_ENABLE_RESPONSE, "assets://mesh/player.xml")
-	mgActivePlayer(player)
-	
--- 	mgSetSpeed(1.0, 10.0)
-	
-	-- spawn
--- 	mgBox(
--- 		0.0, 0.0, -8.0,
--- 		6.0, 0.25, 8.0,
--- 		mgRandFloat(), mgRandFloat(), mgRandFloat(), "tile0"
--- 	)
--- 	
--- 	buildFloorTest(5.0, 12.0, 100.0)
-	
+function initHud()
 	ui.Statistics = mgUIElement(QR_ELEMUI_TEXT)
 	mgUIText(ui.Statistics, "[text about in-game statistics will appear here shortly...]")
 	mgUITextPos(ui.Statistics, -1.0, -0.9)
@@ -80,6 +65,16 @@ function init()
 	first = mgEntity(0)
 end
 
+function init()
+	-- player init
+	local player = new_cube(0.0, 1.5, 0.0, 0.9, 0.9, 0.9, true, QR_PHYS_ENABLE_RESPONSE, "assets://mesh/player.xml")
+	mgActivePlayer(player)
+	
+	initHud()
+	
+	--m = createMenu({"Option 1", "Option 2", "Option 3"}, -0.9)
+end
+
 function room()
 	return next_pos / 100.0
 end
@@ -90,14 +85,6 @@ function tick()
 	mgUIText(ui.Statistics, "Frame " .. tostring(frame) .. ", " .. tostring(mgEntCount()) .. " Entities, Position: " .. "(" .. x .. ", " .. y .. ", " .. z .. ")")
 	mgUIText(ui.Distance, tostring(math.floor(-z)))
 	mgUIText(ui.Speed, tostring(mgGetSpeed()))
-	
-	-- build more walls as the player moves forward
--- 	if z < -(next_pos - 20.0) then 
--- 		mgDeleteOlder(first)
--- 		buildFloorTest(5.0, 12.0, 100.0, next_pos)
--- 		next_pos = next_pos + 100.0
--- 		mgSetSpeed((room() / 10.0) + 1.0, room() + 10.0)
--- 	end
 	
 	if lives.updated then
 		mgUIText(ui.LivesCount, tostring(lives.count))
