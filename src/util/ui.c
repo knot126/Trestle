@@ -310,9 +310,24 @@ DG_UI_REMOVE_ELEMENT(DgUISurfaceRemoveButton, DgUIButton, button, button_count);
  * =============================================================================
  */
 
-void DgUISurfaceUpdate(DgUISurface *surface) {
+void DgUILineEditUpdateText(DgUILineEdit *object, unsigned keycode) {
+	/**
+	 * Update the LineEdit object to add or remove letters, or move the cursor
+	 * using the arrow keys.
+	 */
+	
+	
+}
+
+void DgUISurfaceUpdate(DgUISurface *surface, DgUISurfaceUpdateStructure *info) {
 	/**
 	 * Call all of the needed update routines.
 	 */
 	
+}
+
+void DgUISurfaceRenderData(DgUISurface *surface, DgUIRenderData *data) {
+	/**
+	 * Generate and return the render data.
+	 */
 }

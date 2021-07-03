@@ -116,6 +116,37 @@ typedef struct DgUISurface {
 
 #undef DG_UI_ELEMENT_LIST
 
+typedef struct DgUISurfaceUpdateStructure {
+	unsigned(*getKey)(void *ctx, unsigned code);
+	void *getKey_ctx;
+} DgUISurfaceUpdateStructure;
+
+typedef struct DgUIFrameInputInfo {
+	// contain information on keypresses, mouse movements, etc..
+	uint8_t dummy;
+} DgUIFrameInputInfo;
+
+typedef struct DgUIRenderVertex {
+	// A single vertex for the UI
+	float x, y;
+	float u, v;
+	float r, g, b, a;
+} DgUIRenderVertex;
+
+typedef struct DgUIRenderVertexSet {
+	// A set of vertexes
+	DgUIRenderVertex *vertex;
+	size_t vertex_count;
+	uint32_t flags;
+	uint32_t texture;
+} DgUIRenderVertexSet;
+
+typedef struct DgUIRenderData {
+	/* Data needed to render the UI. */
+	DgUIRenderVertexSet *data;
+	size_t length;
+} DgUIRenderData;
+
 // Function Declarations
 
 DgUISurface *DgUISurfaceNew(void);
