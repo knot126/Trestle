@@ -123,6 +123,7 @@ static char *xml_escape_and_free(char *string) {
 	size_t len = strlen(string);
 	size_t lenallocate = len + 1;
 	
+	// Calculate the length of the unescaped string
 	for (size_t i = 0; i < len; i++) {
 		if (string[i] == '&') {
 			while (string[i++] != ';') {
@@ -135,10 +136,12 @@ static char *xml_escape_and_free(char *string) {
 		}
 	}
 	
-	if (len == (lenallocate - 1)) { // no processing needed
+	// Check if any processing is needed at all
+	if (len == (lenallocate - 1)) {
 		return string;
 	}
 	
+	// Allocate new string
 	char *new = (char *) DgAlloc(sizeof *new * lenallocate);
 	
 	if (!new) {
@@ -147,15 +150,20 @@ static char *xml_escape_and_free(char *string) {
 	
 	new[lenallocate - 1] = '\0';
 	
+	// Fill in the new string with values
 	for (size_t i = 0, j = 0; i < len; i++, j++) {
+		// Check for escape
 		if (string[i] == '&') {
 			++i;
 			
 			// Find what the escape is assocaited with...
 			for (size_t k = 0; k < sizeof(EscapeValues); k++) {
 				if (xml_strnext(&string[i], EscapeValues[k].key)) {
+					// Replace escape with char
 					new[j] = EscapeValues[k].value;
-					while (string[++i] != ';');
+					while (string[i] != ';') {
+						i++;
+					};
 					break;
 				}
 			}
@@ -165,6 +173,7 @@ static char *xml_escape_and_free(char *string) {
 		}
 	}
 	
+	// Free old string
 	DgFree(string);
 	
 	return new;
