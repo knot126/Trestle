@@ -86,6 +86,90 @@ static bool is_comment_end(const char * const seq) {
 	return (seq[0] == '-' && seq[1] == '-' && seq[2] == '>');
 }
 
+static bool xml_strnext(char *str, char *what) {
+	/**
+	 * Find if str starts with what.
+	 */
+	
+	int len = strlen(what);
+	int k = 0;
+	
+	while (*str != '\0' && *what != '\0' && *(str++) == *(what++)) {
+		k++;
+	}
+	
+	return (len == k);
+}
+
+typedef struct {
+	char *key;
+	char value;
+} Dg_XMLAssocEscape;
+
+static char *xml_escape_and_free(char *string) {
+	/**
+	 * Escape an XML string, returning unescaped string if there is a fault
+	 */
+	
+	const Dg_XMLAssocEscape EscapeValues[] = {
+		{"amp", '&'},
+		{"apos", '\''},
+		{"quot", '"'},
+		{"lt", '<'},
+		{"gt", '>'},
+		{"", '~'}, // invalid escape sequence
+	};
+	
+	size_t len = strlen(string);
+	size_t lenallocate = len + 1;
+	
+	for (size_t i = 0; i < len; i++) {
+		if (string[i] == '&') {
+			while (string[i++] != ';') {
+				if (string[i] == '\0') { // something went wrong, just return unescaped
+					return string;
+				}
+				
+				lenallocate--;
+			}
+		}
+	}
+	
+	if (len == (lenallocate - 1)) { // no processing needed
+		return string;
+	}
+	
+	char *new = (char *) DgAlloc(sizeof *new * lenallocate);
+	
+	if (!new) {
+		return string;
+	}
+	
+	new[lenallocate - 1] = '\0';
+	
+	for (size_t i = 0, j = 0; i < len; i++, j++) {
+		if (string[i] == '&') {
+			++i;
+			
+			// Find what the escape is assocaited with...
+			for (size_t k = 0; k < sizeof(EscapeValues); k++) {
+				if (xml_strnext(&string[i], EscapeValues[k].key)) {
+					new[j] = EscapeValues[k].value;
+					while (string[++i] != ';');
+					break;
+				}
+			}
+		}
+		else {
+			new[j] = string[i];
+		}
+	}
+	
+	DgFree(string);
+	
+	return new;
+}
+
 /**
  * Main Parsing and Loading Functions
  * ==================================
@@ -108,6 +192,7 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 	/**
 	 * Main tokeniser loop
 	 */
+	{
 	for (size_t i = 0; i < content_size; i++) {
 		if (is_whitespace(&content[i])) {
 			continue;
@@ -189,22 +274,12 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 			}
 		}
 	}
-	
-	//printf("Took %d iterations to parse document.\n", icount);
-	
-	/**
-	 * Debug: Print out all the tokens in a nice format.
-	 */
-#if 0
-	for (size_t i = 0; i < token_count; i++) {
-		printf("[ %.3d ] %d -> %s\n", i, tokens[i].type, tokens[i].text);
 	}
-#endif
 	
 	/*
 	 * Pre-parser steps
 	 */
-	memset(doc, 0, sizeof(DgXMLNode));
+	memset(doc, 0, sizeof *doc);
 	
 	/**
 	 * XML Parser loop
@@ -213,10 +288,7 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 	DgXMLNode *current = (DgXMLNode *) doc;
 	
 	for (size_t i = 0; i < token_count; i++) {
-		//printf("================================================\n");
-		//DgXMLPrintNode(doc, 0);
-		
-		// Sync the current node to the starting node
+		// Sync to starting node
 		current = doc;
 		for (size_t i = 1; i < depth; i++) {
 			current = &current->sub[current->sub_count - 1];
@@ -226,11 +298,7 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 		if (tokens[i].type == DG_XML_TAG_NAME) {
 			// New subelement that is not the document root
 			if (depth > 0) {
-				//printf("current->sub_count is 0, current is %x\n", current);
-				current->sub_count++;
-				
-				//printf("DgRealloc(<%x>, %d)\n", current->sub, current->sub_count);
-				current->sub = DgRealloc(current->sub, current->sub_count * sizeof(DgXMLNode));
+				current->sub = DgRealloc(current->sub, sizeof *current->sub * ++current->sub_count);
 				
 				if (!current->sub) {
 					DgLog(DG_LOG_ERROR, "[XML Parser] Failed to allocate memory for subnodes.\n");
@@ -244,16 +312,15 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 			depth++;
 			current->name = tokens[i].text;
 			
-			//printf("%d: %s\n", depth, current->name);
-			
 			// Peek the next token to see if we have attributes
-			// If it is name 'name,' we certinaly have attributes
+			// If it is name 'name,' we certianly have attributes
 			while ((i + 1) < token_count && tokens[i + 1].type == DG_XML_NAME) {
 				i++;
 				
 				char *key = tokens[i].text;
 				
-				// Check that we have enough tokens left then check if assoc
+				// Check that we have enough tokens left and if the next token
+				// is what we expect (an assocaitor). If not, then error.
 				if ((i + 1) < token_count && tokens[i + 1].type == DG_XML_ASSOC) {
 					i++;
 					
@@ -270,15 +337,22 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 							return 5;
 						}
 						
+						value = xml_escape_and_free(value);
+						
+						if (!current->attrib) {
+							DgLog(DG_LOG_ERROR, "[XML Parser] Failed to allocate memory for escaped string.\n");
+							return 6;
+						}
+						
 						current->attrib[current->attrib_count - 1].key = key;
 						current->attrib[current->attrib_count - 1].value = value;
 					}
-					else {
+					else { // End of doc or did not get string
 						DgLog(DG_LOG_ERROR, "[XML Parser] Expected string, got other type or end of document.\n");
 						return 4;
 					}
 				}
-				else {
+				else { // End of doc or did not get assoc
 					DgLog(DG_LOG_ERROR, "[XML Parser] Expected assocatior, got other type or end of document.\n");
 					return 2;
 				}
