@@ -153,6 +153,11 @@ DgOpenGLContext* gl_graphics_init(void) {
 	glUseProgram(gl->programs[0]);
 	glUniform1i(glGetUniformLocation(gl->programs[0], "image"), 0);
 	
+	glUniform1f(glGetUniformLocation(gl->programs[0], "LightFactor"), 0.15f);
+	DgVec3 v = {1.0, 1.0, 0.1};
+	v = DgVec3Normalise(v);
+	glUniform3f(glGetUniformLocation(gl->programs[0], "LightDirection"), v.x, v.y, v.z);
+	
 	gl_error_check(__FILE__, __LINE__);
 	
 	glUseProgram(gl->programs[1]);
