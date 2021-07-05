@@ -127,7 +127,7 @@ char *DgFileStreamGetString(DgFileStream* stream) {
 	size_t alloc = 0;
 	char *str = NULL;
 	
-	while (c != '\0' && c != '\n' && c != EOF && c != '\r') {
+	while (true) {
 		if (size >= alloc) {
 			alloc = 4 + (alloc * 2);
 			
@@ -140,7 +140,7 @@ char *DgFileStreamGetString(DgFileStream* stream) {
 		
 		c = fgetc(stream->_c_file_stream);
 		
-		if (c == EOF) {
+		if (c == '\0' || c == '\n' || c == EOF || c == '\r') {
 			break;
 		}
 		
