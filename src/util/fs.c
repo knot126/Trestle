@@ -57,54 +57,6 @@ void DgInitPaths() {
 	
 }
 
-char* DgEvalPath(char* path) {
-	/* 
-	 * Expands/evaluates a DGFS path. Remember to free the allocated memory.
-	 * 
-	 * DGFS DESCRIPTION
-	 * ================
-	 * 
-	 * DGFS allows using a single, standard file path for all platforms. It 
-	 * (tries to) abstracts the normal file system without going too far.
-	 * 
-	 *   * asset://            - Access to the game's main asset bundle.
-	 *   * config://           - Access to the user's save directory.
-	 *   * bin://              - Access to the binaries directory.
-	 */
-	
-	// Check for a path that does not need evaluation
-	if (!strstr(path, "://")) {
-		return path;
-	}
-	
-	uint8_t i; // For the path to use
-	
-	// Note we only check the first two bytes
-	if (!memcmp(path, "as", 2)) {
-		i = 0;
-	}
-	else if (!memcmp(path, "co", 2)) {
-		i = 1;
-	}
-	else if (!memcmp(path, "bi", 2)) {
-		i = 2;
-	}
-	else {
-		return NULL;
-	}
-	
-	// Here, we account for: old len + added "/" len + special len + null term
-	size_t size = strlen(path) + strlen(dg_special_directory_paths[i]) + (sizeof(char) * 2);
-	char *new_path = (char *) DgAlloc(size);
-	char *rel_path = strstr(path, "://") + (sizeof(char) * 3);
-	
-	strcpy(new_path, dg_special_directory_paths[i]);
-	strcat(new_path, "/");
-	strcat(new_path, rel_path);
-	
-	return new_path;
-}
-
 DgFileStream* DgFileStreamOpen(char* path, char* permissions) {
 	/* Opens a file stream */
 	FILE *f;
@@ -159,6 +111,108 @@ size_t DgFileStreamLength(DgFileStream* stream) {
 	rewind(stream->_c_file_stream);
 	
 	return size;
+}
+
+char *DgFileStreamGetString(DgFileStream* stream) {
+	/**
+	 * Get a string from a file stream. Here, a string is terminated by either 
+	 * a \0, \n, EOF or \r. This returns NULL on failure or the string on
+	 * success.
+	 * 
+	 * NB: The returned string must be freed afterwards.
+	 */
+	
+	int c;
+	size_t size = 0;
+	size_t alloc = 0;
+	char *str = NULL;
+	
+	while (c != '\0' && c != '\n' && c != EOF && c != '\r') {
+		if (size >= alloc) {
+			alloc = 4 + (alloc * 2);
+			
+			str = (char *) DgRealloc(str, alloc);
+			
+			if (!str) {
+				return NULL;
+			}
+		}
+		
+		c = fgetc(stream->_c_file_stream);
+		
+		if (c == EOF) {
+			break;
+		}
+		
+		str[size] = (char) c;
+		
+		size++;
+	}
+	
+	str = (char *) DgRealloc(str, size + 1);
+	
+	if (!str) {
+		return NULL;
+	}
+	
+	str[size] = '\0';
+	
+	return str;
+}
+
+/**
+ * Non-File Stream Functions
+ * -------------------------
+ * 
+ * Generic file utilities, not for streams!
+ */
+
+char* DgEvalPath(char* path) {
+	/* 
+	 * Expands/evaluates a DGFS path. Remember to free the allocated memory.
+	 * 
+	 * DGFS DESCRIPTION
+	 * ================
+	 * 
+	 * DGFS allows using a single, standard file path for all platforms. It 
+	 * (tries to) abstracts the normal file system without going too far.
+	 * 
+	 *   * asset://            - Access to the game's main asset bundle.
+	 *   * config://           - Access to the user's save directory.
+	 *   * bin://              - Access to the binaries directory.
+	 */
+	
+	// Check for a path that does not need evaluation
+	if (!strstr(path, "://")) {
+		return path;
+	}
+	
+	uint8_t i; // For the path to use
+	
+	// Note we only check the first two bytes
+	if (!memcmp(path, "as", 2)) {
+		i = 0;
+	}
+	else if (!memcmp(path, "co", 2)) {
+		i = 1;
+	}
+	else if (!memcmp(path, "bi", 2)) {
+		i = 2;
+	}
+	else {
+		return NULL;
+	}
+	
+	// Here, we account for: old len + added "/" len + special len + null term
+	size_t size = strlen(path) + strlen(dg_special_directory_paths[i]) + (sizeof(char) * 2);
+	char *new_path = (char *) DgAlloc(size);
+	char *rel_path = strstr(path, "://") + (sizeof(char) * 3);
+	
+	strcpy(new_path, dg_special_directory_paths[i]);
+	strcat(new_path, "/");
+	strcat(new_path, rel_path);
+	
+	return new_path;
 }
 
 void DgMkdir(char* path) {
@@ -254,6 +308,13 @@ inline void DgFileStreamReadFloat(DgFileStream* stream, float* data) {
 
 inline void DgFileStreamReadDouble(DgFileStream* stream, double* data) {
 	fread(data, sizeof(double), 1, stream->_c_file_stream);
+}
+
+inline void DgFileStreamReadLine(DgFileStream* stream, size_t max, char *data) {
+	char *c = fgets(data, max, stream->_c_file_stream);
+	if (!c) {
+		DgLog(DG_LOG_ERROR, "Failed to read line from file stream.");
+	}
 }
 
 /* =============================================================================

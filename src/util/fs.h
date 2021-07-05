@@ -27,6 +27,8 @@ void DgFileStreamClose(DgFileStream* stream);
 void DgFileStreamRead(DgFileStream* stream, size_t size, void* data);
 void DgFileStreamWrite(DgFileStream* stream, size_t size, const void* data);
 size_t DgFileStreamLength(DgFileStream* stream);
+char *DgFileStreamGetString(DgFileStream* stream);
+
 void DgMkdir(char* path);
 bool DgIsDir(const char* dir);
 char *DgGetUserDir();
@@ -44,6 +46,7 @@ void DgFileStreamReadInt64(DgFileStream* stream, int64_t* data);
 void DgFileStreamReadUInt64(DgFileStream* stream, uint64_t* data);
 void DgFileStreamReadFloat(DgFileStream* stream, float* data);
 void DgFileStreamReadDouble(DgFileStream* stream, double* data);
+void DgFileStreamReadLine(DgFileStream* stream, size_t max, char *data);
 
 void DgFileStreamWriteInt8(DgFileStream* stream, int8_t* data);
 void DgFileStreamWriteUInt8(DgFileStream* stream, uint8_t* data);
