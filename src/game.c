@@ -36,6 +36,7 @@
 #include "game/gameplay.h"
 #include "game/phys.h"
 #include "game/level.h"
+#include "game/gamescript.h"
 #include "types.h"
 
 #include "game.h"
@@ -66,12 +67,9 @@ static void sys_init(SystemStates *sys) {
 	
 	// Run the main game script
 	DgLog(DG_LOG_INFO, "Loading main game script...");
-	DgScriptInit(&sys->game_script);
-	DgRegisterRandFuncs(&sys->game_script);
-	registerWorldScriptFunctions(&sys->game_script);
-	DgScriptLoad(&sys->game_script, DgINIGet(g_quickRunConfig, "Main", "include_script_path", "assets://scripts/include.lua"));
-	DgScriptLoad(&sys->game_script, DgINIGet(g_quickRunConfig, "Main", "startup_script_path", "assets://scripts/startup.lua"));
-	DgScriptCall(&sys->game_script, "init");
+	game_script_new(&sys->game_script);
+	game_script_yeild(&sys->game_script, DgINIGet(g_quickRunConfig, "Main", "startup_script_path", "assets://scripts/startup.lua"));
+	game_script_active(&sys->game_script);
 	
 	// Init the level manager
 	DgLog(DG_LOG_INFO, "Initialising level manager...");
@@ -83,7 +81,7 @@ static void sys_destroy(SystemStates *sys) {
 	graphics_free(sys->graphics);
 	
 	DgLog(DG_LOG_INFO, "Freeing resources used by main script...");
-	DgScriptFree(&sys->game_script);
+	game_script_free(&sys->game_script);
 	
 	DgLog(DG_LOG_INFO, "Freeing resources used by level manager...");
 	level_free(&sys->level_info);
@@ -162,6 +160,8 @@ static int game_loop(World *world, SystemStates *systems) {
 		graphics_update(world, systems->graphics);
 		input_update(systems->graphics);
 		
+		game_script_update(&systems->game_script);
+		
 #ifndef QR_EXPRIMENTAL_THREADING
 		if (accumulate > g_physicsDelta) {
 			phys_update(world, g_physicsDelta);
@@ -169,7 +169,9 @@ static int game_loop(World *world, SystemStates *systems) {
 		}
 #endif
 		
-		gameplay_update(world);
+		if (!world_get_pause(world)) {
+			gameplay_update(world);
+		}
 		
 		// Update frame time
 		frame_time = DgTime() - frame_time;
@@ -189,9 +191,9 @@ static int game_loop(World *world, SystemStates *systems) {
 		}
 		
 		// Update the level
-		level_update(world, &systems->level_info);
-		
-		DgScriptCall(&systems->game_script, "tick");
+		if (!world_get_pause(world)) {
+			level_update(world, &systems->level_info);
+		}
 	} // while (should_keep_open)
 	
 #ifdef QR_EXPRIMENTAL_THREADING
@@ -199,12 +201,6 @@ static int game_loop(World *world, SystemStates *systems) {
 #endif
 	
 	return 0;
-}
-
-void *at(void *data) {
-	while (true) {
-		DgLog(DG_LOG_VERBOSE, "Hello from thread %d!", *(int *)data);
-	}
 }
 
 int game_main(int argc, char* argv[]) {
@@ -272,7 +268,7 @@ int game_main(int argc, char* argv[]) {
 	DgLog(DG_LOG_INFO, "Initialising main world...");
 	World main_world;
 	world_init(&main_world, 0);
-	SetActiveWorld(&main_world);
+	world_active(&main_world);
 	
 	// Load systems state
 	// 

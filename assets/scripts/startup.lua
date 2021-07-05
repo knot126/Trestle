@@ -71,8 +71,6 @@ function init()
 	mgActivePlayer(player)
 	
 	initHud()
-	
-	--m = createMenu({"Option 1", "Option 2", "Option 3"}, -0.9)
 end
 
 function room()
@@ -108,10 +106,16 @@ function tick()
 		mgUITextSize(ui.Dead, 0.35)
 		mgUITextFont(ui.Dead, "font3")
 		mgPaused(true)
+		
+		mgClearWorld()
+		mgYeildToScript("assets://scripts/menu.lua")
 	end
 	
 	-- Pulse the text colour
 	if lives.hasBeenDead then
 		mgUITextColour(ui.Dead, 1.0, (math.sin(frame * 0.01) + 1.0) / 2.0, (math.sin(frame * 0.01) + 1.0) / 2.0, 1.0)
 	end
+end
+
+function free()
 end

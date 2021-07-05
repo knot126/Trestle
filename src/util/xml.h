@@ -38,6 +38,7 @@ typedef struct DgXMLNode {
 } DgXMLNode;
 
 uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const char * const content);
+uint32_t DgXMLLoadString(DgXMLNode *doc, const char * const str);
 uint32_t DgXMLLoad(DgXMLNode *doc, const char * const path);
 void DgXMLNodeFree(DgXMLNode *node);
 void DgXMLPrintNode(const DgXMLNode * const doc, uint32_t depth);

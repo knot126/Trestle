@@ -385,6 +385,14 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 	return 0;
 }
 
+uint32_t DgXMLLoadString(DgXMLNode *doc, const char * const str) {
+	/**
+	 * Load a NULL-terminated string that contains an XML document.
+	 */
+	
+	return DgXMLParse(doc, strlen(str), str);
+}
+
 uint32_t DgXMLLoad(DgXMLNode *doc, const char * const path) {
 	/**
 	 * Load an XML document from a file into a basic parsed tree

@@ -99,6 +99,11 @@ typedef struct DgUIButton {
 
 // Surfaces
 
+typedef struct DgUIActiveInfo {
+	size_t type;
+	size_t index;
+} DgUIActiveInfo;
+
 #define DG_UI_ELEMENT_LIST(TYPE_NAME, ACCESS_NAME, COUNT_NAME) TYPE_NAME *ACCESS_NAME; size_t COUNT_NAME; 
 
 typedef struct DgUISurface {
@@ -106,6 +111,8 @@ typedef struct DgUISurface {
 	DgUIElementBase defaultBase;
 	DgUIFontMetrics defaultFont;
 	DgUIPanelMetrics defaultPanel;
+	
+	DgUIActiveInfo active;
 	
 	// The lists of elements
 	DG_UI_ELEMENT_LIST(DgUIPanel, panel, panel_count);
