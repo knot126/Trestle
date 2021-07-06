@@ -20,7 +20,7 @@
 #include "util/str.h"
 #include "util/rand.h"
 #include "util/log.h"
-#include "world/scripting.h"
+#include "game/scripting.h"
 #include "types.h"
 
 #include "gamescript.h"

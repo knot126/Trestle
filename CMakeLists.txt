@@ -114,9 +114,8 @@ set(EXEC_FILES
 	${MELON_FILES}
 	src/world/compo.c
 	src/world/world.c
-	src/world/scripting.c
-	src/world/seg.c
 	src/graphics/extern/glad.c
+	src/graphics/mesh.c
 	src/graphics/graphics.c
 	src/graphics/opengl.c
 	src/graphics/texture.c
@@ -125,6 +124,8 @@ set(EXEC_FILES
 	src/game/gamescript.c
 	src/game/level.c
 	src/game/phys.c
+	src/game/seg.c
+	src/game/scripting.c
 	src/input/input.c
 	src/input/glfwi.c
 	src/game.c

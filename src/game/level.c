@@ -14,7 +14,7 @@
 #include "util/str.h"
 #include "util/log.h"
 #include "util/rand.h"
-#include "world/scripting.h"
+#include "game/scripting.h"
 #include "world/world.h"
 
 #include "level.h"

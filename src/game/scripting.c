@@ -13,9 +13,10 @@
 
 #include "util/script.h"
 #include "util/log.h"
-#include "compo.h"
-#include "world.h"
-#include "seg.h"
+#include "graphics/mesh.h"
+#include "world/compo.h"
+#include "world/world.h"
+#include "game/seg.h"
 
 #include "scripting.h"
 

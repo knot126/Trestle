@@ -9,12 +9,12 @@
 #include <inttypes.h>
 #include <stdlib.h>
 
-#include "world.h"
-#include "../util/alloc.h"
-#include "../util/xml.h"
-#include "../util/fs.h"
-#include "../util/maths.h"
-#include "../util/log.h"
+#include "world/world.h"
+#include "util/alloc.h"
+#include "util/xml.h"
+#include "util/fs.h"
+#include "util/maths.h"
+#include "util/log.h"
 
 float next;
 
