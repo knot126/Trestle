@@ -8,14 +8,15 @@
 #include <string.h>
 
 #include "compo.h"
-#include "../util/fs.h"
-#include "../util/alloc.h"
-#include "../util/fail.h"
-#include "../util/xml.h"
-#include "../util/maths.h"
-#include "../util/log.h"
-#include "../util/str.h"
-#include "../util/stream.h"
+#include "util/fs.h"
+#include "util/alloc.h"
+#include "util/fail.h"
+#include "util/xml.h"
+#include "util/maths.h"
+#include "util/log.h"
+#include "util/str.h"
+#include "util/stream.h"
+#include "util/obj.h"
 
 #include "world.h"
 

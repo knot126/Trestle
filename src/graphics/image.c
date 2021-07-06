@@ -8,18 +8,18 @@
 #include <inttypes.h>
 #include <stdint.h>
 
-#include "../util/alloc.h"
+#include "util/alloc.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_MALLOC(s) DgAlloc(s)
 #define STBI_REALLOC(p, s) DgRealloc(p, s)
 #define STBI_FREE(p) DgFree(p)
-#include "stb_image.h"
+#include "extern/stb_image.h"
 
-#include "../util/fs.h"
-#include "../util/types.h"
-#include "../util/rand.h"
-#include "../util/log.h"
+#include "util/fs.h"
+#include "util/types.h"
+#include "util/rand.h"
+#include "util/log.h"
 
 #include "image.h"
 

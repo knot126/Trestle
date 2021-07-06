@@ -23,37 +23,31 @@ function initHud()
 	mgUIText(ui.LivesCountText, "Lives")
 	mgUITextPos(ui.LivesCountText, -0.95, 0.95)
 	mgUITextSize(ui.LivesCountText, 0.06)
--- 	mgUITextFont(ui.LivesCountText, "font3")
 	
 	ui.LivesCount = mgUIElement(QR_ELEMUI_TEXT)
 	mgUIText(ui.LivesCount, "quickrun")
 	mgUITextPos(ui.LivesCount, -0.95, 0.88)
 	mgUITextSize(ui.LivesCount, 0.09)
--- 	mgUITextFont(ui.LivesCount, "font3")
 	
 	ui.DistanceText = mgUIElement(QR_ELEMUI_TEXT)
 	mgUIText(ui.DistanceText, "Distance")
 	mgUITextPos(ui.DistanceText, -0.75, 0.95)
 	mgUITextSize(ui.DistanceText, 0.06)
--- 	mgUITextFont(ui.DistanceText, "font3")
 	
 	ui.Distance = mgUIElement(QR_ELEMUI_TEXT)
 	mgUIText(ui.Distance, "quickrun")
 	mgUITextPos(ui.Distance, -0.75, 0.88)
 	mgUITextSize(ui.Distance, 0.09)
--- 	mgUITextFont(ui.Distance, "font3")
 	
 	ui.SpeedText = mgUIElement(QR_ELEMUI_TEXT)
 	mgUIText(ui.SpeedText, "Speed")
 	mgUITextPos(ui.SpeedText, -0.55, 0.95)
 	mgUITextSize(ui.SpeedText, 0.06)
--- 	mgUITextFont(ui.SpeedText, "font3")
 	
 	ui.Speed = mgUIElement(QR_ELEMUI_TEXT)
 	mgUIText(ui.Speed, "quickrun")
 	mgUITextPos(ui.Speed, -0.55, 0.88)
 	mgUITextSize(ui.Speed, 0.09)
--- 	mgUITextFont(ui.Speed, "font3")
 	
 	ui.ProgressBarBG = mgUIElement(QR_ELEMUI_BOX)
 	mgUIBox(ui.ProgressBarBG, -1.0, 1.0, 2.0, 0.025)
@@ -71,7 +65,7 @@ end
 
 function init()
 	-- player init
-	local player = new_cube(0.0, 1.5, 0.0, 0.9, 0.9, 0.9, true, QR_PHYS_ENABLE_RESPONSE, "assets://mesh/player.xml")
+	local player = new_cube(0.0, 1.5, 0.0, 0.9, 0.9, 0.9, true, QR_PHYS_ENABLE_RESPONSE, "assets://mesh/untitled.obj")
 	mgActivePlayer(player)
 	
 	initHud()

@@ -110,6 +110,7 @@ World *world_active(World * const restrict world);
 // Mesh Loading
 bool entity_load_mesh(World * const restrict world, uint32_t id, char * const restrict path);
 bool entity_load_xml_mesh(World * const restrict world, uint32_t id, const char * const restrict path);
+bool entity_load_obj_mesh(World * const restrict world, uint32_t id, const char * const restrict path);
 
 // Tranforms
 bool entity_set_transform(World * const restrict world, const uint32_t id, const DgVec3 pos, const DgVec3 rot, const DgVec3 scale);

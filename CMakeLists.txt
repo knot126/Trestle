@@ -92,6 +92,7 @@ set(MELON_FILES
 	src/util/load.c
 	src/util/log.c
 	src/util/maths.c
+	src/util/obj.c
 	src/util/rand.c
 	src/util/resource.c
 	src/util/script.c
@@ -115,7 +116,7 @@ set(EXEC_FILES
 	src/world/world.c
 	src/world/scripting.c
 	src/world/seg.c
-	src/graphics/glad.c
+	src/graphics/extern/glad.c
 	src/graphics/graphics.c
 	src/graphics/opengl.c
 	src/graphics/texture.c

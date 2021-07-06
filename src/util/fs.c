@@ -113,11 +113,21 @@ size_t DgFileStreamLength(DgFileStream* stream) {
 	return size;
 }
 
-char *DgFileStreamGetString(DgFileStream* stream) {
+bool DgFileStreamEndOfFile(DgFileStream *stream) {
+	/**
+	 * Get if the stream has EOF marked.
+	 */
+	
+	return !!feof(stream->_c_file_stream);
+}
+
+char *DgFileStreamGetString(DgFileStream* stream, size_t *length) {
 	/**
 	 * Get a string from a file stream. Here, a string is terminated by either 
 	 * a \0, \n, EOF or \r. This returns NULL on failure or the string on
 	 * success.
+	 * 
+	 * If length is not NULL, then the string size is written to length.
 	 * 
 	 * NB: The returned string must be freed afterwards.
 	 */
@@ -126,6 +136,10 @@ char *DgFileStreamGetString(DgFileStream* stream) {
 	size_t size = 0;
 	size_t alloc = 0;
 	char *str = NULL;
+	
+	if (DgFileStreamEndOfFile(stream)) {
+		return NULL;
+	}
 	
 	while (true) {
 		if (size >= alloc) {
@@ -156,6 +170,10 @@ char *DgFileStreamGetString(DgFileStream* stream) {
 	}
 	
 	str[size] = '\0';
+	
+	if (length) {
+		*length = size;
+	}
 	
 	return str;
 }

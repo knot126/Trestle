@@ -177,3 +177,58 @@ bool entity_load_xml_mesh(World * const restrict world, uint32_t id, const char 
 	
 	return true;
 }
+
+#include "graphics/mesh.h"
+
+bool entity_load_obj_mesh(World * const restrict world, uint32_t id, const char * const restrict path) {
+	/**
+	 * Load an XML mesh
+	 */
+	
+	// Find the mesh component
+	C_Mesh *mesh = entity_find_mesh(world, id);
+	
+	if (!mesh) {
+		DgLog(DG_LOG_ERROR, "Failed to load OBJ mesh or model '%s' to entity %d: mesh not found.", path, id);
+		return false;
+	}
+	
+	DgOBJMesh obj;
+	
+	uint32_t status = DgOBJLoad(&obj, (char *) path);
+	
+	if (status) {
+		DgLog(DG_LOG_ERROR, "Failed to load OBJ mesh or model '%s' to entity %d: failed to load OBJ.", path, id);
+		return false;
+	}
+	
+	QRVertex1 *vert = (QRVertex1 *) DgAlloc(sizeof *vert * obj.vertex_count);
+	
+	if (!vert) {
+		DgLog(DG_LOG_ERROR, "Failed to load OBJ mesh or model '%s' to entity %d: failed to allocate memory.", path, id);
+		DgOBJFree(&obj);
+		return false;
+	}
+	
+	for (size_t i = 0; i < obj.vertex_count; i++) {
+		vert[i].x = obj.vertex[i].x;
+		vert[i].y = obj.vertex[i].y;
+		vert[i].z = obj.vertex[i].z;
+		
+		vert[i].u = 0.0f;
+		vert[i].v = 0.0f;
+		
+		vert[i].r = 1.0f;
+		vert[i].g = 1.0f;
+		vert[i].b = 1.0f;
+	}
+	
+	mesh->vert = (float *) vert;
+	mesh->vert_count = obj.vertex_count;
+	mesh->index = obj.face;
+	mesh->index_count = obj.face_count;
+	
+	DgFree(obj.vertex);
+	
+	return true;
+}

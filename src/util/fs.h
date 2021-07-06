@@ -27,7 +27,7 @@ void DgFileStreamClose(DgFileStream* stream);
 void DgFileStreamRead(DgFileStream* stream, size_t size, void* data);
 void DgFileStreamWrite(DgFileStream* stream, size_t size, const void* data);
 size_t DgFileStreamLength(DgFileStream* stream);
-char *DgFileStreamGetString(DgFileStream* stream);
+char *DgFileStreamGetString(DgFileStream* stream, size_t *length);
 
 void DgMkdir(char* path);
 bool DgIsDir(const char* dir);

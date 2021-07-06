@@ -28,7 +28,11 @@ function new_cube(x, y, z, sx, sy, sz, phys, pflags, model)
 	local ent = mgEntity(flags)
 	
 	mgTransform(ent, x, y, z, 0.0, 0.0, 0.0, sx, sy, sz)
-	mgMesh2(ent, model)
+	if string.find(model, ".obj") then
+		mgObjMesh(ent, model)
+	else
+		mgMesh2(ent, model)
+	end
 	if phys then
 		mgMass(ent, 1.0)
 		mgForce(ent, 0.0, 0.0, -100.0, 0.0, 0.0, 0.0)
