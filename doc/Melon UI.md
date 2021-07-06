@@ -55,6 +55,7 @@ All elements include a base struct, which just has the position information as w
 ```c
 typedef struct DgUIElementBase {
 	DgVec2 pos;                        // Position
+	DgVec2 size;                       // Size for panels and buttons
 	bool visible;                      // Weather or not the element is visible
 	bool enable;                       // Weather or not the element is enabled
 } DgUIElementBase;
@@ -63,6 +64,8 @@ typedef struct DgUIElementBase {
 #### Font Metrics
 
 There is also a font metrics style info struct, which is commonly used for styling text elements. It provides colour (RGBA), the size (in OpenGL-like standard units) in height and how the text is aligned (left, centre or right).
+
+**Important**: Make sure to allocate these using `DgAlloc()`, or only use the defaults. Except for when setting their defaults, the UI library will **not** internally allocate them for you.
 
 ```c
 typedef struct DgUIFontMetrics {
@@ -85,7 +88,6 @@ In the future, this may be updated to allow for providing stroke (outline) infor
 typedef struct DgUIPanelMetrics {
 	DgVec4 colour;                     // Colour of the panel
 	DgVec4 padding;                    // Padding on all sides of the panel
-	DgVec2 size;                       // Size of the panel
 	float radius;                      // Curve radius
 } DgUIPanelMetrics;
 ```
@@ -101,6 +103,17 @@ typedef struct DgUIActionSpec {
 };
 ```
 
+#### Strings
+
+Strings are mainly passed using DgString structures. Note that the constructor expects a C string.
+
+```c
+typedef struct DgUIString {
+	const char *content;               // The string, may/may not be null terminated
+	size_t length;                     // Length of the string
+} DgUIString;
+```
+
 ### Types of Elements
 
 #### Panel
@@ -110,22 +123,23 @@ A panel works like you might expect a panel to work in any other collection of w
 ```c
 typedef struct DgUIPanel {
 	DgUIElementBase base;
-	DgUIPanelMetrics panel;
+	DgUIPanelMetrics *panel;
 	// =========================================================================
-};
+} DgUIPanel;
 ```
 
 #### Label
 
-A label provides a means to output text without outputting anything else.
+A label provides a means to output text without outputting anything else. It can optionally be configured to use an action, but is is not yet supported by the outgoing API.
 
 ```c
 typedef struct DgUILabel {
 	DgUIElementBase base;
-	DgUIFontMetrics font;
+	DgUIFontMetrics *font;
 	// =========================================================================
-	const char *content;               // The string, may/may not be null terminated
-	size_t length;                     // Length of the string
+	DgUIString text;                   // The text to be displayed
+	DgUIActionSpec action;             // Action to preform when label is pressed
+	bool pressed;                      // If this label was recently pressed
 } DgUILabel;
 ```
 
@@ -138,17 +152,14 @@ This should support highlighting text as well as inserting and deleting text at 
 ```c
 typedef struct DgUILineEdit {
 	DgUIElementBase base;
-	DgUIFontMetrics font;
-	DgUIPanelMetrics panel;
+	DgUIFontMetrics *font;
+	DgUIPanelMetrics *panel;
 	// =========================================================================
-	const char *placeholder;           // Text that appears when no content is there
-	size_t placeholder_length;         // The placeholder text length
-	
-	const char *content;               // Content that the user has input
-	size_t length;                     // The length of the user content
+	DgUIString placeholder;            // The placeholder text
+	DgUIString text;                   // The text that the user has entered
 	size_t curpos;                     // The current position of the cursor
 	
-	DgUIPanelMetrics s_style;          // Info about the selection type
+	DgUIPanelMetrics *s_style;         // Info about the selection type
 	size_t s_start, s_end;             // End and start of selection
 	bool selecting;                    // If the user is selecting things
 } DgUILineEdit;
@@ -161,11 +172,10 @@ A Button usually provides a means to preform an action. The Button can either be
 ```c
 typedef struct DgUIButton {
 	DgUIElementBase base;
-	DgUIFontMetrics font;
-	DgUIPanelMetrics panel;
+	DgUIFontMetrics *font;
+	DgUIPanelMetrics *panel;
 	// =========================================================================
-	const char *content;               // Text that appears on the button
-	size_t length;                     // The placeholder text length
+	DgUIString text;                   // The text that appears on the button
 	DgUIActionSpec action;             // Action to preform when button is pressed
 	bool pressed;                      // If this button was recently pressed
 } DgUIButton;
@@ -185,6 +195,7 @@ You can set the default base struct, font and panel metrics using these function
 void DgUISurfaceSetDefaultBase(DgUISurface *surface, DgUIElementBase *base);
 void DgUISurfaceSetDefaultFontMetrics(DgUISurface *surface, DgUIFontMetrics *metrics);
 void DgUISurfaceSetDefaultPanelMetrics(DgUISurface *surface, DgUIPanelMetrics *metrics);
+void DgUISurfaceSetDefaultSelectionMetrics(DgUISurface *surface, DgUIPanelMetrics *metrics);
 ```
 
 #### Create Simple Objects

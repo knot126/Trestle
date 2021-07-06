@@ -61,18 +61,38 @@ void DgUISurfaceSetDefaultBase(DgUISurface *surface, DgUIElementBase *base) {
 
 void DgUISurfaceSetDefaultFontMetrics(DgUISurface *surface, DgUIFontMetrics *metrics) {
 	/**
-	 * Set default font metrics.
+	 * Set default font metrics. This will make an interal copy of the structure.
 	 */
 	
-	surface->defaultFont = *metrics;
+	if (!surface->defaultFont) {
+		surface->defaultFont = (DgUIFontMetrics *) DgAlloc(sizeof *surface->defaultFont);
+	}
+	
+	*surface->defaultFont = *metrics;
 }
 
 void DgUISurfaceSetDefaultPanelMetrics(DgUISurface *surface, DgUIPanelMetrics *metrics) {
 	/**
-	 * Set default panel metrics.
+	 * Set default panel metrics. This will make an interal copy of the structure.
 	 */
 	
-	surface->defaultPanel = *metrics;
+	if (!surface->defaultPanel) {
+		surface->defaultPanel = (DgUIPanelMetrics *) DgAlloc(sizeof *surface->defaultPanel);
+	}
+	
+	*surface->defaultPanel = *metrics;
+}
+
+void DgUISurfaceSetDefaultSelectionMetrics(DgUISurface *surface, DgUIPanelMetrics *metrics) {
+	/**
+	 * Set default text selection metrics. This will make an interal copy of the structure.
+	 */
+	
+	if (!surface->defaultSelect) {
+		surface->defaultSelect = (DgUIPanelMetrics *) DgAlloc(sizeof *surface->defaultSelect);
+	}
+	
+	*surface->defaultSelect = *metrics;
 }
 
 /**
@@ -81,7 +101,7 @@ void DgUISurfaceSetDefaultPanelMetrics(DgUISurface *surface, DgUIPanelMetrics *m
  * =============================================================================
  */
 
-DgUIElementBase DgUIElementBaseNew(DgVec2 pos, bool visible, bool enable) {
+DgUIElementBase DgUIElementBaseNew(DgVec2 pos, DgVec2 size, bool visible, bool enable) {
 	/**
 	 * Create DgUIElementBase object
 	 */
@@ -89,6 +109,7 @@ DgUIElementBase DgUIElementBaseNew(DgVec2 pos, bool visible, bool enable) {
 	DgUIElementBase obj;
 	
 	obj.pos = pos;
+	obj.size = size;
 	obj.visible = visible;
 	obj.enable = enable;
 	
@@ -110,7 +131,7 @@ DgUIFontMetrics DgUIFontMetricsNew(DgVec4 colour, float size, int32_t font, uint
 	return obj;
 }
 
-DgUIPanelMetrics DgUIPanelMetricsNew(DgVec4 colour, DgVec4 padding, DgVec2 size, float radius) {
+DgUIPanelMetrics DgUIPanelMetricsNew(DgVec4 colour, DgVec4 padding, float radius) {
 	/**
 	 * Create DgUIPanelMetrics object
 	 */
@@ -119,7 +140,6 @@ DgUIPanelMetrics DgUIPanelMetricsNew(DgVec4 colour, DgVec4 padding, DgVec2 size,
 	
 	obj.colour = colour;
 	obj.padding = padding;
-	obj.size = size;
 	obj.radius = radius;
 	
 	return obj;
@@ -138,6 +158,19 @@ DgUIActionSpec DgUIActionSpecNew(void *context, void (*callback)(void *context))
 	return obj;
 }
 
+DgUIString DgUIStringNew(const char * const string) {
+	/**
+	 * Create DgUIString object
+	 */
+	
+	DgUIString obj;
+	
+	obj.content = DgStrdup(string);
+	obj.length = strlen(obj.content);
+	
+	return obj;
+}
+
 DgUIPanel DgUIPanelNew(
 	DgUISurface *surface, 
 	DgUIElementBase *base, 
@@ -152,7 +185,7 @@ DgUIPanel DgUIPanelNew(
 	DgUIPanel obj;
 	
 	obj.base = (base) ? *base : surface->defaultBase;
-	obj.panel = (panel) ? *panel : surface->defaultPanel;
+	obj.panel = (panel) ? panel : surface->defaultPanel;
 	
 	return obj;
 }
@@ -161,7 +194,7 @@ DgUILabel DgUILabelNew(
 	DgUISurface *surface, 
 	DgUIElementBase *base,
 	DgUIFontMetrics *font, 
-	const char * const content) 
+	DgUIString *text) 
 {
 	/**
 	 * Create a new label
@@ -172,10 +205,8 @@ DgUILabel DgUILabelNew(
 	DgUILabel obj;
 	
 	obj.base = (base) ? *base : surface->defaultBase;
-	obj.font = (font) ? *font : surface->defaultFont;
-	
-	obj.content = DgStrdup(content);
-	obj.length = strlen(obj.content);
+	obj.font = (font) ? font : surface->defaultFont;
+	obj.text = (text) ? *text : DgUIStringNew("Missing String");
 	
 	return obj;
 }
@@ -185,8 +216,8 @@ DgUILineEdit DgUILineEditNew(
 	DgUIElementBase *base, 
 	DgUIFontMetrics *font, 
 	DgUIPanelMetrics *panel, 
-	const char * const placeholder, 
-	const char * const content, 
+	DgUIString *placeholder, 
+	DgUIString *text, 
 	DgUIPanelMetrics *s_style)
 {
 	/**
@@ -198,17 +229,13 @@ DgUILineEdit DgUILineEditNew(
 	DgUILineEdit obj;
 	
 	obj.base = (base) ? *base : surface->defaultBase;
-	obj.font = (font) ? *font : surface->defaultFont;
-	obj.panel = (panel) ? *panel : surface->defaultPanel;
+	obj.font = (font) ? font : surface->defaultFont;
+	obj.panel = (panel) ? panel : surface->defaultPanel;
+	obj.placeholder = (placeholder) ? *placeholder : DgUIStringNew("Missing String");
+	obj.text = (text) ? *text : DgUIStringNew("Missing String");
+	obj.curpos = obj.text.length;
 	
-	obj.placeholder = DgStrdup(placeholder);
-	obj.placeholder_length = strlen(obj.placeholder);
-	
-	obj.content = DgStrdup(content);
-	obj.length = strlen(obj.content);
-	obj.curpos = obj.length;
-	
-	obj.s_style = (s_style) ? *s_style : surface->defaultPanel;
+	obj.s_style = (s_style) ? s_style : surface->defaultPanel;
 	
 	return obj;
 }
@@ -218,7 +245,7 @@ DgUIButton DgUIButtonNew(
 	DgUIElementBase *base, 
 	DgUIFontMetrics *font, 
 	DgUIPanelMetrics *panel, 
-	const char * const content,
+	DgUIString *text,
 	DgUIActionSpec *action)
 {
 	/**
@@ -230,12 +257,9 @@ DgUIButton DgUIButtonNew(
 	DgUIButton obj;
 	
 	obj.base = (base) ? *base : surface->defaultBase;
-	obj.font = (font) ? *font : surface->defaultFont;
-	obj.panel = (panel) ? *panel : surface->defaultPanel;
-	
-	obj.content = DgStrdup(content);
-	obj.length = strlen(obj.content);
-	
+	obj.font = (font) ? font : surface->defaultFont;
+	obj.panel = (panel) ? panel : surface->defaultPanel;
+	obj.text = (text) ? *text : DgUIStringNew("Missing String");
 	obj.action = (action) ? *action : (DgUIActionSpec) {.context = NULL, .callback = NULL};
 	obj.pressed = false;
 	
@@ -248,13 +272,29 @@ DgUIButton DgUIButtonNew(
  * =============================================================================
  */
 
-static void DgUILineEditFree(DgUILineEdit *obj) {
-	DgFree((void *) obj->placeholder);
+static void DgUIStringFree(DgUIString *obj) {
+	/**
+	 * Free a DgUIString object.
+	 */
+	
 	DgFree((void *) obj->content);
 }
 
+static void DgUILineEditFree(DgUILineEdit *obj) {
+	/**
+	 * Free a DgUILineEdit object.
+	 */
+	
+	DgUIStringFree(&obj->placeholder);
+	DgUIStringFree(&obj->text);
+}
+
 static void DgUIButtonFree(DgUIButton *obj) {
-	DgFree((void *) obj->content);
+	/**
+	 * Free a DgUIButton object.
+	 */
+	
+	DgUIStringFree(&obj->text);
 }
 
 /**
@@ -322,6 +362,13 @@ void DgUILineEditUpdateText(DgUILineEdit *object, unsigned keycode) {
 void DgUISurfaceUpdate(DgUISurface *surface, DgUISurfaceUpdateStructure *info) {
 	/**
 	 * Call all of the needed update routines.
+	 */
+	
+}
+
+void DgUISurfaceRenderPanel() {
+	/**
+	 * Generate a panel for the mesh.
 	 */
 	
 }
