@@ -203,6 +203,7 @@ int game_main(int argc, char* argv[]) {
 	 * The first real main game function, called from the main() function of the
 	 * OS. 
 	 */
+	
 	print_info();
 	
 	// Parse command line arguments
@@ -231,7 +232,7 @@ int game_main(int argc, char* argv[]) {
 	DgLog(DG_LOG_INFO, "Loading engine configuration file...");
 	
 	DgINIDocument initconf;
-	char *config = DgArgGetValue2("config", "assets://config.ini");
+	char *config = (char *) DgArgGetValue2("config", "assets://config.ini");
 	uint32_t initconf_status = DgINILoad(&initconf, config);
 	
 	if (initconf_status) {

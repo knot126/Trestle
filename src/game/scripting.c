@@ -18,6 +18,8 @@
 #include "world/world.h"
 #include "world/gamestate.h"
 #include "game/seg.h"
+#include "game/box.h"
+#include "game/physent.h"
 
 #include "scripting.h"
 

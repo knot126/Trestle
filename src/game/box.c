@@ -2,16 +2,19 @@
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
- * Box making function
+ * Box entity generation
  */
 
-#pragma once
+#include <string.h>
 
-/**
- * -----------------------------------------------------------------------------
- * Higher level entity generation
- * -----------------------------------------------------------------------------
- */
+#include "world/compo.h"
+#include "world/world.h"
+#include "util/alloc.h"
+#include "util/maths.h"
+#include "util/log.h"
+#include "util/str.h"
+
+#include "box.h"
 
 bool entity_generate_box(World * const restrict world, const DgVec3 pos, const DgVec3 size, const DgVec3 colour, const char * const texture) {
 	uint32_t ent = world_create_entity(world, QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH);

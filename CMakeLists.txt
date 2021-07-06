@@ -120,10 +120,12 @@ set(EXEC_FILES
 	src/graphics/opengl.c
 	src/graphics/texture.c
 	src/graphics/image.c
+	src/game/box.c
 	src/game/gameplay.c
 	src/game/gamescript.c
 	src/game/level.c
 	src/game/phys.c
+	src/game/physent.c
 	src/game/seg.c
 	src/game/scripting.c
 	src/input/input.c

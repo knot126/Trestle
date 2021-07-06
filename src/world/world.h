@@ -26,11 +26,6 @@ typedef enum {
 	QR_COMPONENT_AABB = (1 << 4),
 } ComponentMaskEnum;
 
-typedef enum {
-	QR_ELEMUI_BOX = (1 << 0),
-	QR_ELEMUI_TEXT = (1 << 1),
-} UIElementMaskEnum;
-
 typedef struct {
 	uint32_t id;
 	float speed;
@@ -84,8 +79,9 @@ typedef struct {
 	
 } World;
 
-// Active world variable
-extern World *QuickRunActiveWorld;
+// Active world
+extern World *QuickRunActiveWorld; // Accessing directly is deprecated
+World *world_active(World * const restrict world);
 
 // World create and destory
 void world_init(World * const restrict world, size_t prealloc_count);
@@ -100,30 +96,13 @@ C_Mesh *entity_find_mesh(const World * const restrict world, const uint32_t id);
 C_Camera *entity_find_cam(const World * const restrict world, const uint32_t id);
 C_Physics *entity_find_phys(const World * const restrict world, const uint32_t id);
 
-// Active world
-World *world_active(World * const restrict world);
-
 // Tranforms
 bool entity_set_transform(World * const restrict world, const uint32_t id, const DgVec3 pos, const DgVec3 rot, const DgVec3 scale);
 
+#include "world/oldui.h"
+
 // Cameras
 void world_set_camera(World * const restrict world, const uint32_t id);
-
-// Physics
-bool entity_phys_set_flags(World * const restrict world, const uint32_t id, const int flags);
-bool entity_phys_set_mass(World * const restrict world, const uint32_t id, const float mass);
-bool entity_phys_add_force(World * const restrict world, const uint32_t id, const DgVec3 pos, const DgVec3 rot);
-
-// UI Text
-bool ui_element_set_text(World * const restrict world, const uint32_t id, const char * const restrict text);
-bool ui_element_set_text_pos(World * const restrict world, const uint32_t id, const DgVec2 pos);
-bool ui_element_set_text_size(World * const restrict world, const uint32_t id, const float size);
-bool ui_element_set_text_font(World * const restrict world, const uint32_t id, const char * const restrict font);
-bool ui_element_set_text_colour(World * const restrict world, const uint32_t id, const DgVec4 colour);
-
-// UI Box 
-bool ui_element_set_box(World * const restrict world, const uint32_t id, const DgVec2 size, const DgVec2 pos);
-bool ui_element_set_box_colour(World * const restrict world, const uint32_t id, const DgVec4 colour);
 
 // Player position
 DgVec3 world_get_player_position(const World * const restrict world);
@@ -137,6 +116,3 @@ void world_get_speed(const World * const restrict world, float * restrict min, f
 void world_set_speed(World * const restrict world, const float min, const float max);
 void world_put_length(World * const restrict world, float number);
 float world_get_level_offset(const World * const restrict world);
-
-// Box generation
-bool entity_generate_box(World * const restrict world, const DgVec3 pos, const DgVec3 size, const DgVec3 colour, const char * const texture);
