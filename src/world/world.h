@@ -104,7 +104,6 @@ C_Camera *entity_find_cam(const World * const restrict world, const uint32_t id)
 C_Physics *entity_find_phys(const World * const restrict world, const uint32_t id);
 
 // Active world
-void SetActiveWorld(World *world);
 World *world_active(World * const restrict world);
 
 // Tranforms

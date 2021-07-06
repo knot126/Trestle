@@ -14,6 +14,7 @@
 #warning DgBag is deprecated.
 
 #include "alloc.h"
+#include "log.h"
 
 #include "bag.h"
 
@@ -21,6 +22,8 @@ DgBag DgBagInit() {
 	/* 
 	 * Create a new property bag with one element already initialised.
 	 */
+	DgLog(DG_LOG_DEPRECATION, "DgBagInit()");
+	
 	DgBag pb;
 	
 	pb.key = (const char **) 0;
@@ -34,12 +37,15 @@ void DgBagFree(DgBag* pb) {
 	/*
 	 * Free a property bag 
 	 */
+	DgLog(DG_LOG_DEPRECATION, "DgBagFree(%.16X)", pb);
 }
 
 void DgBagPrint(DgBag* pb) {
 	/*
 	 * Print the contents of a bag 
 	 */
+	DgLog(DG_LOG_DEPRECATION, "DgBagPrint(%.16X)", pb);
+	
 	if (!pb->key || !pb->value) {
 		printf("\t<property bag is null>\n");
 		return;
@@ -62,6 +68,8 @@ const char *DgBagGet(DgBag* pb, const char* key) {
 	 * Takes a PropertyBag and key and returns the value if found.
 	 * Returns the value string location.
 	 */
+	DgLog(DG_LOG_DEPRECATION, "DgBagGet(%.16X, %s)", pb, key);
+	
 	const char *value = "";
 	
 	if (!pb->key || !pb->value) {
@@ -83,6 +91,8 @@ void DgBagSet(DgBag* pb, const char* key, const char* value) {
 	 * Adds (or reassigns the key if found) the key by the name key to the value
 	 * value.
 	 */
+	DgLog(DG_LOG_DEPRECATION, "DgBagSet(%.16X, %s, %s)", pb, key, value);
+	
 	bool have = false;
 	
 	for (size_t i = 0; i < pb->size; i++) {

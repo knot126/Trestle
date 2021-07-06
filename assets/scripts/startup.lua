@@ -65,7 +65,7 @@ end
 
 function init()
 	-- player init
-	local player = new_cube(0.0, 1.5, 0.0, 0.9, 0.9, 0.9, true, QR_PHYS_ENABLE_RESPONSE, "assets://mesh/untitled.obj")
+	local player = new_cube(0.0, 1.5, 0.0, 0.9, 0.9, 0.9, true, QR_PHYS_ENABLE_RESPONSE, "assets://mesh/player.xml")
 	mgActivePlayer(player)
 	
 	initHud()

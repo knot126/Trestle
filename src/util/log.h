@@ -16,8 +16,9 @@ typedef enum DgLogLevel {
 	DG_LOG_VERBOSE = -1,
 	DG_LOG_INFO = 0,
 	DG_LOG_WARNING = 1,
-	DG_LOG_ERROR = 2,
-	DG_LOG_FATAL = 3,
+	DG_LOG_DEPRECATION = 2,
+	DG_LOG_ERROR = 3,
+	DG_LOG_FATAL = 4,
 } DgLogLevel;
 
 typedef struct DgLogger {

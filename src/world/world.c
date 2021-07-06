@@ -11,11 +11,9 @@
 #include "util/fs.h"
 #include "util/alloc.h"
 #include "util/fail.h"
-// #include "util/xml.h"
 #include "util/maths.h"
 #include "util/log.h"
 #include "util/str.h"
-// #include "util/stream.h"
 #include "util/obj.h"
 
 #include "world.h"
@@ -119,6 +117,8 @@ uint32_t world_create_ui_element(World * const restrict world, mask_t mask) {
 	 * Create a new entity in the UI subworld and init if it does not exist yet,
 	 * returns its element id.
 	 */
+	
+	DgLog(DG_LOG_DEPRECATION, "world_create_ui_element(%X, %d)", world, mask);
 	
 	// Create the UI world if it does not exist
 	if (!world->ui) {
@@ -225,16 +225,6 @@ QR_DECL_FIND_ENT_COMPO(entity_find_phys, C_Physics, phys, phys_count);
  * Active world setters and getters
  * -----------------------------------------------------------------------------
  */
-
-void SetActiveWorld(World *world) {
-	/**
-	 * DEPRECATED
-	 * 
-	 * Returns the active world.
-	 */
-	
-	QuickRunActiveWorld = world;
-}
 
 World *world_active(World * const restrict world) {
 	/**

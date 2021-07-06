@@ -6,6 +6,8 @@
  */
 
 bool ui_element_set_box(World * const restrict world, const uint32_t id, const DgVec2 size, const DgVec2 pos) {
+	DgLog(DG_LOG_DEPRECATION, "ui_element_set_box(%X, %d, <DgVec2>, <DgVec2>)", world, id);
+	
 	C_UIBox *element = NULL;
 	
 	if (!world->ui) {
@@ -31,6 +33,8 @@ bool ui_element_set_box(World * const restrict world, const uint32_t id, const D
 }
 
 bool ui_element_set_box_colour(World * const restrict world, const uint32_t id, const DgVec4 colour) {
+	DgLog(DG_LOG_DEPRECATION, "ui_element_set_box_colour(%X, %d, <DgVec4>)", world, id);
+	
 	C_UIBox *element = NULL;
 	
 	if (!world->ui) {

@@ -25,11 +25,15 @@ static void DgLogPushMessage(const DgLogLevel level, const char * const buf) {
 		case DG_LOG_INFO:
 			printf("\033[1;34mINFO: \033[0m");
 			break;
-			
+		
 		case DG_LOG_WARNING:
 			printf("\033[1;33mWARNING: \033[0m");
 			break;
-			
+		
+		case DG_LOG_DEPRECATION:
+			printf("\033[1;38;5;67mDEPRECATION: \033[0m");
+			break;
+		
 		case DG_LOG_ERROR:
 			printf("\033[1;31mERROR: \033[0m");
 			break;
