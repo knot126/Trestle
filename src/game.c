@@ -231,10 +231,12 @@ int game_main(int argc, char* argv[]) {
 	DgLog(DG_LOG_INFO, "Loading engine configuration file...");
 	
 	DgINIDocument initconf;
-	uint32_t initconf_status = DgINILoad(&initconf, (char *) DgArgGetValue2("config", "assets://config.ini"));
+	char *config = DgArgGetValue2("config", "assets://config.ini");
+	uint32_t initconf_status = DgINILoad(&initconf, config);
 	
 	if (initconf_status) {
-		DgFail("Error: Failed to load configuration file.\n", 200);
+		DgLog(DG_LOG_FATAL, "Failed to load configuration file at '%s'.", config);
+		return 1;
 	}
 	else {
 		g_quickRunConfig = &initconf;

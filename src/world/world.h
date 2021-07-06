@@ -10,7 +10,10 @@
 #include <inttypes.h>
 #include <stddef.h>
 
-#include "../world/compo.h"
+#include "world/compo.h"
+#include "world/gamestate.h"
+
+// #warning Traditional worlds have been depreacted, so try to referain from adding to the mess. See "doc/World Struct Deprecation.md" for more info.
 
 typedef uint32_t mask_t;
 typedef uint32_t ehand_t;
@@ -34,16 +37,10 @@ typedef struct {
 } PlayerWorld;
 
 typedef struct {
-	float speed_min;
-	float speed_max;
-	
-	float load_next;
-	float new_length;
-} GameState;
-
-typedef struct {
 	/**
 	 * The world for all UI elements.
+	 * 
+	 * DEPRECATED: The old UI system is now deprecated.
 	 */
 	
 	uint32_t mask_count;

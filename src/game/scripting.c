@@ -16,6 +16,7 @@
 #include "graphics/mesh.h"
 #include "world/compo.h"
 #include "world/world.h"
+#include "world/gamestate.h"
 #include "game/seg.h"
 
 #include "scripting.h"
