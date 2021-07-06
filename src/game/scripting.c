@@ -6,6 +6,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 
 #include "lua.h"
 #include "lualib.h"
@@ -14,6 +15,7 @@
 #include "util/script.h"
 #include "util/log.h"
 #include "graphics/mesh.h"
+#include "input/input.h"
 #include "world/compo.h"
 #include "world/world.h"
 #include "world/gamestate.h"
@@ -425,6 +427,35 @@ static int scripted_PutLength(lua_State *script) {
 	return 0;
 }
 
+static int scripted_GetKey(lua_State *script) {
+	if (lua_gettop(script) != 1) {
+		return 0;
+	}
+	
+	int code = lua_tointeger(script, 1);
+	
+	lua_pushboolean(script, getKeyPressed(code));
+	
+	return 1;
+}
+
+static int scripted_GetKeyCode(lua_State *script) {
+	if (lua_gettop(script) != 1) {
+		return 0;
+	}
+	
+	const char *str = lua_tostring(script, 1);
+	int code;
+	
+	if (str[0] == '\n' || str[0] == '\r' || !strcmp(str, "enter") || !strcmp(str, "newline")) {
+		code = GLFW_KEY_ENTER;
+	}
+	
+	lua_pushinteger(script, code);
+	
+	return 1;
+}
+
 void registerWorldScriptFunctions(DgScript *script) {
 	/*  Low-Level Entities  */
 	lua_register(script->state, "mgEntity", &scripted_CreateEntity);
@@ -466,4 +497,8 @@ void registerWorldScriptFunctions(DgScript *script) {
 	
 	lua_register(script->state, "mgGetSpeed", &scripted_GetPlayerSpeed);
 	lua_register(script->state, "mgSetSpeed", &scripted_SetPlayerSpeed);
+	
+	/* Input and output functions */
+	lua_register(script->state, "mgGetKey", &scripted_GetKey);
+	lua_register(script->state, "mgGetKeyCode", &scripted_GetKeyCode);
 }

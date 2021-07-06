@@ -43,7 +43,7 @@ function new_cube(x, y, z, sx, sy, sz, phys, pflags, model)
 	
 	return ent
 end
-
+--[[
 function buildWallsAndFloor(w, h, l, offset)
 	if offset == nil then offset = 0.0 end
 	
@@ -114,6 +114,7 @@ function createUIText(text, x, y, size)
 	
 	return e
 end
+]]--
 
 -- prototyping menu
 

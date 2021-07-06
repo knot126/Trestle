@@ -9,8 +9,8 @@
 
 #include <stdbool.h>
 
-#include "../graphics/opengl.h"
-#include "../graphics/graphics.h"
+#include "graphics/opengl.h"
+#include "graphics/graphics.h"
 
 void input_init(GraphicsInitInfo info);
 void input_update(GraphicsInitInfo info);
