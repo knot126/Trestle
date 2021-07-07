@@ -115,14 +115,15 @@ function tick()
 		mgUITextSize(ui.Dead, 0.35)
 		mgUITextFont(ui.Dead, "font3")
 		mgPaused(true)
-		
-		mgClearWorld()
-		mgYeildToScript("assets://scripts/menu.lua")
 	end
 	
 	-- Pulse the text colour
 	if lives.hasBeenDead then
 		mgUITextColour(ui.Dead, 1.0, (math.sin(frame * 0.01) + 1.0) / 2.0, (math.sin(frame * 0.01) + 1.0) / 2.0, 1.0)
+		if mgGetKey(GLFW_KEY_ENTER) then
+			mgClearWorld()
+			mgYeildToScript("assets://scripts/menu.lua")
+		end
 	end
 end
 

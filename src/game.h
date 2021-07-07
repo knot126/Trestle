@@ -12,9 +12,11 @@
 #include "util/bag.h"
 #include "game/level.h"
 #include "game/gamescript.h"
+#include "input/input.h"
 
 typedef struct {
-	GraphicsInitInfo graphics;
+	GraphicsSystem *graphics;
+	InputSystem input;
 	GameScript game_script;
 	LevelSystem level_info;
 } SystemStates;

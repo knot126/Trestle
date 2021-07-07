@@ -12,6 +12,10 @@
 #include "graphics/opengl.h"
 #include "graphics/graphics.h"
 
-void input_init(GraphicsInitInfo info);
-void input_update(GraphicsInitInfo info);
+typedef struct {
+	GraphicsSystem *graphics;
+} InputSystem;
+
+void input_init(InputSystem *input, GraphicsSystem *graphics);
+void input_update(InputSystem *input);
 bool getKeyPressed(int key);

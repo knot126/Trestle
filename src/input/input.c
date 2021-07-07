@@ -7,18 +7,35 @@
 
 #include <stdbool.h>
 
-#include "../graphics/opengl.h"
-#include "../graphics/graphics.h"
-#include "glfwi.h"
+#include "graphics/opengl.h"
+#include "graphics/graphics.h"
+#include "input/glfwi.h"
 
-void input_init(GraphicsInitInfo info) {
-	glfwi_init((DgOpenGLContext *) info.info);
+#include "input.h"
+
+void input_init(InputSystem *input, GraphicsSystem *graphics) {
+	/**
+	 * Initialise the input system. This depends on the graphics subsystem when
+	 * using the GLFW interface.
+	 */
+	
+	input->graphics = graphics;
+	
+	glfwi_init(input->graphics);
 }
 
-void input_update(GraphicsInitInfo info) {
-	gl_handle_input((DgOpenGLContext *) info.info);
+void input_update(InputSystem *input) {
+	/**
+	 * Update the input keypresses.
+	 */
+	
+	gl_handle_input(input->graphics);
 }
 
 bool getKeyPressed(int key) {
+	/**
+	 * Return true if a key is considered pressed or held down, false otherwise.
+	 */
+	
 	glfwi_get_key(key, GLFW_PRESS);
 }

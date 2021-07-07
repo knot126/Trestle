@@ -9,24 +9,30 @@
 
 #include <stdbool.h>
 
-#include "../world/world.h"
-#include "texture.h"
-#include "gl_incl.h"
-
-typedef unsigned int GLuint;
+#include "world/world.h"
+#include "graphics/texture.h"
+#include "graphics/gl_incl.h"
 
 typedef struct DgOpenGLContext {
+	/**
+	 * An OpenGL-based graphics system wrapper, which takes care of most of the
+	 * graphics stuff.
+	 */
+	
 	GLFWwindow* window;
 	OpenGLTextureManager texture;
 	
-	GLuint* programs;
+	unsigned* programs;
 	size_t programs_count;
-	GLuint* shaders;
+	
+	unsigned* shaders;
 	size_t shader_count;
 } DgOpenGLContext;
 
-DgOpenGLContext* gl_graphics_init(void);
-void gl_graphics_update(World *world, DgOpenGLContext* gl);
-void gl_graphics_free(DgOpenGLContext* gl);
-void gl_handle_input(DgOpenGLContext* gl);
-bool gl_get_should_keep_open(DgOpenGLContext *info);
+typedef DgOpenGLContext GraphicsSystem;
+
+GraphicsSystem *gl_graphics_init(void);
+void gl_graphics_update(GraphicsSystem *gl, World *world);
+void gl_graphics_free(GraphicsSystem *gl);
+void gl_handle_input(GraphicsSystem *gl);
+bool gl_get_should_keep_open(GraphicsSystem *gl);

@@ -20,6 +20,13 @@ QR_ELEMUI_TEXT = (1 << 1)
 QR_PHYS_DISABLE_GRAVITY = (1 << 0)
 QR_PHYS_ENABLE_RESPONSE = (1 << 2)
 
+-- glfw keys
+GLFW_KEY_ENTER = 257
+GLFW_KEY_RIGHT = 262
+GLFW_KEY_LEFT = 263
+GLFW_KEY_DOWN = 264
+GLFW_KEY_UP = 265
+
 function new_cube(x, y, z, sx, sy, sz, phys, pflags, model)
 	local flags = QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH
 	if phys then

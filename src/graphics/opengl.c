@@ -36,7 +36,7 @@ void gl_set_window_size(GLFWwindow* window, int w, int h) {
 	glViewport(0, 0, w, h);
 }
 
-DgOpenGLContext* gl_graphics_init(void) {
+GraphicsSystem* gl_graphics_init(void) {
 	/*
 	 * Initialise any global OpenGL graphics state. In the future, this should 
 	 * not be in chrage of things like the camera, but this is how it is for the
@@ -46,8 +46,8 @@ DgOpenGLContext* gl_graphics_init(void) {
 	 */
 	
 	// Create context info structure
-	DgOpenGLContext* gl = DgAlloc(sizeof(DgOpenGLContext));
-	memset(gl, 0, sizeof(DgOpenGLContext));
+	GraphicsSystem* gl = (GraphicsSystem *) DgAlloc(sizeof *gl);
+	memset(gl, 0, sizeof *gl);
 	
 	// Glfw init
 	glfwInit();
@@ -171,14 +171,14 @@ DgOpenGLContext* gl_graphics_init(void) {
 	// Alpha blending
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
+//	glEnable(GL_DEPTH_TEST);
 	
 	gl_error_check(__FILE__, __LINE__);
 	
 	return gl;
 }
 
-void gl_graphics_update(World *world, DgOpenGLContext *gl) {
+void gl_graphics_update(GraphicsSystem *gl, World *world) {
 	/*
 	 * Update OpenGL-related state and the graphics system
 	 */

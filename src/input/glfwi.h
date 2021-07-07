@@ -13,4 +13,4 @@
 #include "../graphics/opengl.h"
 
 bool glfwi_get_key(int key, int mode);
-void glfwi_init(DgOpenGLContext *context);
+void glfwi_init(GraphicsSystem *context);

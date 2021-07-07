@@ -58,7 +58,7 @@ static void sys_init(SystemStates *sys) {
 	
 	// Input initialisation
 	DgLog(DG_LOG_INFO, "Init input system...");
-	input_init(sys->graphics);
+	input_init(&sys->input, sys->graphics);
 	
 	// Run the main game script
 	DgLog(DG_LOG_INFO, "Loading main game script...");
@@ -82,7 +82,6 @@ static void sys_destroy(SystemStates *sys) {
 	level_free(&sys->level_info);
 }
 
-#ifdef QR_EXPRIMENTAL_THREADING
 static void *physics_loop(void *args_) {
 	/**
 	 * The loop that updates the physics system.
@@ -121,9 +120,8 @@ static void *physics_loop(void *args_) {
 #endif
 	}
 }
-#endif
 
-static int game_loop(World *world, SystemStates *systems) {
+static int game_loop(World *world, SystemStates *sys) {
 	/** 
 	 * The main loop.
 	 */
@@ -132,38 +130,25 @@ static int game_loop(World *world, SystemStates *systems) {
 	
 	float show_fps = 0.0f;
 	
-	// We will accumulate and update physics when time is right.
-#ifndef QR_EXPRIMENTAL_THREADING
-	float accumulate = 0.0f;
-#endif
-	
-#ifdef QR_EXPRIMENTAL_THREADING
+	// Physics thread
 	GameLoopArgs loopargs;
 	loopargs.world = world;
-	loopargs.systems = systems;
+	loopargs.systems = sys;
 	loopargs.keep_open = &should_keep_open;
 	DgThread thrd;
 	
 	DgThreadNew(&thrd, &physics_loop, &loopargs);
-#endif
 	
 	while (should_keep_open) {
-		float frame_time = DgTime();
+		double frame_time = DgTime();
 		
 		// Check if we should still be open
-		should_keep_open = get_should_keep_open(systems->graphics);
+		should_keep_open = get_should_keep_open(sys->graphics);
 		
-		graphics_update(world, systems->graphics);
-		input_update(systems->graphics);
+		graphics_update(sys->graphics, world);
+		input_update(&sys->input);
 		
-		game_script_update(&systems->game_script);
-		
-#ifndef QR_EXPRIMENTAL_THREADING
-		if (accumulate > g_physicsDelta) {
-			phys_update(world, g_physicsDelta);
-			accumulate = 0.0f;
-		}
-#endif
+		game_script_update(&sys->game_script);
 		
 		if (!world_get_pause(world)) {
 			gameplay_update(world);
@@ -175,26 +160,19 @@ static int game_loop(World *world, SystemStates *systems) {
 		// Update global delta time
 		g_deltaTime = frame_time;
 		
-		// Update accumulator
-#ifndef QR_EXPRIMENTAL_THREADING
-		accumulate += frame_time;
-#endif
-		
 		show_fps = show_fps + frame_time;
 		if (show_fps > 1.0f) {
-			DgLog(DG_LOG_VERBOSE, "Frame Time: %fms (%f FPS)", frame_time * 1000.0f, 1.0f / frame_time);
+			DgLog(DG_LOG_VERBOSE, "Frame Time: %fms", frame_time * 1000.0f, 1.0f / frame_time);
 			show_fps = 0.0f;
 		}
 		
 		// Update the level
 		if (!world_get_pause(world)) {
-			level_update(world, &systems->level_info);
+			level_update(world, &sys->level_info);
 		}
 	} // while (should_keep_open)
 	
-#ifdef QR_EXPRIMENTAL_THREADING
 	DgThreadJoin(&thrd);
-#endif
 	
 	return 0;
 }

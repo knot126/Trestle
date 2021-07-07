@@ -1,4 +1,4 @@
-tk = 0
+tk = 45
 a = {} -- menu/interactable
 ui = {} -- non-interactable
 
@@ -49,7 +49,7 @@ function tick()
 		elseif down then
 			active = active + 1
 		end
-		tk = 100
+		tk = 45
 		updated = true
 	end
 	
