@@ -80,7 +80,9 @@ function tick()
 			mgClearWorld()
 			mgYeildToScript("assets://scripts/startup.lua")
 		elseif active == 2 then
-			print("Not implemented!!!")
+			mgClearWorld()
+			mgYeildToScript("assets://scripts/m_options.lua")
+-- 			print("Not implemented!!!")
 		end
 	end
 	

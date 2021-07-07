@@ -124,9 +124,10 @@ static void *physics_loop(void *args_) {
 #endif
 
 static int game_loop(World *world, SystemStates *systems) {
-	/* 
+	/** 
 	 * The main loop.
 	 */
+	
 	bool should_keep_open = true;
 	
 	float show_fps = 0.0f;

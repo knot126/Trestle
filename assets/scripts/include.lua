@@ -135,3 +135,84 @@ function updateMenu(m)
 	
 	return m
 end
+
+-- CrabUI Library
+crab = {
+	options = {},
+	active = 1,
+	updated = true,
+	kp = 0,
+	
+	addOption = function(this, x, y, text, values)
+		i = #this.options + 1
+		this.options[i] = {}
+		id = mgUIElement(QR_ELEMUI_TEXT)
+		mgUIText(id, text)
+		mgUITextPos(id, x, y)
+		mgUITextSize(id, 0.1)
+		mgUITextColour(id, 1.0, 1.0, 1.0, 1.0)
+		
+		this.options[i].id = id
+		this.options[i].text = text
+		this.options[i].values = values
+		this.options[i].active = 1
+		
+		return i
+	end,
+	
+	getValue = function(this, index)
+		return this.options[index].values[this.options[this.active].active]
+	end,
+	
+	update = function(this)
+		local up = mgGetKey(265)
+		local down = mgGetKey(264)
+		local left = mgGetKey(263)
+		local right = mgGetKey(262)
+		
+		if up and this.kp <= 0 then
+			this.active = this.active - 1
+			this.updated = true
+			this.kp = 30
+		end
+		
+		if down and this.kp <= 0 then
+			this.active = this.active + 1
+			this.updated = true
+			this.kp = 30
+		end
+		
+		if left and this.kp <= 0 then
+			this.options[this.active].active = this.options[this.active].active - 1
+			this.updated = true
+			this.kp = 30
+		end
+		
+		if right and this.kp <= 0 then
+			this.options[this.active].active = this.options[this.active].active + 1
+			this.updated = true
+			this.kp = 30
+		end
+		
+		if this.options[this.active].active < 1 then this.options[this.active].active = 1 end
+		if this.options[this.active].active > #this.options[this.active].values then this.options[this.active].active = #this.options[this.active].values end
+		
+		this.kp = this.kp - 1
+		
+		if this.active < 1 then this.active = 1 end
+		if this.active > #this.options then this.active = #this.options end
+		
+		if this.updated then
+			for i = 1, #this.options, 1 do
+				if this.active == i then
+					mgUITextColour(this.options[i].id, 0.0, 1.0, 0.0, 1.0)
+				else
+					mgUITextColour(this.options[i].id, 1.0, 1.0, 1.0, 1.0)
+				end
+				mgUIText(this.options[i].id, this.options[i].text .. ": " .. this.options[i].values[this.options[i].active])
+			end
+		end
+		
+		this.updated = false
+	end
+}
