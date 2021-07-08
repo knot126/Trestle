@@ -186,6 +186,8 @@ void gl_graphics_update(GraphicsSystem *gl, World *world) {
 	 * Update OpenGL-related state and the graphics system
 	 */
 	
+	glfwMakeContextCurrent(gl->window);
+	
 	// Normal OpenGL events
 	glfwSwapBuffers(gl->window);
 	glfwPollEvents();

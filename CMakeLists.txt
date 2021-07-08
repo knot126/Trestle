@@ -79,32 +79,32 @@ set(LUA_INCLUDE_FILES
 
 # Melon Source files
 set(MELON_FILES
-	src/util/alloc.c
-	src/util/args.c
-	src/util/audio.c
-	src/util/bag.c
-	src/util/bitmap.c
-	src/util/fail.c
-	src/util/fs.c
-	src/util/hash.c
-	src/util/http.c
-	src/util/ini.c
-	src/util/load.c
-	src/util/log.c
-	src/util/maths.c
-	src/util/obj.c
-	src/util/rand.c
-	src/util/resource.c
-	src/util/script.c
-	src/util/script_jax.c
-	src/util/socket.c
-	src/util/str.c
-	src/util/stream.c
-	src/util/thread.c
-	src/util/time.c
-	src/util/ui.c
-	src/util/value.c
-	src/util/xml.c
+	"src/util/alloc.c"
+	"src/util/args.c"
+	"src/util/audio.c"
+	"src/util/bag.c"
+	"src/util/bitmap.c"
+	"src/util/fail.c"
+	"src/util/fs.c"
+	"src/util/hash.c"
+	"src/util/http.c"
+	"src/util/ini.c"
+	"src/util/load.c"
+	"src/util/log.c"
+	"src/util/maths.c"
+	"src/util/obj.c"
+	"src/util/rand.c"
+	"src/util/resource.c"
+	"src/util/script.c"
+	"src/util/script_jax.c"
+	"src/util/socket.c"
+	"src/util/str.c"
+	"src/util/stream.c"
+	"src/util/thread.c"
+	"src/util/time.c"
+	"src/util/ui.c"
+	"src/util/value.c"
+	"src/util/xml.c"
 	${LUA_INCLUDE_FILES}
 	)
 
@@ -112,27 +112,29 @@ set(MELON_FILES
 set(EXEC_FILES 
 	${LUA_FILES}
 	${MELON_FILES}
-	src/world/compo.c
-	src/world/world.c
-	src/graphics/extern/glad.c
-	src/graphics/mesh.c
-	src/graphics/graphics.c
-	src/graphics/opengl.c
-	src/graphics/texture.c
-	src/graphics/image.c
-	src/game/box.c
-	src/game/gameplay.c
-	src/game/gamescript.c
-	src/game/level.c
-	src/game/phys.c
-	src/game/physent.c
-	src/game/seg.c
-	src/game/scripting.c
-	src/input/input.c
-	src/input/glfwi.c
-	src/game.c
-	src/types.c
-	src/main.c)
+	
+	"src/game/box.c"
+	"src/game/gameplay.c"
+	"src/game/gamescript.c"
+	"src/game/level.c"
+	"src/game/phys.c"
+	"src/game/physent.c"
+	"src/game/seg.c"
+	"src/game/scripting.c"
+	"src/graphics/extern/glad.c"
+	"src/graphics/mesh.c"
+	"src/graphics/graphics.c"
+	"src/graphics/opengl.c"
+	"src/graphics/texture.c"
+	"src/graphics/image.c"
+	"src/input/input.c"
+	"src/input/glfwi.c"
+	"src/physics/physics.c"
+	"src/world/compo.c"
+	"src/world/world.c"
+	"src/game.c"
+	"src/types.c"
+	"src/main.c")
 
 # Force compiler to high warning levels
 if(MSVC)

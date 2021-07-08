@@ -439,7 +439,7 @@ void DgUISurfaceRenderData(DgUISurface *surface, DgUIRenderData *data) {
 	memset(data, 0, sizeof *data);
 	
 	for (size_t i = 0; i < surface->panel_count; i++) {
-		DgUISrufaceRenderAlloc(data);
-		DgUISurfaceRenderPanel(data, &surface->panel[i]);
+		if (DgUISrufaceRenderAlloc(data)) return;
+		if (DgUISurfaceRenderPanel(data, &surface->panel[i])) return;
 	}
 }

@@ -36,7 +36,7 @@
 
 #include "game.h"
 
-#define QR_EXPRIMENTAL_THREADING
+// #define QR_EXPRIMENTAL_THREADING
 
 typedef struct GameLoopArgs {
 	bool *keep_open;
@@ -121,6 +121,32 @@ static void *physics_loop(void *args_) {
 	}
 }
 
+#ifdef QR_EXPRIMENTAL_THREADING
+static void *graphics_loop(void *args_) {
+	GameLoopArgs *args = (GameLoopArgs *) args_;
+	
+	World *world = args->world;
+	SystemStates *sys = args->systems;
+	
+	float show_time = 0.0f;
+	
+	while (*args->keep_open) {
+		float time = DgTime();
+		
+		graphics_update(sys->graphics, world);
+		
+		time = DgTime() - time;
+		
+		if (show_time > 1.0f) {
+			DgLog(DG_LOG_VERBOSE, "Graphics frame time: %fms", time);
+			show_time = 0.0f;
+		}
+		
+		show_time += time;
+	}
+}
+#endif
+
 static int game_loop(World *world, SystemStates *sys) {
 	/** 
 	 * The main loop.
@@ -135,9 +161,16 @@ static int game_loop(World *world, SystemStates *sys) {
 	loopargs.world = world;
 	loopargs.systems = sys;
 	loopargs.keep_open = &should_keep_open;
-	DgThread thrd;
 	
-	DgThreadNew(&thrd, &physics_loop, &loopargs);
+	DgThread t_physics;
+#ifdef QR_EXPRIMENTAL_THREADING
+	DgThread t_graphics;
+#endif
+	
+	DgThreadNew(&t_physics, &physics_loop, &loopargs);
+#ifdef QR_EXPRIMENTAL_THREADING
+	DgThreadNew(&t_graphics, &graphics_loop, &loopargs);
+#endif
 	
 	while (should_keep_open) {
 		double frame_time = DgTime();
@@ -145,7 +178,9 @@ static int game_loop(World *world, SystemStates *sys) {
 		// Check if we should still be open
 		should_keep_open = get_should_keep_open(sys->graphics);
 		
+#ifndef QR_EXPRIMENTAL_THREADING
 		graphics_update(sys->graphics, world);
+#endif
 		input_update(&sys->input);
 		
 		game_script_update(&sys->game_script);
@@ -172,7 +207,10 @@ static int game_loop(World *world, SystemStates *sys) {
 		}
 	} // while (should_keep_open)
 	
-	DgThreadJoin(&thrd);
+	DgThreadJoin(&t_physics);
+#ifdef QR_EXPRIMENTAL_THREADING
+	DgThreadJoin(&t_graphics);
+#endif
 	
 	return 0;
 }
