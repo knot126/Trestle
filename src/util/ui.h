@@ -180,6 +180,7 @@ typedef struct DgUIRenderData {
 	/* Data needed to render the UI. */
 	DgUIRenderVertexSet *data;
 	size_t length;
+	size_t cache;
 } DgUIRenderData;
 
 /**

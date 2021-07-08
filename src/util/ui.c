@@ -350,15 +350,6 @@ DG_UI_REMOVE_ELEMENT(DgUISurfaceRemoveButton, DgUIButton, button, button_count);
  * =============================================================================
  */
 
-void DgUILineEditUpdateText(DgUILineEdit *object, unsigned keycode) {
-	/**
-	 * Update the LineEdit object to add or remove letters, or move the cursor
-	 * using the arrow keys.
-	 */
-	
-	
-}
-
 void DgUISurfaceUpdate(DgUISurface *surface, DgUISurfaceUpdateStructure *info) {
 	/**
 	 * Call all of the needed update routines.
@@ -366,15 +357,89 @@ void DgUISurfaceUpdate(DgUISurface *surface, DgUISurfaceUpdateStructure *info) {
 	
 }
 
-void DgUISurfaceRenderPanel() {
+static uint8_t DgUISurfaceRenderPanel(DgUIRenderData *data, const DgUIPanel * const panel) {
 	/**
-	 * Generate a panel for the mesh.
+	 * Generate a mesh for a panel.
 	 */
 	
+	// Get vertex set
+	DgUIRenderVertexSet *vs = &data->data[data->length++];
+	
+	memset(vs, 0, sizeof *vs);
+	
+	vs->vertex = (DgUIRenderVertex *) DgAlloc(sizeof *vs->vertex * 4);
+	
+	if (!vs->vertex) {
+		return 1;
+	}
+	
+	vs->index = (uint32_t *) DgAlloc(sizeof *vs->index * 6);
+	
+	if (!vs->index) {
+		return 2;
+	}
+	
+	vs->vertex[0] = (DgUIRenderVertex) { 
+		panel->base.pos.x, panel->base.pos.y, 
+		0.0f, 0.0f, 
+		panel->panel->colour.r, panel->panel->colour.g, 
+		panel->panel->colour.b, panel->panel->colour.a };
+	
+	vs->vertex[1] = (DgUIRenderVertex) { 
+		panel->base.pos.x, panel->base.pos.y - panel->base.size.y, 
+		0.0f, 0.0f, 
+		panel->panel->colour.r, panel->panel->colour.g, 
+		panel->panel->colour.b, panel->panel->colour.a };
+	
+	vs->vertex[2] = (DgUIRenderVertex) { 
+		panel->base.pos.x + panel->base.size.x, panel->base.pos.y - panel->base.size.y, 
+		0.0f, 0.0f, 
+		panel->panel->colour.r, panel->panel->colour.g, 
+		panel->panel->colour.b, panel->panel->colour.a };
+	
+	vs->vertex[3] = (DgUIRenderVertex) { 
+		panel->base.pos.x + panel->base.size.x, panel->base.pos.y, 
+		0.0f, 0.0f, 
+		panel->panel->colour.r, panel->panel->colour.g, 
+		panel->panel->colour.b, panel->panel->colour.a };
+	
+	vs->index[0] = 0;
+	vs->index[1] = 1;
+	vs->index[2] = 2;
+	vs->index[3] = 0;
+	vs->index[4] = 2;
+	vs->index[5] = 3;
+	
+	return 0;
+}
+
+static uint8_t DgUISrufaceRenderAlloc(DgUIRenderData *data) {
+	/**
+	 * Make sure there are enough VertexSet structures allocated. If not, 
+	 * allocate more.
+	 */
+	
+	if (data->cache <= data->length) {
+		data->cache = 4 + data->cache * 2;
+		data->data = (DgUIRenderVertexSet *) DgRealloc(data->data, sizeof *data->data * data->cache);
+		
+		if (!data->data) {
+			return 1;
+		}
+	}
+	
+	return 0;
 }
 
 void DgUISurfaceRenderData(DgUISurface *surface, DgUIRenderData *data) {
 	/**
 	 * Generate and return the render data.
 	 */
+	
+	memset(data, 0, sizeof *data);
+	
+	for (size_t i = 0; i < surface->panel_count; i++) {
+		DgUISrufaceRenderAlloc(data);
+		DgUISurfaceRenderPanel(data, &surface->panel[i]);
+	}
 }
