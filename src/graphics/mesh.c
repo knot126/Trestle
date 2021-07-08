@@ -16,6 +16,7 @@
 #include "util/fail.h"
 #include "util/xml.h"
 #include "util/maths.h"
+#include "util/rand.h"
 #include "util/log.h"
 #include "util/str.h"
 #include "util/stream.h"
@@ -228,15 +229,17 @@ bool entity_load_obj_mesh(World * const restrict world, uint32_t id, const char 
 		vert[i].u = 0.0f;
 		vert[i].v = 0.0f;
 		
-		vert[i].r = 1.0f;
-		vert[i].g = 1.0f;
-		vert[i].b = 1.0f;
+		vert[i].r = DgRandFloat();
+		vert[i].g = DgRandFloat();
+		vert[i].b = DgRandFloat();
 	}
 	
 	mesh->vert = (float *) vert;
 	mesh->vert_count = obj.vertex_count;
 	mesh->index = obj.face;
 	mesh->index_count = obj.face_count;
+	
+	mesh->updated = true;
 	
 	DgFree(obj.vertex);
 	

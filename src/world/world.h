@@ -75,6 +75,7 @@ typedef struct {
 	PlayerWorld player_info;
 	GameState game;
 	UIWorld *ui;
+	void *graphics_state;
 	bool paused;
 	
 } World;

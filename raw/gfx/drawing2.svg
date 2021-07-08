@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1 (c4e8f9ed74, 2021-05-24)"
+   sodipodi:docname="drawing2.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#111111"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="2.9398148"
+     inkscape:cx="223.65354"
+     inkscape:cy="104.42835"
+     inkscape:window-width="1920"
+     inkscape:window-height="1011"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-size:2.25px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:0.264583"
+       x="4.0240722"
+       y="9.4687872"
+       id="text13827"><tspan
+         sodipodi:role="line"
+         id="tspan13825"
+         style="stroke-width:0.264583"
+         x="4.0240722"
+         y="9.4687872">LinearInterpolate(t, a, b) = (1.0 - t)a + tb = ((1.0 - t) * a) + (t * b)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:2.25px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:0.264583"
+       x="4.0240722"
+       y="14.760454"
+       id="text32769"><tspan
+         sodipodi:role="line"
+         id="tspan32767"
+         style="stroke-width:0.264583"
+         x="4.0240722"
+         y="14.760454">BezierCurve3(t, p1, p2, p3) = LinearInterpolate(t, LinearInterpolate(t, p1, p2), LinearInterpolate(t, p2, p3))</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:2.25px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:0.264583"
+       x="4.0240722"
+       y="20.05212"
+       id="text50977"><tspan
+         sodipodi:role="line"
+         id="tspan50975"
+         style="stroke-width:0.264583"
+         x="4.0240722"
+         y="20.05212">BezierCurve3(t, p1, p2, p3) = LinearInterpolate(t, ((1.0 - t)p<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan61687">1</tspan> + tp<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan59891">2</tspan>), ((1.0 - t)p<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan56895">2</tspan> + tp<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan55429">3</tspan>))</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:2.25px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:0.264583"
+       x="4.0240722"
+       y="25.343786"
+       id="text78607"><tspan
+         sodipodi:role="line"
+         id="tspan78605"
+         style="stroke-width:0.264583"
+         x="4.0240722"
+         y="25.343786">BezierCurve3(t, p1, p2, p3) = (1.0 - t)((1.0 - t)p<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan78597">1</tspan> + tp<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan78599">2</tspan>) + t((1.0 - t)p<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan78601">2</tspan> + tp<tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan78603">3</tspan>)</tspan></text>
+  </g>
+</svg>

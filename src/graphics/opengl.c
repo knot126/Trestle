@@ -175,6 +175,9 @@ GraphicsSystem* gl_graphics_init(void) {
 	
 	gl_error_check(__FILE__, __LINE__);
 	
+	// Set default clear colour
+	gl->clearColour = (DgVec4) {0.5f, 0.5f, 0.5f, 1.0f};
+	
 	return gl;
 }
 
@@ -188,7 +191,7 @@ void gl_graphics_update(GraphicsSystem *gl, World *world) {
 	glfwPollEvents();
 	
 	// OpenGL clear and draw
-	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+	glClearColor(gl->clearColour.r, gl->clearColour.g, gl->clearColour.b, gl->clearColour.a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	// -------------------------------------------------------------------------

@@ -56,19 +56,19 @@ function initHud()
 	ui.ProgressBar = mgUIElement(QR_ELEMUI_BOX)
 	mgUIBox(ui.ProgressBar, -1.0, 1.0, 1.0, 0.025)
 	mgUIBoxColour(ui.ProgressBar, 1.0, 1.0, 1.0, 1.0)
-	
-	lives.count = 5
-	lives.updated = true
-	
-	first = mgEntity(0)
 end
 
 function init()
 	-- player init
-	local player = new_cube(0.0, 1.5, 0.0, 0.9, 0.9, 0.9, true, QR_PHYS_ENABLE_RESPONSE, "assets://mesh/player.xml")
+	local player = new_cube(0.0, 1.5, 0.0, 0.9, 0.9, 0.9, true, QR_PHYS_ENABLE_RESPONSE, "assets://mesh/player.obj")
 	mgActivePlayer(player)
 	
-	initHud()
+	lives.count = 5
+	lives.updated = true
+	
+-- 	initHud()
+	
+	first = mgEntity(0)
 end
 
 function room()
@@ -87,14 +87,14 @@ end
 function tick()
 	frame = frame + 1
 	local x, y, z = mgPlayerPos()
-	mgUIText(ui.Statistics, "Frame " .. tostring(frame) .. ", " .. tostring(mgEntCount()) .. " Entities, Position: " .. "(" .. x .. ", " .. y .. ", " .. z .. ")")
-	mgUIText(ui.Distance, tostring(math.floor(-z)))
-	mgUIText(ui.Speed, tostring(mgGetSpeed()))
-	
-	mgUIBox(ui.ProgressBar, -1.0, 1.0, -z * 0.002, 0.025)
+-- 	mgUIText(ui.Statistics, "Frame " .. tostring(frame) .. ", " .. tostring(mgEntCount()) .. " Entities, Position: " .. "(" .. x .. ", " .. y .. ", " .. z .. ")")
+-- 	mgUIText(ui.Distance, tostring(math.floor(-z)))
+-- 	mgUIText(ui.Speed, tostring(mgGetSpeed()))
+-- 	
+-- 	mgUIBox(ui.ProgressBar, -1.0, 1.0, -z * 0.002, 0.025)
 	
 	if lives.updated then
-		mgUIText(ui.LivesCount, tostring(lives.count))
+-- 		mgUIText(ui.LivesCount, tostring(lives.count))
 		lives.updated = false
 	end
 	
@@ -109,17 +109,17 @@ function tick()
 	
 	if lives.count < 0 and not lives.hasBeenDead then
 		lives.hasBeenDead = true
-		ui.Dead = mgUIElement(QR_ELEMUI_TEXT)
-		mgUIText(ui.Dead, "Player dead !")
-		mgUITextPos(ui.Dead, -0.85, 0.25)
-		mgUITextSize(ui.Dead, 0.35)
-		mgUITextFont(ui.Dead, "font3")
-		mgPaused(true)
+-- 		ui.Dead = mgUIElement(QR_ELEMUI_TEXT)
+-- 		mgUIText(ui.Dead, "Player dead !")
+-- 		mgUITextPos(ui.Dead, -0.85, 0.25)
+-- 		mgUITextSize(ui.Dead, 0.35)
+-- 		mgUITextFont(ui.Dead, "font3")
+-- 		mgPaused(true)
 	end
 	
 	-- Pulse the text colour
 	if lives.hasBeenDead then
-		mgUITextColour(ui.Dead, 1.0, (math.sin(frame * 0.01) + 1.0) / 2.0, (math.sin(frame * 0.01) + 1.0) / 2.0, 1.0)
+-- 		mgUITextColour(ui.Dead, 1.0, (math.sin(frame * 0.01) + 1.0) / 2.0, (math.sin(frame * 0.01) + 1.0) / 2.0, 1.0)
 		if mgGetKey(GLFW_KEY_ENTER) then
 			mgClearWorld()
 			mgYeildToScript("assets://scripts/menu.lua")

@@ -9,6 +9,7 @@
 
 #include <stdbool.h>
 
+#include "util/maths.h"
 #include "world/world.h"
 #include "graphics/texture.h"
 #include "graphics/gl_incl.h"
@@ -27,6 +28,8 @@ typedef struct DgOpenGLContext {
 	
 	unsigned* shaders;
 	size_t shader_count;
+	
+	DgVec4 clearColour;
 } DgOpenGLContext;
 
 typedef DgOpenGLContext GraphicsSystem;

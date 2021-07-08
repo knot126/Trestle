@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <stddef.h>
+
 // Angle ops
 
 float DgCos(float angle);
@@ -145,3 +147,10 @@ void DgMat4Print(DgMat4 a);
 DgMat4 DgTransfromBasicCamera(DgVec3 trans, DgVec3 rot);
 DgMat4 DgTransformLookAt(DgVec3 from, DgVec3 to, DgVec3 world_up);
 DgMat4 DgTransformLookAt2(DgVec3 from, DgVec3 to, DgVec3 world_up);
+
+// Additional maths functions
+
+DgVec3 DgVec3Lerp(float t, DgVec3 a, DgVec3 b);
+DgVec3 DgVec3Bez3(float t, DgVec3 p0, DgVec3 p1, DgVec3 p2);
+DgVec3 DgVec3Bez4(float t, DgVec3 p0, DgVec3 p1, DgVec3 p2, DgVec3 p3);
+DgVec3 DgVec3BezN(float t, size_t length, DgVec3 * restrict points);

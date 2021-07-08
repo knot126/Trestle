@@ -8,6 +8,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stddef.h>
 
 // For C implementations that do not specify PI
 #if !defined(M_PI)
@@ -543,4 +544,52 @@ DgMat4 DgTransformLookAt2(DgVec3 from, DgVec3 to, DgVec3 world_up) {
 	view_matrix = DgMat4ByMat4Multiply(rot_matrix, view_matrix);
 	
 	return view_matrix;
+}
+
+/*
+ * Interpolation Schemes and Bèzier Curves
+ */
+
+inline DgVec3 DgVec3Lerp(float t, DgVec3 a, DgVec3 b) {
+	/**
+	 * Linearly interpolate two 3D vectors.
+	 */
+	
+	return DgVec3Add(DgVec3Scale((1.0f - t), a), DgVec3Scale(t, b));
+}
+
+DgVec3 DgVec3Bez3(float t, DgVec3 p0, DgVec3 p1, DgVec3 p2) {
+	/**
+	 * Compute a 3D quadratic bezier cruve.
+	 * 
+	 * These are the simplest "real" curves.
+	 */
+	
+	return DgVec3Lerp(t, DgVec3Lerp(t, p0, p1), DgVec3Lerp(t, p1, p2));
+}
+
+DgVec3 DgVec3Bez4(float t, DgVec3 p0, DgVec3 p1, DgVec3 p2, DgVec3 p3) {
+	/**
+	 * Compute a 3D cubic bezier cruve.
+	 * 
+	 * These are the simplest curves that look the best.
+	 */
+	
+	return DgVec3Lerp(t, DgVec3Lerp(t, DgVec3Lerp(t, p0, p1), DgVec3Lerp(t, p1, p2)), DgVec3Lerp(t, DgVec3Lerp(t, p1, p2), DgVec3Lerp(t, p2, p3)));
+}
+
+DgVec3 DgVec3BezN(float t, size_t length, DgVec3 * restrict points) {
+	/**
+	 * Compute the current point of an N-order 3D bezier curve. This will need to
+	 * modify the list of control points.
+	 */
+	
+	while (length != 1) {
+		for (size_t i = 0; i < length - 1; i++) {
+			points[i] = DgVec3Lerp(t, points[i], points[i + 1]);
+		}
+		length--;
+	}
+	
+	return *points;
 }
