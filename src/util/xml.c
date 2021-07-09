@@ -16,19 +16,15 @@
 
 #include "xml.h"
 
-/**
- * Data Types
- */
-
 typedef struct {
 	enum {
-		DG_XML_UNKNOWN,
-		DG_XML_TAG_NAME,
-		DG_XML_TAG_END,
-		DG_XML_TEXT_START,
-		DG_XML_NAME,
-		DG_XML_STRING,
-		DG_XML_ASSOC,
+		DG_XML_UNKNOWN    = 0,
+		DG_XML_TAG_NAME   = 1,
+		DG_XML_TAG_END    = 2,
+		DG_XML_TEXT_START = 3,
+		DG_XML_NAME       = 4,
+		DG_XML_STRING     = 5,
+		DG_XML_ASSOC      = 6,
 	} type;
 	char *text;
 } Dg_XMLParseToken;
@@ -203,6 +199,8 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 	 */
 	{
 	for (size_t i = 0; i < content_size; i++) {
+		printf("INTO: %c\n", content[i]);
+		
 		if (is_whitespace(&content[i])) {
 			continue;
 		}
@@ -225,6 +223,11 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 				i++;
 			}
 			tokens[token_count - 1].text = DgStrdupl(&content[start], i - start);
+			
+			// NOTE: This fixes an issue where we increment too far on the end of the tag.
+			if (is_tag_end(&content[i])) {
+				i--;
+			}
 		}
 		
 		else if (is_assoc(&content[i])) {
@@ -250,8 +253,19 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 		else if (is_tag_end(&content[i]) == 1) {
 			expand_tokens(&tokens, &token_count);
 			
+			i++;
+			size_t start = i;
+			while (is_tag_start(&content[i]) == 0) {
+				i++;
+			}
+			
+			char *t = (i - start) ? DgStrdupl(&content[start], i - start) : NULL;
+			
 			tokens[token_count - 1].type = DG_XML_TEXT_START;
-			tokens[token_count - 1].text = NULL;
+			tokens[token_count - 1].text = t;
+			
+			// So we do not go past the start of the next tag.
+			i--;
 		}
 		
 		else if (is_tag_end(&content[i]) == 2 || is_tag_start(&content[i]) == 2) {
@@ -272,7 +286,7 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 			tokens[token_count - 1].type = DG_XML_NAME;
 			
 			size_t start = i;
-			while (!is_whitespace(&content[i]) && !is_assoc(&content[i])) {
+			while (!is_whitespace(&content[i]) && !is_assoc(&content[i]) && !is_tag_start(&content[i])) {
 				i++;
 			}
 			tokens[token_count - 1].text = DgStrdupl(&content[start], i - start);
@@ -289,6 +303,10 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 	 * Pre-parser steps
 	 */
 	memset(doc, 0, sizeof *doc);
+	
+// 	for (size_t i = 0; i < token_count; i++) {
+// 		printf("%.3d   %d   '%s'\n", i, tokens[i].type, tokens[i].text);
+// 	}
 	
 	/**
 	 * XML Parser loop
@@ -368,8 +386,13 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 			}
 		}
 		
+		// Node text
+		else if (tokens[i].type == DG_XML_TEXT_START) {
+			current->text = tokens[i].text;
+		}
+		
 		// Closing tags
-		if (tokens[i].type == DG_XML_TAG_END) {
+		else if (tokens[i].type == DG_XML_TAG_END) {
 			depth--;
 		}
 	}
@@ -471,6 +494,20 @@ void DgXMLPrintNode(const DgXMLNode * const doc, uint32_t depth) {
 	printf("\033[1;32m%s\033[0m:\n", doc->name);
 	depth++;
 	
+	if (doc->text) {
+		for (uint32_t i = 0; i < depth; i++) {
+			printf("\t");
+		}
+		
+		printf("\033[1;33mText\033[0m: \033[0;95m\"%s\"\033[0m\n", doc->text);
+	}
+	else {
+		for (uint32_t i = 0; i < depth; i++) {
+			printf("\t");
+		}
+		printf("(\033[0;33mno text\033[0m)\n");
+	}
+	
 	if (doc->attrib) {
 		for (size_t j = 0; j < doc->attrib_count; j++) {
 			for (uint32_t i = 0; i < depth; i++) {
@@ -501,6 +538,11 @@ void DgXMLPrintNode(const DgXMLNode * const doc, uint32_t depth) {
 }
 
 char *DgXMLGetAttrib(DgXMLNode *node, const char * const restrict key, char *fallback) {
+	/**
+	 * Get the value assocaited with an attribute on an XML node, returning 
+	 * fallback if not available. 
+	 */
+	
 	char *value = fallback;
 	
 	for (size_t i = 0; i < node->attrib_count; i++) {
@@ -511,4 +553,52 @@ char *DgXMLGetAttrib(DgXMLNode *node, const char * const restrict key, char *fal
 	}
 	
 	return value;
+}
+
+inline const char *DgXMLNodeGetName(DgXMLNode *node) {
+	/**
+	 * Get an XML node's name.
+	 */
+	
+	return node->name;
+}
+
+inline const char *DgXMLNodeGetText(DgXMLNode *node) {
+	/**
+	 * Get an XML node's text.
+	 */
+	
+	return node->text;
+}
+
+inline size_t DgXMLNodeGetAttribCount(DgXMLNode *node) {
+	/**
+	 * The the count of attributes in an XML node.
+	 */
+	
+	return node->attrib_count;
+}
+
+inline DgXMLPair *DgXMLNodeGetAttrib(DgXMLNode *node, size_t index) {
+	/**
+	 * Get the key/value pair of the attribute at index.
+	 */
+	
+	return &node->attrib[index];
+}
+
+inline size_t DgXMLNodeGetSubCount(DgXMLNode *node) {
+	/**
+	 * The the count of subnodes in an XML node.
+	 */
+	
+	return node->sub_count;
+}
+
+inline DgXMLNode *DgXMLNodeGetSub(DgXMLNode *node, size_t index) {
+	/**
+	 * Get the key/value pair of the attribute at index.
+	 */
+	
+	return &node->sub[index];
 }

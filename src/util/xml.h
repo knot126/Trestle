@@ -42,4 +42,12 @@ uint32_t DgXMLLoadString(DgXMLNode *doc, const char * const str);
 uint32_t DgXMLLoad(DgXMLNode *doc, const char * const path);
 void DgXMLNodeFree(DgXMLNode *node);
 void DgXMLPrintNode(const DgXMLNode * const doc, uint32_t depth);
+
 char *DgXMLGetAttrib(DgXMLNode *node, const char * const restrict key, char *fallback);
+
+const char *DgXMLNodeGetName(DgXMLNode *node);
+const char *DgXMLNodeGetText(DgXMLNode *node);
+size_t DgXMLNodeGetAttribCount(DgXMLNode *node);
+DgXMLPair *DgXMLNodeGetAttrib(DgXMLNode *node, size_t index);
+size_t DgXMLNodeGetSubCount(DgXMLNode *node);
+DgXMLNode *DgXMLNodeGetSub(DgXMLNode *node, size_t index);
