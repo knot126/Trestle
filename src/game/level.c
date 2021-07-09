@@ -36,8 +36,6 @@ uint32_t level_init(LevelSystem * restrict ls, const char * const restrict game)
 		return status;
 	}
 	
-	DgXMLPrintNode(&root, 0);
-	
 	for (size_t i = 0; i < root.sub_count; i++) {
 		if (!strcmp(root.sub[i].name, "level")) {
 			// Add the level to the list

@@ -16,6 +16,8 @@
 
 #include "xml.h"
 
+#define DG_XML_PRINT_AFTER_PARSE
+
 typedef struct {
 	enum {
 		DG_XML_UNKNOWN    = 0,
@@ -199,8 +201,6 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 	 */
 	{
 	for (size_t i = 0; i < content_size; i++) {
-		printf("INTO: %c\n", content[i]);
-		
 		if (is_whitespace(&content[i])) {
 			continue;
 		}
@@ -404,6 +404,10 @@ uint32_t DgXMLParse(DgXMLNode * const doc, const uint32_t content_size, const ch
 		DgLog(DG_LOG_ERROR, "[XML Parser] The depth after loading the doucment is not zero; could the document not have its tags closed properly?\n");
 		return 1;
 	}
+	
+#if defined(DG_XML_PRINT_AFTER_PARSE)
+	DgXMLPrintNode(doc, 0);
+#endif
 	
 	return 0;
 }
