@@ -176,107 +176,11 @@ uint32_t graphicsLoadShader(DgOpenGLContext *gl, char* source_path) {
 	gl->programs = DgRealloc(gl->programs, sizeof(GLuint) * gl->programs_count);
 	gl->programs[gl->programs_count - 1] = id;
 	
+	// Free shader, keep program, not needed anymore
+	glDeleteShader(vertex);
+	glDeleteShader(fragment);
+	
 	return 0;
-}
-
-/*
-static void graphicsLoadTextureFromFile(DgOpenGLContext *gl, char *path, GLenum active_texture) {
-	(gl->textures_count)++;
-	gl->textures = (GLuint *) DgRealloc(gl->textures, sizeof(GLuint) * gl->textures_count);
-	
-	if (!gl->textures) {
-		DgLog(DG_LOG_FATAL, "Texture list allocation failure");
-		return;
-	}
-	
-	glGenTextures(1, &gl->textures[gl->textures_count - 1]);
-	
-	glActiveTexture(active_texture);
-	glBindTexture(GL_TEXTURE_2D, gl->textures[gl->textures_count - 1]);
-	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
-	DgImageInfo image = DgLoadImage(path);
-	
-	if (!image.data) {
-		DgFail("Error: Failed to load texture.\n", 100);
-	}
-	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.data);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	
-	DgFreeImage(&image);
-}
-*/
-
-/*
-static void graphicsLoadTextureFromBuffer(DgOpenGLContext *gl, DgBitmap *bitmap, GLenum active_texture) {
-	(gl->textures_count)++;
-	gl->textures = (GLuint *) DgRealloc(gl->textures, sizeof(GLuint) * gl->textures_count);
-	
-	if (!gl->textures) {
-		DgLog(DG_LOG_FATAL, "Texture list allocation failure");
-		return;
-	}
-	
-	glGenTextures(1, &gl->textures[gl->textures_count - 1]);
-	
-	glActiveTexture(active_texture);
-	glBindTexture(GL_TEXTURE_2D, gl->textures[gl->textures_count - 1]);
-	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
-	GLenum mode;
-	
-	if (bitmap->chan == 1) { mode = GL_RED; }
-	else if (bitmap->chan == 2) { mode = GL_RG; }
-	else if (bitmap->chan == 3) { mode = GL_RGB; }
-	else if (bitmap->chan == 4) { mode = GL_RGBA; }
-	else { DgLog(DG_LOG_ERROR, "Could not determine feilds in bitmap!!"); }
-	
-	glTexImage2D(GL_TEXTURE_2D, 0, mode, bitmap->width, bitmap->height, 0, mode, GL_UNSIGNED_BYTE, bitmap->src);
-	glGenerateMipmap(GL_TEXTURE_2D);
-}
-*/
-
-static void gl_set_format(DgOpenGLContext *gl) {
-	// Tell OpenGL about this vertex data
-	GLint attr_Position = glGetAttribLocation(gl->programs[0], "position");
-	GLint attr_Texture = glGetAttribLocation(gl->programs[0], "texpos");
-	GLint attr_Colour = glGetAttribLocation(gl->programs[0], "colour");
-	
-	if (attr_Position < 0) {
-		DgFail("Error: No attribute 'position'.\n", 100);
-	}
-	
-	if (attr_Texture < 0) {
-		DgFail("Error: No attribute 'texpos'.\n", 100);
-	}
-	
-	if (attr_Colour < 0) {
-		DgFail("Error: No attribute 'colour'.\n", 100);
-	}
-	
-	glVertexAttribPointer(attr_Position, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) 0);
-	glEnableVertexAttribArray(attr_Position);
-	
-	gl_error_check(__FILE__, __LINE__);
-	
-	glVertexAttribPointer(attr_Texture, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
-	glEnableVertexAttribArray(attr_Texture);
-	
-	gl_error_check(__FILE__, __LINE__);
-	
-	glVertexAttribPointer(attr_Colour, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (5 * sizeof(float)));
-	glEnableVertexAttribArray(attr_Colour);
-	
-	gl_error_check(__FILE__, __LINE__);
 }
 
 #endif

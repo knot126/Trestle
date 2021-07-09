@@ -423,6 +423,7 @@ inline DgMat4 DgMat4NewPerspective2(float fov, float rat, float f, float b) {
 	/* 
 	 * Gives a perspective projection given FOV and Screen Ratio.
 	 */
+	
 	float tangent = DgTan(fov / 2);
 	float h = f * tangent;
 	float w = h * rat;
@@ -454,7 +455,7 @@ void DgMat4Print(DgMat4 a) {
 
 DgMat4 DgTransfromBasicCamera(DgVec3 trans, DgVec3 rot) {
 	/**
-	 * <summary>Brute-force camera transfrom in that </summary>
+	 * <summary>Brute-force camera transfrom in that (... I left the descript at that I guess)</summary>
 	 * <input type="DgVec3" name="trans">The translation that will be applied to the camera.</input>
 	 * <input type="DgVec3" name="rot">The rotation that will be applied to the camera.</input>
 	 */
@@ -466,84 +467,6 @@ DgMat4 DgTransfromBasicCamera(DgVec3 trans, DgVec3 rot) {
 	DgMat4 rot_z = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.0f, 0.0f, 1.0f), rot.z);
 	
 	return DgMat4ByMat4Multiply(DgMat4ByMat4Multiply(rot_x, DgMat4ByMat4Multiply(rot_y, rot_z)), pos);
-}
-
-DgMat4 DgTransformLookAt(DgVec3 from, DgVec3 to, DgVec3 world_up) {
-	/**
-	 * <summary>Return a <type>DgMat4</type> that makes the camera look at <arg>to</arg>.</summary>
-	 * <input type="DgVec3" name="from">Location of the camera.</input>
-	 * <input type="DgVec3" name="to">The point where the camera faces.</input>
-	 * <input type="DgVec3" name="world_up">The up-vector of the world.</input>
-	 */
-	DgMat4 view_matrix = DgMat4New(1.0f);
-	DgMat4 rot_matrix = DgMat4New(1.0f);
-	
-	DgVec3 axis_n = DgVec3Normalise(DgVec3Subtract(to, from));
-	DgVec3 axis_v = DgVec3Normalise(DgVec3Cross(axis_n, DgVec3Cross(world_up, axis_n)));
-	DgVec3 axis_u = DgVec3Normalise(DgVec3Cross(axis_n, axis_v));
-	
-	// Rotate on the X-axis
-	rot_matrix.ax = -axis_u.x;
-	rot_matrix.ay = axis_u.y;
-	rot_matrix.az = axis_u.z;
-	
-	// Rotate on the Y-axis
-	rot_matrix.bx = axis_v.x;
-	rot_matrix.by = -axis_v.y;
-	rot_matrix.bz = axis_v.z;
-	
-	// Rotate on the Z-axis
-	rot_matrix.cx = axis_n.x;
-	rot_matrix.cy = -axis_n.y;
-	rot_matrix.cz = axis_n.z;
-	
-	// Move the camera, but this does not angle it.
-	view_matrix.aw = from.x;
-	view_matrix.bw = -from.y;
-	view_matrix.cw = from.z;
-	
-	view_matrix = DgMat4ByMat4Multiply(rot_matrix, view_matrix);
-	
-	return view_matrix;
-}
-
-DgMat4 DgTransformLookAt2(DgVec3 from, DgVec3 to, DgVec3 world_up) {
-	/**
-	 * <summary>Return a <type>DgMat4</type> that makes the camera look at <arg>to</arg>.</summary>
-	 * <input type="DgVec3" name="from">Location of the camera.</input>
-	 * <input type="DgVec3" name="to">The point where the camera faces.</input>
-	 * <input type="DgVec3" name="world_up">The up-vector of the world.</input>
-	 */
-	DgMat4 view_matrix = DgMat4New(1.0f);
-	DgMat4 rot_matrix = DgMat4New(1.0f);
-	
-	DgVec3 axis_n = DgVec3Normalise(DgVec3Subtract(to, from)); // forward
-	DgVec3 axis_v = DgVec3Normalise(DgVec3Cross(world_up, axis_n)); // right
-	DgVec3 axis_u = DgVec3Normalise(DgVec3Cross(axis_n, axis_v)); // up
-	
-	// Convert local X-axe to global X-axe
-	rot_matrix.ax = -axis_v.x;
-	rot_matrix.ay = axis_v.y;
-	rot_matrix.az = axis_v.z;
-	
-	// Convert local Y-axe to global Y-axe
-	rot_matrix.bx = axis_u.x;
-	rot_matrix.by = -axis_u.y;
-	rot_matrix.bz = axis_u.z;
-	
-	// Convert local Z-axe to global Z-axe
-	rot_matrix.cx = -axis_n.x;
-	rot_matrix.cy = axis_n.y;
-	rot_matrix.cz = axis_n.z;
-	
-	// Move the camera, but this does not angle it.
-	view_matrix.aw = from.x;
-	view_matrix.bw = from.y;
-	view_matrix.cw = from.z;
-	
-	view_matrix = DgMat4ByMat4Multiply(rot_matrix, view_matrix);
-	
-	return view_matrix;
 }
 
 /*

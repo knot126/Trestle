@@ -145,8 +145,6 @@ void DgMat4Print(DgMat4 a);
 // Misc.
 
 DgMat4 DgTransfromBasicCamera(DgVec3 trans, DgVec3 rot);
-DgMat4 DgTransformLookAt(DgVec3 from, DgVec3 to, DgVec3 world_up);
-DgMat4 DgTransformLookAt2(DgVec3 from, DgVec3 to, DgVec3 world_up);
 
 // Additional maths functions
 

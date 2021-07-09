@@ -49,18 +49,14 @@ void gl_set_window_size(GLFWwindow* window, int w, int h) {
 }
 
 void graphics_init(GraphicsSystem * restrict gl, const World * restrict world) {
-	/*
-	 * Initialise any global OpenGL graphics state. In the future, this should 
-	 * not be in chrage of things like the camera, but this is how it is for the
-	 * moment as I am still trying to play around with everything.
-	 * 
-	 * Returns a (GraphicsSystem *) to created info structure.
+	/**
+	 * Initialise any global OpenGL graphics state.
 	 */
 	
 	// Create context info structure
 	memset(gl, 0, sizeof *gl);
 	
-	// Glfw init
+	// GLFW init
 	glfwInit();
 	
 	// Window paramaters
@@ -70,6 +66,7 @@ void graphics_init(GraphicsSystem * restrict gl, const World * restrict world) {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 	
+	// Get window size from config
 	int w_width = atol(DgINIGet(g_quickRunConfig, "Main", "window_width", "1280"));
 	int w_height = atol(DgINIGet(g_quickRunConfig, "Main", "window_height", "720"));
 	
@@ -83,6 +80,7 @@ void graphics_init(GraphicsSystem * restrict gl, const World * restrict world) {
 		return;
 	}
 	
+	// Make the OpenGL context current
 	glfwMakeContextCurrent(gl->window);
 	
 	int ret = gladLoadGLLoader( (GLADloadproc) &glfwGetProcAddress );
@@ -91,12 +89,16 @@ void graphics_init(GraphicsSystem * restrict gl, const World * restrict world) {
 		return;
 	}
 	
+	// Unlock framerate
 	glfwSwapInterval(0);
+	
+	// Regiser window resize callback
 	glfwSetFramebufferSizeCallback(gl->window, &gl_set_window_size);
 	
+	// Set viewport size (not needed?)
 	glViewport(0, 0, w_width, w_height);
 	
-	// set window icon
+	// Set window icon
 	DgImageInfo icon = DgLoadImage(DgINIGet(g_quickRunConfig, "Window", "window_icon", "assets://icon.png"));
 	if (icon.data) {
 		GLFWimage icons[1];
@@ -108,36 +110,21 @@ void graphics_init(GraphicsSystem * restrict gl, const World * restrict world) {
 		DgFreeImage(&icon);
 	}
 	else {
-		DgLog(DG_LOG_ERROR, "Could not set window icon.");
+		DgLog(DG_LOG_ERROR, "Window icon load error.");
 	}
 	
 	// Load shaders
 	uint32_t res;
 	
+	// The main 3D scene shader
 	res = graphicsLoadShader(gl, "assets://shaders/main.glsl");
-	if (res) {
-		// failed to load shader
-		// if 2 the error affects other parts too and is fatal
-	}
 	
-	res = graphicsLoadShader(gl, "assets://shaders/text.glsl");
-	if (res) {
-		// failed to load shader
-		// if 2 the error affects other parts too and is fatal
-	}
-	
-	res = graphicsLoadShader(gl, "assets://shaders/uibox.glsl");
-	if (res) {
-		// failed to load shader
-		// if 2 the error affects other parts too and is fatal
+	if (res == 2) {
+		DgLog(DG_LOG_ERROR, "Failed to load shader.");
+		return;
 	}
 	
 	glUseProgram(gl->programs[0]);
-	
-	// Delete shaders, they are not needed anymore
-	for (int i = 0; i < gl->shader_count; i++) {
-		glDeleteShader(gl->shaders[i]);
-	}
 	
 	// Check for errors
 	gl_error_check(__FILE__, __LINE__);
@@ -153,36 +140,32 @@ void graphics_init(GraphicsSystem * restrict gl, const World * restrict world) {
 		DgBitmapFree(bmp);
 	}
 	else {
-		DgLog(DG_LOG_ERROR, "Failed to generate placeholder texture.");
+		DgLog(DG_LOG_ERROR, "Failed to generate default placeholder texture.");
 	}
 	
+	// Load textures from the master list
 	gltexture_load_list(&gl->texture, "assets://gfx/textures.xml");
 	
 	// Setting texture uniforms in shaders
 	gl_error_check(__FILE__, __LINE__);
 	
+	// Set uniforms for 3D shader
 	glUseProgram(gl->programs[0]);
 	glUniform1i(glGetUniformLocation(gl->programs[0], "image"), 0);
 	
+	// The very basic lighting model
 	glUniform1f(glGetUniformLocation(gl->programs[0], "LightFactor"), 0.15f);
 	DgVec3 v = {1.0, 1.0, 0.1};
 	v = DgVec3Normalise(v);
 	glUniform3f(glGetUniformLocation(gl->programs[0], "LightDirection"), v.x, v.y, v.z);
-	
 	gl_error_check(__FILE__, __LINE__);
 	
-	glUseProgram(gl->programs[1]);
-	glUniform1i(glGetUniformLocation(gl->programs[1], "font"), 0);
-	glUniform4f(glGetUniformLocation(gl->programs[1], "colour"), 1.0, 1.0, 1.0, 1.0);
-	
-	gl_error_check(__FILE__, __LINE__);
-	
+	// Clear current program
 	glUseProgram(0);
 	
-	// Alpha blending
+	// Enable alpha blending
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
-	
 	gl_error_check(__FILE__, __LINE__);
 	
 	// Set default clear colour
@@ -236,10 +219,10 @@ void graphics_update(GraphicsSystem *gl) {
 		camera = DgTransfromBasicCamera(world->trans[tid].pos, world->trans[tid].rot);
 	}
 	else {
-		camera = DgTransformLookAt2(DgVec3New(0.0f, 1.0f, 3.0f), DgVec3New(0.0f, 0.0f, 0.0f), DgVec3New(0.0f, 1.0f, 0.0f));
+		DgLog(DG_LOG_WARNING, "No active camera has been set.");
 	}
 	
-	// Push our matris to the GPU
+	// Push camera matrix to the GPU
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "camera"), 1, GL_TRUE, &camera.ax);
 	
 	for (size_t i = 0; i < world->mesh_count; i++) {
@@ -283,7 +266,73 @@ void graphics_update(GraphicsSystem *gl) {
 			
 			gl_error_check(__FILE__, __LINE__);
 			
-			gl_set_format(gl);
+			// =================================================================
+			// Register vertex attributes
+			// =================================================================
+			
+			GLint attr;
+			
+			attr = glGetAttribLocation(gl->programs[0], "position");
+			
+			if (attr < 0) {
+				DgFail("Error: No attribute 'position'.\n", 100);
+			}
+			
+			glVertexAttribPointer(
+				attr, 
+				3, 
+				GL_FLOAT, 
+				GL_FALSE, 
+				8 * sizeof(float), 
+				(void *) 0
+			);
+			glEnableVertexAttribArray(attr);
+			
+			gl_error_check(__FILE__, __LINE__);
+			
+			// =================================================================
+			// =================================================================
+			
+			attr = glGetAttribLocation(gl->programs[0], "texpos");
+			
+			if (attr < 0) {
+				DgFail("Error: No attribute 'texpos'.\n", 100);
+			}
+			
+			glVertexAttribPointer(
+				attr, 
+				2, 
+				GL_FLOAT, 
+				GL_FALSE, 8 * sizeof(float), 
+				(void *) (3 * sizeof(float))
+			);
+			glEnableVertexAttribArray(attr);
+			
+			gl_error_check(__FILE__, __LINE__);
+			
+			// =================================================================
+			// =================================================================
+			
+			attr = glGetAttribLocation(gl->programs[0], "colour");
+			
+			if (attr < 0) {
+				DgFail("Error: No attribute 'colour'.\n", 100);
+			}
+			
+			glVertexAttribPointer(
+				attr, 
+				3, 
+				GL_FLOAT, 
+				GL_FALSE, 
+				8 * sizeof(float), 
+				(void *) (5 * sizeof(float))
+			);
+			glEnableVertexAttribArray(attr);
+			
+			gl_error_check(__FILE__, __LINE__);
+			
+			// =================================================================
+			// =================================================================
 			
 			mesh->updated = false;
 			
