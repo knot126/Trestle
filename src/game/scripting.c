@@ -36,7 +36,7 @@ static int scripted_CreateEntity(lua_State *script) {
 static int scripted_CreateUIElement(lua_State *script) {
 	uint32_t flags = lua_tointeger(script, 1);
 	
-	lua_pushinteger(script, world_create_ui_element(QuickRunActiveWorld, flags));
+// 	lua_pushinteger(script, world_create_ui_element(QuickRunActiveWorld, flags));
 	
 	return 1;
 }
@@ -190,6 +190,9 @@ static int scripted_CreateCamera(lua_State *script) {
 }
 
 static int scripted_AddBox(lua_State *script) {
+	/**
+	 * DEPRECATED!!!
+	 */
 	int top = lua_gettop(script);
 	
 	float 
@@ -282,88 +285,43 @@ static int scripted_SetPlayer(lua_State *script) {
 }
 
 static int scripted_SetText(lua_State *script) {
-	uint32_t id = lua_tointeger(script, 1);
-	const char *string = lua_tostring(script, 2);
-	
-	bool success = ui_element_set_text(QuickRunActiveWorld, id, string);
-	
-	lua_pushboolean(script, success);
+	lua_pushboolean(script, 0);
 	
 	return 1;
 }
 
 static int scripted_SetTextPos(lua_State *script) {
-	uint32_t id = lua_tointeger(script, 1);
-	float x = (float) lua_tonumber(script, 2);
-	float y = (float) lua_tonumber(script, 3);
-	
-	bool success = ui_element_set_text_pos(QuickRunActiveWorld, id, DgVec2New(x, y));
-	
-	lua_pushboolean(script, success);
+	lua_pushboolean(script, 0);
 	
 	return 1;
 }
 
 static int scripted_SetTextSize(lua_State *script) {
-	uint32_t id = lua_tointeger(script, 1);
-	float size = (float) lua_tonumber(script, 2);
-	
-	bool success = ui_element_set_text_size(QuickRunActiveWorld, id, size);
-	
-	lua_pushboolean(script, success);
+	lua_pushboolean(script, 0);
 	
 	return 1;
 }
 
 static int scripted_SetTextFont(lua_State *script) {
-	uint32_t id = lua_tointeger(script, 1);
-	const char *font = lua_tostring(script, 2);
-	
-	bool success = ui_element_set_text_font(QuickRunActiveWorld, id, font);
-	
-	lua_pushboolean(script, success);
+	lua_pushboolean(script, 0);
 	
 	return 1;
 }
 
 static int scripted_SetTextColour(lua_State *script) {
-	uint32_t id = lua_tointeger(script, 1);
-	float r = (float) lua_tonumber(script, 2);
-	float g = (float) lua_tonumber(script, 3);
-	float b = (float) lua_tonumber(script, 4);
-	float a = (float) lua_tonumber(script, 5);
-	
-	bool success = ui_element_set_text_colour(QuickRunActiveWorld, id, DgVec4New(r, g, b, a));
-	
-	lua_pushboolean(script, success);
+	lua_pushboolean(script, 0);
 	
 	return 1;
 }
 
 static int scripted_SetBox(lua_State *script) {
-	uint32_t id = lua_tointeger(script, 1);
-	float px = (float) lua_tonumber(script, 2);
-	float py = (float) lua_tonumber(script, 3);
-	float sx = (float) lua_tonumber(script, 4);
-	float sy = (float) lua_tonumber(script, 5);
-	
-	bool success = ui_element_set_box(QuickRunActiveWorld, id, DgVec2New(sx, sy), DgVec2New(px, py));
-	
-	lua_pushboolean(script, success);
+	lua_pushboolean(script, 0);
 	
 	return 1;
 }
 
 static int scripted_SetBoxColour(lua_State *script) {
-	uint32_t id = lua_tointeger(script, 1);
-	float r = (float) lua_tonumber(script, 2);
-	float g = (float) lua_tonumber(script, 3);
-	float b = (float) lua_tonumber(script, 4);
-	float a = (float) lua_tonumber(script, 5);
-	
-	bool success = ui_element_set_box_colour(QuickRunActiveWorld, id, DgVec4New(r, g, b, a));
-	
-	lua_pushboolean(script, success);
+	lua_pushboolean(script, 0);
 	
 	return 1;
 }

@@ -13,8 +13,6 @@
 #include "world/compo.h"
 #include "world/gamestate.h"
 
-// #warning Traditional worlds have been depreacted, so try to referain from adding to the mess. See "doc/World Struct Deprecation.md" for more info.
-
 typedef uint32_t mask_t;
 typedef uint32_t ehand_t;
 
@@ -30,22 +28,6 @@ typedef struct {
 	uint32_t id;
 	float speed;
 } PlayerWorld;
-
-typedef struct {
-	/**
-	 * The world for all UI elements.
-	 * 
-	 * DEPRECATED: The old UI system is now deprecated.
-	 */
-	
-	uint32_t mask_count;
-	
-	C_UIBox *box;
-	uint32_t box_count;
-	
-	C_UIText *text;
-	uint32_t text_count;
-} UIWorld;
 
 typedef struct {
 	// Masks and entities
@@ -74,8 +56,6 @@ typedef struct {
 	// Other semiglobal state
 	PlayerWorld player_info;
 	GameState game;
-	UIWorld *ui;
-	void *graphics_state;
 	bool paused;
 	
 } World;
@@ -99,8 +79,6 @@ C_Physics *entity_find_phys(const World * const restrict world, const uint32_t i
 
 // Tranforms
 bool entity_set_transform(World * const restrict world, const uint32_t id, const DgVec3 pos, const DgVec3 rot, const DgVec3 scale);
-
-#include "world/oldui.h"
 
 // Cameras
 void world_set_camera(World * const restrict world, const uint32_t id);

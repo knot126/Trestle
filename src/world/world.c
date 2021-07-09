@@ -24,6 +24,9 @@ void world_init(World * const restrict world, size_t prealloc_count) {
 	/*
 	 * Creates a world full of entities
 	 */
+	
+	DgLog(DG_LOG_DEPRECATION, "Traditional worlds have been depreacted, so try to referain from adding to the mess. See \"doc/World Struct Deprecation.md\" for more info.");
+	
 	memset(world, 0, sizeof(World));
 }
 
@@ -46,22 +49,6 @@ void world_destroy(World * const restrict world) {
 	
 	if (world->cam) {
 		DgFree(world->cam);
-	}
-	
-	if (world->ui) {
-		if (world->ui->text) {
-			for (uint32_t i = 0; i < world->ui->text_count; i++) {
-				world_ui_free_text(&world->ui->text[i]);
-			}
-			
-			DgFree(world->ui->text);
-		}
-		
-		if (world->ui->box) {
-			DgFree(world->ui->box);
-		}
-		
-		DgFree(world->ui);
 	}
 	
 	// Basically memset(world, 0, sizeof(World))
@@ -111,61 +98,6 @@ uint32_t world_create_entity(World * const restrict world, mask_t mask) {
 }
 
 #undef QR_WORLD_ADDCOMPONENT
-
-uint32_t world_create_ui_element(World * const restrict world, mask_t mask) {
-	/**
-	 * Create a new entity in the UI subworld and init if it does not exist yet,
-	 * returns its element id.
-	 */
-	
-	DgLog(DG_LOG_DEPRECATION, "world_create_ui_element(%X, %d)", world, mask);
-	
-	// Create the UI world if it does not exist
-	if (!world->ui) {
-		world->ui = DgAlloc(sizeof(UIWorld));
-		
-		if (!world->ui) {
-			DgLog(DG_LOG_FATAL, "Failed to allocate memory for UI element world.");
-			return 0;
-		}
-		
-		memset(world->ui, 0, sizeof(UIWorld));
-	}
-	
-	world->ui->mask_count += 1;
-	
-	if ((mask & QR_ELEMUI_BOX) == QR_ELEMUI_BOX) {
-		world->ui->box_count += 1;
-		world->ui->box = DgRealloc(world->ui->box, sizeof(C_UIBox) * world->ui->box_count);
-		
-		if (!world->ui->box) {
-			DgLog(DG_LOG_FATAL, "Failed to allocate memory for UI box element.");
-			return 0;
-		}
-		
-		memset(&world->ui->box[world->ui->box_count - 1], 0, sizeof(C_UIBox));
-		world->ui->box[world->ui->box_count - 1].base.id = world->ui->mask_count;
-	}
-	
-	if ((mask & QR_ELEMUI_TEXT) == QR_ELEMUI_TEXT) {
-		world->ui->text_count += 1;
-		world->ui->text = DgRealloc(world->ui->text, sizeof(C_UIText) * world->ui->text_count);
-		
-		if (!world->ui->text) {
-			DgLog(DG_LOG_FATAL, "Failed to allocate memory for UI text element.");
-			return 0;
-		}
-		
-		memset(&world->ui->text[world->ui->text_count - 1], 0, sizeof(C_UIText));
-		C_UIText *element = &world->ui->text[world->ui->text_count - 1];
-		element->base.id = world->ui->mask_count;
-		element->size = 0.1f;
-		element->pos = DgVec2New(-1.0f, 1.0f);
-		element->colour = DgVec4New(1.0f, 1.0f, 1.0f, 1.0f);
-	}
-	
-	return world->ui->mask_count;
-}
 
 #define QR_FREE_OLD(TYPE, LIST, LISTCOUNT) for (size_t i = 1; i < world->LISTCOUNT; i++) {\
 		if (world->LIST[i - 1].base.id > id) {\
@@ -283,10 +215,6 @@ bool entity_set_transform(World * const restrict world, const uint32_t id, const
 	
 	return true;
 }
-
-#include "world/uitext.h"
-
-#include "world/uibox.h"
 
 /**
  * -----------------------------------------------------------------------------

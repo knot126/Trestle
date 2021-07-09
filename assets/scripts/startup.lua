@@ -66,7 +66,7 @@ function init()
 	lives.count = 5
 	lives.updated = true
 	
--- 	initHud()
+	initHud()
 	
 	first = mgEntity(0)
 end
@@ -84,17 +84,22 @@ function colour(n)
 	end
 end
 
+function tickHud(x, y, z, frame)
+	mgUIText(ui.Statistics, "Frame " .. tostring(frame) .. ", " .. tostring(mgEntCount()) .. " Entities, Position: " .. "(" .. x .. ", " .. y .. ", " .. z .. ")")
+	mgUIText(ui.Distance, tostring(math.floor(-z)))
+	mgUIText(ui.Speed, tostring(mgGetSpeed()))
+	
+	mgUIBox(ui.ProgressBar, -1.0, 1.0, -z * 0.002, 0.025)
+end
+
 function tick()
 	frame = frame + 1
 	local x, y, z = mgPlayerPos()
--- 	mgUIText(ui.Statistics, "Frame " .. tostring(frame) .. ", " .. tostring(mgEntCount()) .. " Entities, Position: " .. "(" .. x .. ", " .. y .. ", " .. z .. ")")
--- 	mgUIText(ui.Distance, tostring(math.floor(-z)))
--- 	mgUIText(ui.Speed, tostring(mgGetSpeed()))
--- 	
--- 	mgUIBox(ui.ProgressBar, -1.0, 1.0, -z * 0.002, 0.025)
+	
+	tickHud(x, y, z, frame)
 	
 	if lives.updated then
--- 		mgUIText(ui.LivesCount, tostring(lives.count))
+		mgUIText(ui.LivesCount, tostring(lives.count))
 		lives.updated = false
 	end
 	
