@@ -15,7 +15,13 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "world/world.h"
+#include "game/gameplay.h"
+#include "game/phys.h"
+#include "game/level.h"
+#include "game/gamescript.h"
+#include "game/scripting.h"
+#include "global/supervisor.h"
+#include "graphics/graphics.h"
 #include "input/input.h"
 #include "util/thread.h"
 #include "util/alloc.h"
@@ -23,13 +29,8 @@
 #include "util/ini.h"
 #include "util/log.h"
 #include "util/args.h"
-#include "graphics/graphics.h"
-#include "game/gameplay.h"
-#include "game/phys.h"
-#include "game/level.h"
-#include "game/gamescript.h"
-#include "game/scripting.h"
 #include "physics/physics.h"
+#include "world/world.h"
 #include "types.h"
 
 #include "game.h"
@@ -39,46 +40,11 @@
 typedef struct GameLoopArgs {
 	bool *keep_open;
 	World *world;
-	SystemStates *systems;
+	Supervisor *systems;
 } GameLoopArgs;
 
 static void print_info(void) {
 	DgLog(DG_LOG_INFO, "Engine compiled on %s at %s.", __DATE__, __TIME__);
-}
-
-static void sys_init(SystemStates * restrict sys, const World * restrict world) {
-	// Set to null
-	memset(sys, 0, sizeof(SystemStates));
-	
-	// Graphics initialisation
-	DgLog(DG_LOG_INFO, "Init graphics subsystem...");
-	graphics_init(&sys->graphics, world);
-	graphics(&sys->graphics);
-	
-	// Input initialisation
-	DgLog(DG_LOG_INFO, "Init input system...");
-	input_init(&sys->input, &sys->graphics);
-	
-	// Run the main game script
-	DgLog(DG_LOG_INFO, "Loading main game script...");
-	game_script_new(&sys->game_script);
-	game_script_yeild(&sys->game_script, DgINIGet(g_quickRunConfig, "Main", "startup_script_path", "assets://scripts/startup.lua"));
-	game_script_active(&sys->game_script);
-	
-	// Init the level manager
-	DgLog(DG_LOG_INFO, "Initialising level manager...");
-	level_init(&sys->level_info, DgINIGet(g_quickRunConfig, "Resources", "level_index_path", "assets://game.xml"));
-}
-
-static void sys_destroy(SystemStates *sys) {
-	DgLog(DG_LOG_INFO, "Freeing graphics subsystem...");
-	graphics_free(&sys->graphics);
-	
-	DgLog(DG_LOG_INFO, "Freeing resources used by main script...");
-	game_script_free(&sys->game_script);
-	
-	DgLog(DG_LOG_INFO, "Freeing resources used by level manager...");
-	level_free(&sys->level_info);
 }
 
 static void *physics_loop(void *args_) {
@@ -87,7 +53,7 @@ static void *physics_loop(void *args_) {
 	 */
 	GameLoopArgs *args = (GameLoopArgs *) args_;
 	World *world = args->world;
-	SystemStates *systems = args->systems;
+	Supervisor *systems = args->systems;
 	
 	double accumulate = 0.0f;
 	double show_time = 0.0f;
@@ -125,7 +91,7 @@ static void *graphics_loop(void *args_) {
 	GameLoopArgs *args = (GameLoopArgs *) args_;
 	
 	World *world = args->world;
-	SystemStates *sys = args->systems;
+	Supervisor *sys = args->systems;
 	
 	float show_time = 0.0f;
 	
@@ -146,7 +112,7 @@ static void *graphics_loop(void *args_) {
 }
 #endif
 
-static int game_loop(World *world, SystemStates *sys) {
+static int game_loop(World *world, Supervisor *sys) {
 	/** 
 	 * The main loop.
 	 */
@@ -292,8 +258,8 @@ int game_main(int argc, char* argv[]) {
 	// that can basically manage itself (for example, utility functions), though
 	// perhaps they should be ported to use system init as well.
 	DgLog(DG_LOG_INFO, "Initialising systems...");
-	SystemStates systems;
-	sys_init(&systems, &main_world);
+	Supervisor systems;
+	sup_init(&systems, &main_world);
 	
 	/**
 	 * 
@@ -313,7 +279,7 @@ int game_main(int argc, char* argv[]) {
 	
 	// Systems destruction
 	DgLog(DG_LOG_INFO, "Destroying systems...");
-	sys_destroy(&systems);
+	sup_destroy(&systems);
 	
 	// World destruction
 	DgLog(DG_LOG_INFO, "Destroying main world...");

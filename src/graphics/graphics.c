@@ -357,26 +357,26 @@ void graphics_update(GraphicsSystem *gl) {
 
 void gl_handle_input(GraphicsSystem* gl) {
 	/*
-	 * Handles most game input
+	 * Handles most game input, for example keyboard input
 	 */
+	
 	if (glfwGetKey(gl->window, GLFW_KEY_ESCAPE)) {
 		glfwSetWindowShouldClose(gl->window, GL_TRUE);
 	}
 	
-	static bool polymode = false;
-	
 	if (glfwGetKey(gl->window, GLFW_KEY_Q)) {
-		polymode = !polymode;
-	}
-	
-	if (polymode) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	} else {
+	}
+	else {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 }
 
 void graphics_free(GraphicsSystem* gl) {
+	/**
+	 * Free the graphics subsystem.
+	 */
+	
 	glfwTerminate();
 	
 	for (uint32_t i = 0; i < gl->programs_count; i++) {
@@ -389,6 +389,10 @@ void graphics_free(GraphicsSystem* gl) {
 }
 
 bool get_should_keep_open(GraphicsSystem *info) {
+	/**
+	 * Return true if the window should be kept open.
+	 */
+	
 	return !glfwWindowShouldClose(info->window);
 }
 

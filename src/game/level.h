@@ -10,6 +10,7 @@
 #include <inttypes.h>
 
 #include "util/script.h"
+#include "world/world.h"
 
 typedef struct Room {
 	DgScript script;

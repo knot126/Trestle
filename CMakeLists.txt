@@ -121,6 +121,7 @@ set(EXEC_FILES
 	"src/game/physent.c"
 	"src/game/seg.c"
 	"src/game/scripting.c"
+	"src/global/supervisor.c"
 	"src/graphics/extern/glad.c"
 	"src/graphics/mesh.c"
 	"src/graphics/graphics.c"

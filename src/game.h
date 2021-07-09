@@ -7,18 +7,4 @@
 
 #pragma once
 
-#include "graphics/graphics.h"
-#include "util/script.h"
-#include "util/bag.h"
-#include "game/level.h"
-#include "game/gamescript.h"
-#include "input/input.h"
-
-typedef struct {
-	GraphicsSystem graphics;
-	InputSystem input;
-	GameScript game_script;
-	LevelSystem level_info;
-} SystemStates;
-
 int game_main(int argc, char* argv[]);
