@@ -15,6 +15,7 @@
 #include "util/script.h"
 #include "util/log.h"
 #include "graphics/mesh.h"
+#include "graphics/graphics.h"
 #include "input/input.h"
 #include "world/compo.h"
 #include "world/world.h"
@@ -182,7 +183,7 @@ static int scripted_CreateCamera(lua_State *script) {
 	
 	uint32_t ent = world_create_entity(QuickRunActiveWorld, QR_COMPONENT_TRANSFORM | QR_COMPONENT_CAMERA);
 	entity_set_transform(QuickRunActiveWorld, ent, DgVec3New(px, py, pz), DgVec3New(rx, ry, rz), DgVec3New(1.0f, 1.0f, 1.0f));
-	world_set_camera(QuickRunActiveWorld, ent);
+	graphics_set_camera(NULL, ent); // TODO: Fix this
 	
 	lua_pushinteger(script, ent);
 	

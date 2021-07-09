@@ -47,7 +47,6 @@ typedef struct {
 	// Camera Components
 	C_Camera *cam;
 	uint32_t cam_count;
-	uint32_t cam_active[3];
 	
 	// Physics Components
 	C_Physics *phys;
@@ -79,9 +78,6 @@ C_Physics *entity_find_phys(const World * const restrict world, const uint32_t i
 
 // Tranforms
 bool entity_set_transform(World * const restrict world, const uint32_t id, const DgVec3 pos, const DgVec3 rot, const DgVec3 scale);
-
-// Cameras
-void world_set_camera(World * const restrict world, const uint32_t id);
 
 // Player position
 DgVec3 world_get_player_position(const World * const restrict world);

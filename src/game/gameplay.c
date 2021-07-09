@@ -10,17 +10,18 @@
 
 #include "graphics/gl_incl.h"
 
-#include "../input/input.h"
-#include "../util/maths.h"
-#include "../util/log.h"
-#include "../util/ini.h"
-#include "../world/world.h"
-#include "../world/compo.h"
-#include "../types.h"
+#include "input/input.h"
+#include "util/maths.h"
+#include "util/log.h"
+#include "util/ini.h"
+#include "world/world.h"
+#include "world/compo.h"
+#include "types.h"
+#include "graphics/opengl.h"
 
 #include "gameplay.h"
 
-void gameplay_update(World *world) {
+void gameplay_update(World *world, GraphicsSystem *graphics) {
 	/*
 	 * Gameplay/game specific realted updates
 	 */
@@ -106,7 +107,7 @@ void gameplay_update(World *world) {
 		}
 	}
 	
-	C_Transform *cpos = entity_find_trans(world, world->cam_active[2]);
+	C_Transform *cpos = entity_find_trans(world, graphics_get_camera(graphics));
 	
 	if (!cpos) {
 		return;

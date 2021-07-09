@@ -15,7 +15,7 @@
 #include "input/input.h"
 
 typedef struct {
-	GraphicsSystem *graphics;
+	GraphicsSystem graphics;
 	InputSystem input;
 	GameScript game_script;
 	LevelSystem level_info;

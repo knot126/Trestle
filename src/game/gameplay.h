@@ -8,6 +8,7 @@
 
 #pragma once
 
-#include "../world/world.h"
+#include "world/world.h"
+#include "graphics/opengl.h"
 
-void gameplay_update(World *world);
+void gameplay_update(World *world, GraphicsSystem *graphics);

@@ -20,10 +20,7 @@
 #include "util/thread.h"
 #include "util/alloc.h"
 #include "util/time.h"
-#include "util/xml.h"
 #include "util/ini.h"
-#include "util/fs.h"
-#include "util/script.h"
 #include "util/log.h"
 #include "util/args.h"
 #include "graphics/graphics.h"
@@ -32,6 +29,7 @@
 #include "game/level.h"
 #include "game/gamescript.h"
 #include "game/scripting.h"
+#include "physics/physics.h"
 #include "types.h"
 
 #include "game.h"
@@ -48,17 +46,18 @@ static void print_info(void) {
 	DgLog(DG_LOG_INFO, "Engine compiled on %s at %s.", __DATE__, __TIME__);
 }
 
-static void sys_init(SystemStates *sys) {
+static void sys_init(SystemStates * restrict sys, const World * restrict world) {
 	// Set to null
 	memset(sys, 0, sizeof(SystemStates));
 	
 	// Graphics initialisation
 	DgLog(DG_LOG_INFO, "Init graphics subsystem...");
-	sys->graphics = graphics_init();
+	graphics_init(&sys->graphics, world);
+	graphics(&sys->graphics);
 	
 	// Input initialisation
 	DgLog(DG_LOG_INFO, "Init input system...");
-	input_init(&sys->input, sys->graphics);
+	input_init(&sys->input, &sys->graphics);
 	
 	// Run the main game script
 	DgLog(DG_LOG_INFO, "Loading main game script...");
@@ -73,7 +72,7 @@ static void sys_init(SystemStates *sys) {
 
 static void sys_destroy(SystemStates *sys) {
 	DgLog(DG_LOG_INFO, "Freeing graphics subsystem...");
-	graphics_free(sys->graphics);
+	graphics_free(&sys->graphics);
 	
 	DgLog(DG_LOG_INFO, "Freeing resources used by main script...");
 	game_script_free(&sys->game_script);
@@ -133,7 +132,7 @@ static void *graphics_loop(void *args_) {
 	while (*args->keep_open) {
 		float time = DgTime();
 		
-		graphics_update(sys->graphics, world);
+		graphics_update(&sys->graphics);
 		
 		time = DgTime() - time;
 		
@@ -176,17 +175,19 @@ static int game_loop(World *world, SystemStates *sys) {
 		double frame_time = DgTime();
 		
 		// Check if we should still be open
-		should_keep_open = get_should_keep_open(sys->graphics);
+		should_keep_open = get_should_keep_open(&sys->graphics);
 		
 #ifndef QR_EXPRIMENTAL_THREADING
-		graphics_update(sys->graphics, world);
+		graphics_update(&sys->graphics);
 #endif
 		input_update(&sys->input);
 		
 		game_script_update(&sys->game_script);
 		
 		if (!world_get_pause(world)) {
-			gameplay_update(world);
+			// NOTE: This function should not exist because all of this stuff 
+			// should be scripted.
+			gameplay_update(world, &sys->graphics);
 		}
 		
 		// Update frame time
@@ -292,7 +293,7 @@ int game_main(int argc, char* argv[]) {
 	// perhaps they should be ported to use system init as well.
 	DgLog(DG_LOG_INFO, "Initialising systems...");
 	SystemStates systems;
-	sys_init(&systems);
+	sys_init(&systems, &main_world);
 	
 	/**
 	 * 

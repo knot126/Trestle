@@ -124,7 +124,6 @@ set(EXEC_FILES
 	"src/graphics/extern/glad.c"
 	"src/graphics/mesh.c"
 	"src/graphics/graphics.c"
-	"src/graphics/opengl.c"
 	"src/graphics/texture.c"
 	"src/graphics/image.c"
 	"src/input/input.c"

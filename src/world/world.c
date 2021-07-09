@@ -171,31 +171,6 @@ World *world_active(World * const restrict world) {
 	}
 }
 
-void world_set_camera(World * const restrict world, const uint32_t id) {
-	/*
-	 * Setter function for the world's active camera.
-	 * 
-	 * Implementation note: We add one to I so that we can check if no camera
-	 * has been set and use default matrix in that case.
-	 */
-	
-	for (size_t i = 0; i < world->trans_count; i++) {
-		if (world->trans[i].base.id == id) {
-			world->cam_active[0] = i + 1;
-			break;
-		}
-	}
-	
-	for (size_t i = 0; i < world->cam_count; i++) {
-		if (world->cam[i].base.id == id) {
-			world->cam_active[1] = i + 1;
-			break;
-		}
-	}
-	
-	world->cam_active[2] = id;
-}
-
 /**
  * -----------------------------------------------------------------------------
  * Transform related functions
