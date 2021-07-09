@@ -16,7 +16,7 @@
 
 #include "xml.h"
 
-#define DG_XML_PRINT_AFTER_PARSE
+// #define DG_XML_PRINT_AFTER_PARSE
 
 typedef struct {
 	enum {
