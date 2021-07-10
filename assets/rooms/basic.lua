@@ -14,10 +14,12 @@ end
 function init()
 	mgSetSpeed(10.0, 15.0)
 	
-	for i = 0, 1000 do
-		box(pz() * 16.0, pz() * 8.0, pz() * 140.0, 1.0, 1.0, 1.0)
+	mgPaused(true)
+	
+-- 	for i = 0, 1000 do
+-- 		box(pz() * 16.0, pz() * 8.0, pz() * 140.0, 1.0, 1.0, 1.0)
 		--mgObjMesh(t, "assets://mesh/player.obj")
-	end
+-- 	end
 	
 	mgLength(140)
 end

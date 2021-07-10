@@ -32,6 +32,7 @@
 #include "physics/physics.h"
 #include "world/world.h"
 #include "types.h"
+#include "StringStringTable.h"
 
 #include "game.h"
 
@@ -252,6 +253,15 @@ int game_main(int argc, char* argv[]) {
 	world_init(&main_world, 0);
 	world_active(&main_world);
 	
+	// sst test 
+	StringStringTable t;
+	StringStringTableInit(&t);
+	StringStringTableSet(&t, "a", "b");
+	StringStringTableSet(&t, "carb", "600");
+	StringStringTableSet(&t, "Ice", "A very funny thing!");
+	DgLog(DG_LOG_VERBOSE, "%s and %s", *StringStringTableGet(&t, "a"), *StringStringTableGet(&t, "Ice"));
+	StringStringTableFree(&t);
+	
 	// Load systems state
 	// 
 	// This is only for the really big systems in the game and not for anything
@@ -260,6 +270,7 @@ int game_main(int argc, char* argv[]) {
 	DgLog(DG_LOG_INFO, "Initialising systems...");
 	Supervisor systems;
 	sup_init(&systems, &main_world);
+	supervisor(&systems);
 	
 	/**
 	 * 

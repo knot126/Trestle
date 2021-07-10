@@ -134,7 +134,8 @@ set(EXEC_FILES
 	"src/world/world.c"
 	"src/game.c"
 	"src/types.c"
-	"src/main.c")
+	"src/main.c"
+	"src/StringStringTable.c")
 
 # Force compiler to high warning levels
 if(MSVC)

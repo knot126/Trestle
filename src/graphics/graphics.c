@@ -2,7 +2,7 @@
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
- * OpenGL-related graphics stuff
+ * Graphics System
  */
 
 #include <string.h>
@@ -11,23 +11,24 @@
 
 #include "gl_incl.h"
 
-#include "../world/world.h"
-#include "../util/alloc.h"
-#include "../util/time.h"
-#include "../util/fail.h"
-#include "../util/maths.h"
-#include "../util/rand.h"
-#include "../util/load.h"
-#include "../util/ini.h"
-#include "../util/str.h"
-#include "../util/bitmap.h"
-#include "../util/log.h"
-#include "../types.h" // For g_deltaTime
+#include "graphics/mesh.h"
+#include "world/world.h"
+#include "util/alloc.h"
+#include "util/time.h"
+#include "util/fail.h"
+#include "util/maths.h"
+#include "util/rand.h"
+#include "util/load.h"
+#include "util/ini.h"
+#include "util/str.h"
+#include "util/bitmap.h"
+#include "util/log.h"
+#include "types.h" // For g_deltaTime
 
 #include "image.h"
 #include "texture.h"
 
-#include "opengl.h"
+#include "graphics.h"
 
 GraphicsSystem *QR_ACTIVE_GRPAHICS_SYSTEM;
 
@@ -394,6 +395,115 @@ void graphics_update(GraphicsSystem *gl) {
 		gl_error_check(__FILE__, __LINE__);
 	}
 	
+	// Draw Bezier curves
+	for (size_t i = 0; i < gl->curve_count; i++) {
+		Curve *curve = &gl->curve[i];
+		
+		// Generate verticies
+		QRVertex1 v[30];
+		
+		for (size_t j = 0; j < sizeof v / sizeof *v; j++) {
+			DgVec3 a = DgVec3Bez4((float)j / (float)(sizeof v / sizeof *v), curve->points[0], curve->points[1], curve->points[2], curve->points[3]);
+			v[j].x = a.x;
+			v[j].y = a.y;
+			v[j].z = a.z;
+			v[j].u = 0.0f;
+			v[j].v = 0.0f;
+			v[j].r = 1.0f;
+			v[j].g = 1.0f;
+			v[j].b = 1.0f;
+		}
+		
+		// Push new verticies
+		unsigned vbo, ebo, vao;
+		glGenBuffers(1, &vbo);
+		glGenVertexArrays(1, &vao);
+		
+		glBindVertexArray(vao);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		
+		glBufferData(GL_ARRAY_BUFFER, sizeof v, v, GL_STATIC_DRAW);
+		
+		// =================================================================
+		// Register vertex attributes
+		// =================================================================
+		
+		GLint attr;
+		
+		attr = glGetAttribLocation(gl->programs[0], "position");
+		
+		if (attr < 0) {
+			DgFail("Error: No attribute 'position'.\n", 100);
+		}
+		
+		glVertexAttribPointer(
+			attr, 
+			3, 
+			GL_FLOAT, 
+			GL_FALSE, 
+			8 * sizeof(float), 
+			(void *) 0
+		);
+		glEnableVertexAttribArray(attr);
+		
+		gl_error_check(__FILE__, __LINE__);
+		
+		// =================================================================
+		// =================================================================
+		
+		attr = glGetAttribLocation(gl->programs[0], "texpos");
+		
+		if (attr < 0) {
+			DgFail("Error: No attribute 'texpos'.\n", 100);
+		}
+		
+		glVertexAttribPointer(
+			attr, 
+			2, 
+			GL_FLOAT, 
+			GL_FALSE, 8 * sizeof(float), 
+			(void *) (3 * sizeof(float))
+		);
+		glEnableVertexAttribArray(attr);
+		
+		gl_error_check(__FILE__, __LINE__);
+		
+		// =================================================================
+		// =================================================================
+		
+		attr = glGetAttribLocation(gl->programs[0], "colour");
+		
+		if (attr < 0) {
+			DgFail("Error: No attribute 'colour'.\n", 100);
+		}
+		
+		glVertexAttribPointer(
+			attr, 
+			3, 
+			GL_FLOAT, 
+			GL_FALSE, 
+			8 * sizeof(float), 
+			(void *) (5 * sizeof(float))
+		);
+		glEnableVertexAttribArray(attr);
+		
+		gl_error_check(__FILE__, __LINE__);
+		
+		// =================================================================
+		// =================================================================
+		
+		// Bind the currently active textures for this shader
+		glBindTexture(GL_TEXTURE_2D, gltexture_get_name(&gl->texture, "placeholder"));
+		
+		DgMat4 model = DgMat4New(1.0f);
+		glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
+		
+		glDrawArrays(GL_LINES, 0, sizeof v / sizeof *v);
+		
+		glDeleteBuffers(1, &vbo);
+		glDeleteVertexArrays(1, &vao);
+	}
+	
 	// Unbind everything
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -411,13 +521,6 @@ void gl_handle_input(GraphicsSystem* gl) {
 	
 	if (glfwGetKey(gl->window, GLFW_KEY_ESCAPE)) {
 		glfwSetWindowShouldClose(gl->window, GL_TRUE);
-	}
-	
-	if (glfwGetKey(gl->window, GLFW_KEY_Q)) {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
-	else {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 }
 
@@ -481,4 +584,18 @@ uint32_t graphics_get_camera(GraphicsSystem * restrict gl) {
 	 */
 	
 	return gl->cam_active[2];
+}
+
+void graphics_add_curve(GraphicsSystem * restrict gl, DgVec3 p0, DgVec3 p1, DgVec3 p2, DgVec3 p3) {
+	gl->curve = (Curve *) DgRealloc(gl->curve, sizeof *gl->curve * ++gl->curve_count);
+	
+	if (!gl->curve) {
+		gl->curve_count = 0;
+		return;
+	}
+	
+	gl->curve[gl->curve_count - 1].points[0] = p0;
+	gl->curve[gl->curve_count - 1].points[1] = p1;
+	gl->curve[gl->curve_count - 1].points[2] = p2;
+	gl->curve[gl->curve_count - 1].points[3] = p3;
 }

@@ -9,12 +9,63 @@
 
 #include "rand.h"
 #include "alloc.h"
+#include "maths.h"
 
 #include "bitmap.h"
 
 enum {
-	DG_IMAGE_CHANNELS = 3,
+	DG_IMAGE_CHANNELS = 3, // For some random generation functions
 };
+
+DgBitmap *DgBitmapCreate(const uint16_t width, const uint16_t height, const uint16_t chan) {
+	DgBitmap *bitmap = (DgBitmap *) DgAlloc(sizeof *bitmap);
+	
+	if (!bitmap) {
+		return NULL;
+	}
+	
+	bitmap->width = width;
+	bitmap->height = height;
+	bitmap->chan = chan;
+	bitmap->src = (uint8_t *) DgAlloc(width * height * DG_IMAGE_CHANNELS * sizeof(uint8_t));
+	
+	if (!bitmap->src) {
+		DgFree(bitmap);
+		return NULL;
+	}
+	
+	uint8_t *src = bitmap->src;
+	
+	return bitmap;
+}
+
+DgBitmap *DgBitmapFill(DgBitmap *this, DgVec4 colour) {
+	for (size_t x = 0; x < this->width; x++) {
+		for (size_t y = 0; y < this->height; y++) {
+			this->src[(((this->width * y) + x) * this->chan) + 0] = (uint8_t) (colour.r * 255.0f);
+			if (this->chan >= 2) {
+				this->src[(((this->width * y) + x) * this->chan) + 1] = (uint8_t) (colour.g * 255.0f);
+				if (this->chan >= 3) {
+					this->src[(((this->width * y) + x) * this->chan) + 2] = (uint8_t) (colour.b * 255.0f);
+					if (this->chan >= 4) {
+						this->src[(((this->width * y) + x) * this->chan) + 3] = (uint8_t) (colour.a * 255.0f);
+					}
+				}
+			}
+		}
+	}
+	
+	return this;
+}
+
+DgBitmap *DgBitmapDrawPixel(DgBitmap *this, uint16_t x, uint16_t y, DgVec4 colour) {
+	this->src[(((y * this->width) + x) * this->chan) + 0] = (uint8_t) (colour.r * 255.0f);
+	this->src[(((y * this->width) + x) * this->chan) + 1] = (uint8_t) (colour.g * 255.0f);
+	this->src[(((y * this->width) + x) * this->chan) + 2] = (uint8_t) (colour.b * 255.0f);
+	this->src[(((y * this->width) + x) * this->chan) + 3] = (uint8_t) (colour.a * 255.0f);
+	
+	return this;
+}
 
 DgBitmap *DgBitmapGenTiles(const uint16_t width, const uint16_t height, const uint16_t size) {
 	DgBitmap *bitmap = (DgBitmap *) DgAlloc(sizeof(DgBitmap));
