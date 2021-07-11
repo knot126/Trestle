@@ -13,4 +13,4 @@
 #include "global/supervisor.h"
 #include "util/maths.h"
 
-bool entity_generate_box(Supervisor * const restrict sup, const DgVec3 pos, const DgVec3 size, const DgVec3 colour, const char * const texture);
+Name make_box(Supervisor * const restrict sup, const DgVec3 pos, const DgVec3 size, const DgVec3 colour, const char * const texture);

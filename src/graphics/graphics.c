@@ -633,7 +633,7 @@ Name graphics_create_mesh(GraphicsSystem * restrict gl, Name name) {
 	}
 	
 	gl->mesh_name[gl->mesh_count++] = name;
-	gl->mesh[gl->mesh_count - 1].updated = false;
+	memset(&gl->mesh[gl->mesh_count - 1], 0, sizeof *gl->mesh);
 	
 	return name;
 }

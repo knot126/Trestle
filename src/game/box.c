@@ -13,13 +13,25 @@
 #include "util/maths.h"
 #include "util/log.h"
 #include "util/str.h"
+#include "types.h"
 
 #include "box.h"
 
-bool entity_generate_box(Supervisor * const restrict sup, const DgVec3 pos, const DgVec3 size, const DgVec3 colour, const char * const texture) {
-	Name name = *(Name *)0;
+Name make_box(Supervisor * const restrict sup, const DgVec3 pos, const DgVec3 size, const DgVec3 colour, const char * const texture) {
+	Name name = sup_entity(sup, ENT_TRANSFORM | ENT_GRAPHICS_MESH);
 	
+	if (!name) {
+		DgLog(DG_LOG_ERROR, "Failed to make new entity!");
+		return 0;
+	}
+	
+	Transform *trans = graph_get(&sup->graph, name);
 	Mesh *mesh = graphics_get_mesh(&sup->graphics, name);
+	
+	// Push transform
+	trans->pos = pos;
+	trans->rot = (DgVec3) {0.0f, 0.0f, 0.0f};
+	trans->scale = size;
 	
 	// Generate box mesh
 	const float s_BoxData[] = {
@@ -77,7 +89,7 @@ bool entity_generate_box(Supervisor * const restrict sup, const DgVec3 pos, cons
 	
 	if (!vertex) {
 		DgLog(DG_LOG_ERROR, "Failed to find mesh for entity %d.", name);
-		return false;
+		return 0;
 	}
 	
 	memcpy(vertex, s_BoxData, sizeof(s_BoxData));
@@ -87,7 +99,7 @@ bool entity_generate_box(Supervisor * const restrict sup, const DgVec3 pos, cons
 	if (!index) {
 		DgLog(DG_LOG_ERROR, "Failed to find mesh for entity %d.", name);
 		DgFree(vertex);
-		return false;
+		return 0;
 	}
 	
 	memcpy(index, s_IndexData, sizeof(s_IndexData));
@@ -170,5 +182,5 @@ bool entity_generate_box(Supervisor * const restrict sup, const DgVec3 pos, cons
 		mesh->texture = DgStrdup(texture);
 	}
 	
-	return true;
+	return name;
 }

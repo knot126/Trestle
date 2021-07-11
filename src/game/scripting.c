@@ -12,6 +12,7 @@
 #include "lualib.h"
 #include "lauxlib.h"
 
+#include "game/box.h"
 #include "global/supervisor.h"
 #include "util/log.h"
 #include "util/script.h"
@@ -57,20 +58,20 @@ static int scripted_PushTransform(lua_State *script) {
 	
 	Name name = lua_tointeger(script, 1);
 	
-	pos.x = lua_tointeger(script, 2);
-	pos.y = lua_tointeger(script, 3);
-	pos.z = lua_tointeger(script, 4);
+	pos.x = lua_tonumber(script, 2);
+	pos.y = lua_tonumber(script, 3);
+	pos.z = lua_tonumber(script, 4);
 	
 	if (top > 6) {
-		rot.x = lua_tointeger(script, 5);
-		rot.y = lua_tointeger(script, 6);
-		rot.z = lua_tointeger(script, 7);
+		rot.x = lua_tonumber(script, 5);
+		rot.y = lua_tonumber(script, 6);
+		rot.z = lua_tonumber(script, 7);
 	}
 	
 	if (top > 9) {
-		scale.x = lua_tointeger(script, 8);
-		scale.y = lua_tointeger(script, 9);
-		scale.z = lua_tointeger(script, 10);
+		scale.x = lua_tonumber(script, 8);
+		scale.y = lua_tonumber(script, 9);
+		scale.z = lua_tonumber(script, 10);
 	}
 	
 	graph_set(&(supervisor(NULL)->graph), name, (Transform) {pos, rot, scale});
@@ -85,6 +86,41 @@ static int scripted_SetCamera(lua_State *script) {
 	}
 	
 	graphics_set_camera(&(supervisor(NULL)->graphics), lua_tointeger(script, 1));
+	
+	return 0;
+}
+
+static int scripted_MakeBox(lua_State *script) {
+	int top = lua_gettop(script);
+	
+	DgVec3 pos = {0.0f, 0.0f, 0.0f}, size = {1.0f, 1.0f, 1.0f}, col = {0.75f, 0.75f, 0.75f};
+	const char * texture = NULL;
+	
+	Name name = lua_tointeger(script, 1);
+	
+	if (top >= 3) {
+		pos.x = lua_tonumber(script, 5);
+		pos.y = lua_tonumber(script, 6);
+		pos.z = lua_tonumber(script, 7);
+	}
+	
+	if (top >= 6) {
+		size.x = lua_tonumber(script, 5);
+		size.y = lua_tonumber(script, 6);
+		size.z = lua_tonumber(script, 7);
+	}
+	
+	if (top >= 9) {
+		col.x = lua_tonumber(script, 8);
+		col.y = lua_tonumber(script, 9);
+		col.z = lua_tonumber(script, 10);
+	}
+	
+	if (top >= 10) {
+		texture = lua_tostring(script, 11);
+	}
+	
+	make_box(supervisor(NULL), pos, size, col, texture);
 	
 	return 0;
 }
@@ -112,6 +148,9 @@ void registerWorldScriptFunctions(DgScript *script) {
 	
 	// Graphics
 	lua_register(script->state, "set_camera", &scripted_SetCamera);
+	
+	// Objects
+	lua_register(script->state, "make_box", &scripted_MakeBox);
 	
 	// Input
 	lua_register(script->state, "get_key", &scripted_GetKey);
