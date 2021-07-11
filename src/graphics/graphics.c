@@ -212,6 +212,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 	if (gl->camera != 0) {
 		Transform * const camtrans = graph_get(graph, gl->camera);
 		camera = DgTransfromBasicCamera(camtrans->pos, camtrans->rot);
+// 		DgLog(DG_LOG_VERBOSE, "Camera: (%.3f, %.3f, %.3f)", camtrans->pos.x, camtrans->pos.y, camtrans->pos.z);
 	}
 	else {
 		DgLog(DG_LOG_WARNING, "No active camera has been set.");
