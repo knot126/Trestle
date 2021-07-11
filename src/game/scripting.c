@@ -420,39 +420,38 @@ void registerWorldScriptFunctions(DgScript *script) {
 	lua_register(script->state, "mgEntity", &scripted_CreateEntity);
 	lua_register(script->state, "mgDeleteOlder", &scripted_DeleteOldEntity);
 	lua_register(script->state, "mgTransform", &scripted_SetTransform);
-	lua_register(script->state, "mgMesh", &scripted_LoadMesh);
+// 	lua_register(script->state, "mgMesh", &scripted_LoadMesh);
 	lua_register(script->state, "mgMesh2", &scripted_LoadXMLMesh);
 	lua_register(script->state, "mgObjMesh", &scripted_LoadOBJMesh);
 	lua_register(script->state, "mgForce", &scripted_AddForce);
 	lua_register(script->state, "mgMass", &scripted_SetMass);
 	lua_register(script->state, "mgPhysFlags", &scripted_SetPhysicsFlags);
-	lua_register(script->state, "mgEntCount", &scripted_GetEntCount);
+// 	lua_register(script->state, "mgEntCount", &scripted_GetEntCount);
 	lua_register(script->state, "mgClearWorld", &scripted_ClearWorld);
 	lua_register(script->state, "mgPaused", &scripted_SetPaused);
 	
 	/* UI based entites */
-	lua_register(script->state, "mgUIElement", &scripted_CreateUIElement);
-	
-	lua_register(script->state, "mgUIText", &scripted_SetText);
-	lua_register(script->state, "mgUITextPos", &scripted_SetTextPos);
-	lua_register(script->state, "mgUITextSize", &scripted_SetTextSize);
-	lua_register(script->state, "mgUITextFont", &scripted_SetTextFont);
-	lua_register(script->state, "mgUITextColour", &scripted_SetTextColour);
-	
-	lua_register(script->state, "mgUIBox", &scripted_SetBox);
-	lua_register(script->state, "mgUIBoxColour", &scripted_SetBoxColour);
+// 	lua_register(script->state, "mgUIElement", &scripted_CreateUIElement);
+// 	
+// 	lua_register(script->state, "mgUIText", &scripted_SetText);
+// 	lua_register(script->state, "mgUITextPos", &scripted_SetTextPos);
+// 	lua_register(script->state, "mgUITextSize", &scripted_SetTextSize);
+// 	lua_register(script->state, "mgUITextFont", &scripted_SetTextFont);
+// 	lua_register(script->state, "mgUITextColour", &scripted_SetTextColour);
+// 	
+// 	lua_register(script->state, "mgUIBox", &scripted_SetBox);
+// 	lua_register(script->state, "mgUIBoxColour", &scripted_SetBoxColour);
 	
 	/*  Segment and Level Management  */
 	lua_register(script->state, "mgSegment", &scripted_LoadSegment);
-	lua_register(script->state, "mgBox", &scripted_AddBox);
-	lua_register(script->state, "mgBoxLevel", &scripted_AddBoxLevel);
+	lua_register(script->state, "mgBox", &scripted_AddBoxLevel);
 	lua_register(script->state, "mgLength", &scripted_PutLength);
 	
 	/*  Higher-Level Entities  */
 	lua_register(script->state, "mgCamera", &scripted_CreateCamera);
 	lua_register(script->state, "mgActivePlayer", &scripted_SetPlayer);
-	lua_register(script->state, "mgPlayerPos", &scripted_GetPlayerPos);
-	lua_register(script->state, "mgResetPlayer", &scripted_ResetPlayer);
+// 	lua_register(script->state, "mgPlayerPos", &scripted_GetPlayerPos);
+// 	lua_register(script->state, "mgResetPlayer", &scripted_ResetPlayer);
 	
 	lua_register(script->state, "mgGetSpeed", &scripted_GetPlayerSpeed);
 	lua_register(script->state, "mgSetSpeed", &scripted_SetPlayerSpeed);

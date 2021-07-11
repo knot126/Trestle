@@ -124,6 +124,30 @@ char * *StringStringTableGet(StringStringTable * const restrict t, const char * 
 	return NULL;
 }
 
+const char * *StringStringTableGetKeyAt(StringStringTable * const restrict t, size_t index) {
+	/**
+	 * Get the key at a certian index. Mainly used for looping over values.
+	 */
+	
+	return &t->key[index];
+}
+
+char * *StringStringTableGetValueAt(StringStringTable * const restrict t, size_t index) {
+	/**
+	 * Get the value at a certian index. Mainly used for looping over values.
+	 */
+	
+	return &t->value[index];
+}
+
+size_t StringStringTableGetLength(StringStringTable * const restrict t) {
+	/**
+	 * Get the length of the hash table.
+	 */
+	
+	return t->count;
+}
+
 void StringStringTableFree(StringStringTable * const restrict t) {
 	/**
 	 * Free the entire hash table.

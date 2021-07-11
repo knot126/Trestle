@@ -181,6 +181,36 @@ func_get = """
 }}
 """.format(ValueType, StructTypeName, StructTypeName, KeyType, HashType, HashFunctionName, ValueCompareFunction)
 
+func_getKeyAt = """
+{} *{}GetKeyAt({} * const restrict t, size_t index) {{
+	/**
+	 * Get the key at a certian index. Mainly used for looping over values.
+	 */
+	
+	return &t->key[index];
+}}
+""".format(KeyType, StructTypeName, StructTypeName)
+
+func_getValueAt = """
+{} *{}GetValueAt({} * const restrict t, size_t index) {{
+	/**
+	 * Get the value at a certian index. Mainly used for looping over values.
+	 */
+	
+	return &t->value[index];
+}}
+""".format(ValueType, StructTypeName, StructTypeName)
+
+func_getLength = """
+size_t {}GetLength({} * const restrict t) {{
+	/**
+	 * Get the length of the hash table.
+	 */
+	
+	return t->count;
+}}
+""".format(StructTypeName, StructTypeName)
+
 func_free = """
 void {}Free({} * const restrict t) {{
 	/**
@@ -214,7 +244,7 @@ void {}Free({} * const restrict t) {{
 }}
 """.format(StructTypeName, StructTypeName, KeyFreeFunction, ReallocateFunction, ReallocateFunction, ValueFreeFunction, ReallocateFunction)
 
-Output = pre + func_new + func_alloc + func_set + func_get + func_free
+Output = pre + func_new + func_alloc + func_set + func_get + func_getKeyAt + func_getValueAt + func_getLength + func_free
 
 f = open(FileNameC, "w")
 f.write(Output)
@@ -224,10 +254,16 @@ Output = "#pragma once\n" + pre + type1 + """
 void {}Init({} * const restrict t);
 int8_t {}Set({} * const restrict t, {} k, {} v);
 {} *{}Get({} * const restrict t, {} k);
+{} *{}GetKeyAt({} * const restrict t, size_t index);
+{} *{}GetValueAt({} * const restrict t, size_t index);
+size_t {}GetLength({} * const restrict t);
 void {}Free({} * const restrict t);
 """.format(StructTypeName, StructTypeName,
 	StructTypeName, StructTypeName, KeyType, ValueType,
 	ValueType, StructTypeName, StructTypeName, KeyType,
+	KeyType, StructTypeName, StructTypeName,
+	ValueType, StructTypeName, StructTypeName,
+	StructTypeName, StructTypeName,
 	StructTypeName, StructTypeName)
 
 f = open(FileNameH, "w")

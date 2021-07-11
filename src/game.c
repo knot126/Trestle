@@ -260,6 +260,14 @@ int game_main(int argc, char* argv[]) {
 	StringStringTableSet(&t, "carb", "600");
 	StringStringTableSet(&t, "Ice", "A very funny thing!");
 	DgLog(DG_LOG_VERBOSE, "%s and %s", *StringStringTableGet(&t, "a"), *StringStringTableGet(&t, "Ice"));
+	
+	for (size_t i = 0; i < StringStringTableGetLength(&t); i++) {
+		const char *k = *StringStringTableGetKeyAt(&t, i);
+		char *v = *StringStringTableGetValueAt(&t, i);
+		
+		printf("%s -> %s\n", k, v);
+	}
+	
 	StringStringTableFree(&t);
 	
 	// Load systems state

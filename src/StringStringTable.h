@@ -56,4 +56,7 @@ typedef struct StringStringTable {
 void StringStringTableInit(StringStringTable * const restrict t);
 int8_t StringStringTableSet(StringStringTable * const restrict t, const char * k, char * v);
 char * *StringStringTableGet(StringStringTable * const restrict t, const char * k);
+const char * *StringStringTableGetKeyAt(StringStringTable * const restrict t, size_t index);
+char * *StringStringTableGetValueAt(StringStringTable * const restrict t, size_t index);
+size_t StringStringTableGetLength(StringStringTable * const restrict t);
 void StringStringTableFree(StringStringTable * const restrict t);

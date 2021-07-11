@@ -36,3 +36,10 @@ void physics_update(PhysicsSystem *this) {
 	 */
 	
 }
+
+void physics_free(PhysicsSystem *this) {
+	/**
+	 * Frees all resources used by the physics system.
+	 */
+	
+}

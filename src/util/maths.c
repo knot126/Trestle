@@ -73,7 +73,7 @@ inline float DgVec2Magnitude(DgVec2 a) {
 }
 
 inline float DgVec2Dot(DgVec2 a, DgVec2 b) {
-	return (a.x * b.x) + (a.y + b.y);
+	return (a.x * b.x) + (a.y * b.y);
 }
 
 inline DgVec2 DgVec2Normalise(DgVec2 a) {
