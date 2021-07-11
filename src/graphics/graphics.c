@@ -11,8 +11,7 @@
 
 #include "gl_incl.h"
 
-#include "graphics/mesh.h"
-#include "world/world.h"
+#include "graphics/vertex1.h"
 #include "util/alloc.h"
 #include "util/time.h"
 #include "util/fail.h"
@@ -24,6 +23,8 @@
 #include "util/bitmap.h"
 #include "util/log.h"
 #include "types.h" // For g_deltaTime
+
+#include "graph/graph.h"
 
 #include "image.h"
 #include "texture.h"
@@ -49,7 +50,7 @@ void gl_set_window_size(GLFWwindow* window, int w, int h) {
 	glViewport(0, 0, w, h);
 }
 
-void graphics_init(GraphicsSystem * restrict gl, const World * restrict world) {
+void graphics_init(GraphicsSystem * restrict gl) {
 	/**
 	 * Initialise any global OpenGL graphics state.
 	 */
@@ -171,19 +172,12 @@ void graphics_init(GraphicsSystem * restrict gl, const World * restrict world) {
 	
 	// Set default clear colour
 	gl->clearColour = (DgVec4) {0.5f, 0.5f, 0.5f, 1.0f};
-	
-	// DEPRECATED BEHAVIOUR: Store world for later use
-	gl->world = (World *) world;
 }
 
-void graphics_update(GraphicsSystem *gl) {
+void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) {
 	/*
 	 * Update OpenGL-related state and the graphics system
 	 */
-	
-	//glfwMakeContextCurrent(gl->window);
-	// DEPRECATED BEHAVIOUR: Reload world for use
-	World *world = gl->world;
 	
 	// Normal OpenGL events
 	glfwSwapBuffers(gl->window);
@@ -215,9 +209,9 @@ void graphics_update(GraphicsSystem *gl) {
 	DgMat4 camera;
 	
 	// Do the camera
-	if (gl->cam_active[0] != 0) {
-		uint32_t tid = gl->cam_active[0] - 1;
-		camera = DgTransfromBasicCamera(world->trans[tid].pos, world->trans[tid].rot);
+	if (gl->camera != 0) {
+		Transform * const camtrans = graph_get(graph, gl->camera);
+		camera = DgTransfromBasicCamera(camtrans->pos, camtrans->rot);
 	}
 	else {
 		DgLog(DG_LOG_WARNING, "No active camera has been set.");
@@ -226,9 +220,9 @@ void graphics_update(GraphicsSystem *gl) {
 	// Push camera matrix to the GPU
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "camera"), 1, GL_TRUE, &camera.ax);
 	
-	for (size_t i = 0; i < world->mesh_count; i++) {
-		uint32_t id = world->mesh[i].base.id;
-		C_Mesh *mesh = &world->mesh[i];
+	for (size_t i = 0; i < gl->mesh_count; i++) {
+		Name id = gl->mesh_name[i];
+		Mesh *mesh = &gl->mesh[i];
 		
 		// If there have been on vericies pushed to the GPU
 		if (!mesh->vert_count || !mesh->index_count) {
@@ -365,13 +359,12 @@ void graphics_update(GraphicsSystem *gl) {
 		DgVec3 rotate = DgVec3New(0.0f, 0.0f, 0.0f);
 		DgVec3 scale = DgVec3New(1.0f, 1.0f, 1.0f);
 		
-		for (int i = 0; i < world->trans_count; i++) {
-			if (world->trans[i].base.id == id) {
-				translate = world->trans[i].pos;
-				rotate = world->trans[i].rot;
-				scale = world->trans[i].scale;
-				break;
-			}
+		Transform * const trans = graph_get(graph, id);
+		
+		if (trans) {
+			translate = trans->pos;
+			rotate = trans->rot;
+			scale = trans->scale;
 		}
 		
 		DgMat4 rot_x = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(1.0f, 0.0f, 0.0f), rotate.x);
@@ -556,7 +549,7 @@ void graphics_set_background(GraphicsSystem * restrict gl, const DgVec4 colour) 
 	gl->clearColour = colour;
 }
 
-void graphics_set_camera(GraphicsSystem * restrict gl, const uint32_t name) {
+void graphics_set_camera(GraphicsSystem * restrict gl, Name name) {
 	/*
 	 * Setter function for the world's active camera.
 	 * 
@@ -568,25 +561,22 @@ void graphics_set_camera(GraphicsSystem * restrict gl, const uint32_t name) {
 		gl = QR_ACTIVE_GRPAHICS_SYSTEM;
 	}
 	
-	for (size_t i = 0; i < gl->world->trans_count; i++) {
-		if (gl->world->trans[i].base.id == name) {
-			gl->cam_active[0] = i + 1;
-			break;
-		}
-	}
-	
-	gl->cam_active[2] = name;
+	gl->camera = name;
 }
 
-uint32_t graphics_get_camera(GraphicsSystem * restrict gl) {
+Name graphics_get_camera(GraphicsSystem * restrict gl) {
 	/**
 	 * Getter function for the active camera's ID.
 	 */
 	
-	return gl->cam_active[2];
+	return gl->camera;
 }
 
 void graphics_add_curve(GraphicsSystem * restrict gl, DgVec3 p0, DgVec3 p1, DgVec3 p2, DgVec3 p3) {
+	/**
+	 * This API will be updated soon.
+	 */
+	
 	gl->curve = (Curve *) DgRealloc(gl->curve, sizeof *gl->curve * ++gl->curve_count);
 	
 	if (!gl->curve) {
@@ -598,4 +588,87 @@ void graphics_add_curve(GraphicsSystem * restrict gl, DgVec3 p0, DgVec3 p1, DgVe
 	gl->curve[gl->curve_count - 1].points[1] = p1;
 	gl->curve[gl->curve_count - 1].points[2] = p2;
 	gl->curve[gl->curve_count - 1].points[3] = p3;
+}
+
+static int graphics_realloc_mesh(GraphicsSystem * restrict gl) {
+	/**
+	 * Take care of reallocating mesh data when low on space. It must make sure
+	 * there is at least one free mesh worth of space.
+	 */
+	
+	gl->mesh_name = DgRealloc(gl->mesh_name, sizeof *gl->mesh_name * (gl->mesh_count + 1));
+	
+	if (!gl->mesh_name) {
+		return 1;
+	}
+	
+	gl->mesh = DgRealloc(gl->mesh, sizeof *gl->mesh * (gl->mesh_count + 1));
+	
+	if (!gl->mesh) {
+		return 2;
+	}
+}
+
+static size_t graphics_find_mesh(GraphicsSystem * restrict gl, Name name) {
+	/**
+	 * Find a mesh that goes by a given name.
+	 */
+	
+	for (size_t i = 0; i < gl->mesh_count; i++) {
+		if (gl->mesh_name[i] == name) {
+			return i;
+		}
+	}
+	
+	return -1;
+}
+
+Name graphics_create_mesh(GraphicsSystem * restrict gl, Name name) {
+	/**
+	 * Creates a mesh entity.
+	 */
+	
+	if (graphics_realloc_mesh(gl)) {
+		return 0;
+	}
+	
+	gl->mesh_name[gl->mesh_count++] = name;
+	gl->mesh[gl->mesh_count - 1].updated = false;
+	
+	return name;
+}
+
+Name graphics_set_mesh(GraphicsSystem * restrict gl, Name name, size_t vertex_count, QRVertex1 *vertex, size_t index_count, uint32_t *index, const char *texture) {
+	/**
+	 * Set mesh data for a given mesh.
+	 */
+	
+	size_t loc = graphics_find_mesh(gl, name);
+	
+	if (loc == -1) {
+		return 0;
+	}
+	
+	gl->mesh[loc].vert = (float *) vertex;
+	gl->mesh[loc].vert_count = vertex_count;
+	gl->mesh[loc].index = index;
+	gl->mesh[loc].index_count = index_count;
+	gl->mesh[loc].texture = DgStrdup(texture);
+	gl->mesh[loc].updated = true;
+	
+	return name;
+}
+
+Mesh * const graphics_get_mesh(GraphicsSystem * restrict gl, Name name) {
+	/**
+	 * Get a reference to a mesh structure for a given name.
+	 */
+	
+	size_t index = graphics_find_mesh(gl, name);
+	
+	if (index == -1) {
+		return NULL;
+	}
+	
+	return &gl->mesh[index];
 }

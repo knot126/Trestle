@@ -15,9 +15,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "game/gameplay.h"
-#include "game/phys.h"
-#include "game/level.h"
 #include "game/gamescript.h"
 #include "game/scripting.h"
 #include "global/supervisor.h"
@@ -30,9 +27,7 @@
 #include "util/log.h"
 #include "util/args.h"
 #include "physics/physics.h"
-#include "world/world.h"
 #include "types.h"
-#include "StringStringTable.h"
 
 #include "game.h"
 
@@ -40,7 +35,6 @@
 
 typedef struct GameLoopArgs {
 	bool *keep_open;
-	World *world;
 	Supervisor *systems;
 } GameLoopArgs;
 
@@ -52,8 +46,8 @@ static void *physics_loop(void *args_) {
 	/**
 	 * The loop that updates the physics system.
 	 */
+	
 	GameLoopArgs *args = (GameLoopArgs *) args_;
-	World *world = args->world;
 	Supervisor *systems = args->systems;
 	
 	double accumulate = 0.0f;
@@ -65,7 +59,7 @@ static void *physics_loop(void *args_) {
 		if (accumulate > g_physicsDelta) {
 			float time = DgTime();
 			
-			phys_update(world, g_physicsDelta);
+			//phys_update(world, g_physicsDelta);
 			accumulate = 0.0f;
 			
 			time = DgTime() - time;
@@ -87,33 +81,7 @@ static void *physics_loop(void *args_) {
 	}
 }
 
-#ifdef QR_EXPRIMENTAL_THREADING
-static void *graphics_loop(void *args_) {
-	GameLoopArgs *args = (GameLoopArgs *) args_;
-	
-	World *world = args->world;
-	Supervisor *sys = args->systems;
-	
-	float show_time = 0.0f;
-	
-	while (*args->keep_open) {
-		float time = DgTime();
-		
-		graphics_update(&sys->graphics);
-		
-		time = DgTime() - time;
-		
-		if (show_time > 1.0f) {
-			DgLog(DG_LOG_VERBOSE, "Graphics frame time: %fms", time);
-			show_time = 0.0f;
-		}
-		
-		show_time += time;
-	}
-}
-#endif
-
-static int game_loop(World *world, Supervisor *sys) {
+static int game_loop(Supervisor *sys) {
 	/** 
 	 * The main loop.
 	 */
@@ -124,19 +92,12 @@ static int game_loop(World *world, Supervisor *sys) {
 	
 	// Physics thread
 	GameLoopArgs loopargs;
-	loopargs.world = world;
 	loopargs.systems = sys;
 	loopargs.keep_open = &should_keep_open;
 	
 	DgThread t_physics;
-#ifdef QR_EXPRIMENTAL_THREADING
-	DgThread t_graphics;
-#endif
 	
 	DgThreadNew(&t_physics, &physics_loop, &loopargs);
-#ifdef QR_EXPRIMENTAL_THREADING
-	DgThreadNew(&t_graphics, &graphics_loop, &loopargs);
-#endif
 	
 	while (should_keep_open) {
 		double frame_time = DgTime();
@@ -144,18 +105,10 @@ static int game_loop(World *world, Supervisor *sys) {
 		// Check if we should still be open
 		should_keep_open = get_should_keep_open(&sys->graphics);
 		
-#ifndef QR_EXPRIMENTAL_THREADING
-		graphics_update(&sys->graphics);
-#endif
+		graphics_update(&sys->graphics, &sys->graph);
 		input_update(&sys->input);
 		
 		game_script_update(&sys->game_script);
-		
-		if (!world_get_pause(world)) {
-			// NOTE: This function should not exist because all of this stuff 
-			// should be scripted.
-			gameplay_update(world, &sys->graphics);
-		}
 		
 		// Update frame time
 		frame_time = DgTime() - frame_time;
@@ -168,17 +121,9 @@ static int game_loop(World *world, Supervisor *sys) {
 			DgLog(DG_LOG_VERBOSE, "Frame Time: %fms", frame_time * 1000.0f, 1.0f / frame_time);
 			show_fps = 0.0f;
 		}
-		
-		// Update the level
-		if (!world_get_pause(world)) {
-			level_update(world, &sys->level_info);
-		}
 	} // while (should_keep_open)
 	
 	DgThreadJoin(&t_physics);
-#ifdef QR_EXPRIMENTAL_THREADING
-	DgThreadJoin(&t_graphics);
-#endif
 	
 	return 0;
 }
@@ -228,56 +173,10 @@ int game_main(int argc, char* argv[]) {
 		g_quickRunConfig = &initconf;
 	}
 	
-	// testing audio
-// 	DgAudioStream audio;
-// 	DgAudioStreamNew(&audio);
-// 	
-// 	float *audio_data = (float *) DgAlloc(sizeof *audio_data * 88200);
-// 	
-// 	if (audio_data) {
-// 		for (size_t i = 0; i < 44100; i++) {
-// 			float s = DgSin(i * (1.0f / (44100.0f / 440.0f)));
-// 			audio_data[i * 2] = s;
-// 			audio_data[i * 2 + 1] = s;
-// 		}
-// 		
-// 		DgAudioStreamPush(&audio, sizeof *audio_data * 88200, audio_data);
-// 		
-// 		DgFree(audio_data);
-// 		DgAudioStreamFree(&audio);
-// 	}
-	
-	// Load world
-	DgLog(DG_LOG_INFO, "Initialising main world...");
-	World main_world;
-	world_init(&main_world, 0);
-	world_active(&main_world);
-	
-	// sst test 
-	StringStringTable t;
-	StringStringTableInit(&t);
-	StringStringTableSet(&t, "a", "b");
-	StringStringTableSet(&t, "carb", "600");
-	StringStringTableSet(&t, "Ice", "A very funny thing!");
-	DgLog(DG_LOG_VERBOSE, "%s and %s", *StringStringTableGet(&t, "a"), *StringStringTableGet(&t, "Ice"));
-	
-	for (size_t i = 0; i < StringStringTableGetLength(&t); i++) {
-		const char *k = *StringStringTableGetKeyAt(&t, i);
-		char *v = *StringStringTableGetValueAt(&t, i);
-		
-		printf("%s -> %s\n", k, v);
-	}
-	
-	StringStringTableFree(&t);
-	
 	// Load systems state
-	// 
-	// This is only for the really big systems in the game and not for anything
-	// that can basically manage itself (for example, utility functions), though
-	// perhaps they should be ported to use system init as well.
 	DgLog(DG_LOG_INFO, "Initialising systems...");
 	Supervisor systems;
-	sup_init(&systems, &main_world);
+	sup_init(&systems);
 	supervisor(&systems);
 	
 	/**
@@ -288,7 +187,7 @@ int game_main(int argc, char* argv[]) {
 	
 	// Main loop
 	DgLog(DG_LOG_INFO, "Starting the main loop...");
-	game_loop(&main_world, &systems);
+	game_loop(&systems);
 	
 	/**
 	 * 
@@ -299,10 +198,6 @@ int game_main(int argc, char* argv[]) {
 	// Systems destruction
 	DgLog(DG_LOG_INFO, "Destroying systems...");
 	sup_destroy(&systems);
-	
-	// World destruction
-	DgLog(DG_LOG_INFO, "Destroying main world...");
-	world_destroy(&main_world);
 	
 	// Cleanup main config file
 	if (!initconf_status) {

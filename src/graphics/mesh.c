@@ -9,8 +9,8 @@
 #include <inttypes.h>
 #include <string.h>
 
-#include "world/compo.h"
-#include "world/world.h"
+#include "graphics/graphics.h"
+#include "graphics/vertex1.h"
 #include "util/fs.h"
 #include "util/alloc.h"
 #include "util/fail.h"
@@ -24,62 +24,11 @@
 
 #include "mesh.h"
 
-bool entity_load_mesh(World * const restrict world, uint32_t id, char * const restrict path) {
-	/*
-	 * Loads an uncompressed mesh from a file into an entity's mesh component
-	 */
-	
-	// Find the mesh component
-	C_Mesh *mesh = entity_find_mesh(world, id);
-	
-	if (!mesh) {
-		DgLog(DG_LOG_ERROR, "Failed to load mesh or model '%s' to entity %d.", path, id);
-		return false;
-	}
-	
-	// Open the file stream
-	char *real_path = DgEvalPath(path);
-	DgFileStream *s = DgFileStreamOpen(real_path, "rb");
-	DgFree(real_path);
-	
-	if (!s) {
-		DgLog(DG_LOG_ERROR, "Failed to load file '%s'.", path);
-		return false;
-	}
-	
-	// Read vertexes
-	DgFileStreamReadInt32(s, &mesh->vert_count);
-	mesh->vert = DgAlloc(mesh->vert_count * 32);
-	if (!mesh->vert) {
-		DgFileStreamClose(s);
-		DgLog(DG_LOG_ERROR, "Failed to allocate memory whilst trying to load a mesh file.");
-		return false;
-	}
-	DgFileStreamRead(s, mesh->vert_count * 32, mesh->vert);
-	
-	// Read indexes
-	DgFileStreamReadInt32(s, &mesh->index_count);
-	mesh->index = DgAlloc(mesh->index_count * 4);
-	if (!mesh->index) {
-		DgFileStreamClose(s);
-		DgFree(mesh->vert);
-		DgLog(DG_LOG_ERROR, "Failed to allocate memory whilst trying to load a mesh file.");
-		return false;
-	}
-	DgFileStreamRead(s, mesh->index_count * 4, mesh->index);
-	
-	mesh->updated = true;
-	
-	DgFileStreamClose(s);
-	
-	return true;
-}
-
-bool entity_load_xml_mesh(World * const restrict world, uint32_t id, const char * const restrict path) {
+bool graphics_load_xml_mesh(GraphicsSystem * restrict this, Name id, const char * const restrict path) {
 	/**
 	 * Load and generate an XML format mesh to an entity
 	 */
-	
+	/*
 	// Find the mesh component
 	C_Mesh *mesh = entity_find_mesh(world, id);
 	
@@ -186,16 +135,16 @@ bool entity_load_xml_mesh(World * const restrict world, uint32_t id, const char 
 	// Free XML document
 	DgXMLNodeFree(&doc);
 	
-	return true;
+	return true;*/
 }
 
 #include "graphics/mesh.h"
 
-bool entity_load_obj_mesh(World * const restrict world, uint32_t id, const char * const restrict path) {
+bool graphics_load_obj_mesh(GraphicsSystem * restrict this, Name id, const char * const restrict path) {
 	/**
 	 * Load an XML mesh
 	 */
-	
+	/*
 	// Find the mesh component
 	C_Mesh *mesh = entity_find_mesh(world, id);
 	
@@ -243,5 +192,5 @@ bool entity_load_obj_mesh(World * const restrict world, uint32_t id, const char 
 	
 	DgFree(obj.vertex);
 	
-	return true;
+	return true;*/
 }

@@ -7,11 +7,10 @@
 
 #pragma once
 
-#include "game/level.h"
 #include "game/gamescript.h"
 #include "graphics/graphics.h"
+#include "graph/graph.h"
 #include "input/input.h"
-#include "world/world.h"
 
 typedef struct Supervisor {
 	/**
@@ -23,11 +22,11 @@ typedef struct Supervisor {
 	GraphicsSystem graphics;
 	// I
 	InputSystem input;
-	// L
-	LevelSystem level_info;
+	// S
+	SceneGraph graph;
 } Supervisor;
 
 Supervisor *supervisor(Supervisor *S);
 
-void sup_init(Supervisor * restrict sup, const World * restrict world);
+void sup_init(Supervisor * restrict sup);
 void sup_destroy(Supervisor * restrict sup);

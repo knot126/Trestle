@@ -7,13 +7,12 @@
 
 #include <string.h>
 
-#include "game/level.h"
 #include "game/gamescript.h"
+#include "graph/graph.h"
 #include "graphics/graphics.h"
 #include "input/input.h"
 #include "util/log.h"
 #include "util/ini.h"
-#include "world/world.h"
 #include "types.h"
 
 #include "supervisor.h"
@@ -32,14 +31,18 @@ Supervisor *supervisor(Supervisor *S) {
 	return QR_MAIN_SUPERVISOR;
 }
 
-void sup_init(Supervisor * restrict sup, const World * restrict world) {
+void sup_init(Supervisor * restrict sup) {
 	// Set to null
 	memset(sup, 0, sizeof(Supervisor));
 	
 	// Graphics initialisation
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: Graphics");
-	graphics_init(&sup->graphics, world);
+	graphics_init(&sup->graphics);
 	graphics(&sup->graphics);
+	
+	// Scene graph initialisation
+	DgLog(DG_LOG_INFO, "Supervisor Initialise: Scene Graph");
+	graph_init(&sup->graph);
 	
 	// Input initialisation
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: Input");
@@ -50,22 +53,18 @@ void sup_init(Supervisor * restrict sup, const World * restrict world) {
 	game_script_new(&sup->game_script);
 	game_script_yeild(&sup->game_script, DgINIGet(g_quickRunConfig, "Main", "startup_script_path", "assets://scripts/startup.lua"));
 	game_script_active(&sup->game_script);
-	
-	// Init the level manager
-	DgLog(DG_LOG_INFO, "Supervisor Initialise: Levels");
-	level_init(&sup->level_info, DgINIGet(g_quickRunConfig, "Resources", "level_index_path", "assets://game.xml"));
 }
 
 void sup_destroy(Supervisor * restrict sup) {
-	DgLog(DG_LOG_INFO, "Supervisor Destroy: Graphics");
-	graphics_free(&sup->graphics);
+	DgLog(DG_LOG_INFO, "Supervisor Destroy: GameScript");
+	game_script_free(&sup->game_script);
 	
 	DgLog(DG_LOG_INFO, "Supervisor Destroy: Input");
 	// Not currently required
 	
-	DgLog(DG_LOG_INFO, "Supervisor Destroy: GameScript");
-	game_script_free(&sup->game_script);
+	DgLog(DG_LOG_INFO, "Supervisor Destroy: Scene Graph");
+	graph_free(&sup->graph);
 	
-	DgLog(DG_LOG_INFO, "Supervisor Destroy: Levels");
-	level_free(&sup->level_info);
+	DgLog(DG_LOG_INFO, "Supervisor Destroy: Graphics");
+	graphics_free(&sup->graphics);
 }

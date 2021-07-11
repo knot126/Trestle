@@ -7,8 +7,8 @@
 
 #include <string.h>
 
-#include "world/compo.h"
-#include "world/world.h"
+#include "global/supervisor.h"
+#include "graphics/graphics.h"
 #include "util/alloc.h"
 #include "util/maths.h"
 #include "util/log.h"
@@ -16,27 +16,10 @@
 
 #include "box.h"
 
-bool entity_generate_box(World * const restrict world, const DgVec3 pos, const DgVec3 size, const DgVec3 colour, const char * const texture) {
-	uint32_t ent = world_create_entity(world, QR_COMPONENT_TRANSFORM | QR_COMPONENT_MESH);
+bool entity_generate_box(Supervisor * const restrict sup, const DgVec3 pos, const DgVec3 size, const DgVec3 colour, const char * const texture) {
+	Name name = *(Name *)0;
 	
-	if (ent == 0) {
-		DgLog(DG_LOG_ERROR, "Failed to find mesh for entity %d.", ent);
-		return false;
-	}
-	
-	// Find the mesh component
-	C_Mesh *mesh = entity_find_mesh(world, ent);
-	
-	if (!mesh) {
-		DgLog(DG_LOG_ERROR, "Failed to find mesh for entity %d.", ent);
-		return false;
-	}
-	
-	// Set the transform
-	if (!entity_set_transform(world, ent, pos, DgVec3New(0.0f, 0.0f, 0.0f), size)) {
-		DgLog(DG_LOG_ERROR, "Failed to find mesh for entity %d.", ent);
-		return false;
-	}
+	Mesh *mesh = graphics_get_mesh(&sup->graphics, name);
 	
 	// Generate box mesh
 	const float s_BoxData[] = {
@@ -93,7 +76,7 @@ bool entity_generate_box(World * const restrict world, const DgVec3 pos, const D
 	float *vertex = (float *) DgAlloc(sizeof(s_BoxData));
 	
 	if (!vertex) {
-		DgLog(DG_LOG_ERROR, "Failed to find mesh for entity %d.", ent);
+		DgLog(DG_LOG_ERROR, "Failed to find mesh for entity %d.", name);
 		return false;
 	}
 	
@@ -102,7 +85,7 @@ bool entity_generate_box(World * const restrict world, const DgVec3 pos, const D
 	uint32_t *index = (uint32_t *) DgAlloc(sizeof(s_IndexData));
 	
 	if (!index) {
-		DgLog(DG_LOG_ERROR, "Failed to find mesh for entity %d.", ent);
+		DgLog(DG_LOG_ERROR, "Failed to find mesh for entity %d.", name);
 		DgFree(vertex);
 		return false;
 	}
