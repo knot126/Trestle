@@ -12,7 +12,7 @@
 
 #include "physics.h"
 
-void physics_new(PhysicsSystem *this) {
+void physics_init(PhysicsSystem *this) {
 	/**
 	 * Initialise a physics system.
 	 */

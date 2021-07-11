@@ -2,7 +2,7 @@
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
- * OpenGL-related graphics stuff
+ * Graphics Subsystem
  */
 
 #pragma once

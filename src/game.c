@@ -48,7 +48,7 @@ static void *physics_loop(void *args_) {
 	 */
 	
 	GameLoopArgs *args = (GameLoopArgs *) args_;
-	Supervisor *systems = args->systems;
+	Supervisor *sup = args->systems;
 	
 	double accumulate = 0.0f;
 	double show_time = 0.0f;
@@ -59,7 +59,7 @@ static void *physics_loop(void *args_) {
 		if (accumulate > g_physicsDelta) {
 			float time = DgTime();
 			
-			//phys_update(world, g_physicsDelta);
+			physics_update(&sup->physics);
 			accumulate = 0.0f;
 			
 			time = DgTime() - time;
@@ -105,9 +105,9 @@ static int game_loop(Supervisor *sys) {
 		// Check if we should still be open
 		should_keep_open = get_should_keep_open(&sys->graphics);
 		
+		// Update subsystems
 		graphics_update(&sys->graphics, &sys->graph);
 		input_update(&sys->input);
-		
 		game_script_update(&sys->game_script);
 		
 		// Update frame time
@@ -174,7 +174,7 @@ int game_main(int argc, char* argv[]) {
 	}
 	
 	// Load systems state
-	DgLog(DG_LOG_INFO, "Initialising systems...");
+	DgLog(DG_LOG_INFO, "SubSystem Supervisor Initialise");
 	Supervisor systems;
 	sup_init(&systems);
 	supervisor(&systems);
@@ -186,7 +186,7 @@ int game_main(int argc, char* argv[]) {
 	 */
 	
 	// Main loop
-	DgLog(DG_LOG_INFO, "Starting the main loop...");
+	DgLog(DG_LOG_INFO, "Start main loop");
 	game_loop(&systems);
 	
 	/**
@@ -196,7 +196,7 @@ int game_main(int argc, char* argv[]) {
 	 */
 	
 	// Systems destruction
-	DgLog(DG_LOG_INFO, "Destroying systems...");
+	DgLog(DG_LOG_INFO, "SubSystem Supervisor Destroy");
 	sup_destroy(&systems);
 	
 	// Cleanup main config file

@@ -75,7 +75,8 @@ set(LUA_INCLUDE_FILES
 	${LUA_DIR}/lmem.h
 	${LUA_DIR}/lparser.h
 	${LUA_DIR}/ltable.h
-	${LUA_DIR}/lualib.h)
+	${LUA_DIR}/lualib.h
+)
 
 # Melon Source files
 set(MELON_FILES
@@ -106,7 +107,7 @@ set(MELON_FILES
 	"src/util/value.c"
 	"src/util/xml.c"
 	${LUA_INCLUDE_FILES}
-	)
+)
 
 # Source files
 set(EXEC_FILES 
@@ -129,7 +130,7 @@ set(EXEC_FILES
 	"src/game.c"
 	"src/types.c"
 	"src/main.c"
-	"src/StringStringTable.c")
+)
 
 # Force compiler to high warning levels
 if(MSVC)

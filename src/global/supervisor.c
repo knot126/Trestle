@@ -6,6 +6,7 @@
  */ 
 
 #include <string.h>
+#include <inttypes.h>
 
 #include "game/gamescript.h"
 #include "graph/graph.h"
@@ -13,6 +14,7 @@
 #include "input/input.h"
 #include "util/log.h"
 #include "util/ini.h"
+#include "physics/physics.h"
 #include "types.h"
 
 #include "supervisor.h"
@@ -32,13 +34,22 @@ Supervisor *supervisor(Supervisor *S) {
 }
 
 void sup_init(Supervisor * restrict sup) {
+	/**
+	 * Initialise all the systems in the game.
+	 */
+	
 	// Set to null
 	memset(sup, 0, sizeof(Supervisor));
+	sup->next = 1;
 	
 	// Graphics initialisation
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: Graphics");
 	graphics_init(&sup->graphics);
 	graphics(&sup->graphics);
+	
+	// Physics initialisation
+	DgLog(DG_LOG_INFO, "Supervisor Initialise: Physics");
+	physics_init(&sup->physics);
 	
 	// Scene graph initialisation
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: Scene Graph");
@@ -56,6 +67,10 @@ void sup_init(Supervisor * restrict sup) {
 }
 
 void sup_destroy(Supervisor * restrict sup) {
+	/**
+	 * Destroy all the systems in the game.
+	 */
+	
 	DgLog(DG_LOG_INFO, "Supervisor Destroy: GameScript");
 	game_script_free(&sup->game_script);
 	
@@ -65,6 +80,39 @@ void sup_destroy(Supervisor * restrict sup) {
 	DgLog(DG_LOG_INFO, "Supervisor Destroy: Scene Graph");
 	graph_free(&sup->graph);
 	
+	DgLog(DG_LOG_INFO, "Supervisor Destroy: Physics");
+	physics_free(&sup->physics);
+	
 	DgLog(DG_LOG_INFO, "Supervisor Destroy: Graphics");
 	graphics_free(&sup->graphics);
+}
+
+Name sup_next_name(Supervisor *sup) {
+	/**
+	 * Get the next name.
+	 */
+	
+	return sup->next++;
+}
+
+Name sup_entity(Supervisor *sup, const uint64_t systems) {
+	/**
+	 * Make an entity in the requested systems.
+	 */
+	
+	Name name = sup_next_name(sup);
+	
+	if ((systems & ENT_TRANSFORM) == ENT_TRANSFORM) {
+		graph_create(&sup->graph, name);
+	}
+	
+	if ((systems & ENT_GRAPHICS_MESH) == ENT_GRAPHICS_MESH) {
+		graphics_create_mesh(&sup->graphics, name);
+	}
+	
+	if ((systems & ENT_GRAPHICS_CURVE) == ENT_GRAPHICS_CURVE) {
+		// ...
+	}
+	
+	return name;
 }
