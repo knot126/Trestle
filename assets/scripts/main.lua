@@ -24,7 +24,7 @@ function init()
 	
 	player = make_box(0.0, 2.0, 0.0)
 	create_physics_object(player)
-	set_physics_flags(player, PHYSICS_STATIC)
+	set_physics_flags(player, ~PHYSICS_STATIC)
 end
 
 function tick(dt)

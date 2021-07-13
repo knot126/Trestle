@@ -11,6 +11,7 @@
 #include "graph/graph.h"
 #include "util/maths.h"
 #include "util/alloc.h"
+#include "util/time.h"
 
 #include "physics.h"
 
@@ -22,7 +23,7 @@ void physics_init(PhysicsSystem *this) {
 	memset(this, 0, sizeof *this);
 }
 
-static void physics_update_gravity(PhysicsSystem *this, SceneGraph *graph) {
+static void physics_update_gravity(PhysicsSystem *this, SceneGraph *graph, float delta) {
 	/**
 	 * Update gravity on all objects.
 	 */
@@ -32,7 +33,10 @@ static void physics_update_gravity(PhysicsSystem *this, SceneGraph *graph) {
 		PhysicsObject * const obj = &this->object[i];
 		
 		if ((obj->flags & PHYSICS_STATIC) != PHYSICS_STATIC) {
-			trans->pos.y -= 0.001f;
+			const DgVec3 tempold = obj->lastPos;
+			const DgVec3 tempcur = trans->pos;
+			trans->pos = DgVec3Add(DgVec3Subtract(DgVec3Scale(2.0f, trans->pos), tempold), DgVec3Scale(delta * delta, obj->accel));
+			obj->lastPos = tempcur;
 		}
 	}
 }
@@ -42,7 +46,11 @@ void physics_update(PhysicsSystem *this, SceneGraph *graph) {
 	 * Update the physics system and advance the simulation.
 	 */
 	
-	physics_update_gravity(this, graph);
+	const float time = DgTime();
+	
+	physics_update_gravity(this, graph, this->delta_time);
+	
+	this->delta_time = DgTime() - time;
 }
 
 void physics_free(PhysicsSystem *this) {

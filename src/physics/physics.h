@@ -50,6 +50,8 @@ typedef struct PhysicsSystem {
 	SphereShape *sphere;
 	size_t       sphere_count;
 	size_t       sphere_alloc;
+	
+	float delta_time;
 } PhysicsSystem;
 
 void physics_init(PhysicsSystem *this);
