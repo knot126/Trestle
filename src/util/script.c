@@ -9,6 +9,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include "lua.h"
 #include "lualib.h"
@@ -35,6 +36,7 @@ bool DgScriptLoad(DgScript *script, char * const path) {
 	/*
 	 * Load a script file.
 	 */
+	
 	char * real_path = DgEvalPath(path);
 	
 	if (!real_path) {
@@ -56,11 +58,42 @@ bool DgScriptLoad(DgScript *script, char * const path) {
 void DgScriptCall(DgScript *script, char *name) {
 	/*
 	 * Call a function in a script that has no arguments and no return values.
-	 * Other functions should be called manually.
 	 */
+	
 	lua_getglobal(script->state, name);
 	
 	lua_call(script->state, 0, 0);
+	
+	lua_pop(script->state, 0);
+}
+
+void DgScriptCallArgs(DgScript *script, char *name, int *types, int argc, ...) {
+	/*
+	 * Call a function in a script that has any number and type of argumets but 
+	 * no return values.
+	 * 
+	 * ´argc´ must be the count of arguments, and ´types´ must be an int array
+	 * of ´argc´ length that contains an array of the types for each value
+	 * in order.
+	 */
+	
+	lua_getglobal(script->state, name);
+	
+	va_list args;
+	va_start(args, argc);
+	
+	for (int i = 0; i < argc; i++) {
+		switch (types[i]) {
+			case DG_SCRIPT_NUMBER: lua_pushnumber(script->state, va_arg(args, double)); break;
+			case DG_SCRIPT_STRING: lua_pushstring(script->state, va_arg(args, char *)); break;
+			case DG_SCRIPT_BOOLEAN: lua_pushboolean(script->state, va_arg(args, int)); break;
+			default: lua_pushnil(script->state); break;
+		}
+	}
+	
+	va_end(args);
+	
+	lua_call(script->state, argc, 0);
 	
 	lua_pop(script->state, 0);
 }
@@ -69,6 +102,7 @@ void DgScriptFree(DgScript *script) {
 	/*
 	 * Free script resources
 	 */
+	
 	lua_close(script->state);
 }
 

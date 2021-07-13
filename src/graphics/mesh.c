@@ -24,16 +24,16 @@
 
 #include "mesh.h"
 
-bool graphics_load_xml_mesh(GraphicsSystem * restrict this, Name id, const char * const restrict path) {
+bool graphics_load_xml_mesh(GraphicsSystem * restrict this, Name name, const char * const restrict path) {
 	/**
 	 * Load and generate an XML format mesh to an entity
 	 */
-	/*
+	
 	// Find the mesh component
-	C_Mesh *mesh = entity_find_mesh(world, id);
+	Mesh *mesh = graphics_get_mesh(this, name);
 	
 	if (!mesh) {
-		DgLog(DG_LOG_ERROR, "Failed to load xml mesh or model '%s' to entity %d.", path, id);
+		DgLog(DG_LOG_ERROR, "Failed to load xml mesh or model '%s' to entity %d.", path, name);
 		return false;
 	}
 	
@@ -51,7 +51,7 @@ bool graphics_load_xml_mesh(GraphicsSystem * restrict this, Name id, const char 
 	DgStream *vertex = DgStreamCreate();
 	
 	if (!vertex) {
-		DgLog(DG_LOG_ERROR, "Failed to load xml mesh or model '%s' to entity %d.", path, id);
+		DgLog(DG_LOG_ERROR, "Failed to load xml mesh or model '%s' to entity %d.", path, name);
 		DgXMLNodeFree(&doc);
 		return false;
 	}
@@ -59,7 +59,7 @@ bool graphics_load_xml_mesh(GraphicsSystem * restrict this, Name id, const char 
 	DgStream *index = DgStreamCreate();
 	
 	if (!index) {
-		DgLog(DG_LOG_ERROR, "Failed to load xml mesh or model '%s' to entity %d.", path, id);
+		DgLog(DG_LOG_ERROR, "Failed to load xml mesh or model '%s' to entity %d.", path, name);
 		DgXMLNodeFree(&doc);
 		DgStreamFree(vertex);
 		return false;
@@ -135,10 +135,8 @@ bool graphics_load_xml_mesh(GraphicsSystem * restrict this, Name id, const char 
 	// Free XML document
 	DgXMLNodeFree(&doc);
 	
-	return true;*/
+	return true;
 }
-
-#include "graphics/mesh.h"
 
 bool graphics_load_obj_mesh(GraphicsSystem * restrict this, Name name, const char * const restrict path) {
 	/**

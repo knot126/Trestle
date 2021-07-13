@@ -94,7 +94,8 @@ void game_script_update(GameScript *gs) {
 	}
 	
 	if (gs->active) {
-		DgScriptCall(&gs->script, "tick");
+		int types[] = { DG_SCRIPT_NUMBER };
+		DgScriptCallArgs(&gs->script, "tick", types, 1, g_deltaTime);
 	}
 }
 

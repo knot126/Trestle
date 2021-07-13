@@ -529,6 +529,22 @@ void graphics_free(GraphicsSystem* gl) {
 		glDeleteProgram(gl->programs[i]);
 	}
 	
+	// Free meshes
+	for (size_t i = 0; i < gl->mesh_count; i++) {
+		glDeleteBuffers(1, &gl->mesh[i].vbo);
+		glDeleteBuffers(1, &gl->mesh[i].ebo);
+		
+		glDeleteVertexArrays(1, &gl->mesh[i].vao);
+		
+		if (gl->mesh[i].shouldFree) {
+			DgFree(gl->mesh[i].vert);
+			DgFree(gl->mesh[i].index);
+			if (gl->mesh[i].texture) {
+				DgFree((void *) gl->mesh[i].texture);
+			}
+		}
+	}
+	
 	gltexture_free(&gl->texture);
 	
 	DgFree(gl->shaders);

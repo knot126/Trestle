@@ -25,6 +25,7 @@ typedef struct Mesh {
 	uint32_t index_count;
 	uint32_t vbo, ebo, vao;
 	bool updated;
+	bool shouldFree;
 } Mesh;
 
 typedef struct Curve {

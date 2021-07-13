@@ -19,6 +19,7 @@ in vec3 colour;
 
 out vec2 Texture;
 out vec3 Colour;
+out vec3 OutPos;
 
 float LightResolve() {
 	return (1.0 - LightFactor) + LightFactor * (position.x * LightDirection.x + position.y * LightDirection.y + position.z * LightDirection.z);
@@ -27,6 +28,7 @@ float LightResolve() {
 void main() {
 	Colour = colour * LightResolve();
 	Texture = texpos;
+	OutPos = (camera * model * vec4(position, 1.0)).xyz;
 	gl_Position = proj * camera * model * vec4(position, 1.0);
 }
 #endif
@@ -36,10 +38,16 @@ uniform sampler2D image;
 
 in vec2 Texture;
 in vec3 Colour;
+in vec3 OutPos;
 
 out vec4 out_colour;
 
+float fog() {
+	float f = min((24.0 + OutPos.z) * 0.125, 1.0);
+	return f;
+}
+
 void main() {
-	out_colour = texture(image, Texture) * vec4(Colour, 1.0);
+	out_colour = texture(image, Texture) * vec4(Colour, fog());
 }
 #endif

@@ -110,6 +110,17 @@ static int scripted_GetTransform(lua_State *script) {
 	return 9;
 }
 
+static int scripted_GetCamera(lua_State *script) {
+	if (lua_gettop(script) != 0) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of get_camera().");
+		return 0;
+	}
+	
+	lua_pushinteger(script, graphics_get_camera(&(supervisor(NULL)->graphics)));
+	
+	return 1;
+}
+
 static int scripted_SetCamera(lua_State *script) {
 	if (lua_gettop(script) != 1) {
 		DgLog(DG_LOG_ERROR, "Invalid usage of set_camera().");
@@ -128,6 +139,17 @@ static int scripted_PushOBJMesh(lua_State *script) {
 	}
 	
 	graphics_load_obj_mesh(&(supervisor(NULL)->graphics), lua_tointeger(script, 1), lua_tostring(script, 2));
+	
+	return 0;
+}
+
+static int scripted_SetBackground(lua_State *script) {
+	if (lua_gettop(script) != 4) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of set_background().");
+		return 0;
+	}
+	
+	graphics_set_background(&(supervisor(NULL)->graphics), (DgVec4) {lua_tonumber(script, 1), lua_tonumber(script, 2), lua_tonumber(script, 3), lua_tonumber(script, 4)});
 	
 	return 0;
 }
@@ -162,7 +184,7 @@ static int scripted_MakeBox(lua_State *script) {
 	
 	lua_pushinteger(script, make_box(supervisor(NULL), pos, size, col, texture));
 	
-	return 0;
+	return 1;
 }
 
 static int scripted_GetKey(lua_State *script) {
@@ -189,7 +211,9 @@ void registerWorldScriptFunctions(DgScript *script) {
 	
 	// Graphics
 	lua_register(script->state, "set_camera", &scripted_SetCamera);
+	lua_register(script->state, "get_camera", &scripted_GetCamera);
 	lua_register(script->state, "push_obj_mesh", &scripted_PushOBJMesh);
+	lua_register(script->state, "set_background", &scripted_SetBackground);
 	
 	// Objects
 	lua_register(script->state, "make_box", &scripted_MakeBox);
