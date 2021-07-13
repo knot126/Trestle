@@ -114,5 +114,9 @@ Name sup_entity(Supervisor *sup, const uint64_t systems) {
 		// ...
 	}
 	
+	if ((systems & ENT_PHYSICS_OBJECT) == ENT_PHYSICS_OBJECT) {
+		physics_create_object(&sup->physics, name);
+	}
+	
 	return name;
 }

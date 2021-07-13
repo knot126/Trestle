@@ -9,9 +9,16 @@
 
 #include <stddef.h>
 
+#include "graph/graph.h"
 #include "util/maths.h"
 
 #include "types.h"
+
+typedef struct PhysicsObject {
+	DgVec3 lastPos;
+	DgVec3 accel;
+	uint64_t flags;
+} PhysicsObject;
 
 typedef struct AABBShape {
 	DgVec3 size;
@@ -21,27 +28,30 @@ typedef struct SphereShape {
 	float radius;
 } SphereShape;
 
-typedef struct PhysicsObject {
-	uint64_t flags;
-} PhysicsObject;
-
 typedef struct PhysicsSystem {
 	/// Physics Objects ///
 	Name          *object_name;
 	PhysicsObject *object;
 	size_t         object_count;
+	size_t         object_alloc;
 	
 	/// Axis Aligned Bounding Boxes ///
-	Name      *aabb_name;   // Name of the object
-	AABBShape *aabb;        // The shape of the object
+	Name      *aabb_name;
+	AABBShape *aabb;
 	size_t     aabb_count;
+	size_t     aabb_alloc;
 	
 	/// Spheres ///
 	Name        *sphere_name;
 	SphereShape *sphere;
 	size_t       sphere_count;
+	size_t       sphere_alloc;
 } PhysicsSystem;
 
 void physics_init(PhysicsSystem *this);
-void physics_update(PhysicsSystem *this);
+void physics_update(PhysicsSystem *this, SceneGraph *graph);
 void physics_free(PhysicsSystem *this);
+
+Name physics_create_object(PhysicsSystem *this, Name name);
+Name physics_clear_object(PhysicsSystem *this, Name name);
+Name physics_set_accel(PhysicsSystem *this, Name name, DgVec3 accel);

@@ -59,7 +59,7 @@ static void *physics_loop(void *args_) {
 		if (accumulate > g_physicsDelta) {
 			float time = DgTime();
 			
-			physics_update(&sup->physics);
+			physics_update(&sup->physics, &sup->graph);
 			accumulate = 0.0f;
 			
 			time = DgTime() - time;
