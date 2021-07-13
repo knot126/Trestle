@@ -154,6 +154,53 @@ static int scripted_SetBackground(lua_State *script) {
 	return 0;
 }
 
+static int scripted_CreatePhysicsObject(lua_State *script) {
+	if (lua_gettop(script) != 1) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of create_physics_object().");
+		return 0;
+	}
+	
+	lua_pushinteger(script, physics_create_object(&(supervisor(NULL)->physics), lua_tointeger(script, 1)));
+	
+	return 1;
+}
+
+static int scripted_ClearPhysicsObject(lua_State *script) {
+	if (lua_gettop(script) != 1) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of clear_physics_object().");
+		return 0;
+	}
+	
+	physics_clear_object(&(supervisor(NULL)->physics), lua_tointeger(script, 1));
+	
+	return 0;
+}
+
+static int scripted_SetAccel(lua_State *script) {
+	if (lua_gettop(script) != 4) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of set_accel().");
+		return 0;
+	}
+	
+	physics_set_accel(&(supervisor(NULL)->physics), lua_tointeger(script, 1), (DgVec3) {lua_tonumber(script, 2), lua_tonumber(script, 3), lua_tonumber(script, 4)});
+	
+	return 0;
+}
+
+static int scripted_SetPhysicsFlags(lua_State *script) {
+	if (lua_gettop(script) != 2) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of set_physics_flags().");
+		return 0;
+	}
+	
+	int name = lua_tointeger(script, 1);
+	uint64_t flag = lua_tointeger(script, 2);
+	
+	physics_set_flags(&(supervisor(NULL)->physics), name, flag);
+	
+	return 0;
+}
+
 static int scripted_MakeBox(lua_State *script) {
 	int top = lua_gettop(script);
 	
@@ -214,6 +261,12 @@ void registerWorldScriptFunctions(DgScript *script) {
 	lua_register(script->state, "get_camera", &scripted_GetCamera);
 	lua_register(script->state, "push_obj_mesh", &scripted_PushOBJMesh);
 	lua_register(script->state, "set_background", &scripted_SetBackground);
+	
+	// Physics
+	lua_register(script->state, "create_physics_object", &scripted_CreatePhysicsObject);
+	lua_register(script->state, "clear_physics_object", &scripted_ClearPhysicsObject);
+	lua_register(script->state, "set_accel", &scripted_SetAccel);
+	lua_register(script->state, "set_physics_flags", &scripted_SetPhysicsFlags);
 	
 	// Objects
 	lua_register(script->state, "make_box", &scripted_MakeBox);

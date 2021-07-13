@@ -31,7 +31,9 @@ static void physics_update_gravity(PhysicsSystem *this, SceneGraph *graph) {
 		Transform * const trans = graph_get(graph, this->object_name[i]);
 		PhysicsObject * const obj = &this->object[i];
 		
-		trans->pos.y -= 0.001f;
+		if ((obj->flags & PHYSICS_STATIC) != PHYSICS_STATIC) {
+			trans->pos.y -= 0.001f;
+		}
 	}
 }
 
@@ -150,6 +152,22 @@ Name physics_set_accel(PhysicsSystem *this, Name name, DgVec3 accel) {
 	}
 	
 	this->object[index].accel = accel;
+	
+	return name;
+}
+
+Name physics_set_flags(PhysicsSystem *this, Name name, uint64_t flags) {
+	/**
+	 * Set an object's acceleration data.
+	 */
+	
+	size_t index = physics_find_object(this, name);
+	
+	if (index == -1) {
+		return 0;
+	}
+	
+	this->object[index].flags = flags;
 	
 	return name;
 }

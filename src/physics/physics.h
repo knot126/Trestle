@@ -14,6 +14,10 @@
 
 #include "types.h"
 
+enum {
+	PHYSICS_STATIC = (1 << 0),
+};
+
 typedef struct PhysicsObject {
 	DgVec3 lastPos;
 	DgVec3 accel;
@@ -55,3 +59,4 @@ void physics_free(PhysicsSystem *this);
 Name physics_create_object(PhysicsSystem *this, Name name);
 Name physics_clear_object(PhysicsSystem *this, Name name);
 Name physics_set_accel(PhysicsSystem *this, Name name, DgVec3 accel);
+Name physics_set_flags(PhysicsSystem *this, Name name, uint64_t flags);

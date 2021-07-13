@@ -5,15 +5,10 @@
 -- Game Startup Script
 -- 
 
-ENT_TRANSFORM = (1 << 0)
-ENT_GRAPHICS_MESH = (1 << 1)
-ENT_GRAPHICS_CURVE = (1 << 2)
-ENT_PHYSICS_OBJECT = (1 << 3)
-
 function init()
 	set_background(mgRandFloat(), mgRandFloat(), mgRandFloat(), 1.0)
 	
-	cam = create_entity(ENT_TRANSFORM | ENT_PHYSICS_OBJECT)
+	cam = create_entity(ENT_TRANSFORM)
 	push_transform(cam, 0.0, 5.0, 5.65, 0.0375, 0.0, 0.0)
 	set_camera(cam)
 	
@@ -28,6 +23,8 @@ function init()
 	push_obj_mesh(bm2, "assets://mesh/gum_tree1.obj")
 	
 	player = make_box(0.0, 2.0, 0.0)
+	create_physics_object(player)
+	set_physics_flags(player, PHYSICS_STATIC)
 end
 
 function tick(dt)
