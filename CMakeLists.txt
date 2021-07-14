@@ -127,6 +127,7 @@ set(EXEC_FILES
 	"src/input/input.c"
 	"src/input/glfwi.c"
 	"src/physics/physics.c"
+	"src/resman/resman.c"
 	"src/game.c"
 	"src/types.c"
 	"src/main.c"
