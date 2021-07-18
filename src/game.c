@@ -54,13 +54,12 @@ static void *physics_loop(void *args_) {
 	double show_time = 0.0f;
 	
 	while (*args->keep_open) {
-		float frame_time = (float) DgTime();
+		double frame_time = DgTime();
 		
-		if (accumulate > g_physicsDelta) {
+		if (accumulate >= g_physicsDelta) {
 			float time = DgTime();
 			
-			physics_update(&sup->physics, &sup->graph);
-			accumulate = 0.0f;
+			physics_update(&sup->physics, &sup->graph, g_physicsDelta);
 			
 			time = DgTime() - time;
 			
@@ -68,16 +67,18 @@ static void *physics_loop(void *args_) {
 				DgLog(DG_LOG_VERBOSE, "Physics frame time: %fms", time);
 				show_time = 0.0f;
 			}
+			
+			accumulate = 0.0f;
 		}
+		
+#if defined(__GNUC__) && defined(__x86_64__)
+		__asm__ ( "pause;" );
+#endif
 		
 		frame_time = DgTime() - frame_time;
 		
 		accumulate += frame_time;
 		show_time += frame_time;
-		
-#if defined(__GNUC__) && defined(__x86_64__)
-		__asm__ ( "pause;" );
-#endif
 	}
 }
 

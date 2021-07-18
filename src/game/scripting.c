@@ -201,6 +201,43 @@ static int scripted_SetPhysicsFlags(lua_State *script) {
 	return 0;
 }
 
+static int scripted_AddForce(lua_State *script) {
+	if (lua_gettop(script) != 4) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of add_force().");
+		return 0;
+	}
+	
+	int name = lua_tointeger(script, 1);
+	
+	physics_add_forces(&(supervisor(NULL)->physics), name, (DgVec3) {lua_tonumber(script, 2), lua_tonumber(script, 3), lua_tonumber(script, 4)});
+	
+	return 0;
+}
+
+static int scripted_EnablePhysics(lua_State *script) {
+	if (lua_gettop(script) != 1) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of enable_physics().");
+		return 0;
+	}
+	
+	bool enable = lua_toboolean(script, 1);
+	
+	physics_enabled(&(supervisor(NULL)->physics), enable);
+	
+	return 0;
+}
+
+static int scripted_PhysicsSyncGraph(lua_State *script) {
+	if (lua_gettop(script) != 0) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of physics_sync_graph().");
+		return 0;
+	}
+	
+	physics_sync_graph(&(supervisor(NULL)->physics), &(supervisor(NULL)->graph));
+	
+	return 0;
+}
+
 static int scripted_MakeBox(lua_State *script) {
 	int top = lua_gettop(script);
 	
@@ -267,6 +304,9 @@ void registerWorldScriptFunctions(DgScript *script) {
 	lua_register(script->state, "clear_physics_object", &scripted_ClearPhysicsObject);
 	lua_register(script->state, "set_accel", &scripted_SetAccel);
 	lua_register(script->state, "set_physics_flags", &scripted_SetPhysicsFlags);
+	lua_register(script->state, "enable_physics", &scripted_EnablePhysics);
+	lua_register(script->state, "physics_sync_graph", &scripted_PhysicsSyncGraph);
+	lua_register(script->state, "add_force", &scripted_AddForce);
 	
 	// Objects
 	lua_register(script->state, "make_box", &scripted_MakeBox);

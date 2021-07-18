@@ -12,6 +12,7 @@
 #include "util/maths.h"
 #include "util/alloc.h"
 #include "util/time.h"
+#include "util/log.h"
 
 #include "physics.h"
 
@@ -21,6 +22,60 @@ void physics_init(PhysicsSystem *this) {
 	 */
 	
 	memset(this, 0, sizeof *this);
+	
+	this->gravity = (DgVec3) {0.0f, -9.81f, 0.0f};
+}
+
+static void physics_prepare_forces(PhysicsSystem *this, SceneGraph *graph, float delta) {
+	/**
+	 * Prepares forces on all objects for being updated by the physics system.
+	 * Mainly of note, this applies the delta time to the forces.
+	 */
+	
+	if (delta == 0.0f) {
+		return;
+	}
+	
+	for (size_t i = 0; i < this->object_count; i++) {
+		Transform * const trans = graph_get(graph, this->object_name[i]);
+		PhysicsObject * const obj = &this->object[i];
+		
+		// We divide here to get m/s from m/s^2
+		// In other words, we apply the delta time transformation for all forces
+		// here.
+// 		obj->accel = DgVec3Scale(1.0f / delta, obj->accel);
+	}
+}
+
+static void physics_reset_forces(PhysicsSystem *this, SceneGraph *graph, float delta) {
+	/**
+	 * Reset forces on all objects to their default. (0, 0, 0) with no gravity, 
+	 * or whatever gravity is with that enabled.
+	 */
+	
+	if (delta == 0.0f) {
+		return;
+	}
+	
+	for (size_t i = 0; i < this->object_count; i++) {
+		Transform * const trans = graph_get(graph, this->object_name[i]);
+		PhysicsObject * const obj = &this->object[i];
+		
+		// Reset forces to zero
+		obj->accel = (DgVec3) {0.0f, 0.0f, 0.0f};
+		
+		// Gravity
+		if ((obj->flags & PHYSICS_NO_GRAVITY) != PHYSICS_NO_GRAVITY && (obj->flags & PHYSICS_STATIC) != PHYSICS_STATIC) {
+			obj->accel = DgVec3Add(obj->accel, this->gravity);
+		}
+		
+		// Drag
+		// NOTE: This doesn't work (it's not the correct thing to do, just a
+		// dummy algorithm)
+		if ((obj->flags & PHYSICS_DRAG) == PHYSICS_DRAG && (obj->flags & PHYSICS_STATIC) != PHYSICS_STATIC) {
+			obj->accel = DgVec3Subtract(obj->accel, DgVec3Scale(0.02f, obj->accel));
+		}
+	}
 }
 
 static void physics_update_gravity(PhysicsSystem *this, SceneGraph *graph, float delta) {
@@ -28,29 +83,40 @@ static void physics_update_gravity(PhysicsSystem *this, SceneGraph *graph, float
 	 * Update gravity on all objects.
 	 */
 	
+	if (delta == 0.0f) {
+		return;
+	}
+	
 	for (size_t i = 0; i < this->object_count; i++) {
 		Transform * const trans = graph_get(graph, this->object_name[i]);
 		PhysicsObject * const obj = &this->object[i];
 		
+		// Apply forces to the object
 		if ((obj->flags & PHYSICS_STATIC) != PHYSICS_STATIC) {
 			const DgVec3 tempold = obj->lastPos;
 			const DgVec3 tempcur = trans->pos;
-			trans->pos = DgVec3Add(DgVec3Subtract(DgVec3Scale(2.0f, trans->pos), tempold), DgVec3Scale(delta * delta, obj->accel));
+			trans->pos = DgVec3Add(
+				DgVec3Add(tempcur, DgVec3Subtract(tempcur, tempold)),
+				DgVec3Scale(delta, DgVec3Scale(delta, obj->accel))
+			);
 			obj->lastPos = tempcur;
 		}
 	}
 }
 
-void physics_update(PhysicsSystem *this, SceneGraph *graph) {
+void physics_update(PhysicsSystem *this, SceneGraph *graph, float delta) {
 	/**
 	 * Update the physics system and advance the simulation.
 	 */
 	
-	const float time = DgTime();
+	// Check if physics are currently enabled
+	if (!this->enabled) {
+		return;
+	}
 	
-	physics_update_gravity(this, graph, this->delta_time);
-	
-	this->delta_time = DgTime() - time;
+	physics_prepare_forces(this, graph, delta);
+	physics_update_gravity(this, graph, delta);
+	physics_reset_forces(this, graph, delta);
 }
 
 void physics_free(PhysicsSystem *this) {
@@ -73,6 +139,14 @@ void physics_free(PhysicsSystem *this) {
 	if (this->aabb) {
 		DgFree(this->aabb);
 	}
+}
+
+void physics_enabled(PhysicsSystem *this, bool mode) {
+	/**
+	 * Set physics as enabled or disabled.
+	 */
+	
+	this->enabled = mode;
 }
 
 static uint8_t physics_reallocate(PhysicsSystem *this) {
@@ -178,4 +252,36 @@ Name physics_set_flags(PhysicsSystem *this, Name name, uint64_t flags) {
 	this->object[index].flags = flags;
 	
 	return name;
+}
+
+Name physics_add_forces(PhysicsSystem *this, Name name, DgVec3 force) {
+	/**
+	 * Add a force to an object for one physics frame.
+	 */
+	
+	size_t index = physics_find_object(this, name);
+	
+	if (index == -1) {
+		return 0;
+	}
+	
+	this->object[index].accel = DgVec3Add(this->object[index].accel, force);
+	
+	return name;
+}
+
+void physics_sync_graph(PhysicsSystem *this, SceneGraph *graph) {
+	/**
+	 * Sync a physics system's object positions with the graphs object
+	 * positions.
+	 */
+	
+	for (size_t i = 0; i < this->object_count; i++) {
+		const Name name = this->object_name[i];
+		const Transform * const trans = graph_get(graph, name);
+		PhysicsObject * const phys = &this->object[i];
+		
+		phys->lastPos = trans->pos;
+		phys->accel = (DgVec3) {0.0f, 0.0f, 0.0f};
+	}
 }

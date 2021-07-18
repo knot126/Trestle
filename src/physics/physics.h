@@ -16,6 +16,9 @@
 
 enum {
 	PHYSICS_STATIC = (1 << 0),
+	PHYSICS_NO_GRAVITY = (1 << 1),
+	PHYSICS_DRAG = (1 << 2),
+	PHYSICS_MODE_PLAYER = (1 << 3), // uses a different integration scheme
 };
 
 typedef struct PhysicsObject {
@@ -51,14 +54,21 @@ typedef struct PhysicsSystem {
 	size_t       sphere_count;
 	size_t       sphere_alloc;
 	
+	/// Globals ///
+	DgVec3 gravity;
 	float delta_time;
+	bool enabled;
 } PhysicsSystem;
 
 void physics_init(PhysicsSystem *this);
-void physics_update(PhysicsSystem *this, SceneGraph *graph);
+void physics_update(PhysicsSystem *this, SceneGraph *graph, float delta);
 void physics_free(PhysicsSystem *this);
+void physics_enabled(PhysicsSystem *this, bool mode);
 
 Name physics_create_object(PhysicsSystem *this, Name name);
 Name physics_clear_object(PhysicsSystem *this, Name name);
 Name physics_set_accel(PhysicsSystem *this, Name name, DgVec3 accel);
 Name physics_set_flags(PhysicsSystem *this, Name name, uint64_t flags);
+Name physics_add_forces(PhysicsSystem *this, Name name, DgVec3 force);
+
+void physics_sync_graph(PhysicsSystem *this, SceneGraph *graph);

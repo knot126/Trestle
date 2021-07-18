@@ -7,6 +7,7 @@
 
 function init()
 	set_background(mgRandFloat(), mgRandFloat(), mgRandFloat(), 1.0)
+	enable_physics(true)
 	
 	cam = create_entity(ENT_TRANSFORM)
 	push_transform(cam, 0.0, 5.0, 5.65, 0.0375, 0.0, 0.0)
@@ -24,33 +25,43 @@ function init()
 	
 	player = make_box(0.0, 2.0, 0.0)
 	create_physics_object(player)
-	set_physics_flags(player, ~PHYSICS_STATIC)
+	set_physics_flags(player, 0)
+	
+	physics_sync_graph()
 end
+
+at = 0
 
 function tick(dt)
 	local w = get_key(GLFW_KEY_UP)
 	local s = get_key(GLFW_KEY_DOWN)
 	local a = get_key(GLFW_KEY_LEFT)
 	local d = get_key(GLFW_KEY_RIGHT)
+	
+	-- unrelated
 	local x, y, z, rx, ry, rz = get_transform(player)
 	
+	if at > 1.0 then
+		print("player: (" .. x .. ", " .. y .. ", " .. z .. ")")
+		at = 0
+	end
+	at = at + dt
+	
 	if w then
-		z = z - dt * 5.0
+		add_force(player, 0.0, 0.0, -3.0)
 	end
 	
 	if s then
-		z = z + dt * 5.0
+		add_force(player, 0.0, 0.0, 3.0)
 	end
 	
 	if a then
-		x = x - dt * 5.0
+		add_force(player, -3.0, 0.0, 0.0)
 	end
 	
 	if d then
-		x = x + dt * 5.0
+		add_force(player, 3.0, 0.0, 0.0)
 	end
-	
-	push_transform(player, x, y, z, rx, ry, rz)
 end
 
 function free()
