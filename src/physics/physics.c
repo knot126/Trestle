@@ -7,6 +7,7 @@
 
 #include <inttypes.h>
 #include <string.h>
+#include <math.h>
 
 #include "graph/graph.h"
 #include "util/maths.h"
@@ -72,6 +73,51 @@ static bool Test_AABB_AABB(AABBShape *a, AABBShape *b) {
 		&& ((amin.z >= bmax.z) && (bmin.z >= amax.z));
 }
 
+static float flt_abs_phys(float A) { return (A < 0.0f) ? -A : A; }
+
+static void Resolve_AABB_AABB(PhysicsSystem *this, SceneGraph *graph, size_t i, size_t j) {
+	/**
+	 * Respond to a collision between two AABB objects.
+	 * 
+	 * We will a assume that I (A) should be moved out of J (B)'s way.
+	 */
+	
+	DgVec3 amin = DgVec3Add(this->aabb[i].pos, this->aabb[i].pos);
+	DgVec3 amax = DgVec3Subtract(this->aabb[i].pos, this->aabb[i].pos);
+	DgVec3 bmin = DgVec3Add(this->aabb[j].pos, this->aabb[j].pos);
+	DgVec3 bmax = DgVec3Subtract(this->aabb[j].pos, this->aabb[j].pos);
+	
+	// Get the transform
+	Transform * const trans = graph_get(graph, this->aabb_name[i]);
+	
+	if (!trans) {
+		return;
+	}
+	
+	// Find the difference
+	DgVec3 diff = DgVec3Subtract(bmin, amax);
+	diff.x = flt_abs_phys(diff.x);
+	diff.y = flt_abs_phys(diff.y);
+	diff.z = flt_abs_phys(diff.z);
+	
+	// Find out which penertates the least and push based on that.
+	if (diff.x < diff.y && diff.x < diff.z) {
+		printf("X (%f, %f, %f)\n", diff.x, diff.y, diff.z);
+// 		physics_add_forces(this, this->aabb_name[i], (DgVec3) {diff.x * 100.0f, 0.0f, 0.0f});
+		trans->pos.x = trans->pos.x + diff.x;
+	}
+	else if (diff.y < diff.x && diff.y < diff.z) {
+		printf("Y (%f, %f, %f)\n", diff.x, diff.y, diff.z);
+// 		physics_add_forces(this, this->aabb_name[i], (DgVec3) {0.0f, diff.y * 100.0f, 0.0f});
+		trans->pos.y = trans->pos.y + diff.y;
+	}
+	else if (diff.z < diff.x && diff.z < diff.y) {
+		printf("Z (%f, %f, %f)\n", diff.x, diff.y, diff.z);
+// 		physics_add_forces(this, this->aabb_name[i], (DgVec3) {0.0f, 0.0f, diff.z * 100.0f});
+		trans->pos.z = trans->pos.z + diff.z;
+	}
+}
+
 static void resolve_collisions(PhysicsSystem *this, SceneGraph *graph, float delta) {
 	/**
 	 * Check and resolve all collisions 
@@ -88,6 +134,7 @@ static void resolve_collisions(PhysicsSystem *this, SceneGraph *graph, float del
 			if (i != j) {
 				if (Test_AABB_AABB(&this->aabb[i], &this->aabb[j])) {
 					DgLog(DG_LOG_VERBOSE, "(i = %d, j = %d) Colliding!!", i, j);
+					Resolve_AABB_AABB(this, graph, i, j);
 				}
 			}
 		}
