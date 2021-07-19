@@ -28,10 +28,12 @@ typedef struct PhysicsObject {
 } PhysicsObject;
 
 typedef struct AABBShape {
+	DgVec3 pos;
 	DgVec3 size;
 } AABBShape;
 
 typedef struct SphereShape {
+	DgVec3 pos;
 	float radius;
 } SphereShape;
 
@@ -72,3 +74,6 @@ Name physics_set_flags(PhysicsSystem *this, Name name, uint64_t flags);
 Name physics_add_forces(PhysicsSystem *this, Name name, DgVec3 force);
 
 void physics_sync_graph(PhysicsSystem *this, SceneGraph *graph);
+
+Name physics_create_aabb(PhysicsSystem *this, Name name);
+Name physics_set_aabb(PhysicsSystem *this, Name name, DgVec3 size);

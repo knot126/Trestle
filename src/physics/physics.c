@@ -26,28 +26,7 @@ void physics_init(PhysicsSystem *this) {
 	this->gravity = (DgVec3) {0.0f, -9.81f, 0.0f};
 }
 
-static void physics_prepare_forces(PhysicsSystem *this, SceneGraph *graph, float delta) {
-	/**
-	 * Prepares forces on all objects for being updated by the physics system.
-	 * Mainly of note, this applies the delta time to the forces.
-	 */
-	
-	if (delta == 0.0f) {
-		return;
-	}
-	
-	for (size_t i = 0; i < this->object_count; i++) {
-		Transform * const trans = graph_get(graph, this->object_name[i]);
-		PhysicsObject * const obj = &this->object[i];
-		
-		// We divide here to get m/s from m/s^2
-		// In other words, we apply the delta time transformation for all forces
-		// here.
-// 		obj->accel = DgVec3Scale(1.0f / delta, obj->accel);
-	}
-}
-
-static void physics_reset_forces(PhysicsSystem *this, SceneGraph *graph, float delta) {
+static void reset_forces(PhysicsSystem *this, SceneGraph *graph, float delta) {
 	/**
 	 * Reset forces on all objects to their default. (0, 0, 0) with no gravity, 
 	 * or whatever gravity is with that enabled.
@@ -78,7 +57,44 @@ static void physics_reset_forces(PhysicsSystem *this, SceneGraph *graph, float d
 	}
 }
 
-static void physics_update_gravity(PhysicsSystem *this, SceneGraph *graph, float delta) {
+static bool Test_AABB_AABB(AABBShape *a, AABBShape *b) {
+	/**
+	 * Check a collision between two AABB shapes.
+	 */
+	
+	DgVec3 amin = DgVec3Add(a->pos, a->size);
+	DgVec3 amax = DgVec3Subtract(a->pos, a->size);
+	DgVec3 bmin = DgVec3Add(b->pos, b->size);
+	DgVec3 bmax = DgVec3Subtract(b->pos, b->size);
+	
+	return ((amin.x >= bmax.x) && (bmin.x >= amax.x))
+		&& ((amin.y >= bmax.y) && (bmin.y >= amax.y))
+		&& ((amin.z >= bmax.z) && (bmin.z >= amax.z));
+}
+
+static void resolve_collisions(PhysicsSystem *this, SceneGraph *graph, float delta) {
+	/**
+	 * Check and resolve all collisions 
+	 */
+	
+	// Fix AABB positions
+	for (size_t i = 0; i < this->aabb_count; i++) {
+		this->aabb[i].pos = graph_get(graph, this->aabb_name[i])->pos;
+	}
+	
+	// AABB to AABB
+	for (size_t i = 0; i < this->aabb_count; i++) {
+		for (size_t j = 0; j < this->aabb_count; j++) {
+			if (i != j) {
+				if (Test_AABB_AABB(&this->aabb[i], &this->aabb[j])) {
+					DgLog(DG_LOG_VERBOSE, "(i = %d, j = %d) Colliding!!", i, j);
+				}
+			}
+		}
+	}
+}
+
+static void update_gravity(PhysicsSystem *this, SceneGraph *graph, float delta) {
 	/**
 	 * Update gravity on all objects.
 	 */
@@ -114,9 +130,9 @@ void physics_update(PhysicsSystem *this, SceneGraph *graph, float delta) {
 		return;
 	}
 	
-	physics_prepare_forces(this, graph, delta);
-	physics_update_gravity(this, graph, delta);
-	physics_reset_forces(this, graph, delta);
+	update_gravity(this, graph, delta);
+	resolve_collisions(this, graph, delta);
+	reset_forces(this, graph, delta);
 }
 
 void physics_free(PhysicsSystem *this) {
@@ -284,4 +300,81 @@ void physics_sync_graph(PhysicsSystem *this, SceneGraph *graph) {
 		phys->lastPos = trans->pos;
 		phys->accel = (DgVec3) {0.0f, 0.0f, 0.0f};
 	}
+}
+
+/**
+ * =============================================================================
+ * AABB Shapes
+ * =============================================================================
+ */
+
+static uint8_t aabb_reallocate(PhysicsSystem *this) {
+	/**
+	 * Automatically reallocate physics feilds as needed.
+	 */
+	
+	// Physics Objects
+	if (this->aabb_count == this->aabb_alloc) {
+		this->aabb_alloc = 2 + (this->aabb_alloc * 2);
+		
+		this->aabb_name = DgRealloc(this->aabb_name, sizeof *this->aabb_name * this->aabb_alloc);
+		
+		if (!this->aabb_name) {
+			return 1;
+		}
+		
+		this->aabb = DgRealloc(this->aabb, sizeof *this->aabb * this->aabb_alloc);
+		
+		if (!this->aabb_name) {
+			return 2;
+		}
+	}
+	
+	return 0;
+}
+
+static size_t physics_find_aabb(PhysicsSystem *this, Name name) {
+	/**
+	 * Find the index for the given aabb name.
+	 */
+	
+	for (size_t i = 0; i < this->aabb_count; i++) {
+		if (this->aabb_name[i] == name) {
+			return i;
+		}
+	}
+	
+	return -1;
+}
+
+Name physics_create_aabb(PhysicsSystem *this, Name name) {
+	/**
+	 * Create a physics aabb by the given name.
+	 */
+	
+	if (aabb_reallocate(this)) {
+		return 0;
+	}
+	
+	this->aabb_count++;
+	
+	this->aabb_name[this->aabb_count - 1] = name;
+	
+	return name;
+}
+
+Name physics_set_aabb(PhysicsSystem *this, Name name, DgVec3 size) {
+	/**
+	 * Set an AABB's shape.
+	 */
+	
+	size_t index = physics_find_aabb(this, name);
+	
+	if (index == -1) {
+		return 0;
+	}
+	
+	this->aabb[index].size = size;
+	
+	return name;
 }

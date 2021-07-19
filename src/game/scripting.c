@@ -238,6 +238,28 @@ static int scripted_PhysicsSyncGraph(lua_State *script) {
 	return 0;
 }
 
+static int scripted_CreateAABB(lua_State *script) {
+	if (lua_gettop(script) != 1) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of create_aabb().");
+		return 0;
+	}
+	
+	lua_pushinteger(script, physics_create_aabb(&(supervisor(NULL)->physics), lua_tointeger(script, 1)));
+	
+	return 1;
+}
+
+static int scripted_SetAABB(lua_State *script) {
+	if (lua_gettop(script) != 4) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of set_aabb().");
+		return 0;
+	}
+	
+	physics_set_aabb(&(supervisor(NULL)->physics), lua_tointeger(script, 1), (DgVec3) {lua_tonumber(script, 2), lua_tonumber(script, 3), lua_tonumber(script, 4)});
+	
+	return 0;
+}
+
 static int scripted_MakeBox(lua_State *script) {
 	int top = lua_gettop(script);
 	
@@ -307,6 +329,8 @@ void registerWorldScriptFunctions(DgScript *script) {
 	lua_register(script->state, "enable_physics", &scripted_EnablePhysics);
 	lua_register(script->state, "physics_sync_graph", &scripted_PhysicsSyncGraph);
 	lua_register(script->state, "add_force", &scripted_AddForce);
+	lua_register(script->state, "create_aabb", &scripted_CreateAABB);
+	lua_register(script->state, "set_aabb", &scripted_SetAABB);
 	
 	// Objects
 	lua_register(script->state, "make_box", &scripted_MakeBox);

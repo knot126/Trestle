@@ -14,6 +14,8 @@ function init()
 	set_camera(cam)
 	
 	k = make_box(0.0, 0.0, -12.0, 8.0, 0.5, 12.0)
+	create_aabb(k)
+	set_aabb(k, 8.0, 0.5, 12.0)
 	
 	bm = create_entity(ENT_TRANSFORM | ENT_GRAPHICS_MESH)
 	push_transform(bm, -3.0, 0.0, -4.0, 0.0, 0.0, 0.0, 0.25, 0.25, 0.25)
@@ -26,6 +28,8 @@ function init()
 	player = make_box(0.0, 2.0, 0.0)
 	create_physics_object(player)
 	set_physics_flags(player, 0)
+	create_aabb(player)
+	set_aabb(player, 1.0, 1.0, 1.0)
 	
 	physics_sync_graph()
 end
