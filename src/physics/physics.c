@@ -80,6 +80,8 @@ static void Resolve_AABB_AABB(PhysicsSystem *this, SceneGraph *graph, size_t i, 
 	 * Respond to a collision between two AABB objects.
 	 * 
 	 * We will a assume that I (A) should be moved out of J (B)'s way.
+	 * 
+	 * WARNING: This will be replaced once I figure out how to do this properly.
 	 */
 	
 	DgVec3 amin = DgVec3Add(this->aabb[i].pos, this->aabb[i].pos);
@@ -97,7 +99,7 @@ static void Resolve_AABB_AABB(PhysicsSystem *this, SceneGraph *graph, size_t i, 
 	// Find the difference
 	DgVec3 diff = DgVec3Subtract(amin, bmax);
 	
-	printf("DIFF = (%f, %f, %f)\n", diff.x, diff.y, diff.z);
+// 	printf("DIFF = (%f, %f, %f)\n", diff.x, diff.y, diff.z);
 	
 	// Find out which penertates the least and push based on that.
 	if (diff.x > 0.0f && diff.x > diff.y && diff.x > diff.z) {

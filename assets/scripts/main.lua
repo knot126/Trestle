@@ -14,11 +14,11 @@ function init()
 	set_camera(cam)
 	
 	bm = create_entity(ENT_TRANSFORM | ENT_GRAPHICS_MESH)
-	push_transform(bm, -3.0, 0.0, -4.0, 0.0, 0.0, 0.0, 0.25, 0.25, 0.25)
+	push_transform(bm, -3.0, 0.0, -4.0, 0.0, 0.0, -0.05, 0.25, 0.25, 0.25)
 	push_obj_mesh(bm, "assets://mesh/gum_tree1.obj")
 	
 	bm2 = create_entity(ENT_TRANSFORM | ENT_GRAPHICS_MESH)
-	push_transform(bm2, 3.0, 0.0, -4.0, 0.0, 0.0, 0.0, 0.25, 0.25, 0.25)
+	push_transform(bm2, 3.0, 0.0, -4.0, 0.0, 0.0, 0.01, 0.25, 0.25, 0.25)
 	push_obj_mesh(bm2, "assets://mesh/gum_tree1.obj")
 	
 	player = make_box(0.0, 2.0, -2.0)
@@ -46,7 +46,7 @@ function tick(dt)
 	local x, y, z, rx, ry, rz = get_transform(player)
 	
 	if at > 1.0 then
-		print("player: (" .. x .. ", " .. y .. ", " .. z .. ")")
+		print("Player position: (" .. x .. ", " .. y .. ", " .. z .. ")")
 		at = 0
 	end
 	at = at + dt
@@ -66,6 +66,14 @@ function tick(dt)
 	if d then
 		add_force(player, 3.0, 0.0, 0.0)
 	end
+	
+	local cx, cy, cz, crx, cry, crz = get_transform(cam)
+	
+	cx = x * 0.99
+	cy = y + 4.0
+	cz = z + 8.0
+	
+	push_transform(cam, cx, cy, cz, crx, cry, crz)
 end
 
 function free()
