@@ -95,28 +95,32 @@ static void Resolve_AABB_AABB(PhysicsSystem *this, SceneGraph *graph, size_t i, 
 	}
 	
 	// Find the difference
-	DgVec3 diff = DgVec3Subtract(bmin, amax);
-	diff.x = flt_abs_phys(diff.x);
-	diff.y = flt_abs_phys(diff.y);
-	diff.z = flt_abs_phys(diff.z);
+	DgVec3 diff = DgVec3Subtract(amin, bmax);
+	
+	printf("DIFF = (%f, %f, %f)\n", diff.x, diff.y, diff.z);
 	
 	// Find out which penertates the least and push based on that.
-	if (diff.x < diff.y && diff.x < diff.z) {
-		printf("X (%f, %f, %f)\n", diff.x, diff.y, diff.z);
-// 		physics_add_forces(this, this->aabb_name[i], (DgVec3) {diff.x * 100.0f, 0.0f, 0.0f});
-		trans->pos.x = trans->pos.x + diff.x;
+	if (diff.x > 0.0f && diff.x > diff.y && diff.x > diff.z) {
+		trans->pos.x += diff.x * g_physicsDelta;
 	}
-	else if (diff.y < diff.x && diff.y < diff.z) {
-		printf("Y (%f, %f, %f)\n", diff.x, diff.y, diff.z);
-// 		physics_add_forces(this, this->aabb_name[i], (DgVec3) {0.0f, diff.y * 100.0f, 0.0f});
-		trans->pos.y = trans->pos.y + diff.y;
+	else if (diff.x < 0.0f && diff.x < diff.y && diff.x < diff.z) {
+		trans->pos.x -= diff.x * g_physicsDelta;
 	}
-	else if (diff.z < diff.x && diff.z < diff.y) {
-		printf("Z (%f, %f, %f)\n", diff.x, diff.y, diff.z);
-// 		physics_add_forces(this, this->aabb_name[i], (DgVec3) {0.0f, 0.0f, diff.z * 100.0f});
-		trans->pos.z = trans->pos.z + diff.z;
+	else if (diff.y > 0.0f && diff.y > diff.x && diff.y > diff.z) {
+		trans->pos.y += diff.y * g_physicsDelta;
+	}
+	else if (diff.y < 0.0f && diff.y < diff.x && diff.y < diff.z) {
+		trans->pos.y -= diff.y * g_physicsDelta;
+	}
+	else if (diff.z > 0.0f && diff.z > diff.x && diff.z > diff.y) {
+		trans->pos.z -= diff.z * g_physicsDelta;
+	}
+	else if (diff.z < 0.0f && diff.z < diff.x && diff.z < diff.y) {
+		trans->pos.z += diff.z * g_physicsDelta;
 	}
 }
+
+static size_t physics_find_object(PhysicsSystem *this, Name name);
 
 static void resolve_collisions(PhysicsSystem *this, SceneGraph *graph, float delta) {
 	/**
@@ -133,8 +137,10 @@ static void resolve_collisions(PhysicsSystem *this, SceneGraph *graph, float del
 		for (size_t j = 0; j < this->aabb_count; j++) {
 			if (i != j) {
 				if (Test_AABB_AABB(&this->aabb[i], &this->aabb[j])) {
-					DgLog(DG_LOG_VERBOSE, "(i = %d, j = %d) Colliding!!", i, j);
-					Resolve_AABB_AABB(this, graph, i, j);
+					if ((this->object[physics_find_object(this, this->aabb_name[i])].flags & PHYSICS_STATIC) != PHYSICS_STATIC) {
+						DgLog(DG_LOG_VERBOSE, "(i = %d, j = %d) Colliding!!", i, j);
+						Resolve_AABB_AABB(this, graph, i, j);
+					}
 				}
 			}
 		}
