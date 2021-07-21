@@ -97,29 +97,10 @@ static void Resolve_AABB_AABB(PhysicsSystem *this, SceneGraph *graph, size_t i, 
 	}
 	
 	// Find the difference
-	DgVec3 diff = DgVec3Subtract(amin, bmax);
-	
-// 	printf("DIFF = (%f, %f, %f)\n", diff.x, diff.y, diff.z);
+	DgVec3 diff = DgVec3Subtract(bmin, amax);
 	
 	// Find out which penertates the least and push based on that.
-	if (diff.x > 0.0f && diff.x > diff.y && diff.x > diff.z) {
-		trans->pos.x += diff.x * g_physicsDelta;
-	}
-	else if (diff.x < 0.0f && diff.x < diff.y && diff.x < diff.z) {
-		trans->pos.x -= diff.x * g_physicsDelta;
-	}
-	else if (diff.y > 0.0f && diff.y > diff.x && diff.y > diff.z) {
-		trans->pos.y += diff.y * g_physicsDelta;
-	}
-	else if (diff.y < 0.0f && diff.y < diff.x && diff.y < diff.z) {
-		trans->pos.y -= diff.y * g_physicsDelta;
-	}
-	else if (diff.z > 0.0f && diff.z > diff.x && diff.z > diff.y) {
-		trans->pos.z -= diff.z * g_physicsDelta;
-	}
-	else if (diff.z < 0.0f && diff.z < diff.x && diff.z < diff.y) {
-		trans->pos.z += diff.z * g_physicsDelta;
-	}
+	
 }
 
 static size_t physics_find_object(PhysicsSystem *this, Name name);
@@ -164,6 +145,11 @@ static void update_gravity(PhysicsSystem *this, SceneGraph *graph, float delta) 
 		
 		// Apply forces to the object
 		if ((obj->flags & PHYSICS_STATIC) != PHYSICS_STATIC) {
+			if ((obj->flags & PHYSICS_MODE_PLAYER) == PHYSICS_MODE_PLAYER) {
+				trans->pos = DgVec3Add(trans->pos, DgVec3Scale(delta, obj->accel));
+				obj->accel = (DgVec3) {0.0f, 0.0f, 0.0f};
+				continue;
+			}
 			const DgVec3 tempold = obj->lastPos;
 			const DgVec3 tempcur = trans->pos;
 			trans->pos = DgVec3Add(

@@ -90,6 +90,7 @@ set(MELON_FILES
 	"src/util/hash.c"
 	"src/util/http.c"
 	"src/util/ini.c"
+	"src/util/json.c"
 	"src/util/load.c"
 	"src/util/log.c"
 	"src/util/maths.c"

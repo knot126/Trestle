@@ -23,7 +23,7 @@ function init()
 	
 	player = make_box(0.0, 2.0, -2.0)
 	create_physics_object(player)
-	set_physics_flags(player, 0)
+	set_physics_flags(player, PHYSICS_MODE_PLAYER)
 	create_aabb(player)
 	set_aabb(player, 1.0, 1.0, 1.0)
 	
