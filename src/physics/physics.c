@@ -169,11 +169,14 @@ static void update_gravity(PhysicsSystem *this, SceneGraph *graph, float delta) 
 		
 		// Apply forces to the object
 		if ((obj->flags & PHYSICS_STATIC) != PHYSICS_STATIC) {
+			// Apply direct forces in player mode
 			if ((obj->flags & PHYSICS_MODE_PLAYER) == PHYSICS_MODE_PLAYER) {
-				trans->pos = DgVec3Add(trans->pos, DgVec3Scale(delta, obj->accel));
-				obj->accel = (DgVec3) {0.0f, 0.0f, 0.0f};
-				continue;
+				trans->pos = DgVec3Add(trans->pos, DgVec3Scale(delta, obj->directForce));
+				obj->lastPos = DgVec3Add(obj->lastPos, DgVec3Scale(delta, obj->directForce));
+				obj->directForce = (DgVec3) {0.0f, 0.0f, 0.0f};
 			}
+			
+			// Integrate forces a normal
 			const DgVec3 tempold = obj->lastPos;
 			const DgVec3 tempcur = trans->pos;
 			trans->pos = DgVec3Add(
@@ -347,6 +350,22 @@ Name physics_add_forces(PhysicsSystem *this, Name name, DgVec3 force) {
 	}
 	
 	this->object[index].accel = DgVec3Add(this->object[index].accel, force);
+	
+	return name;
+}
+
+Name physics_move_object(PhysicsSystem *this, Name name, DgVec3 force) {
+	/**
+	 * Moves an object directly (only in player mode)
+	 */
+	
+	size_t index = physics_find_object(this, name);
+	
+	if (index == -1) {
+		return 0;
+	}
+	
+	this->object[index].directForce = DgVec3Add(this->object[index].directForce, force);
 	
 	return name;
 }

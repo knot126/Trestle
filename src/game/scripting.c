@@ -214,6 +214,19 @@ static int scripted_AddForce(lua_State *script) {
 	return 0;
 }
 
+static int scripted_DirectMove(lua_State *script) {
+	if (lua_gettop(script) != 4) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of direct_move().");
+		return 0;
+	}
+	
+	int name = lua_tointeger(script, 1);
+	
+	physics_move_object(&(supervisor(NULL)->physics), name, (DgVec3) {lua_tonumber(script, 2), lua_tonumber(script, 3), lua_tonumber(script, 4)});
+	
+	return 0;
+}
+
 static int scripted_EnablePhysics(lua_State *script) {
 	if (lua_gettop(script) != 1) {
 		DgLog(DG_LOG_ERROR, "Invalid usage of enable_physics().");
@@ -329,6 +342,7 @@ void registerWorldScriptFunctions(DgScript *script) {
 	lua_register(script->state, "enable_physics", &scripted_EnablePhysics);
 	lua_register(script->state, "physics_sync_graph", &scripted_PhysicsSyncGraph);
 	lua_register(script->state, "add_force", &scripted_AddForce);
+	lua_register(script->state, "direct_move", &scripted_DirectMove);
 	lua_register(script->state, "create_aabb", &scripted_CreateAABB);
 	lua_register(script->state, "set_aabb", &scripted_SetAABB);
 	

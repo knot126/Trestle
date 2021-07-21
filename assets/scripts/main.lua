@@ -27,20 +27,22 @@ function init()
 	create_aabb(player)
 	set_aabb(player, 1.0, 1.0, 1.0)
 	
-	k = make_box(0.0, 0.0, -12.0, 8.0, 0.5, 12.0)
+	k = make_box(0.0, 0.0, -36.0, 8.0, 0.5, 36.0)
 	create_aabb(k)
-	set_aabb(k, 8.0, 0.5, 12.0)
+	set_aabb(k, 8.0, 0.5, 36.0)
 	
 	physics_sync_graph()
 end
 
 at = 0
+speed = 2.0
 
 function tick(dt)
 	local w = get_key(GLFW_KEY_UP)
 	local s = get_key(GLFW_KEY_DOWN)
 	local a = get_key(GLFW_KEY_LEFT)
 	local d = get_key(GLFW_KEY_RIGHT)
+	local j = get_key(GLFW_KEY_SPACE)
 	
 	-- unrelated
 	local x, y, z, rx, ry, rz = get_transform(player)
@@ -51,25 +53,31 @@ function tick(dt)
 	end
 	at = at + dt
 	
+	direct_move(player, 0.0, 0.0, -1000.0 * speed * dt)
+	
 	if w then
-		add_force(player, 0.0, 0.0, -3.0)
+		speed = speed + 1.0 * dt
 	end
 	
 	if s then
-		add_force(player, 0.0, 0.0, 3.0)
+		speed = speed + 1.0 * dt
 	end
 	
 	if a then
-		add_force(player, -3.0, 0.0, 0.0)
+		direct_move(player, -3.0, 0.0, 0.0)
 	end
 	
 	if d then
-		add_force(player, 3.0, 0.0, 0.0)
+		direct_move(player, 3.0, 0.0, 0.0)
+	end
+	
+	if j then
+		add_force(player, 0.0, 17.0, 0.0)
 	end
 	
 	local cx, cy, cz, crx, cry, crz = get_transform(cam)
 	
-	cx = x * 0.99
+	cx = x * 0.5
 	cy = y + 4.0
 	cz = z + 8.0
 	
