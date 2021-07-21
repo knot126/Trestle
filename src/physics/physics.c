@@ -84,10 +84,10 @@ static void Resolve_AABB_AABB(PhysicsSystem *this, SceneGraph *graph, size_t i, 
 	 * WARNING: This will be replaced once I figure out how to do this properly.
 	 */
 	
-	DgVec3 amin = DgVec3Add(this->aabb[i].pos, this->aabb[i].pos);
-	DgVec3 amax = DgVec3Subtract(this->aabb[i].pos, this->aabb[i].pos);
-	DgVec3 bmin = DgVec3Add(this->aabb[j].pos, this->aabb[j].pos);
-	DgVec3 bmax = DgVec3Subtract(this->aabb[j].pos, this->aabb[j].pos);
+	DgVec3 amin = DgVec3Add(this->aabb[i].pos, this->aabb[i].size);
+	DgVec3 amax = DgVec3Subtract(this->aabb[i].pos, this->aabb[i].size);
+	DgVec3 bmin = DgVec3Add(this->aabb[j].pos, this->aabb[j].size);
+	DgVec3 bmax = DgVec3Subtract(this->aabb[j].pos, this->aabb[j].size);
 	
 	// Get the transform
 	Transform * const trans = graph_get(graph, this->aabb_name[i]);
@@ -97,10 +97,34 @@ static void Resolve_AABB_AABB(PhysicsSystem *this, SceneGraph *graph, size_t i, 
 	}
 	
 	// Find the difference
-	DgVec3 diff = DgVec3Subtract(bmin, amax);
+	DgVec3 diff = DgVec3Subtract(amax, bmin);
+	
+	printf("(%f, %f, %f)\n", diff.x, diff.y, diff.z);
 	
 	// Find out which penertates the least and push based on that.
+	if (diff.x > 0.0f && diff.y > diff.x && diff.z > diff.x) {
+		trans->pos.x += diff.x;
+	}
 	
+	if (diff.x < 0.0f && diff.y < diff.x && diff.z < diff.x) {
+		trans->pos.x -= diff.x;
+	}
+	
+	if (diff.y > 0.0f && diff.x > diff.y && diff.z > diff.y) {
+		trans->pos.y += diff.y;
+	}
+	
+	if (diff.y < 0.0f && diff.x < diff.y && diff.z < diff.y) {
+		trans->pos.y -= diff.y;
+	}
+	
+	if (diff.z > 0.0f && diff.x > diff.z && diff.y > diff.z) {
+		trans->pos.z += diff.z;
+	}
+	
+	if (diff.z < 0.0f && diff.x < diff.z && diff.y < diff.z) {
+		trans->pos.z -= diff.z;
+	}
 }
 
 static size_t physics_find_object(PhysicsSystem *this, Name name);
