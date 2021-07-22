@@ -443,3 +443,18 @@ void DgUISurfaceRenderData(DgUISurface *surface, DgUIRenderData *data) {
 		if (DgUISurfaceRenderPanel(data, &surface->panel[i])) return;
 	}
 }
+
+void DgUISurfaceRenderDataFree(DgUIRenderData *data) {
+	/**
+	 * Free all of the render data for a given panel.
+	 */
+	
+	for (size_t i = 0; i < data->length; i++) {
+		DgUIRenderVertexSet *set = &data->data[i];
+		
+		DgFree(set->vertex);
+		DgFree(set->index);
+	}
+	
+	DgFree(data->data);
+}

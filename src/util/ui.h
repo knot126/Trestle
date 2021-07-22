@@ -7,11 +7,100 @@
 
 #pragma once
 
+/*
+================================================================================
+
+# Using the Melon GUI system
+
+## Surfaces
+
+The Decent Games GUI library has the concept of surfaces on which your UI 
+elements exist. The surface contains all of the state, since the UI library does
+not introduce any global state into the application. You can create and destroy 
+a surface using:
+
+```c
+DgUISurface *DgUISurfaceNew(void);
+void DgUISurfaceFree(DgUISurface *surface);
+```
+
+## Elements
+
+This library also has the concept of elements: elements are basically "objects"
+that represent one UI thing on the screen. For example, a button or a line edit.
+They can be created using one of these functions:
+
+```c
+DgUIPanel DgUIPanelNew(
+	DgUISurface *surface, 
+	DgUIElementBase *base, 
+	DgUIPanelMetrics *panel);
+
+DgUILabel DgUILabelNew(
+	DgUISurface *surface, 
+	DgUIElementBase *base,
+	DgUIFontMetrics *font, 
+	DgUIString *text);
+
+DgUILineEdit DgUILineEditNew(
+	DgUISurface *surface, 
+	DgUIElementBase *base, 
+	DgUIFontMetrics *font, 
+	DgUIPanelMetrics *panel, 
+	DgUIString *placeholder, 
+	DgUIString *text, 
+	DgUIPanelMetrics *s_style);
+
+DgUIButton DgUIButtonNew(
+	DgUISurface *surface, 
+	DgUIElementBase *base, 
+	DgUIFontMetrics *font, 
+	DgUIPanelMetrics *panel, 
+	DgUIString *text,
+	DgUIActionSpec *action);
+```
+
+These functions will return a new object by value, which can then be passed on 
+to one of the functions that will add or remove them from the surface:
+
+```c
+size_t DgUISurfaceAddPanel(DgUISurface *surface, DgUIPanel obj);
+size_t DgUISurfaceAddLabel(DgUISurface *surface, DgUILabel obj);
+size_t DgUISurfaceAddLineEdit(DgUISurface *surface, DgUILineEdit obj);
+size_t DgUISurfaceAddButton(DgUISurface *surface, DgUIButton obj);
+
+size_t DgUISurfaceRemovePanel(DgUISurface *surface, size_t ident);
+size_t DgUISurfaceRemoveLabel(DgUISurface *surface, size_t ident);
+size_t DgUISurfaceRemoveLineEdit(DgUISurface *surface, size_t ident);
+size_t DgUISurfaceRemoveButton(DgUISurface *surface, size_t ident);
+```
+
+## The Update Loop
+
+The update loop is designed to be as simple as possible while involing very 
+little global state and caching. Once for every update frame, make sure to call 
+`DgUISurfaceUpdate(DgUISurface *surface, DgUISurfaceUpdateStructure *info)` so
+that the selection and active elements, as well as keyboard keypresses, are
+updated. Do note that this won't render the UI elements; for that, you will need
+to get the UI vertex data using these functions:
+
+```c 
+void DgUISurfaceRenderData(DgUISurface *surface, DgUIRenderData *data);
+void DgUISurfaceRenderDataFree(DgUIRenderData *data);
+```
+
+This will produce some vertex data that you can render yourself. It is stored in
+sets of vertexes, which should be drawn in the order they are in the list.
+
+================================================================================
+*/
+
 #include <inttypes.h>
 #include <stdbool.h>
 
 #include "maths.h"
 
+// UI element types
 enum {
 	DG_UI_INVALID = 0,
 	
@@ -21,10 +110,11 @@ enum {
 	DG_UI_BUTTON = 4,
 };
 
+// UI alignment types
 enum {
 	DG_UI_LEFT = 1,
-	DG_UI_CENTRE = 2,
-	DG_UI_RIGHT = 3,
+	DG_UI_RIGHT = 2,
+	DG_UI_CENTRE = 3,
 };
 
 /**
@@ -141,6 +231,22 @@ typedef struct DgUISurface {
 
 /**
  * =============================================================================
+ * Functions for adding and removing elements from a surface
+ * =============================================================================
+ */
+
+size_t DgUISurfaceAddPanel(DgUISurface *surface, DgUIPanel obj);
+size_t DgUISurfaceAddLabel(DgUISurface *surface, DgUILabel obj);
+size_t DgUISurfaceAddLineEdit(DgUISurface *surface, DgUILineEdit obj);
+size_t DgUISurfaceAddButton(DgUISurface *surface, DgUIButton obj);
+
+size_t DgUISurfaceRemovePanel(DgUISurface *surface, size_t ident);
+size_t DgUISurfaceRemoveLabel(DgUISurface *surface, size_t ident);
+size_t DgUISurfaceRemoveLineEdit(DgUISurface *surface, size_t ident);
+size_t DgUISurfaceRemoveButton(DgUISurface *surface, size_t ident);
+
+/**
+ * =============================================================================
  * Update Structures - information from the client about how to update the
  * UI state
  * =============================================================================
@@ -189,19 +295,26 @@ typedef struct DgUIRenderData {
  * =============================================================================
  */
 
+// Surface
 DgUISurface *DgUISurfaceNew(void);
 void DgUISurfaceFree(DgUISurface *surface);
 
+// Bases - set default
 void DgUISurfaceSetDefaultBase(DgUISurface *surface, DgUIElementBase *base);
 void DgUISurfaceSetDefaultFontMetrics(DgUISurface *surface, DgUIFontMetrics *metrics);
 void DgUISurfaceSetDefaultPanelMetrics(DgUISurface *surface, DgUIPanelMetrics *metrics);
 void DgUISurfaceSetDefaultSelectionMetrics(DgUISurface *surface, DgUIPanelMetrics *metrics);
 
+// Bases - construct
 DgUIElementBase DgUIElementBaseNew(DgVec2 pos, DgVec2 size, bool visible, bool enable);
 DgUIFontMetrics DgUIFontMetricsNew(DgVec4 colour, float size, int32_t font, uint32_t align);
 DgUIPanelMetrics DgUIPanelMetricsNew(DgVec4 colour, DgVec4 padding, float radius);
 DgUIActionSpec DgUIActionSpecNew(void *context, void (*callback)(void *context));
 
+// Elements - construct
+// 
+// These functions will help creating a new type of element that can be passed
+// to DgUISurfaceAdd<type>.
 DgUIPanel DgUIPanelNew(
 	DgUISurface *surface, 
 	DgUIElementBase *base, 
@@ -229,3 +342,8 @@ DgUIButton DgUIButtonNew(
 	DgUIPanelMetrics *panel, 
 	DgUIString *text,
 	DgUIActionSpec *action);
+
+// Drawing and Update API
+void DgUISurfaceUpdate(DgUISurface *surface, DgUISurfaceUpdateStructure *info);
+void DgUISurfaceRenderData(DgUISurface *surface, DgUIRenderData *data);
+void DgUISurfaceRenderDataFree(DgUIRenderData *data);
