@@ -24,6 +24,7 @@
 #include "util/alloc.h"
 #include "util/time.h"
 #include "util/ini.h"
+#include "util/json.h"
 #include "util/log.h"
 #include "util/args.h"
 #include "physics/physics.h"
@@ -147,6 +148,13 @@ int game_main(int argc, char* argv[]) {
 	// File system module init
 	DgLog(DG_LOG_INFO, "Initialising file system paths...");
 	DgInitPaths();
+	
+	DgLog(DG_LOG_INFO, "JSON test...");
+	DgJSONValue val;
+	const char a[] = "{\"test\": 6.30, \"abc\": \"def\", \"np\": null}";
+	if (DgJSONParse(&val, sizeof a - 1, a)) {
+		DgLog(DG_LOG_ERROR, "failed to load JSON document");
+	}
 	
 	// Print help
 	if (DgArgGetFlag("help")) {

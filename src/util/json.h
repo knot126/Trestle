@@ -69,3 +69,5 @@ typedef struct DgJSONValue {
 	DgJSONValueType type;
 	DgJSONValueData value;
 } DgJSONValue;
+
+int32_t DgJSONParse(DgJSONValue * restrict doc, const size_t length, const char * const restrict source);
