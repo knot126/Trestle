@@ -22,14 +22,9 @@ function init()
 	push_obj_mesh(bm2, "assets://mesh/gum_tree1.obj")
 	
 	player = make_box(0.0, 2.0, -2.0)
-	create_physics_object(player)
 	set_physics_flags(player, PHYSICS_MODE_PLAYER)
-	create_aabb(player)
-	set_aabb(player, 1.0, 1.0, 1.0)
 	
 	k = make_box(0.0, 0.0, -36.0, 8.0, 0.5, 36.0)
-	create_aabb(k)
-	set_aabb(k, 8.0, 0.5, 36.0)
 	
 	physics_sync_graph()
 end
@@ -49,6 +44,7 @@ function tick(dt)
 	
 	if at > 1.0 then
 		print("Player position: (" .. x .. ", " .. y .. ", " .. z .. ")")
+		print("Speed: " .. speed)
 		at = 0
 	end
 	at = at + dt
@@ -60,7 +56,7 @@ function tick(dt)
 	end
 	
 	if s then
-		speed = speed + 1.0 * dt
+		speed = speed - 1.0 * dt
 	end
 	
 	if a then

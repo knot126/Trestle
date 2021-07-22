@@ -18,7 +18,7 @@
 #include "box.h"
 
 Name make_box(Supervisor * const restrict sup, const DgVec3 pos, const DgVec3 size, const DgVec3 colour, const char * const texture) {
-	Name name = sup_entity(sup, ENT_TRANSFORM | ENT_GRAPHICS_MESH);
+	Name name = sup_entity(sup, ENT_TRANSFORM | ENT_GRAPHICS_MESH | ENT_PHYSICS_OBJECT | ENT_PHYSICS_AABB);
 	
 	if (!name) {
 		DgLog(DG_LOG_ERROR, "Failed to make new entity!");
@@ -32,6 +32,9 @@ Name make_box(Supervisor * const restrict sup, const DgVec3 pos, const DgVec3 si
 	trans->pos = pos;
 	trans->rot = (DgVec3) {0.0f, 0.0f, 0.0f};
 	trans->scale = size;
+	
+	// Set AABB 
+	physics_set_aabb(&sup->physics, name, size);
 	
 	// Generate box mesh
 	const float s_BoxData[] = {

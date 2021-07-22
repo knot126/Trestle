@@ -99,7 +99,7 @@ static void Resolve_AABB_AABB(PhysicsSystem *this, SceneGraph *graph, size_t i, 
 	// Find the difference
 	DgVec3 diff = DgVec3Subtract(amax, bmin);
 	
-	printf("(%f, %f, %f)\n", diff.x, diff.y, diff.z);
+// 	printf("(%f, %f, %f)\n", diff.x, diff.y, diff.z);
 	
 	// Find out which penertates the least and push based on that.
 	if (diff.x > 0.0f && diff.y > diff.x && diff.z > diff.x) {
@@ -145,7 +145,7 @@ static void resolve_collisions(PhysicsSystem *this, SceneGraph *graph, float del
 			if (i != j) {
 				if (Test_AABB_AABB(&this->aabb[i], &this->aabb[j])) {
 					if ((this->object[physics_find_object(this, this->aabb_name[i])].flags & PHYSICS_STATIC) != PHYSICS_STATIC) {
-						DgLog(DG_LOG_VERBOSE, "(i = %d, j = %d) Colliding!!", i, j);
+// 						DgLog(DG_LOG_VERBOSE, "(i = %d, j = %d) Colliding!!", i, j);
 						Resolve_AABB_AABB(this, graph, i, j);
 					}
 				}
