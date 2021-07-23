@@ -42,8 +42,8 @@ typedef struct DgJSONObject {
 	 * Ex: {"key": "value", "a": 643, "def": false}
 	 */
 	
-	const char *key;
-	uint32_t hash;
+	const char **key;
+	uint32_t *hash;
 	struct DgJSONValue *value;
 	size_t count;
 	size_t alloc;
@@ -72,3 +72,13 @@ typedef struct DgJSONValue {
 } DgJSONValue;
 
 int32_t DgJSONParse(DgJSONValue * restrict doc, const size_t length, const char * const restrict source);
+
+void DgJSONValueFree(DgJSONValue * restrict value);
+void DgJSONValuePrint(DgJSONValue * restrict value);
+
+DgJSONArray *DgJSONArrayInit(void);
+int32_t DgJSONArrayPush(DgJSONArray *array, DgJSONValue value);
+
+DgJSONObject *DgJSONObjectInit(void);
+int32_t DgJSONObjectPush(DgJSONObject *obj, const char *key, DgJSONValue value);
+void DgJSONObjectFree(DgJSONObject *obj);

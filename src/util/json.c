@@ -49,6 +49,12 @@ static bool is_alphanumeric(char c) {
 // Value Helper Functions
 // =============================================================================
 
+void DgJSONValueFree(DgJSONValue * restrict value) {
+	if (value->type == DG_JSON_STRING) {
+		DgFree((void *) value->value.as_string);
+	}
+}
+
 void DgJSONValuePrint_(DgJSONValue * restrict value, const size_t sub) {
 	/**
 	 * Print and JSON value and it's subvalues to the screen.
@@ -90,6 +96,22 @@ void DgJSONValuePrint_(DgJSONValue * restrict value, const size_t sub) {
 		
 		for (size_t i = 0; i < array->count; i++) {
 			DgJSONValuePrint_(&array->data[i], sub + 1);
+		}
+	}
+	
+	else if (value->type == DG_JSON_OBJECT) {
+		DgJSONObject *object = value->value.as_object;
+		
+		printf("(object) length = %lld, alloc = %lld\n", object->count, object->alloc);
+		
+		for (size_t i = 0; i < object->count; i++) {
+			for (size_t i = 0; i < sub + 1; i++) {
+				printf("\t");
+			}
+			
+			printf("\"%s\" = ", object->key[i]);
+			
+			DgJSONValuePrint_(&object->value[i], 0);
 		}
 	}
 	
@@ -139,6 +161,91 @@ int32_t DgJSONArrayPush(DgJSONArray *array, DgJSONValue value) {
 	array->count++;
 	
 	return 0;
+}
+
+// Object Helper Functions
+// =============================================================================
+
+DgJSONObject *DgJSONObjectInit(void) {
+	/**
+	 * Initialise a JSON array.
+	 */
+	
+	DgJSONObject *obj = DgAlloc(sizeof *obj);
+	
+	if (!obj) {
+		return NULL;
+	}
+	
+	obj->key = NULL;
+	obj->hash = NULL;
+	obj->value = NULL;
+	obj->count = 0;
+	obj->alloc = 0;
+	
+	return obj;
+}
+
+static int32_t DgJSONObjectRealloc(DgJSONObject *obj) {
+	/**
+	 * Reallocate a JSON object to support at least one more element being added.
+	 */
+	
+	if (obj->count >= obj->alloc) {
+		obj->alloc = (obj->alloc) ? (obj->alloc * 2) : 8;
+		
+		obj->key = DgRealloc(obj->key, sizeof *obj->key * obj->alloc);
+		if (!obj->key) {
+			return 1;
+		}
+		
+		obj->hash = DgRealloc(obj->hash, sizeof *obj->hash * obj->alloc);
+		if (!obj->hash) {
+			return 2;
+		}
+		
+		obj->value = DgRealloc(obj->value, sizeof *obj->value * obj->alloc);
+		if (!obj->value) {
+			return 3;
+		}
+	}
+	
+	return 0;
+}
+
+int32_t DgJSONObjectPush(DgJSONObject *obj, const char *key, DgJSONValue value) {
+	/**
+	 * Push an object onto the object.
+	 */
+	
+	if (DgJSONObjectRealloc(obj)) {
+		return 1;
+	}
+	
+	obj->key[obj->count] = DgStrdup(key);
+	obj->hash[obj->count] = DgHashStringU32(key);
+	obj->value[obj->count] = value;
+	
+	obj->count++;
+	
+	return 0;
+}
+
+void DgJSONObjectFree(DgJSONObject *obj) {
+	/**
+	 * Free a JSON object.
+	 */
+	
+	for (size_t i = 0; i < obj->count; i++) {
+		DgJSONValueFree(&obj->value[i]);
+		DgFree(&obj->key[i]);
+	}
+	
+	DgFree(obj->key);
+	DgFree(obj->hash);
+	DgFree(obj->value);
+	
+	DgFree(obj);
 }
 
 // Token Helper Functions
@@ -426,6 +533,66 @@ static int32_t DgJSONRule(DgJSONParser * restrict parser, DgJSONValue * restrict
 			// Check that the current is either a closing bracket (end of list)
 			// or a comma (there is a new element)
 			if (DG_JSON_CURRENT.type == DG_JSON_TOK_CLOSE_BRACKET) {
+				break;
+			}
+			else if (DG_JSON_CURRENT.type != DG_JSON_TOK_COMMA) {
+				return 2;
+			}
+		}
+		
+		return 0;
+	}
+	
+	else if (DG_JSON_CURRENT.type == DG_JSON_TOK_OPEN_CURLY) {
+		val->type = DG_JSON_OBJECT;
+		val->value.as_object = DgJSONObjectInit();
+		
+		if (!val->value.as_object) {
+			return 3;
+		}
+		
+		// While reading the object
+		while (true) {
+			// Increment
+			parser->head++;
+			
+			// Get the key of the value
+			DgJSONValue key;
+			
+			int32_t status = DgJSONRule(parser, &key);
+			
+			if (status) {
+				return status;
+			}
+			
+			// Assert that the key must be a string
+			if (key.type != DG_JSON_STRING) {
+				return 5;
+			}
+			
+			// Check for a colon
+			if (DG_JSON_CURRENT.type != DG_JSON_TOK_COLON) {
+				return 4;
+			}
+			
+			parser->head++;
+			
+			// Get the value of the value
+			DgJSONValue value;
+			
+			status = DgJSONRule(parser, &value);
+			
+			if (status) {
+				return status;
+			}
+			
+			// Push the value to the object
+			DgJSONObjectPush(val->value.as_object, key.value.as_string, value);
+			
+			DgFree((void *) key.value.as_string);
+			
+			// Check for a comma or end of object
+			if (DG_JSON_CURRENT.type == DG_JSON_TOK_CLOSE_CURLY) {
 				break;
 			}
 			else if (DG_JSON_CURRENT.type != DG_JSON_TOK_COMMA) {
