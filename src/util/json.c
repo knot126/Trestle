@@ -50,6 +50,10 @@ static bool is_alphanumeric(char c) {
 // =============================================================================
 
 void DgJSONValueFree(DgJSONValue * restrict value) {
+	/**
+	 * Free the given JSON value.
+	 */
+	
 	if (value->type == DG_JSON_STRING) {
 		DgFree((void *) value->value.as_string);
 	}
@@ -143,6 +147,20 @@ DgJSONArray *DgJSONArrayInit(void) {
 	return array;
 }
 
+void DgJSONArrayFree(DgJSONArray *array) {
+	/**
+	 * Free the given JSON array.
+	 */
+	
+	if (array->data) {
+		for (size_t i = 0; i < array->count; i++) {
+			DgJSONValueFree(&array->data[i]);
+		}
+		
+		DgFree(array->data);
+	}
+}
+
 int32_t DgJSONArrayPush(DgJSONArray *array, DgJSONValue value) {
 	/**
 	 * Push a new value onto the given JSON array.
@@ -186,6 +204,23 @@ DgJSONObject *DgJSONObjectInit(void) {
 	return obj;
 }
 
+void DgJSONObjectFree(DgJSONObject *obj) {
+	/**
+	 * Free a JSON object.
+	 */
+	
+	for (size_t i = 0; i < obj->count; i++) {
+		DgJSONValueFree(&obj->value[i]);
+		DgFree(&obj->key[i]);
+	}
+	
+	DgFree(obj->key);
+	DgFree(obj->hash);
+	DgFree(obj->value);
+	
+	DgFree(obj);
+}
+
 static int32_t DgJSONObjectRealloc(DgJSONObject *obj) {
 	/**
 	 * Reallocate a JSON object to support at least one more element being added.
@@ -213,6 +248,22 @@ static int32_t DgJSONObjectRealloc(DgJSONObject *obj) {
 	return 0;
 }
 
+static size_t DgJSONObjectGetIndex(DgJSONObject *obj, const char *key) {
+	/**
+	 * Get the index for an object.
+	 */
+	
+	uint32_t find = DgHashStringU32(key);
+	
+	for (size_t i = 0; i < obj->count; i++) {
+		if (obj->hash[i] == find) {
+			return i;
+		}
+	}
+	
+	return -1;
+}
+
 int32_t DgJSONObjectPush(DgJSONObject *obj, const char *key, DgJSONValue value) {
 	/**
 	 * Push an object onto the object.
@@ -231,21 +282,18 @@ int32_t DgJSONObjectPush(DgJSONObject *obj, const char *key, DgJSONValue value) 
 	return 0;
 }
 
-void DgJSONObjectFree(DgJSONObject *obj) {
+DgJSONValue * const DgJSONObjectGet(DgJSONObject *obj, const char *key) {
 	/**
-	 * Free a JSON object.
+	 * Get a JSON value in an object at the given key.
 	 */
 	
-	for (size_t i = 0; i < obj->count; i++) {
-		DgJSONValueFree(&obj->value[i]);
-		DgFree(&obj->key[i]);
+	size_t index = DgJSONObjectGetIndex(obj, key);
+	
+	if (index == -1) {
+		return NULL;
 	}
 	
-	DgFree(obj->key);
-	DgFree(obj->hash);
-	DgFree(obj->value);
-	
-	DgFree(obj);
+	return &obj->value[index];
 }
 
 // Token Helper Functions
@@ -601,6 +649,10 @@ static int32_t DgJSONRule(DgJSONParser * restrict parser, DgJSONValue * restrict
 			// Push the value to the object
 			DgJSONObjectPush(val->value.as_object, key.value.as_string, value);
 			
+			// Free the string that is the key, since we will never need to use
+			// it again.
+			DgFree((void *) key.value.as_string);
+			
 			// Check for a comma or end of object
 			if (DG_JSON_CURRENT.type == DG_JSON_TOK_CLOSE_CURLY) {
 				break;
@@ -634,17 +686,17 @@ int32_t DgJSONParse(DgJSONValue * restrict doc, const size_t length, const char 
 	}
 	
 	// Print tokens for debug
-	for (size_t i = 0; i < tokens.count; i++) {
-		if (tokens.data[i].type == DG_JSON_TOK_STRING) {
-			DgLog(DG_LOG_VERBOSE, "(Token %d) Token = %d, Value = \"%s\"", i, tokens.data[i].type, tokens.data[i].value.as_string);
-		}
-		else if (tokens.data[i].type == DG_JSON_TOK_NUMBER) {
-			DgLog(DG_LOG_VERBOSE, "(Token %d) Token = %d, Value = %g", i, tokens.data[i].type, tokens.data[i].value.as_number);
-		}
-		else {
-			DgLog(DG_LOG_VERBOSE, "(Token %d) Token = %d, Value = %d", i, tokens.data[i].type, tokens.data[i].value);
-		}
-	}
+// 	for (size_t i = 0; i < tokens.count; i++) {
+// 		if (tokens.data[i].type == DG_JSON_TOK_STRING) {
+// 			DgLog(DG_LOG_VERBOSE, "(Token %d) Token = %d, Value = \"%s\"", i, tokens.data[i].type, tokens.data[i].value.as_string);
+// 		}
+// 		else if (tokens.data[i].type == DG_JSON_TOK_NUMBER) {
+// 			DgLog(DG_LOG_VERBOSE, "(Token %d) Token = %d, Value = %g", i, tokens.data[i].type, tokens.data[i].value.as_number);
+// 		}
+// 		else {
+// 			DgLog(DG_LOG_VERBOSE, "(Token %d) Token = %d, Value = %d", i, tokens.data[i].type, tokens.data[i].value);
+// 		}
+// 	}
 	
 	// Parse the document
 	DgJSONParser parser = (DgJSONParser) {&tokens, 0};
@@ -652,8 +704,6 @@ int32_t DgJSONParse(DgJSONValue * restrict doc, const size_t length, const char 
 		DgJSONTokenArrayFree(&tokens, true);
 		return 2;
 	}
-	
-	DgJSONValuePrint(doc);
 	
 	// Free token array, successful
 	DgJSONTokenArrayFree(&tokens, false);

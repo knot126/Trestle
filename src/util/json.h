@@ -77,8 +77,10 @@ void DgJSONValueFree(DgJSONValue * restrict value);
 void DgJSONValuePrint(DgJSONValue * restrict value);
 
 DgJSONArray *DgJSONArrayInit(void);
+void DgJSONArrayFree(DgJSONArray *array);
 int32_t DgJSONArrayPush(DgJSONArray *array, DgJSONValue value);
 
 DgJSONObject *DgJSONObjectInit(void);
-int32_t DgJSONObjectPush(DgJSONObject *obj, const char *key, DgJSONValue value);
 void DgJSONObjectFree(DgJSONObject *obj);
+int32_t DgJSONObjectPush(DgJSONObject *obj, const char *key, DgJSONValue value);
+DgJSONValue * const DgJSONObjectGet(DgJSONObject *obj, const char *key);
