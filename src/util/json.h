@@ -59,6 +59,7 @@ typedef union DgJSONValueData {
 	const char *as_string;
 	DgJSONArray *as_array;
 	DgJSONObject *as_object;
+	bool as_boolean;
 } DgJSONValueData;
 
 typedef struct DgJSONValue {

@@ -151,7 +151,8 @@ int game_main(int argc, char* argv[]) {
 	
 	DgLog(DG_LOG_INFO, "JSON test...");
 	DgJSONValue val;
-	const char a[] = "{\"test\": 6.30, \"abc\": \"def\", \"np\": null}";
+// 	const char a[] = "{\"test\": 6.30,\n\t\"abc\": \"def\",\n\t\"np\": null,\n\t\"a-true\": true, \"a-false\": false\n}";
+	const char a[] = "[5340, \"testy\", 6.37, null, true, false]";
 	if (DgJSONParse(&val, sizeof a - 1, a)) {
 		DgLog(DG_LOG_ERROR, "failed to load JSON document");
 	}

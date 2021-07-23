@@ -11,6 +11,7 @@
 #include "alloc.h"
 #include "str.h"
 #include "log.h"
+#include "hash.h"
 #include "fs.h"
 
 #include "json.h"
@@ -30,6 +31,9 @@ typedef enum {
 	DG_JSON_TOK_NULL,
 } DgJSONTokenType;
 
+// Character Type Helper Functions
+// =============================================================================
+
 static bool is_numeric(char c) {
 	return ((c >= '0') && (c <= '9')) || (c == '.') || (c == '-');
 }
@@ -41,6 +45,104 @@ static bool is_alpha(char c) {
 static bool is_alphanumeric(char c) {
 	return (is_alpha(c)) || ((c >= '0') && (c <= '9'));
 }
+
+// Value Helper Functions
+// =============================================================================
+
+void DgJSONValuePrint_(DgJSONValue * restrict value, const size_t sub) {
+	/**
+	 * Print and JSON value and it's subvalues to the screen.
+	 */
+	
+	for (size_t i = 0; i < sub; i++) {
+		printf("\t");
+	}
+	
+	if (value->type == DG_JSON_NUMBER) {
+		printf("(number) %g", value->value.as_number);
+	}
+	
+	else if (value->type == DG_JSON_INTEGER) {
+		printf("(integer) %lld", value->value.as_integer);
+	}
+	
+	else if (value->type == DG_JSON_STRING) {
+		printf("(string) \"%s\"", value->value.as_string);
+	}
+	
+	else if (value->type == DG_JSON_BOOLEAN) {
+		if (value->value.as_boolean) {
+			printf("(boolean) true");
+		}
+		else {
+			printf("(boolean) false");
+		}
+	}
+	
+	else if (value->type == DG_JSON_NULL) {
+		printf("(null) null");
+	}
+	
+	else if (value->type == DG_JSON_ARRAY) {
+		DgJSONArray *array = value->value.as_array;
+		
+		printf("(array) length = %lld, alloc = %lld\n", array->count, array->alloc);
+		
+		for (size_t i = 0; i < array->count; i++) {
+			DgJSONValuePrint_(&array->data[i], sub + 1);
+		}
+	}
+	
+	printf("\n");
+}
+
+void DgJSONValuePrint(DgJSONValue * restrict value) {
+	DgJSONValuePrint_(value, 0);
+}
+
+// Array Helper Functions
+// =============================================================================
+
+DgJSONArray *DgJSONArrayInit(void) {
+	/**
+	 * Initialise a JSON array.
+	 */
+	
+	DgJSONArray *array = DgAlloc(sizeof *array);
+	
+	if (!array) {
+		return NULL;
+	}
+	
+	array->data = NULL;
+	array->count = 0;
+	array->alloc = 0;
+	
+	return array;
+}
+
+int32_t DgJSONArrayPush(DgJSONArray *array, DgJSONValue value) {
+	/**
+	 * Push a new value onto the given JSON array.
+	 */
+	
+	if (array->count >= array->alloc) {
+		array->alloc = (array->alloc > 0) ? array->alloc * 2 : 8;
+		array->data = DgRealloc(array->data, sizeof *array->data * array->alloc);
+		
+		if (!array->data) {
+			return 1;
+		}
+	}
+	
+	array->data[array->count] = value;
+	array->count++;
+	
+	return 0;
+}
+
+// Token Helper Functions
+// =============================================================================
 
 typedef struct {
 	DgJSONTokenType type;
@@ -157,8 +259,6 @@ static int32_t DgJSONTokenise(DgJSONTokenArray * restrict tokens, const size_t l
 				return 2;
 			}
 			
-			DgLog(DG_LOG_VERBOSE, "%s", s);
-			
 			status = DgJSONPushToken(tokens, (DgJSONToken) {DG_JSON_TOK_STRING, .value.as_string = s, i++});
 		}
 		
@@ -179,8 +279,6 @@ static int32_t DgJSONTokenise(DgJSONTokenArray * restrict tokens, const size_t l
 			if (!s) {
 				return 2;
 			}
-			
-			DgLog(DG_LOG_VERBOSE, "%s", s);
 			
 			if (is_int) {
 				status = DgJSONPushToken(tokens, (DgJSONToken) {DG_JSON_TOK_INTEGER, .value.as_integer = atoll(s), i});
@@ -205,8 +303,6 @@ static int32_t DgJSONTokenise(DgJSONTokenArray * restrict tokens, const size_t l
 			if (!s) {
 				return 2;
 			}
-			
-			DgLog(DG_LOG_VERBOSE, "%s", s);
 			
 			// Accept null, true or false, otherwise treat as string
 			if (!strcmp(s, "null")) {
@@ -243,6 +339,108 @@ static int32_t DgJSONTokenise(DgJSONTokenArray * restrict tokens, const size_t l
 	return 0;
 }
 
+typedef struct DgJSONParser {
+	const DgJSONTokenArray * const restrict tokens;
+	size_t head;
+} DgJSONParser;
+
+#define DG_JSON_CURRENT parser->tokens->data[parser->head]
+
+static int32_t DgJSONRule(DgJSONParser * restrict parser, DgJSONValue * restrict val) {
+	/**
+	 * Satisfies a JSON rule.
+	 */
+	
+	if (DG_JSON_CURRENT.type == DG_JSON_TOK_NUMBER) {
+		val->type = DG_JSON_NUMBER;
+		val->value.as_number = DG_JSON_CURRENT.value.as_number;
+		parser->head++;
+		
+		return 0;
+	}
+	
+	else if (DG_JSON_CURRENT.type == DG_JSON_TOK_INTEGER) {
+		val->type = DG_JSON_INTEGER;
+		val->value.as_integer = DG_JSON_CURRENT.value.as_integer;
+		parser->head++;
+		
+		return 0;
+	}
+	
+	else if (DG_JSON_CURRENT.type == DG_JSON_TOK_STRING) {
+		val->type = DG_JSON_STRING;
+		val->value.as_string = DG_JSON_CURRENT.value.as_string;
+		parser->head++;
+		
+		return 0;
+	}
+	
+	else if (DG_JSON_CURRENT.type == DG_JSON_TOK_NULL) {
+		val->type = DG_JSON_NULL;
+		val->value.as_integer = 0;
+		parser->head++;
+		
+		return 0;
+	}
+	
+	else if (DG_JSON_CURRENT.type == DG_JSON_TOK_TRUE) {
+		val->type = DG_JSON_BOOLEAN;
+		val->value.as_boolean = true;
+		parser->head++;
+		
+		return 0;
+	}
+	
+	else if (DG_JSON_CURRENT.type == DG_JSON_TOK_FALSE) {
+		val->type = DG_JSON_BOOLEAN;
+		val->value.as_boolean = false;
+		parser->head++;
+		
+		return 0;
+	}
+	
+	else if (DG_JSON_CURRENT.type == DG_JSON_TOK_OPEN_BRACKET) {
+		val->type = DG_JSON_ARRAY;
+		val->value.as_array = DgJSONArrayInit();
+		
+		if (!val->value.as_array) {
+			return 3;
+		}
+		
+		// While reading conents from the array
+		while (true) {
+			// Increment
+			parser->head++;
+			
+			// Get the value and push to array
+			DgJSONValue temp;
+			
+			int32_t status = DgJSONRule(parser, &temp);
+			
+			if (status) {
+				return status;
+			}
+			
+			DgJSONArrayPush(val->value.as_array, temp);
+			
+			// Check that the current is either a closing bracket (end of list)
+			// or a comma (there is a new element)
+			if (DG_JSON_CURRENT.type == DG_JSON_TOK_CLOSE_BRACKET) {
+				break;
+			}
+			else if (DG_JSON_CURRENT.type != DG_JSON_TOK_COMMA) {
+				return 2;
+			}
+		}
+		
+		return 0;
+	}
+	
+	return 1;
+}
+
+#undef DG_JSON_CURRENT
+
 int32_t DgJSONParse(DgJSONValue * restrict doc, const size_t length, const char * const restrict source) {
 	/**
 	 * Parse a JSON document from the given buffer.
@@ -268,6 +466,15 @@ int32_t DgJSONParse(DgJSONValue * restrict doc, const size_t length, const char 
 			DgLog(DG_LOG_VERBOSE, "(Token %d) Token = %d, Value = %d", i, tokens.data[i].type, tokens.data[i].value);
 		}
 	}
+	
+	// Parse the document
+	DgJSONParser parser = (DgJSONParser) {&tokens, 0};
+	if (DgJSONRule(&parser, doc)) {
+		DgJSONTokenArrayFree(&tokens, true);
+		return 2;
+	}
+	
+	DgJSONValuePrint(doc);
 	
 	// Free token array, successful
 	DgJSONTokenArrayFree(&tokens, false);
