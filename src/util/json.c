@@ -519,6 +519,11 @@ static int32_t DgJSONRule(DgJSONParser * restrict parser, DgJSONValue * restrict
 			// Increment
 			parser->head++;
 			
+			// Check for the end of array (for empty objects)
+			if (DG_JSON_CURRENT.type == DG_JSON_TOK_CLOSE_BRACKET) {
+				break;
+			}
+			
 			// Get the value and push to array
 			DgJSONValue temp;
 			
@@ -540,6 +545,8 @@ static int32_t DgJSONRule(DgJSONParser * restrict parser, DgJSONValue * restrict
 			}
 		}
 		
+		parser->head++;
+		
 		return 0;
 	}
 	
@@ -555,6 +562,11 @@ static int32_t DgJSONRule(DgJSONParser * restrict parser, DgJSONValue * restrict
 		while (true) {
 			// Increment
 			parser->head++;
+			
+			// Check for the end of object (for empty objects)
+			if (DG_JSON_CURRENT.type == DG_JSON_TOK_CLOSE_CURLY) {
+				break;
+			}
 			
 			// Get the key of the value
 			DgJSONValue key;
@@ -589,8 +601,6 @@ static int32_t DgJSONRule(DgJSONParser * restrict parser, DgJSONValue * restrict
 			// Push the value to the object
 			DgJSONObjectPush(val->value.as_object, key.value.as_string, value);
 			
-			DgFree((void *) key.value.as_string);
-			
 			// Check for a comma or end of object
 			if (DG_JSON_CURRENT.type == DG_JSON_TOK_CLOSE_CURLY) {
 				break;
@@ -599,6 +609,8 @@ static int32_t DgJSONRule(DgJSONParser * restrict parser, DgJSONValue * restrict
 				return 2;
 			}
 		}
+		
+		parser->head++;
 		
 		return 0;
 	}
