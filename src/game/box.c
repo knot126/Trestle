@@ -35,6 +35,7 @@ Name make_box(Supervisor * const restrict sup, const DgVec3 pos, const DgVec3 si
 	
 	// Set AABB 
 	physics_set_aabb(&sup->physics, name, size);
+	physics_set_flags(&sup->physics, name, PHYSICS_STATIC);
 	
 	// Generate box mesh
 	const float s_BoxData[] = {

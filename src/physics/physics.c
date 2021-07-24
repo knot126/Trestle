@@ -142,13 +142,11 @@ static void resolve_collisions(PhysicsSystem *this, SceneGraph *graph, float del
 	// AABB to AABB
 	for (size_t i = 0; i < this->aabb_count; i++) {
 		for (size_t j = 0; j < this->aabb_count; j++) {
-			if (i != j) {
-				if (Test_AABB_AABB(&this->aabb[i], &this->aabb[j])) {
-					if ((this->object[physics_find_object(this, this->aabb_name[i])].flags & PHYSICS_STATIC) != PHYSICS_STATIC) {
-// 						DgLog(DG_LOG_VERBOSE, "(i = %d, j = %d) Colliding!!", i, j);
-						Resolve_AABB_AABB(this, graph, i, j);
-					}
-				}
+			if (i != j 
+				&& Test_AABB_AABB(&this->aabb[i], &this->aabb[j]) 
+				&& (this->object[physics_find_object(this, this->aabb_name[i])].flags & PHYSICS_STATIC) != PHYSICS_STATIC) {
+// 				DgLog(DG_LOG_VERBOSE, "(i = %d, j = %d) Colliding!!", i, j);
+				Resolve_AABB_AABB(this, graph, i, j);
 			}
 		}
 	}
