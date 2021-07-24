@@ -104,7 +104,6 @@ set(MELON_FILES
 	"src/util/stream.c"
 	"src/util/thread.c"
 	"src/util/time.c"
-	"src/util/ui.c"
 	"src/util/value.c"
 	"src/util/xml.c"
 	${LUA_INCLUDE_FILES}

@@ -22,7 +22,6 @@
 #include "util/str.h"
 #include "util/bitmap.h"
 #include "util/log.h"
-#include "util/ui.h"
 #include "types.h" // For g_deltaTime
 
 #include "graph/graph.h"
