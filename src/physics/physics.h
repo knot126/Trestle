@@ -23,8 +23,8 @@ enum {
 
 typedef struct PhysicsObject {
 	DgVec3 lastPos;
-	DgVec3 directForce;     // Applied via moving the object
-	DgVec3 accel;           // Applied via proper integration
+	DgVec3 accel;
+	DgVec3 deferedAccel;     // added after the current physics frame
 	uint64_t flags;
 } PhysicsObject;
 
@@ -73,6 +73,7 @@ Name physics_clear_object(PhysicsSystem *this, Name name);
 Name physics_set_accel(PhysicsSystem *this, Name name, DgVec3 accel);
 Name physics_set_flags(PhysicsSystem *this, Name name, uint64_t flags);
 Name physics_add_forces(PhysicsSystem *this, Name name, DgVec3 force);
+Name physics_add_forces_deferred(PhysicsSystem *this, Name name, DgVec3 force);
 Name physics_move_object(PhysicsSystem *this, Name name, DgVec3 force);
 
 void physics_sync_graph(PhysicsSystem *this, SceneGraph *graph);

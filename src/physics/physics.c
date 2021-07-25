@@ -55,6 +55,10 @@ static void reset_forces(PhysicsSystem *this, SceneGraph *graph, float delta) {
 		if ((obj->flags & PHYSICS_DRAG) == PHYSICS_DRAG && (obj->flags & PHYSICS_STATIC) != PHYSICS_STATIC) {
 			obj->accel = DgVec3Subtract(obj->accel, DgVec3Scale(0.02f, obj->accel));
 		}
+		
+		// Any deferred forces
+		obj->accel = DgVec3Add(obj->accel, obj->deferedAccel);
+		obj->deferedAccel = (DgVec3) {0.0f, 0.0f, 0.0f};
 	}
 }
 
@@ -75,7 +79,7 @@ static bool Test_AABB_AABB(AABBShape *a, AABBShape *b) {
 
 static float flt_abs_phys(float A) { return (A < 0.0f) ? -A : A; }
 
-static void Resolve_AABB_AABB(PhysicsSystem *this, SceneGraph *graph, size_t i, size_t j) {
+static void Resolve_AABB_AABB(PhysicsSystem *this, SceneGraph *graph, size_t i, size_t j, const float dt) {
 	/**
 	 * Respond to a collision between two AABB objects.
 	 * 
@@ -98,8 +102,6 @@ static void Resolve_AABB_AABB(PhysicsSystem *this, SceneGraph *graph, size_t i, 
 	
 	// Find the difference
 	DgVec3 diff = DgVec3Subtract(amax, bmin);
-	
-// 	printf("(%f, %f, %f)\n", diff.x, diff.y, diff.z);
 	
 	// Find out which penertates the least and push based on that.
 	if (diff.x > 0.0f && diff.y > diff.x && diff.z > diff.x) {
@@ -146,7 +148,7 @@ static void resolve_collisions(PhysicsSystem *this, SceneGraph *graph, float del
 				&& Test_AABB_AABB(&this->aabb[i], &this->aabb[j]) 
 				&& (this->object[physics_find_object(this, this->aabb_name[i])].flags & PHYSICS_STATIC) != PHYSICS_STATIC) {
 // 				DgLog(DG_LOG_VERBOSE, "(i = %d, j = %d) Colliding!!", i, j);
-				Resolve_AABB_AABB(this, graph, i, j);
+				Resolve_AABB_AABB(this, graph, i, j, delta);
 			}
 		}
 	}
@@ -167,13 +169,6 @@ static void update_gravity(PhysicsSystem *this, SceneGraph *graph, float delta) 
 		
 		// Apply forces to the object
 		if ((obj->flags & PHYSICS_STATIC) != PHYSICS_STATIC) {
-			// Apply direct forces in player mode
-			if ((obj->flags & PHYSICS_MODE_PLAYER) == PHYSICS_MODE_PLAYER) {
-				trans->pos = DgVec3Add(trans->pos, DgVec3Scale(delta, obj->directForce));
-				obj->lastPos = DgVec3Add(obj->lastPos, DgVec3Scale(delta, obj->directForce));
-				obj->directForce = (DgVec3) {0.0f, 0.0f, 0.0f};
-			}
-			
 			// Integrate forces a normal
 			const DgVec3 tempold = obj->lastPos;
 			const DgVec3 tempcur = trans->pos;
@@ -352,6 +347,23 @@ Name physics_add_forces(PhysicsSystem *this, Name name, DgVec3 force) {
 	return name;
 }
 
+Name physics_add_forces_deferred(PhysicsSystem *this, Name name, DgVec3 force) {
+	/**
+	 * Add a force to an object for one physics frame (the frame to add to being
+	 * one late). This is the only way to add forces within the system itself.
+	 */
+	
+	size_t index = physics_find_object(this, name);
+	
+	if (index == -1) {
+		return 0;
+	}
+	
+	this->object[index].deferedAccel = DgVec3Add(this->object[index].deferedAccel, force);
+	
+	return name;
+}
+
 Name physics_move_object(PhysicsSystem *this, Name name, DgVec3 force) {
 	/**
 	 * Moves an object directly (only in player mode)
@@ -363,7 +375,7 @@ Name physics_move_object(PhysicsSystem *this, Name name, DgVec3 force) {
 		return 0;
 	}
 	
-	this->object[index].directForce = DgVec3Add(this->object[index].directForce, force);
+// 	this->object[index].directForce = DgVec3Add(this->object[index].directForce, force);
 	
 	return name;
 }

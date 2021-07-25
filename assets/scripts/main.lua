@@ -30,7 +30,10 @@ function init()
 end
 
 at = 0
+speed_old = 0.0 -- previous speed
 speed = 2.0
+
+p = 0
 
 function tick(dt)
 	local w = get_key(GLFW_KEY_UP)
@@ -49,7 +52,10 @@ function tick(dt)
 	end
 	at = at + dt
 	
-	direct_move(player, 0.0, 0.0, -1000.0 * speed * dt)
+	add_force(player, 0.0, 0.0, speed_old * dt * 1000.0)
+	add_force(player, 0.0, 0.0, -speed * dt * 1000.0)
+	
+	speed_old = speed
 	
 	if w then
 		speed = speed + 1.0 * dt
@@ -60,20 +66,23 @@ function tick(dt)
 	end
 	
 	if a then
-		direct_move(player, -3.0, 0.0, 0.0)
+		add_force(player, -8.0, 0.0, 0.0)
 	end
 	
 	if d then
-		direct_move(player, 3.0, 0.0, 0.0)
+		add_force(player, 8.0, 0.0, 0.0)
 	end
 	
-	if j then
-		add_force(player, 0.0, 17.0, 0.0)
+	if j and p > 0 then
+		add_force(player, 0.0, 10000000.0, 0.0)
+		p = 200
 	end
+	
+	p = p - 1
 	
 	local cx, cy, cz, crx, cry, crz = get_transform(cam)
 	
-	cx = x * 0.5
+	cx = x * 0.25
 	cy = y + 4.0
 	cz = z + 8.0
 	
