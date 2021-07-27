@@ -5,35 +5,44 @@
 -- Game Startup Script
 -- 
 
-function init()
-	set_background(mgRandFloat(), mgRandFloat(), mgRandFloat(), 1.0)
-	enable_physics(true)
-	
-	cam = create_entity(ENT_TRANSFORM)
-	push_transform(cam, 0.0, 5.0, 5.65, 0.0375, 0.0, 0.0)
-	set_camera(cam)
-	
-	bm = create_entity(ENT_TRANSFORM | ENT_GRAPHICS_MESH)
-	push_transform(bm, -3.0, 0.0, -4.0, 0.0, 0.0, -0.05, 0.25, 0.25, 0.25)
-	push_obj_mesh(bm, "assets://mesh/gum_tree1.obj")
-	
-	bm2 = create_entity(ENT_TRANSFORM | ENT_GRAPHICS_MESH)
-	push_transform(bm2, 3.0, 0.0, -4.0, 0.0, 0.0, 0.01, 0.25, 0.25, 0.25)
-	push_obj_mesh(bm2, "assets://mesh/gum_tree1.obj")
-	
-	player = make_box(0.0, 2.0, -2.0)
-	set_physics_flags(player, PHYSICS_MODE_PLAYER)
-	
-	k = make_box(0.0, 0.0, -36.0, 8.0, 0.5, 36.0)
-	
-	physics_sync_graph()
-end
-
 at = 0
 speed_old = 0.0 -- previous speed
 speed = 2.0
 
 p = 0
+
+function s_generate_level()
+	-- Generate the entire level
+	make_box(0.0, 0.0, -36.0, 8.0, 0.5, 36.0, mgRandFloat(), mgRandFloat(), mgRandFloat(), "tile1")
+	
+	-- Load two tree models
+	s_load_model(3.0, 0.0, -4.0, 0.0, 0.0, 0.01, 0.2, "assets://mesh/gum_tree1.obj")
+	s_load_model(-3.0, 0.0, -4.0, 0.0, 0.0, -0.05, 0.2, "assets://mesh/gum_tree1.obj")
+end
+
+function init()
+	-- Set the background colour
+	set_background(mgRandFloat(), mgRandFloat(), mgRandFloat(), 1.0)
+	
+	-- Create camera
+	cam = create_entity(ENT_TRANSFORM)
+	push_transform(cam, 0.0, 5.0, 5.65, 0.0375, 0.0, 0.0)
+	set_camera(cam)
+	
+	-- Initialise player
+	player = make_box(0.0, 2.0, -2.0)
+	set_physics_flags(player, PHYSICS_MODE_PLAYER)
+	add_force(player, 0.0, 0.0, speed * -1000.0)
+	
+	-- Generate the level
+	s_generate_level()
+	
+	-- Sync the physics graph after everything has been created
+	physics_sync_graph()
+	
+	-- Enable the physics engine
+	enable_physics(true)
+end
 
 function tick(dt)
 	local w = get_key(GLFW_KEY_UP)
@@ -52,17 +61,14 @@ function tick(dt)
 	end
 	at = at + dt
 	
-	add_force(player, 0.0, 0.0, speed_old * dt * 1000.0)
-	add_force(player, 0.0, 0.0, -speed * dt * 1000.0)
-	
-	speed_old = speed
-	
 	if w then
-		speed = speed + 1.0 * dt
+		--speed = speed + 1.0 * dt
+		add_force(player, 0.0, 0.0, -100.0 * speed)
 	end
 	
 	if s then
-		speed = speed - 1.0 * dt
+		--speed = speed - 1.0 * dt
+		add_force(player, 0.0, 0.0, 100.0 * speed)
 	end
 	
 	if a then
@@ -73,7 +79,7 @@ function tick(dt)
 		add_force(player, 8.0, 0.0, 0.0)
 	end
 	
-	if j and p > 0 then
+	if j and p < 0 then
 		add_force(player, 0.0, 10000000.0, 0.0)
 		p = 200
 	end

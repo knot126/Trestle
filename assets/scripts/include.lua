@@ -27,3 +27,12 @@ PHYSICS_STATIC = (1 << 0)
 PHYSICS_NO_GRAVITY = (1 << 1)
 PHYSICS_DRAG = (1 << 2)
 PHYSICS_MODE_PLAYER = (1 << 3)
+
+
+function s_load_model(x, y, z, rx, ry, rz, s, model)
+	-- In-script utility function for loading a model into an entity
+	bm = create_entity(ENT_TRANSFORM | ENT_GRAPHICS_MESH)
+	push_transform(bm, x, y, z, rx, ry, rz, s, s, s)
+	push_obj_mesh(bm, model)
+	return bm
+end
