@@ -6,13 +6,17 @@
 -- 
 
 at = 0
-speed_old = 0.0 -- previous speed
+speed_max = 10.0
+speed_min = 1.0
 speed = 2.0
 
 p = 0
 
-function s_generate_level()
-	-- Generate the entire level
+function GenerateLevel()
+	--[[
+	Generate the entire level 
+	
+	]]--
 	make_box(0.0, 0.0, -36.0, 8.0, 0.5, 36.0, mgRandFloat(), mgRandFloat(), mgRandFloat(), "tile1")
 	
 	-- Load two tree models
@@ -32,10 +36,9 @@ function init()
 	-- Initialise player
 	player = make_box(0.0, 2.0, -2.0)
 	set_physics_flags(player, PHYSICS_MODE_PLAYER)
-	add_force(player, 0.0, 0.0, speed * -1000.0)
 	
 	-- Generate the level
-	s_generate_level()
+	GenerateLevel()
 	
 	-- Sync the physics graph after everything has been created
 	physics_sync_graph()
@@ -51,44 +54,52 @@ function tick(dt)
 	local d = get_key(GLFW_KEY_RIGHT)
 	local j = get_key(GLFW_KEY_SPACE)
 	
+	print(dt)
+	
 	-- unrelated
 	local x, y, z, rx, ry, rz = get_transform(player)
 	
-	if at > 1.0 then
+-- 	if at > 1.0 then
 		print("Player position: (" .. x .. ", " .. y .. ", " .. z .. ")")
 		print("Speed: " .. speed)
 		at = 0
-	end
+-- 	end
 	at = at + dt
 	
+	-- moving the player
 	if w then
-		--speed = speed + 1.0 * dt
-		add_force(player, 0.0, 0.0, -100.0 * speed)
+		speed = speed + dt * 10.0
 	end
 	
 	if s then
-		--speed = speed - 1.0 * dt
-		add_force(player, 0.0, 0.0, 100.0 * speed)
+		speed = speed - dt * 10.0
 	end
 	
+	-- limit speed to max and min
+	speed = math.min(math.max(speed, speed_min), speed_max)
+	
+	-- move the player
+	move_object(player, 0.0, 0.0, -speed * dt)
+	
 	if a then
-		add_force(player, -8.0, 0.0, 0.0)
+		move_object(player, -5.0 * dt, 0.0, 0.0)
 	end
 	
 	if d then
-		add_force(player, 8.0, 0.0, 0.0)
+		move_object(player, 5.0 * dt, 0.0, 0.0)
 	end
 	
-	if j and p < 0 then
-		add_force(player, 0.0, 10000000.0, 0.0)
-		p = 200
-	end
+	-- jumping
+-- 	if j and p < 0 then
+-- 		add_force(player, 0.0, 1000.0, 0.0)
+-- 		p = 200
+-- 	end
 	
 	p = p - 1
 	
 	local cx, cy, cz, crx, cry, crz = get_transform(cam)
 	
-	cx = x * 0.25
+	cx = x * 0.2
 	cy = y + 4.0
 	cz = z + 8.0
 	

@@ -57,8 +57,10 @@ static void reset_forces(PhysicsSystem *this, SceneGraph *graph, float delta) {
 		}
 		
 		// Any deferred forces
-		obj->accel = DgVec3Add(obj->accel, obj->deferedAccel);
-		obj->deferedAccel = (DgVec3) {0.0f, 0.0f, 0.0f};
+		if ((obj->flags & PHYSICS_MODE_PLAYER) != PHYSICS_MODE_PLAYER) {
+			obj->accel = DgVec3Add(obj->accel, obj->deferedAccel);
+			obj->deferedAccel = (DgVec3) {0.0f, 0.0f, 0.0f};
+		}
 	}
 }
 
@@ -154,9 +156,9 @@ static void resolve_collisions(PhysicsSystem *this, SceneGraph *graph, float del
 	}
 }
 
-static void update_gravity(PhysicsSystem *this, SceneGraph *graph, float delta) {
+static void update_acceleration(PhysicsSystem *this, SceneGraph *graph, float delta) {
 	/**
-	 * Update gravity on all objects.
+	 * Update acceleration on all objects.
 	 */
 	
 	if (delta == 0.0f) {
@@ -169,7 +171,14 @@ static void update_gravity(PhysicsSystem *this, SceneGraph *graph, float delta) 
 		
 		// Apply forces to the object
 		if ((obj->flags & PHYSICS_STATIC) != PHYSICS_STATIC) {
-			// Integrate forces a normal
+			// Add direct movements
+			if ((obj->flags & PHYSICS_MODE_PLAYER) == PHYSICS_MODE_PLAYER) {
+				obj->lastPos = DgVec3Add(obj->deferedAccel, obj->lastPos);
+				trans->pos = DgVec3Add(obj->deferedAccel, trans->pos);
+				obj->deferedAccel = (DgVec3) {0.0f, 0.0f, 0.0f};
+			}
+			
+			// Integrate forces as normal
 			const DgVec3 tempold = obj->lastPos;
 			const DgVec3 tempcur = trans->pos;
 			trans->pos = DgVec3Add(
@@ -191,7 +200,7 @@ void physics_update(PhysicsSystem *this, SceneGraph *graph, float delta) {
 		return;
 	}
 	
-	update_gravity(this, graph, delta);
+	update_acceleration(this, graph, delta);
 	resolve_collisions(this, graph, delta);
 	reset_forces(this, graph, delta);
 }
@@ -375,7 +384,7 @@ Name physics_move_object(PhysicsSystem *this, Name name, DgVec3 force) {
 		return 0;
 	}
 	
-// 	this->object[index].directForce = DgVec3Add(this->object[index].directForce, force);
+	this->object[index].deferedAccel = DgVec3Add(this->object[index].deferedAccel, force);
 	
 	return name;
 }

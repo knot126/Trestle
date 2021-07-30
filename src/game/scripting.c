@@ -216,7 +216,7 @@ static int scripted_AddForce(lua_State *script) {
 
 static int scripted_DirectMove(lua_State *script) {
 	if (lua_gettop(script) != 4) {
-		DgLog(DG_LOG_ERROR, "Invalid usage of direct_move().");
+		DgLog(DG_LOG_ERROR, "Invalid usage of move_object().");
 		return 0;
 	}
 	
@@ -342,7 +342,7 @@ void registerWorldScriptFunctions(DgScript *script) {
 	lua_register(script->state, "enable_physics", &scripted_EnablePhysics);
 	lua_register(script->state, "physics_sync_graph", &scripted_PhysicsSyncGraph);
 	lua_register(script->state, "add_force", &scripted_AddForce);
-	lua_register(script->state, "direct_move", &scripted_DirectMove);
+	lua_register(script->state, "move_object", &scripted_DirectMove);
 	lua_register(script->state, "create_aabb", &scripted_CreateAABB);
 	lua_register(script->state, "set_aabb", &scripted_SetAABB);
 	
