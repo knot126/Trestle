@@ -26,7 +26,18 @@ Name make_box(Supervisor * const restrict sup, const DgVec3 pos, const DgVec3 si
 	}
 	
 	Transform *trans = graph_get(&sup->graph, name);
+	
+	if (!trans) {
+		DgLog(DG_LOG_ERROR, "Failed to create box!!");
+		return 0;
+	}
+	
 	Mesh *mesh = graphics_get_mesh(&sup->graphics, name);
+	
+	if (!mesh) {
+		DgLog(DG_LOG_ERROR, "Failed to create box!!");
+		return 0;
+	}
 	
 	// Push transform
 	trans->pos = pos;
@@ -184,6 +195,9 @@ Name make_box(Supervisor * const restrict sup, const DgVec3 pos, const DgVec3 si
 	// Texture
 	if (texture) {
 		mesh->texture = DgStrdup(texture);
+	}
+	else {
+		mesh->texture = NULL;
 	}
 	
 	return name;

@@ -8,6 +8,7 @@
 #pragma once
 
 #include <inttypes.h>
+#include <stdbool.h>
 
 #include "game/gamescript.h"
 #include "graphics/graphics.h"
@@ -43,13 +44,17 @@ typedef struct Supervisor {
 	// S
 	SceneGraph graph;
 	
+	// very basic gloal state
 	Name next;
+	bool running;
 } Supervisor;
 
 Supervisor *supervisor(Supervisor *S);
 
 void sup_init(Supervisor * restrict sup);
 void sup_destroy(Supervisor * restrict sup);
+
+void sup_close(Supervisor *sup);
 
 Name sup_next_name(Supervisor *sup);
 Name sup_entity(Supervisor *sup, const uint64_t systems);

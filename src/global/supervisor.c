@@ -7,6 +7,7 @@
 
 #include <string.h>
 #include <inttypes.h>
+#include <stdbool.h>
 
 #include "game/gamescript.h"
 #include "graph/graph.h"
@@ -64,6 +65,8 @@ void sup_init(Supervisor * restrict sup) {
 	game_script_new(&sup->game_script);
 	game_script_yeild(&sup->game_script, DgINIGet(g_quickRunConfig, "Main", "startup_script_path", "assets://scripts/startup.lua"));
 	game_script_active(&sup->game_script);
+	
+	sup->running = true;
 }
 
 void sup_destroy(Supervisor * restrict sup) {
@@ -85,6 +88,14 @@ void sup_destroy(Supervisor * restrict sup) {
 	
 	DgLog(DG_LOG_INFO, "Supervisor Destroy: Graphics");
 	graphics_free(&sup->graphics);
+}
+
+void sup_close(Supervisor *sup) {
+	/**
+	 * Set the game as not running anymore.
+	 */
+	
+	sup->running = false;
 }
 
 Name sup_next_name(Supervisor *sup) {

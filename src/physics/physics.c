@@ -79,6 +79,7 @@ static bool Test_AABB_AABB(AABBShape *a, AABBShape *b) {
 		&& ((amin.z >= bmax.z) && (bmin.z >= amax.z));
 }
 
+static size_t physics_find_object(PhysicsSystem *this, Name name);
 static float flt_abs_phys(float A) { return (A < 0.0f) ? -A : A; }
 
 static void Resolve_AABB_AABB(PhysicsSystem *this, SceneGraph *graph, size_t i, size_t j, const float dt) {
@@ -98,6 +99,9 @@ static void Resolve_AABB_AABB(PhysicsSystem *this, SceneGraph *graph, size_t i, 
 	// Get the transform
 	Transform * const trans = graph_get(graph, this->aabb_name[i]);
 	
+	size_t idx = physics_find_object(this, this->aabb_name[i]);
+	PhysicsObject * const obj = (idx != -1) ? &this->object[i] : NULL;
+	
 	if (!trans) {
 		return;
 	}
@@ -105,33 +109,45 @@ static void Resolve_AABB_AABB(PhysicsSystem *this, SceneGraph *graph, size_t i, 
 	// Find the difference
 	DgVec3 diff = DgVec3Subtract(amax, bmin);
 	
-	// Find out which penertates the least and push based on that.
+	// Find out which penertates the least and project the object out based on that.
+	bool was_ground = false;
+	
 	if (diff.x > 0.0f && diff.y > diff.x && diff.z > diff.x) {
 		trans->pos.x += diff.x;
+		if (obj) { obj->lastPos.x += diff.x; }
 	}
 	
 	if (diff.x < 0.0f && diff.y < diff.x && diff.z < diff.x) {
 		trans->pos.x -= diff.x;
+		if (obj) { obj->lastPos.x -= diff.x; }
 	}
 	
 	if (diff.y > 0.0f && diff.x > diff.y && diff.z > diff.y) {
 		trans->pos.y += diff.y;
+		if (obj) { obj->lastPos.y += diff.y; }
 	}
 	
 	if (diff.y < 0.0f && diff.x < diff.y && diff.z < diff.y) {
 		trans->pos.y -= diff.y;
+		if (obj) { obj->lastPos.y -= diff.y; }
+		was_ground = true;
 	}
 	
 	if (diff.z > 0.0f && diff.x > diff.z && diff.y > diff.z) {
 		trans->pos.z += diff.z;
+		if (obj) { obj->lastPos.z += diff.z; }
 	}
 	
 	if (diff.z < 0.0f && diff.x < diff.z && diff.y < diff.z) {
 		trans->pos.z -= diff.z;
+		if (obj) { obj->lastPos.z -= diff.z; }
+	}
+	
+	// If we are on the ground, we should not be building up any forces (gravity)
+	if (obj && was_ground) {
+		obj->lastPos = trans->pos;
 	}
 }
-
-static size_t physics_find_object(PhysicsSystem *this, Name name);
 
 static void resolve_collisions(PhysicsSystem *this, SceneGraph *graph, float delta) {
 	/**
@@ -181,6 +197,8 @@ static void update_acceleration(PhysicsSystem *this, SceneGraph *graph, float de
 			// Integrate forces as normal
 			const DgVec3 tempold = obj->lastPos;
 			const DgVec3 tempcur = trans->pos;
+			DgVec3 a = DgVec3Scale(delta, DgVec3Scale(delta, obj->accel));
+			DgVec3 b = DgVec3Add(tempcur, DgVec3Subtract(tempcur, tempold));
 			trans->pos = DgVec3Add(
 				DgVec3Add(tempcur, DgVec3Subtract(tempcur, tempold)),
 				DgVec3Scale(delta, DgVec3Scale(delta, obj->accel))
@@ -199,6 +217,8 @@ void physics_update(PhysicsSystem *this, SceneGraph *graph, float delta) {
 	if (!this->enabled) {
 		return;
 	}
+	
+	// Print all of the shit
 	
 	update_acceleration(this, graph, delta);
 	resolve_collisions(this, graph, delta);
@@ -402,6 +422,8 @@ void physics_sync_graph(PhysicsSystem *this, SceneGraph *graph) {
 		
 		phys->lastPos = trans->pos;
 		phys->accel = (DgVec3) {0.0f, 0.0f, 0.0f};
+		
+		DgLog(DG_LOG_VERBOSE, "Sync phys object %d | lastPos = (%.f, %.f, %.f)", this->object_name[i], phys->lastPos.x, phys->lastPos.y, phys->lastPos.z);
 	}
 }
 

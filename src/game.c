@@ -54,7 +54,7 @@ static void *physics_loop(void *args_) {
 	double accumulate = 0.0f;
 	double show_time = 0.0f;
 	
-	while (*args->keep_open) {
+	while (sup->running) {
 		double frame_time = DgTime();
 		
 		if (accumulate >= g_physicsDelta) {
@@ -88,24 +88,22 @@ static int game_loop(Supervisor *sys) {
 	 * The main loop.
 	 */
 	
-	bool should_keep_open = true;
-	
 	float show_fps = 0.0f;
 	
 	// Physics thread
 	GameLoopArgs loopargs;
 	loopargs.systems = sys;
-	loopargs.keep_open = &should_keep_open;
 	
 	DgThread t_physics;
 	
 	DgThreadNew(&t_physics, &physics_loop, &loopargs);
 	
-	while (should_keep_open) {
+	while (sys->running) {
 		double frame_time = DgTime();
 		
 		// Check if we should still be open
-		should_keep_open = get_should_keep_open(&sys->graphics);
+		// We do it here so the script can override this status if needed
+		sys->running = get_should_keep_open(&sys->graphics);
 		
 		// Update subsystems
 		graphics_update(&sys->graphics, &sys->graph);
@@ -123,7 +121,7 @@ static int game_loop(Supervisor *sys) {
 			DgLog(DG_LOG_VERBOSE, "Frame Time: %fms", frame_time * 1000.0f, 1.0f / frame_time);
 			show_fps = 0.0f;
 		}
-	} // while (should_keep_open)
+	} // while (sys->running)
 	
 	DgThreadJoin(&t_physics);
 	

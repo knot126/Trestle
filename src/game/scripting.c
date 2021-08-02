@@ -47,6 +47,17 @@ static int scripted_CreateEntity(lua_State *script) {
 	return 1;
 }
 
+static int scripted_Quit(lua_State *script) {
+	if (lua_gettop(script) != 0) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of quit().");
+		return 0;
+	}
+	
+	sup_close(supervisor(NULL));
+	
+	return 0;
+}
+
 static int scripted_PushTransform(lua_State *script) {
 	int top = lua_gettop(script);
 	
@@ -298,7 +309,7 @@ static int scripted_MakeBox(lua_State *script) {
 	}
 	
 	if (top >= 10) {
-		texture = lua_tostring(script, 11);
+		texture = lua_tostring(script, 10);
 	}
 	
 	lua_pushinteger(script, make_box(supervisor(NULL), pos, size, col, texture));
@@ -323,6 +334,7 @@ void registerWorldScriptFunctions(DgScript *script) {
 	// Supervisor and Entites
 	lua_register(script->state, "next_name", &scripted_EntityName);
 	lua_register(script->state, "create_entity", &scripted_CreateEntity);
+	lua_register(script->state, "quit", &scripted_Quit);
 	
 	// Scene Graph
 	lua_register(script->state, "push_transform", &scripted_PushTransform);
