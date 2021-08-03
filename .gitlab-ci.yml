@@ -23,8 +23,8 @@ build:
     - make -j$(nproc)
   artifacts:
     paths:
-      - build/quickrun
-      - build/libmelon.so
+      - "build/quickrun"
+      - "build/libmelon.so"
       # depending on your build setup it's most likely a good idea to cache outputs to reduce the build time
       cache:
         paths:
