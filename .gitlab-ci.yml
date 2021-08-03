@@ -8,14 +8,15 @@
 # can use verions as well, like gcc:5.2
 # see https://hub.docker.com/_/gcc/
 
-image: gcc
+image: gcc:latest
 
 build:
   stage: build
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
   before_script:
-    - apt update && apt -y install make autoconf cmake
+    - apt update
+    - apt -y install make autoconf cmake libglfw3-dev
   script:
     - mkdir build
     - cd build
