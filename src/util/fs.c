@@ -35,8 +35,13 @@ const char *dg_special_directory_paths[3] = {
 	".",
 };
 
-void DgInitPaths() {
-	/* This will initialise the paths in dg_special_directory_paths. */
+void DgInitPaths(uint32_t fail_mode) {
+	/**
+	 * This will initialise the paths in dg_special_directory_paths.
+	 * 
+	 * NOTE: This needs to be redone for not only ZIP files but also just to be
+	 * better written in general.
+	 */
 	
 	// Index 0: Assets path
 	for (int i = 0; i < sizeof(ASSETS_LOOK_PATH); i++) {
@@ -49,8 +54,13 @@ void DgInitPaths() {
 	}
 	
 	if (!dg_special_directory_paths[0]) {
-		printf("Couldn't initialise paths.\n");
-		exit(EXIT_FAILURE);
+		if (fail_mode == DG_PATH_FAIL_ERROR) {
+			printf("Failed to initialise paths!!");
+		}
+		else {
+			printf("Couldn't initialise paths.\n");
+			exit(EXIT_FAILURE);
+		}
 	}
 	
 	// Index 1: User config path ** NOT IMPLEMENTED **

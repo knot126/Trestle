@@ -28,6 +28,7 @@
 #include "util/log.h"
 #include "util/args.h"
 #include "physics/physics.h"
+#include "test.h"
 #include "types.h"
 
 #include "game.h"
@@ -140,31 +141,33 @@ int game_main(int argc, char* argv[]) {
 	DgLog(DG_LOG_INFO, "Parsing command line arguments...");
 	DgArgParse(argc, argv);
 	
-	// Initialise the clock
-	DgInitTime();
-	
-	// File system module init
-	DgLog(DG_LOG_INFO, "Initialising file system paths...");
-	DgInitPaths();
-	
-	DgLog(DG_LOG_INFO, "JSON test...");
-	DgJSONValue val;
-	const char a[] = "{\"test\": 6.30,\n\t\"abc\": \"def\", \"q\": [0, 0, 0],\n\t\"np\": null,\n\t\"a-true\": true, \"a-false\": false\n, \"objec\": {}, \"arre\": [], \"thing\": {\"ssss\": 534}}";
-	
-	if (DgJSONParse(&val, sizeof a - 1, a)) {
-		DgLog(DG_LOG_ERROR, "Failed to load JSON document.");
-	}
-	
 	// Print help
 	if (DgArgGetFlag("help")) {
 		DgLog(DG_LOG_INFO, "Quick Run (run as %s)", argv[0]);
 		DgLog(DG_LOG_INFO, "");
 		DgLog(DG_LOG_INFO, "\t--config [path]         Specify a custom engine config file to load.");
 		DgLog(DG_LOG_INFO, "\t--assets [path1;path2]  Specify a custom assets ZIP filesystem.");
+		DgLog(DG_LOG_INFO, "\t--ignore-fs             Let the game ignore unsuccessful pathfinding.");
+		DgLog(DG_LOG_INFO, "\t--test-mode, -t         Run all tests.");
 		DgLog(DG_LOG_INFO, "\t--help                  Print this help message.");
 		DgLog(DG_LOG_INFO, "");
+		DgLog(DG_LOG_VERBOSE, "Will not clean up resources because we are just exiting to OS next.");
 		return 0;
 	}
+	
+	// Do tests
+	if (DgArgGetFlag("test-mode") || DgArgGetFlag("t")) {
+		do_all_tests();
+		DgLog(DG_LOG_VERBOSE, "Will not clean up resources because we are just exiting to OS next.");
+		return 0;
+	}
+	
+	// Initialise the clock
+	DgInitTime();
+	
+	// File system module init
+	DgLog(DG_LOG_INFO, "Initialising file system paths...");
+	DgInitPaths( DgArgGetFlag("ignore-fs") ? DG_PATH_FAIL_ERROR : DG_PATH_FAIL_FATAL );
 	
 	// Load config
 	DgLog(DG_LOG_INFO, "Loading engine configuration file...");

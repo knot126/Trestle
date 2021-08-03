@@ -130,8 +130,9 @@ set(EXEC_FILES
 	"src/physics/physics.c"
 	"src/resman/resman.c"
 	"src/game.c"
-	"src/types.c"
 	"src/main.c"
+	"src/test.c"
+	"src/types.c"
 )
 
 # Force compiler to high warning levels

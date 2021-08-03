@@ -12,13 +12,18 @@
 #include <inttypes.h>
 #include <stdbool.h>
 
+enum {
+	DG_PATH_FAIL_FATAL,
+	DG_PATH_FAIL_ERROR,
+};
+
 typedef struct DgFileStream {
 	FILE* _c_file_stream;
 } DgFileStream;
 
 typedef DgFileStream DgFile;
 
-void DgInitPaths();
+void DgInitPaths(uint32_t fail_mode);
 char* DgEvalPath(char* path);
 DgFileStream* DgFileStreamOpen(char* path, char* permissions);
 DgFileStream* DgFileStreamReopen(DgFileStream* stream, char* path, char* permissions);
