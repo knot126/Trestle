@@ -35,6 +35,8 @@ build:
 test:
   stage: test
   script:
+    - apt update
+    - apt -y install make autoconf cmake libglfw3-dev libpulse-dev
     - cd build
     - ./quickrun --test-mode
     - cd ..
