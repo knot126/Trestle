@@ -22,7 +22,7 @@ build:
     - apt update
     - apt -y install make autoconf cmake libglfw3-dev libpulse-dev
   script:
-    - mkdir build
+    - if [ ! -e build ]; then mkdir build; fi;
     - cd build
     - cmake ..
     - make -j$(nproc)
