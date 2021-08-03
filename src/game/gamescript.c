@@ -79,7 +79,7 @@ void game_script_update(GameScript *gs) {
 		DgScriptInit(&gs->script);
 		
 		DgRegisterRandFuncs(&gs->script);
-		registerWorldScriptFunctions(&gs->script);
+		regiser_default_script_functions(&gs->script);
 		game_script_script_functions(&gs->script);
 		
 		DgScriptLoad(&gs->script, DgINIGet(g_quickRunConfig, "Main", "include_script_path", "assets://scripts/include.lua"));

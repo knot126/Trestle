@@ -9,4 +9,4 @@
 
 #include "../util/script.h"
 
-void registerWorldScriptFunctions(DgScript *script);
+void regiser_default_script_functions(DgScript *script);

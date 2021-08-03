@@ -117,6 +117,7 @@ set(EXEC_FILES
 	"src/game/box.c"
 	"src/game/gamescript.c"
 	"src/game/scripting.c"
+	"src/game/scriptman.c"
 	"src/global/supervisor.c"
 	"src/graph/graph.c"
 	"src/graphics/extern/glad.c"

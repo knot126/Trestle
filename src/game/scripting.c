@@ -330,7 +330,7 @@ static int scripted_GetKey(lua_State *script) {
 	return 1;
 }
 
-void registerWorldScriptFunctions(DgScript *script) {
+void regiser_default_script_functions(DgScript *script) {
 	// Supervisor and Entites
 	lua_register(script->state, "next_name", &scripted_EntityName);
 	lua_register(script->state, "create_entity", &scripted_CreateEntity);
