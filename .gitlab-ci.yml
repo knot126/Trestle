@@ -10,6 +10,10 @@
 
 image: gcc:latest
 
+# So this *SHOULD* be a GitLab security scan.
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
 build:
   stage: build
   # instead of calling g++ directly you can also use some build toolkit like make
