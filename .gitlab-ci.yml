@@ -36,7 +36,7 @@ test:
   stage: test
   script:
     - apt update
-    - apt -y install libglfw3 libpulse
+    - apt -y install libglfw3 libpulse0
     - cd build
     - ./quickrun --test-mode
     - cd ..
