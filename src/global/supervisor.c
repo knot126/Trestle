@@ -62,14 +62,9 @@ void sup_init(Supervisor * restrict sup) {
 	input_init(&sup->input, &sup->graphics);
 	
 	// Run the main game script
-	DgLog(DG_LOG_INFO, "Supervisor Initialise: GameScript");
-	game_script_new(&sup->game_script);
-	game_script_yeild(&sup->game_script, DgINIGet(g_quickRunConfig, "Main", "startup_script_path", "assets://scripts/startup.lua"));
-	game_script_active(&sup->game_script);
-	
-	// Run the main game script
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: ScriptManager");
 	scriptman_init(&sup->scriptman);
+	scriptman_open(&sup->scriptman, DgINIGet(g_quickRunConfig, "Main", "startup_script_path", "assets://scripts/startup.lua"));
 	
 	sup->running = true;
 }
@@ -81,9 +76,6 @@ void sup_destroy(Supervisor * restrict sup) {
 	
 	DgLog(DG_LOG_INFO, "Supervisor Destroy: ScriptManager");
 	scriptman_free(&sup->scriptman);
-	
-	DgLog(DG_LOG_INFO, "Supervisor Destroy: GameScript");
-	game_script_free(&sup->game_script);
 	
 	DgLog(DG_LOG_INFO, "Supervisor Destroy: Input");
 	// Not currently required

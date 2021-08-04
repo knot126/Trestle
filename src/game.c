@@ -109,7 +109,7 @@ static int game_loop(Supervisor *sys) {
 		// Update subsystems
 		graphics_update(&sys->graphics, &sys->graph);
 		input_update(&sys->input);
-		game_script_update(&sys->game_script);
+		scriptman_update(&sys->scriptman, g_deltaTime);
 		
 		// Update frame time
 		frame_time = DgTime() - frame_time;
@@ -185,10 +185,12 @@ int game_main(int argc, char* argv[]) {
 	}
 	
 	// Load systems state
+	// The active supervisor must be set first so the script manager can init
+	// the main script.
 	DgLog(DG_LOG_INFO, "SubSystem Supervisor Initialise");
 	Supervisor systems;
-	sup_init(&systems);
 	supervisor(&systems);
+	sup_init(&systems);
 	
 	/**
 	 * 

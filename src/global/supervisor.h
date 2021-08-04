@@ -36,7 +36,6 @@ typedef struct Supervisor {
 	 */
 	
 	// G
-	GameScript game_script;
 	GraphicsSystem graphics;
 	// I
 	InputSystem input;
