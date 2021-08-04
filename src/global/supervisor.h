@@ -11,6 +11,7 @@
 #include <stdbool.h>
 
 #include "game/gamescript.h"
+#include "game/scriptman.h"
 #include "graphics/graphics.h"
 #include "graph/graph.h"
 #include "physics/physics.h"
@@ -43,6 +44,7 @@ typedef struct Supervisor {
 	PhysicsSystem physics;
 	// S
 	SceneGraph graph;
+	ScriptManager scriptman;
 	
 	// very basic gloal state
 	Name next;

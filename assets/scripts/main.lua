@@ -13,7 +13,8 @@ speed = 6.0
 p = 0
 toruses = {}
 
-r, g, b = mgRandFloat(), mgRandFloat(), mgRandFloat()
+-- r, g, b = mgRandFloat(), mgRandFloat(), mgRandFloat()
+r, g, b = 1.0, 1.0, 1.0
 
 function RandPosAxis(max, diss)
 	a = (mgRandFloat() - 0.5) * 2.0 * max
@@ -152,10 +153,7 @@ function tick(dt)
 	push_transform(cam, cx, cy, cz, crx, cry, crz)
 	
 	-- Check for player's death
-	if y < -6.0 then
+	if y < -8.0 then
 		quit()
 	end
-end
-
-function free()
 end

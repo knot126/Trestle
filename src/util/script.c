@@ -60,7 +60,11 @@ void DgScriptCall(DgScript *script, char *name) {
 	 * Call a function in a script that has no arguments and no return values.
 	 */
 	
-	lua_getglobal(script->state, name);
+	int type = lua_getglobal(script->state, name);
+	
+	if (type == LUA_TNIL) {
+		return;
+	}
 	
 	lua_call(script->state, 0, 0);
 	
@@ -77,7 +81,11 @@ void DgScriptCallArgs(DgScript *script, char *name, int *types, int argc, ...) {
 	 * in order.
 	 */
 	
-	lua_getglobal(script->state, name);
+	int type = lua_getglobal(script->state, name);
+	
+	if (type == LUA_TNIL) {
+		return;
+	}
 	
 	va_list args;
 	va_start(args, argc);

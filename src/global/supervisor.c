@@ -10,6 +10,7 @@
 #include <stdbool.h>
 
 #include "game/gamescript.h"
+#include "game/scriptman.h"
 #include "graph/graph.h"
 #include "graphics/graphics.h"
 #include "input/input.h"
@@ -66,6 +67,10 @@ void sup_init(Supervisor * restrict sup) {
 	game_script_yeild(&sup->game_script, DgINIGet(g_quickRunConfig, "Main", "startup_script_path", "assets://scripts/startup.lua"));
 	game_script_active(&sup->game_script);
 	
+	// Run the main game script
+	DgLog(DG_LOG_INFO, "Supervisor Initialise: ScriptManager");
+	scriptman_init(&sup->scriptman);
+	
 	sup->running = true;
 }
 
@@ -73,6 +78,9 @@ void sup_destroy(Supervisor * restrict sup) {
 	/**
 	 * Destroy all the systems in the game.
 	 */
+	
+	DgLog(DG_LOG_INFO, "Supervisor Destroy: ScriptManager");
+	scriptman_free(&sup->scriptman);
 	
 	DgLog(DG_LOG_INFO, "Supervisor Destroy: GameScript");
 	game_script_free(&sup->game_script);
