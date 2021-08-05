@@ -19,6 +19,7 @@
 #include "util/script.h"
 #include "input/input.h"
 #include "game/box.h"
+#include "game/scriptman.h"
 #include "types.h"
 
 #include "scripting.h"
@@ -56,6 +57,52 @@ static int scripted_Quit(lua_State *script) {
 	sup_close(supervisor(NULL));
 	
 	return 0;
+}
+
+static int scripted_ScriptCreate(lua_State *script) {
+	if (lua_gettop(script) != 0) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of script_create().");
+		return 0;
+	}
+	
+	lua_pushinteger(script, scriptman_create(&supervisor(NULL)->scriptman));
+	
+	return 1;
+}
+
+static int scripted_ScriptDestroy(lua_State *script) {
+	if (lua_gettop(script) != 1) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of script_destroy().");
+		return 0;
+	}
+	
+	scriptman_destroy(&supervisor(NULL)->scriptman, lua_tointeger(script, 1));
+	
+	return 0;
+}
+
+static int scripted_ScriptLoad(lua_State *script) {
+	if (lua_gettop(script) != 2) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of script_load().");
+		return 0;
+	}
+	
+	lua_pushinteger(script, scriptman_load(&supervisor(NULL)->scriptman, lua_tointeger(script, 1), (char *) lua_tostring(script, 2)));
+	
+	return 1;
+}
+
+static int scripted_ScriptOpen(lua_State *script) {
+	if (lua_gettop(script) != 1) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of script_open().");
+		return 0;
+	}
+	
+	const char *path = lua_tostring(script, 1);
+	
+	lua_pushinteger(script, scriptman_open(&supervisor(NULL)->scriptman, (char *) path));
+	
+	return 1;
 }
 
 static int scripted_PushTransform(lua_State *script) {
@@ -335,6 +382,12 @@ void regiser_default_script_functions(DgScript *script) {
 	lua_register(script->state, "next_name", &scripted_EntityName);
 	lua_register(script->state, "create_entity", &scripted_CreateEntity);
 	lua_register(script->state, "quit", &scripted_Quit);
+	
+	// Script Management
+	lua_register(script->state, "script_create", &scripted_ScriptCreate);
+	lua_register(script->state, "script_destroy", &scripted_ScriptDestroy);
+	lua_register(script->state, "script_load", &scripted_ScriptLoad);
+	lua_register(script->state, "script_open", &scripted_ScriptOpen);
 	
 	// Scene Graph
 	lua_register(script->state, "push_transform", &scripted_PushTransform);
