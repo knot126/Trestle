@@ -121,6 +121,7 @@ set(EXEC_FILES
 	"src/global/supervisor.c"
 	"src/graph/graph.c"
 	"src/graphics/extern/glad.c"
+	"src/graphics/font.c"
 	"src/graphics/mesh.c"
 	"src/graphics/graphics.c"
 	"src/graphics/texture.c"

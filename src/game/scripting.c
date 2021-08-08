@@ -17,6 +17,7 @@
 #include "graphics/mesh.h"
 #include "util/log.h"
 #include "util/script.h"
+#include "util/xml.h"
 #include "input/input.h"
 #include "game/box.h"
 #include "game/scriptman.h"
@@ -101,6 +102,20 @@ static int scripted_ScriptOpen(lua_State *script) {
 	const char *path = lua_tostring(script, 1);
 	
 	lua_pushinteger(script, scriptman_open(&supervisor(NULL)->scriptman, (char *) path));
+	
+	return 1;
+}
+
+static int scripted_XMLLoad(lua_State *script) {
+	if (lua_gettop(script) != 1) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of xml_load().");
+		return 0;
+	}
+	
+	DgXMLNode *node = lua_newuserdata(script, sizeof *node);
+	const char *path = lua_tostring(script, 1);
+	
+	DgXMLLoad(node, path);
 	
 	return 1;
 }
@@ -389,6 +404,8 @@ void regiser_default_script_functions(DgScript *script) {
 	lua_register(script->state, "script_load", &scripted_ScriptLoad);
 	lua_register(script->state, "script_open", &scripted_ScriptOpen);
 	
+	// XML Parser
+	
 	// Scene Graph
 	lua_register(script->state, "push_transform", &scripted_PushTransform);
 	lua_register(script->state, "get_transform", &scripted_GetTransform);
@@ -411,9 +428,9 @@ void regiser_default_script_functions(DgScript *script) {
 	lua_register(script->state, "create_aabb", &scripted_CreateAABB);
 	lua_register(script->state, "set_aabb", &scripted_SetAABB);
 	
-	// Objects
-	lua_register(script->state, "make_box", &scripted_MakeBox);
-	
 	// Input
 	lua_register(script->state, "get_key", &scripted_GetKey);
+	
+	// Objects
+	lua_register(script->state, "make_box", &scripted_MakeBox);
 }

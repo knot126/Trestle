@@ -28,6 +28,12 @@ typedef struct Mesh {
 	bool shouldFree;
 } Mesh;
 
+typedef struct TextString {
+	float size;
+	const char *text;
+	size_t length;
+} TextString;
+
 typedef struct Curve {
 	DgVec3 points[4];
 } Curve;

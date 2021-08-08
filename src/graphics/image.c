@@ -33,9 +33,6 @@ DgImageInfo DgLoadImage(char* path) {
 	
 	char *res_path = DgEvalPath(path);
 	
-	// TODO: Figure out how to undo this but keep font textures okay
-	stbi_set_flip_vertically_on_load(1);
-	
 	info.data = (byte *) stbi_load(res_path, &info.width, &info.height, &info.channels, 0);
 	
 	if (!info.data) {

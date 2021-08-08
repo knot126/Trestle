@@ -15,7 +15,7 @@ function RandPosAxis(max, diss)
 end
 
 function RandNegate(n)
-	if mgRandInt() % 2 == 1 then
+	if rand_bool() then
 		return n
 	else
 		return -n
@@ -25,9 +25,12 @@ end
 function GenerateLevel()
 	--[[
 	Generate the entire level 
-	
 	]]--
-	make_box(0.0, 0.0, -36.0, 8.0, 0.5, 36.0, r - 0.1, g - 0.1, b - 0.1, "tile0")
+	
+	make_box(0.0, -0.5, -36.0, 8.0, 0.5, 36.0, r - 0.1, g - 0.1, b - 0.1, "tile0")
+	
+	make_box(-9.0, 0.0, -36.0, 1.0, 2.0, 36.0, r - 0.1, g - 0.1, b - 0.1, "tile0")
+	make_box(9.0, 0.0, -36.0, 1.0, 2.0, 36.0, r - 0.1, g - 0.1, b - 0.1, "tile0")
 	
 	-- Load some tree models for the forest
 	for z = 0.0, 150.0, 12.0 do

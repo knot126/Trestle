@@ -73,7 +73,7 @@ function tick(dt)
 	
 	-- jumping
 	if j and p < 0 then
-		add_force(player, 0.0, 1000.0, 0.0)
+		add_force(player, 0.0, 1250.0, 0.0)
 		p = 200
 	end
 	
