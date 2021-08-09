@@ -27,5 +27,9 @@ void font_init(Font *this, const char * const path) {
 }
 
 void font_free(Font *this) {
+	/**
+	 * Free a font file.
+	 */
+	
 	DgFree(this->data);
 }

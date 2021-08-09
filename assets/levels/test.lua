@@ -1,6 +1,7 @@
 toruses = {}
 
 r, g, b = mgRandFloat(), mgRandFloat(), mgRandFloat()
+br, bg, bb = mgRandFloat(), mgRandFloat(), mgRandFloat()
 -- r, g, b = 1.0, 1.0, 1.0
 
 function RandPosAxis(max, diss)
@@ -61,7 +62,7 @@ end
 
 function init()
 	-- Set the background colour
-	set_background(r, g, b, 1.0)
+	set_background(br, bg, bb, 1.0)
 	
 	-- Generate the level
 	GenerateLevel()

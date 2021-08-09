@@ -120,6 +120,19 @@ static int scripted_XMLLoad(lua_State *script) {
 	return 1;
 }
 
+static int scripted_CreateTransform(lua_State *script) {
+	int top = lua_gettop(script);
+	
+	if (top != 1) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of create_transform().");
+		return 0;
+	}
+	
+	lua_pushinteger(script, graph_create(&(supervisor(NULL)->graph), lua_tonumber(script, 1)));
+	
+	return 1;
+}
+
 static int scripted_PushTransform(lua_State *script) {
 	int top = lua_gettop(script);
 	
@@ -205,6 +218,17 @@ static int scripted_SetCamera(lua_State *script) {
 	return 0;
 }
 
+static int scripted_SetBackground(lua_State *script) {
+	if (lua_gettop(script) != 4) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of set_background().");
+		return 0;
+	}
+	
+	graphics_set_background(&(supervisor(NULL)->graphics), (DgVec4) {lua_tonumber(script, 1), lua_tonumber(script, 2), lua_tonumber(script, 3), lua_tonumber(script, 4)});
+	
+	return 0;
+}
+
 static int scripted_PushOBJMesh(lua_State *script) {
 	if (lua_gettop(script) != 2) {
 		DgLog(DG_LOG_ERROR, "Invalid usage of push_obj_mesh().");
@@ -216,15 +240,44 @@ static int scripted_PushOBJMesh(lua_State *script) {
 	return 0;
 }
 
-static int scripted_SetBackground(lua_State *script) {
-	if (lua_gettop(script) != 4) {
-		DgLog(DG_LOG_ERROR, "Invalid usage of set_background().");
+static int scripted_CreateMesh(lua_State *script) {
+	int top = lua_gettop(script);
+	
+	if (top != 1) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of create_mesh().");
 		return 0;
 	}
 	
-	graphics_set_background(&(supervisor(NULL)->graphics), (DgVec4) {lua_tonumber(script, 1), lua_tonumber(script, 2), lua_tonumber(script, 3), lua_tonumber(script, 4)});
+	lua_pushinteger(script, graphics_create_mesh(&(supervisor(NULL)->graphics), lua_tonumber(script, 1)));
+	
+	return 1;
+}
+
+static int scripted_AddCurve(lua_State *script) {
+	if (lua_gettop(script) != 12) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of add_curve().");
+		return 0;
+	}
+	
+	DgVec3 p0 = (DgVec3) {lua_tonumber(script, 1), lua_tonumber(script, 2), lua_tonumber(script, 3)};
+	DgVec3 p1 = (DgVec3) {lua_tonumber(script, 4), lua_tonumber(script, 5), lua_tonumber(script, 6)};
+	DgVec3 p2 = (DgVec3) {lua_tonumber(script, 7), lua_tonumber(script, 8), lua_tonumber(script, 9)};
+	DgVec3 p3 = (DgVec3) {lua_tonumber(script, 10), lua_tonumber(script, 11), lua_tonumber(script, 12)};
+	
+	graphics_add_curve(&(supervisor(NULL)->graphics), p0, p1, p2, p3);
 	
 	return 0;
+}
+
+static int scripted_GetShouldKeepOpen(lua_State *script) {
+	if (lua_gettop(script) != 0) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of get_should_keep_open().");
+		return 0;
+	}
+	
+	lua_pushboolean(script, get_should_keep_open(&(supervisor(NULL)->graphics)));
+	
+	return 1;
 }
 
 static int scripted_CreatePhysicsObject(lua_State *script) {
@@ -407,14 +460,18 @@ void regiser_default_script_functions(DgScript *script) {
 	// XML Parser
 	
 	// Scene Graph
+	lua_register(script->state, "create_transform", &scripted_CreateTransform);
 	lua_register(script->state, "push_transform", &scripted_PushTransform);
 	lua_register(script->state, "get_transform", &scripted_GetTransform);
 	
 	// Graphics
 	lua_register(script->state, "set_camera", &scripted_SetCamera);
 	lua_register(script->state, "get_camera", &scripted_GetCamera);
-	lua_register(script->state, "push_obj_mesh", &scripted_PushOBJMesh);
 	lua_register(script->state, "set_background", &scripted_SetBackground);
+	lua_register(script->state, "get_should_keep_open", &scripted_GetShouldKeepOpen);
+	lua_register(script->state, "create_mesh", &scripted_CreateMesh);
+	lua_register(script->state, "push_obj_mesh", &scripted_PushOBJMesh);
+	lua_register(script->state, "add_curve", &scripted_AddCurve);
 	
 	// Physics
 	lua_register(script->state, "create_physics_object", &scripted_CreatePhysicsObject);
