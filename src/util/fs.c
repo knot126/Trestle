@@ -188,6 +188,24 @@ char *DgFileStreamGetString(DgFileStream* stream, size_t *length) {
 	return str;
 }
 
+unsigned char *DgFileStreamLoad(DgFile stream) {
+	/**
+	 * Load a file into memory and return the buffer that was created.
+	 */
+	
+	size_t size = DgFileStreamLength(stream);
+	
+	unsigned char *data = (unsigned char *) DgAlloc(size);
+	
+	if (!data) {
+		return NULL;
+	}
+	
+	DgFileStreamRead(stream, size, data);
+	
+	return data;
+}
+
 /**
  * Non-File Stream Functions
  * -------------------------

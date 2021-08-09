@@ -29,6 +29,11 @@ typedef struct Mesh {
 } Mesh;
 
 typedef struct TextString {
+	float *vertex;
+	size_t vertex_count;
+	float *index;
+	size_t index_count;
+	
 	float size;
 	const char *text;
 	size_t length;

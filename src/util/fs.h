@@ -21,7 +21,7 @@ typedef struct DgFileStream {
 	FILE* _c_file_stream;
 } DgFileStream;
 
-typedef DgFileStream DgFile;
+typedef DgFileStream * DgFile;
 
 void DgInitPaths(uint32_t fail_mode);
 char* DgEvalPath(char* path);
@@ -33,6 +33,7 @@ void DgFileStreamRead(DgFileStream* stream, size_t size, void* data);
 void DgFileStreamWrite(DgFileStream* stream, size_t size, const void* data);
 size_t DgFileStreamLength(DgFileStream* stream);
 char *DgFileStreamGetString(DgFileStream* stream, size_t *length);
+unsigned char *DgFileStreamLoad(DgFile stream);
 
 void DgMkdir(char* path);
 bool DgIsDir(const char* dir);

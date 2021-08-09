@@ -10,3 +10,9 @@
 #include <inttypes.h>
 #include <stdbool.h>
 
+#include "extern/stb_truetype.h"
+
+typedef struct Font {
+	stbtt_fontinfo font;
+	unsigned char *data;
+} Font;
