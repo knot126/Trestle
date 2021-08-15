@@ -25,8 +25,8 @@ float LightResolve() {
 }
 
 void main() {
-	Colour = colour * LightResolve();
 	Texture = texpos;
+	Colour = colour * LightResolve();
 	gl_Position = proj * camera * model * vec4(position, 1.0);
 }
 #endif

@@ -118,8 +118,18 @@ void graphics_init(GraphicsSystem * restrict gl) {
 	// Load shaders
 	uint32_t res;
 	
-	// The main 3D scene shader
+	// The main 3D shader
 	res = graphicsLoadShader(gl, "assets://shaders/main.glsl");
+	
+	if (res == 2) {
+		DgLog(DG_LOG_ERROR, "Failed to load shader.");
+		return;
+	}
+	
+	glUseProgram(gl->programs[0]);
+	
+	// The main 2D shader
+	res = graphicsLoadShader(gl, "assets://shaders/gui.glsl");
 	
 	if (res == 2) {
 		DgLog(DG_LOG_ERROR, "Failed to load shader.");
@@ -388,6 +398,164 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		
 		gl_error_check(__FILE__, __LINE__);
 	}
+	
+	// -------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
+	
+	// Disable depth tests
+	glDisable(GL_DEPTH_TEST);
+	
+	// Use the first progam
+	glUseProgram(gl->programs[1]);
+	
+	// Render all of the Mesh2D objects
+	for (size_t i = 0; i < gl->mesh2d_count; i++) {
+		Name id = gl->mesh2d_name[i];
+		Mesh2D *mesh = &gl->mesh2d[i];
+		
+		// Check that there are actually things to render
+		if (!mesh->vertex_count || !mesh->index_count) {
+			continue;
+		}
+		
+		// If the mesh is updated and the allocation of the mesh data failed,
+		// then just ignore this mesh.
+		if ((!mesh->index || !mesh->vertex) && mesh->updated) {
+			continue;
+		}
+		
+		// Update the mesh if needed
+		if (mesh->updated) {
+			if (!mesh->vbo) {
+				glGenBuffers(1, &mesh->vbo);
+			}
+			
+			if (!mesh->ebo) {
+				glGenBuffers(1, &mesh->ebo);
+			}
+			
+			if (!mesh->vao) {
+				glGenVertexArrays(1, &mesh->vao);
+			}
+			
+			gl_error_check(__FILE__, __LINE__);
+			
+			// Bind buffers
+			glBindVertexArray(mesh->vao);
+			glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ebo);
+			
+			gl_error_check(__FILE__, __LINE__);
+			
+			// Push the buffer data
+			glBufferData(GL_ARRAY_BUFFER, sizeof *mesh->vertex * mesh->vertex_count, mesh->vertex, GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof *mesh->index * mesh->index_count, mesh->index, GL_STATIC_DRAW);
+			
+			gl_error_check(__FILE__, __LINE__);
+			
+			// =================================================================
+			// Register vertex attributes
+			// =================================================================
+			
+			GLint attr;
+			
+			attr = glGetAttribLocation(gl->programs[1], "aPos");
+			
+			if (attr < 0) {
+				DgFail("Error: No attribute 'aPos'.\n", 100);
+			}
+			
+			glVertexAttribPointer(
+				attr, 
+				2, 
+				GL_FLOAT, 
+				GL_FALSE, 
+				8 * sizeof(float), 
+				(void *) 0
+			);
+			glEnableVertexAttribArray(attr);
+			
+			gl_error_check(__FILE__, __LINE__);
+			
+			// =================================================================
+			// =================================================================
+			
+			attr = glGetAttribLocation(gl->programs[1], "aTex");
+			
+			if (attr < 0) {
+				DgFail("Error: No attribute 'aTex'.\n", 100);
+			}
+			
+			glVertexAttribPointer(
+				attr, 
+				2, 
+				GL_FLOAT, 
+				GL_FALSE, 8 * sizeof(float), 
+				(void *) (2 * sizeof(float))
+			);
+			glEnableVertexAttribArray(attr);
+			
+			gl_error_check(__FILE__, __LINE__);
+			
+			// =================================================================
+			// =================================================================
+			
+			attr = glGetAttribLocation(gl->programs[1], "aCol");
+			
+			if (attr < 0) {
+				DgFail("Error: No attribute 'aCol'.\n", 100);
+			}
+			
+			glVertexAttribPointer(
+				attr, 
+				4, 
+				GL_FLOAT, 
+				GL_FALSE, 
+				8 * sizeof(float), 
+				(void *) (4 * sizeof(float))
+			);
+			glEnableVertexAttribArray(attr);
+			
+			gl_error_check(__FILE__, __LINE__);
+			
+			// =================================================================
+			// =================================================================
+			
+			mesh->updated = false;
+			
+			DgFree(mesh->vertex);
+			mesh->vertex = NULL;
+			
+			DgFree(mesh->index);
+			mesh->index = NULL;
+			
+			gl_error_check(__FILE__, __LINE__);
+		}
+		
+		// Bind the currently active textures for this object
+		const char * texture_name = mesh->texture;
+		if (!texture_name) {
+			texture_name = "placeholder";
+		}
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, gltexture_get_name(&gl->texture, texture_name));
+		
+		gl_error_check(__FILE__, __LINE__);
+		
+		// Bind buffers
+		glBindVertexArray(mesh->vao);
+		glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ebo);
+		
+		gl_error_check(__FILE__, __LINE__);
+		
+		glDrawElements(GL_TRIANGLES, mesh->index_count, GL_UNSIGNED_INT, 0);
+	}
+	
+	// -------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 	
 	// Draw Bezier curves
 	for (size_t i = 0; i < gl->curve_count; i++) {

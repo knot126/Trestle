@@ -14,12 +14,16 @@
 #include "graphics/texture.h"
 #include "graphics/gl_incl.h"
 #include "graphics/vertex1.h"
+#include "graphics/vertex2d.h"
 #include "types.h"
 
+/**
+ * A 3D mesh that is drawn in the 3D world.
+ */
 typedef struct Mesh {
-	float * vert;
-	uint32_t * index;
-	const char * texture;
+	float *vert;
+	uint32_t *index;
+	const char *texture;
 	
 	uint32_t vert_count;
 	uint32_t index_count;
@@ -27,6 +31,20 @@ typedef struct Mesh {
 	bool updated;
 	bool shouldFree;
 } Mesh;
+
+/**
+ * A 2D mesh that is displayed as part of the GUI layer.
+ */
+typedef struct Mesh2D {
+	QRVertex2D *vertex;
+	uint32_t *index;
+	const char *texture;
+	
+	uint32_t vertex_count;
+	uint32_t index_count;
+	uint32_t vbo, ebo, vao;
+	bool updated;
+} Mesh2D;
 
 typedef struct TextString {
 	float *vertex;
@@ -65,10 +83,16 @@ typedef struct GraphicsSystem {
 	DgVec4 clearColour;
 	Name camera;
 	
-	// Mesh names
+	// Mesh3D objects
 	Name  *mesh_name;
 	Mesh  *mesh;
 	size_t mesh_count;
+	
+	// Mesh2D objects
+	Name    *mesh2d_name;
+	Mesh2D  *mesh2d;
+	size_t   mesh2d_alloc;
+	size_t   mesh2d_count;
 	
 	// Curve objects
 	Curve *curve;
