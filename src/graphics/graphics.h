@@ -87,6 +87,7 @@ typedef struct GraphicsSystem {
 	Name  *mesh_name;
 	Mesh  *mesh;
 	size_t mesh_count;
+	size_t mesh_alloc;
 	
 	// Mesh2D objects
 	Name    *mesh2d_name;
@@ -103,17 +104,29 @@ typedef GraphicsSystem DgOpenGLContext;
 
 GraphicsSystem *graphics(GraphicsSystem *G);
 
+// Graphics System API
 void graphics_init(GraphicsSystem * restrict gl);
 void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph);
 void graphics_free(GraphicsSystem *gl);
 void gl_handle_input(GraphicsSystem *gl);
 bool get_should_keep_open(GraphicsSystem *gl);
 
+// Global Graphics State
 void graphics_set_background(GraphicsSystem * restrict gl, const DgVec4 colour);
 void graphics_set_camera(GraphicsSystem * restrict gl, const uint32_t id);
 uint32_t graphics_get_camera(GraphicsSystem * restrict gl);
 
+// Curves
 void graphics_add_curve(GraphicsSystem * restrict gl, DgVec3 p0, DgVec3 p1, DgVec3 p2, DgVec3 p3);
+
+// 3D Meshes
 Name graphics_create_mesh(GraphicsSystem * restrict gl, Name name);
 Name graphics_set_mesh(GraphicsSystem * restrict gl, Name name, size_t vertex_count, QRVertex1 *vertex, size_t index_count, uint32_t *index, const char *texture);
 Mesh * const graphics_get_mesh(GraphicsSystem * restrict gl, Name name);
+size_t graphics_get_mesh_counts(GraphicsSystem * restrict gl, size_t *allocsz);
+
+// 2D Meshes
+Name graphics_create_mesh2d(GraphicsSystem * restrict gl, Name name);
+Name graphics_set_mesh2d(GraphicsSystem * restrict gl, Name name, uint32_t vertex_count, QRVertex2D *vertex, uint32_t index_count, uint32_t *index, const char *texture);
+Mesh2D * const graphics_get_mesh2d(GraphicsSystem * restrict gl, Name name);
+size_t graphics_get_mesh2d_counts(GraphicsSystem * restrict gl, size_t *allocsz);

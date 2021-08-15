@@ -757,6 +757,12 @@ Name graphics_get_camera(GraphicsSystem * restrict gl) {
 	return gl->camera;
 }
 
+/**
+ * =============================================================================
+ * 3D Meshes
+ * =============================================================================
+ */
+
 void graphics_add_curve(GraphicsSystem * restrict gl, DgVec3 p0, DgVec3 p1, DgVec3 p2, DgVec3 p3) {
 	/**
 	 * This API will be updated soon.
@@ -781,17 +787,22 @@ static int graphics_realloc_mesh(GraphicsSystem * restrict gl) {
 	 * there is at least one free mesh worth of space.
 	 */
 	
-	gl->mesh_name = DgRealloc(gl->mesh_name, sizeof *gl->mesh_name * (gl->mesh_count + 1));
-	
-	if (!gl->mesh_name) {
-		return 1;
+	if (gl->mesh_count >= gl->mesh_alloc) {
+		gl->mesh_alloc = 4 + (gl->mesh_alloc * 2);
+		gl->mesh = DgRealloc(gl->mesh, sizeof *gl->mesh * gl->mesh_alloc);
+		
+		if (!gl->mesh) {
+			return 1;
+		}
+		
+		gl->mesh_name = DgRealloc(gl->mesh_name, sizeof *gl->mesh_name * gl->mesh_alloc);
+		
+		if (!gl->mesh_name) {
+			return 2;
+		}
 	}
 	
-	gl->mesh = DgRealloc(gl->mesh, sizeof *gl->mesh * (gl->mesh_count + 1));
-	
-	if (!gl->mesh) {
-		return 2;
-	}
+	return 0;
 }
 
 static size_t graphics_find_mesh(GraphicsSystem * restrict gl, Name name) {
@@ -856,4 +867,128 @@ Mesh * const graphics_get_mesh(GraphicsSystem * restrict gl, Name name) {
 	}
 	
 	return &gl->mesh[index];
+}
+
+size_t graphics_get_mesh_counts(GraphicsSystem * restrict gl, size_t *allocsz) {
+	/**
+	 * Get the count of meshes that are active and optionally the count of meshes
+	 * that are allocated.
+	 */
+	
+	if (allocsz) {
+		*allocsz = gl->mesh_alloc;
+	}
+	
+	return gl->mesh_count;
+}
+
+/**
+ * =============================================================================
+ * 2D Meshes
+ * =============================================================================
+ */
+
+static int graphics_realloc_mesh2d(GraphicsSystem * restrict gl) {
+	/**
+	 * Reallocate the list of mesh entities, making sure there is at least one 
+	 * free slot available. Returns non-zero when there is an error.
+	 */
+	
+	if (gl->mesh2d_count >= gl->mesh2d_alloc) {
+		gl->mesh2d_alloc = 4 + (gl->mesh2d_alloc * 2);
+		gl->mesh2d = DgRealloc(gl->mesh2d, sizeof *gl->mesh2d * gl->mesh2d_alloc);
+		
+		if (!gl->mesh2d) {
+			return 1;
+		}
+		
+		gl->mesh2d_name = DgRealloc(gl->mesh2d_name, sizeof *gl->mesh2d_name * gl->mesh2d_alloc);
+		
+		if (!gl->mesh2d_name) {
+			return 2;
+		}
+	}
+	
+	return 0;
+}
+
+static size_t graphics_find_mesh2d(GraphicsSystem * restrict gl, const Name name) {
+	/**
+	 * Find a mesh2d's index given its name.
+	 */
+	
+	for (size_t i = 0; i < gl->mesh2d_count; i++) {
+		if (gl->mesh2d_name[i] == name) {
+			return i;
+		}
+	}
+	
+	return -1;
+}
+
+Name graphics_create_mesh2d(GraphicsSystem * restrict gl, Name name) {
+	/**
+	 * Create a 2D mesh object.
+	 */
+	
+	if (graphics_realloc_mesh2d(gl)) {
+		return 0;
+	}
+	
+	gl->mesh2d_name[gl->mesh2d_count] = name;
+	memset(&gl->mesh2d[gl->mesh2d_count], 0, sizeof *gl->mesh2d);
+	
+	gl->mesh2d_count++;
+	
+	return name;
+}
+
+Name graphics_set_mesh2d(GraphicsSystem * restrict gl, Name name, uint32_t vertex_count, QRVertex2D *vertex, uint32_t index_count, uint32_t *index, const char *texture) {
+	/**
+	 * Set the mesh data for the given 2D mesh entity.
+	 */
+	
+	size_t i = graphics_find_mesh2d(gl, name);
+	
+	if (i == -1) {
+		return 0;
+	}
+	
+	Mesh2D *mesh = &gl->mesh2d[i];
+	
+	mesh->vertex = vertex;
+	mesh->vertex_count = vertex_count;
+	mesh->index = index;
+	mesh->index_count = index_count;
+	mesh->texture = DgStrdup(texture);
+	mesh->updated = true;
+	
+	return name;
+}
+
+Mesh2D * const graphics_get_mesh2d(GraphicsSystem * restrict gl, Name name) {
+	/**
+	 * Retrieve a pointer to the mesh data structure.
+	 */
+	
+	size_t i = graphics_find_mesh2d(gl, name);
+	
+	if (i == -1) {
+		return NULL;
+	}
+	
+	return &gl->mesh2d[i];
+}
+
+size_t graphics_get_mesh2d_counts(GraphicsSystem * restrict gl, size_t *allocsz) {
+	/**
+	 * Get the count of 2d meshes that are active and optionally the count of 2d
+	 * meshes that are allocated.
+	 */
+	
+	if (allocsz) {
+		*allocsz = gl->mesh2d_alloc;
+	}
+	
+	return gl->mesh2d_count;
 }

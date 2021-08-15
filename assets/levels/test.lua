@@ -1,7 +1,7 @@
 toruses = {}
 
 r, g, b = mgRandFloat(), mgRandFloat(), mgRandFloat()
-br, bg, bb = mgRandFloat(), mgRandFloat(), mgRandFloat()
+br, bg, bb = r, g, b
 -- r, g, b = 1.0, 1.0, 1.0
 
 function RandPosAxis(max, diss)
