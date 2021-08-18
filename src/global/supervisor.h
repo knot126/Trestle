@@ -12,6 +12,7 @@
 
 #include "game/gamescript.h"
 #include "game/scriptman.h"
+#include "global/reg.h"
 #include "graphics/graphics.h"
 #include "graph/graph.h"
 #include "physics/physics.h"
@@ -41,6 +42,8 @@ typedef struct Supervisor {
 	InputSystem input;
 	// P
 	PhysicsSystem physics;
+	// R
+	Registry reg;
 	// S
 	SceneGraph graph;
 	ScriptManager scriptman;

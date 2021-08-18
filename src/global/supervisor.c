@@ -11,6 +11,7 @@
 
 #include "game/gamescript.h"
 #include "game/scriptman.h"
+#include "global/reg.h"
 #include "graph/graph.h"
 #include "graphics/graphics.h"
 #include "input/input.h"
@@ -61,6 +62,10 @@ void sup_init(Supervisor * restrict sup) {
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: Input");
 	input_init(&sup->input, &sup->graphics);
 	
+	// Initialise the registry
+	DgLog(DG_LOG_INFO, "Supervisor Initialise: Registry");
+	registry_init(&sup->reg);
+	
 	// Run the main game script
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: ScriptManager");
 	scriptman_init(&sup->scriptman);
@@ -76,6 +81,9 @@ void sup_destroy(Supervisor * restrict sup) {
 	
 	DgLog(DG_LOG_INFO, "Supervisor Destroy: ScriptManager");
 	scriptman_free(&sup->scriptman);
+	
+	DgLog(DG_LOG_INFO, "Supervisor Destroy: Registry");
+	registry_free(&sup->reg);
 	
 	DgLog(DG_LOG_INFO, "Supervisor Destroy: Input");
 	// Not currently required

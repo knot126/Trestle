@@ -13,6 +13,7 @@
 #include "lauxlib.h"
 
 #include "game/box.h"
+#include "global/reg.h"
 #include "global/supervisor.h"
 #include "graphics/mesh.h"
 #include "util/log.h"
@@ -432,6 +433,28 @@ static int scripted_MakeBox(lua_State *script) {
 	return 1;
 }
 
+static int scripted_RegSet(lua_State *script) {
+	if (lua_gettop(script) != 2) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of reg_set().");
+		return 0;
+	}
+	
+	registry_set(&(supervisor(NULL)->reg), lua_tostring(script, 1), (char *) lua_tostring(script, 2));
+	
+	return 0;
+}
+
+static int scripted_RegGet(lua_State *script) {
+	if (lua_gettop(script) != 1) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of reg_get().");
+		return 0;
+	}
+	
+	lua_pushstring(script, registry_get(&(supervisor(NULL)->reg), lua_tostring(script, 1)));
+	
+	return 1;
+}
+
 static int scripted_GetKey(lua_State *script) {
 	if (lua_gettop(script) != 1) {
 		DgLog(DG_LOG_ERROR, "Invalid usage of get_key().");
@@ -487,6 +510,10 @@ void regiser_default_script_functions(DgScript *script) {
 	
 	// Input
 	lua_register(script->state, "get_key", &scripted_GetKey);
+	
+	// Registry
+	lua_register(script->state, "reg_get", &scripted_RegGet);
+	lua_register(script->state, "reg_set", &scripted_RegSet);
 	
 	// Objects
 	lua_register(script->state, "make_box", &scripted_MakeBox);

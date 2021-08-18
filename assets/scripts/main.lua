@@ -25,6 +25,10 @@ function init()
 	-- Sync the physics graph after everything has been created
 	physics_sync_graph()
 	
+	-- Set some registry values
+	reg_set("life", "3")
+	reg_set("offset", "5230")
+	
 	-- Open the level script
 	level = script_open("assets://levels/test.lua")
 	
@@ -44,6 +48,7 @@ function tick(dt)
 	
 	if at > 1.0 then
 		print("POSITION (" .. x .. ", " .. y .. ", " .. z .. ")", "SPEED " .. speed)
+		print("LIFE: " .. reg_get("life"), "OFFSET: " .. reg_get("offset"))
 		at = 0
 	end
 	at = at + dt

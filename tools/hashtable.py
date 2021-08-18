@@ -1,3 +1,9 @@
+"""
+Generate a very simple hash table.
+"""
+import sys
+import json
+
 KeyType = "const char *" # String type
 ValueType = "char *" # Value type
 HashType = "uint32_t" # Hash type
