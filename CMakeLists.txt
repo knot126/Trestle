@@ -84,6 +84,7 @@ set(MELON_FILES
 	"src/util/args.c"
 	"src/util/audio.c"
 	"src/util/bag.c"
+	"src/util/bezsurf.c"
 	"src/util/bitmap.c"
 	"src/util/fail.c"
 	"src/util/fs.c"

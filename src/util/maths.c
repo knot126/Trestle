@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <inttypes.h>
 
 // For C implementations that do not specify PI
 #if !defined(M_PI)
@@ -35,6 +36,47 @@ float DgTan(float angle) {
 
 float DgSqrt(float n) {
 	return (float) sqrt(n);
+}
+
+float xcos(float n) {
+	return DgCos(n);
+}
+
+float xsin(float n) {
+	return DgSin(n);
+}
+
+float xtan(float n) {
+	return DgTan(n);
+}
+
+float xsqrt(float n) {
+	return DgSqrt(n);
+}
+
+/**
+ * Other misc. utility functions
+ */
+
+float xfac(float n) {
+	const uint64_t num = (uint64_t) n;
+	uint64_t res = 1;
+	
+	for (uint64_t i = 1; i <= num; i++) {
+		res *= i;
+	}
+	
+	return (float) res;
+}
+
+float xpow(float n, uint64_t e) {
+	float res = n;
+	
+	for (int i = 0; i < e; i++) {
+		res *= res;
+	}
+	
+	return res;
 }
 
 /* 

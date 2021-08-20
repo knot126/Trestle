@@ -8,6 +8,7 @@
 #pragma once
 
 #include <stddef.h>
+#include <inttypes.h>
 
 // Angle ops
 
@@ -15,6 +16,13 @@ float DgCos(float angle);
 float DgSin(float angle);
 float DgTan(float angle);
 float DgSqrt(float n);
+
+float xcos(float n);
+float xsin(float n);
+float xtan(float n);
+float xsqrt(float n);
+float xfac(float n);
+float xpow(float n, uint64_t e);
 
 // DgVec**
 
