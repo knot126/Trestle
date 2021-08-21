@@ -422,6 +422,7 @@ void physics_sync_graph(PhysicsSystem *this, SceneGraph *graph) {
 		
 		phys->lastPos = trans->pos;
 		phys->accel = (DgVec3) {0.0f, 0.0f, 0.0f};
+		phys->deferedAccel = (DgVec3) {0.0f, 0.0f, 0.0f};
 		
 		DgLog(DG_LOG_VERBOSE, "Sync phys object %d | lastPos = (%.f, %.f, %.f)", this->object_name[i], phys->lastPos.x, phys->lastPos.y, phys->lastPos.z);
 	}

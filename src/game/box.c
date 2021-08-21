@@ -25,24 +25,22 @@ Name make_box(Supervisor * const restrict sup, const DgVec3 pos, const DgVec3 si
 		return 0;
 	}
 	
-	Transform *trans = graph_get(&sup->graph, name);
+	// Push transform
+	Transform trans;
 	
-	if (!trans) {
-		DgLog(DG_LOG_ERROR, "Failed to create box!!");
-		return 0;
-	}
+	trans.pos = pos;
+	trans.rot = (DgVec3) {0.0f, 0.0f, 0.0f};
+	trans.scale = size;
 	
+	graph_set(&sup->graph, name, trans);
+	
+	// Get mesh object
 	Mesh *mesh = graphics_get_mesh(&sup->graphics, name);
 	
 	if (!mesh) {
 		DgLog(DG_LOG_ERROR, "Failed to create box!!");
 		return 0;
 	}
-	
-	// Push transform
-	trans->pos = pos;
-	trans->rot = (DgVec3) {0.0f, 0.0f, 0.0f};
-	trans->scale = size;
 	
 	// Set AABB 
 	physics_set_aabb(&sup->physics, name, size);

@@ -46,13 +46,14 @@ function tick(dt)
 	-- unrelated
 	local x, y, z, rx, ry, rz = get_transform(player)
 	
-	if at > 1.0 then
+-- 	if at > 1.0 then
 		print("POSITION (" .. x .. ", " .. y .. ", " .. z .. ")", "SPEED " .. speed)
 		print("LIFE: " .. reg_get("life"), "OFFSET: " .. reg_get("offset"))
 		at = 0
-	end
+-- 	end
 	at = at + dt
 	
+	--[[
 	-- moving the player
 	if w then
 		speed = speed + dt * 5.0
@@ -95,8 +96,9 @@ function tick(dt)
 	
 	-- Check for player's death
 	if y < -8.0 then
-		quit()
-	end
+		enable_physics(false)
+		print("Dead!")
+	end]]--
 end
 
 function free()
