@@ -18,4 +18,7 @@ typedef struct {
 
 void input_init(InputSystem *input, GraphicsSystem *graphics);
 void input_update(InputSystem *input);
+
 bool getKeyPressed(int key);
+DgVec2 getMousePos(void);
+DgVec2 getMouseDelta(void);

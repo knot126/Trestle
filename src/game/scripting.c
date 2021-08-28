@@ -281,6 +281,31 @@ static int scripted_GetShouldKeepOpen(lua_State *script) {
 	return 1;
 }
 
+static int scripted_GetScreenSize(lua_State *script) {
+	if (lua_gettop(script) != 0) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of get_screen_size().");
+		return 0;
+	}
+	
+	DgVec2I size = graphics_get_screen_size(&(supervisor(NULL)->graphics));
+	
+	lua_pushinteger(script, size.x);
+	lua_pushinteger(script, size.y);
+	
+	return 2;
+}
+
+static int scripted_SetMouseDisabled(lua_State *script) {
+	if (lua_gettop(script) != 1) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of set_mouse_disabled().");
+		return 0;
+	}
+	
+	graphics_set_mouse_disabled(&supervisor(NULL)->graphics, lua_toboolean(script, 1));
+	
+	return 0;
+}
+
 static int scripted_CreatePhysicsObject(lua_State *script) {
 	if (lua_gettop(script) != 1) {
 		DgLog(DG_LOG_ERROR, "Invalid usage of create_physics_object().");
@@ -468,6 +493,34 @@ static int scripted_GetKey(lua_State *script) {
 	return 1;
 }
 
+static int scripted_GetMousePos(lua_State *script) {
+	if (lua_gettop(script) != 0) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of get_mouse_pos().");
+		return 0;
+	}
+	
+	DgVec2 pos = getMousePos();
+	
+	lua_pushnumber(script, pos.x);
+	lua_pushnumber(script, pos.y);
+	
+	return 2;
+}
+
+static int scripted_GetMouseDelta(lua_State *script) {
+	if (lua_gettop(script) != 0) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of get_mouse_delta().");
+		return 0;
+	}
+	
+	DgVec2 pos = getMouseDelta();
+	
+	lua_pushnumber(script, pos.x);
+	lua_pushnumber(script, pos.y);
+	
+	return 2;
+}
+
 void regiser_default_script_functions(DgScript *script) {
 	// Supervisor and Entites
 	lua_register(script->state, "next_name", &scripted_EntityName);
@@ -492,6 +545,8 @@ void regiser_default_script_functions(DgScript *script) {
 	lua_register(script->state, "get_camera", &scripted_GetCamera);
 	lua_register(script->state, "set_background", &scripted_SetBackground);
 	lua_register(script->state, "get_should_keep_open", &scripted_GetShouldKeepOpen);
+	lua_register(script->state, "get_screen_size", &scripted_GetScreenSize);
+	lua_register(script->state, "set_mouse_disabled", &scripted_SetMouseDisabled);
 	lua_register(script->state, "create_mesh", &scripted_CreateMesh);
 	lua_register(script->state, "push_obj_mesh", &scripted_PushOBJMesh);
 	lua_register(script->state, "add_curve", &scripted_AddCurve);
@@ -510,6 +565,8 @@ void regiser_default_script_functions(DgScript *script) {
 	
 	// Input
 	lua_register(script->state, "get_key", &scripted_GetKey);
+	lua_register(script->state, "get_mouse_pos", &scripted_GetMousePos);
+	lua_register(script->state, "get_mouse_delta", &scripted_GetMouseDelta);
 	
 	// Registry
 	lua_register(script->state, "reg_get", &scripted_RegGet);

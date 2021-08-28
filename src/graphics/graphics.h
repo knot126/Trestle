@@ -115,6 +115,8 @@ bool get_should_keep_open(GraphicsSystem *gl);
 void graphics_set_background(GraphicsSystem * restrict gl, const DgVec4 colour);
 void graphics_set_camera(GraphicsSystem * restrict gl, const uint32_t id);
 uint32_t graphics_get_camera(GraphicsSystem * restrict gl);
+DgVec2I graphics_get_screen_size(GraphicsSystem * restrict gl);
+void graphics_set_mouse_disabled(GraphicsSystem * restrict gl, bool enabled);
 
 // Curves
 void graphics_add_curve(GraphicsSystem * restrict gl, DgVec3 p0, DgVec3 p1, DgVec3 p2, DgVec3 p3);

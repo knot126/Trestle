@@ -35,6 +35,10 @@ typedef struct DgVec2 {
 	};
 } DgVec2;
 
+typedef struct DgVec2I {
+	int x, y;
+} DgVec2I;
+
 typedef struct DgVec3 {
 	union {
 		struct {

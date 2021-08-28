@@ -143,9 +143,16 @@ static void Resolve_AABB_AABB(PhysicsSystem *this, SceneGraph *graph, size_t i, 
 		if (obj) { obj->lastPos.z -= diff.z; }
 	}
 	
-	// If we are on the ground, we should not be building up any forces (gravity)
 	if (obj && was_ground) {
+		// Remove any forces, like gravity
 		obj->lastPos = trans->pos;
+		
+		// Set ground flag
+		obj->flags |= PHYSICS_ON_GROUND;
+	}
+	else {
+		// Clear ground flag
+		obj->flags &= ~PHYSICS_ON_GROUND;
 	}
 }
 

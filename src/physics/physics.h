@@ -19,6 +19,7 @@ enum {
 	PHYSICS_NO_GRAVITY = (1 << 1),
 	PHYSICS_DRAG = (1 << 2),
 	PHYSICS_MODE_PLAYER = (1 << 3), // uses a different integration scheme
+	PHYSICS_ON_GROUND = (1 << 4),
 };
 
 typedef struct PhysicsObject {

@@ -31,6 +31,8 @@
 
 #include "graphics.h"
 
+#define GL_ERROR_CHECK() gl_error_check(__FILE__, __LINE__)
+
 GraphicsSystem *QR_ACTIVE_GRPAHICS_SYSTEM;
 
 GraphicsSystem *graphics(GraphicsSystem *G) {
@@ -139,7 +141,7 @@ void graphics_init(GraphicsSystem * restrict gl) {
 	glUseProgram(gl->programs[0]);
 	
 	// Check for errors
-	gl_error_check(__FILE__, __LINE__);
+	GL_ERROR_CHECK();
 	
 	// Create texture manager
 	gltexture_init(&gl->texture);
@@ -159,7 +161,7 @@ void graphics_init(GraphicsSystem * restrict gl) {
 	gltexture_load_list(&gl->texture, "assets://gfx/textures.xml");
 	
 	// Setting texture uniforms in shaders
-	gl_error_check(__FILE__, __LINE__);
+	GL_ERROR_CHECK();
 	
 	// Set uniforms for 3D shader
 	glUseProgram(gl->programs[0]);
@@ -170,7 +172,7 @@ void graphics_init(GraphicsSystem * restrict gl) {
 	DgVec3 v = {1.0, 1.0, 0.1};
 	v = DgVec3Normalise(v);
 	glUniform3f(glGetUniformLocation(gl->programs[0], "LightDirection"), v.x, v.y, v.z);
-	gl_error_check(__FILE__, __LINE__);
+	GL_ERROR_CHECK();
 	
 	// Clear current program
 	glUseProgram(0);
@@ -178,7 +180,7 @@ void graphics_init(GraphicsSystem * restrict gl) {
 	// Enable alpha blending
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
-	gl_error_check(__FILE__, __LINE__);
+	GL_ERROR_CHECK();
 	
 	// Set default clear colour
 	gl->clearColour = (DgVec4) {0.5f, 0.5f, 0.5f, 1.0f};
@@ -259,18 +261,18 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 				glGenVertexArrays(1, &mesh->vao);
 			}
 			
-			gl_error_check(__FILE__, __LINE__);
+			GL_ERROR_CHECK();
 			
 			glBindVertexArray(mesh->vao);
 			glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ebo);
 			
-			gl_error_check(__FILE__, __LINE__);
+			GL_ERROR_CHECK();
 			
 			glBufferData(GL_ARRAY_BUFFER, mesh->vert_count * 32, mesh->vert, GL_STATIC_DRAW);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->index_count * sizeof(uint32_t), mesh->index, GL_STATIC_DRAW);
 			
-			gl_error_check(__FILE__, __LINE__);
+			GL_ERROR_CHECK();
 			
 			// =================================================================
 			// Register vertex attributes
@@ -294,7 +296,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			);
 			glEnableVertexAttribArray(attr);
 			
-			gl_error_check(__FILE__, __LINE__);
+			GL_ERROR_CHECK();
 			
 			// =================================================================
 			// =================================================================
@@ -314,7 +316,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			);
 			glEnableVertexAttribArray(attr);
 			
-			gl_error_check(__FILE__, __LINE__);
+			GL_ERROR_CHECK();
 			
 			// =================================================================
 			// =================================================================
@@ -335,7 +337,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			);
 			glEnableVertexAttribArray(attr);
 			
-			gl_error_check(__FILE__, __LINE__);
+			GL_ERROR_CHECK();
 			
 			// =================================================================
 			// =================================================================
@@ -348,7 +350,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			DgFree(mesh->index);
 			mesh->index = NULL;
 			
-			gl_error_check(__FILE__, __LINE__);
+			GL_ERROR_CHECK();
 		}
 		
 		// Bind the currently active textures for this shader
@@ -363,7 +365,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ebo);
 		
-		gl_error_check(__FILE__, __LINE__);
+		GL_ERROR_CHECK();
 		
 		// Find the transform
 		DgVec3 translate = DgVec3New(0.0f, 0.0f, 0.0f);
@@ -392,11 +394,11 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			);
 		glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
 		
-		gl_error_check(__FILE__, __LINE__);
+		GL_ERROR_CHECK();
 		
 		glDrawElements(GL_TRIANGLES, mesh->index_count, GL_UNSIGNED_INT, 0);
 		
-		gl_error_check(__FILE__, __LINE__);
+		GL_ERROR_CHECK();
 	}
 	
 	// -------------------------------------------------------------------------
@@ -439,20 +441,20 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 				glGenVertexArrays(1, &mesh->vao);
 			}
 			
-			gl_error_check(__FILE__, __LINE__);
+			GL_ERROR_CHECK();
 			
 			// Bind buffers
 			glBindVertexArray(mesh->vao);
 			glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ebo);
 			
-			gl_error_check(__FILE__, __LINE__);
+			GL_ERROR_CHECK();
 			
 			// Push the buffer data
 			glBufferData(GL_ARRAY_BUFFER, sizeof *mesh->vertex * mesh->vertex_count, mesh->vertex, GL_STATIC_DRAW);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof *mesh->index * mesh->index_count, mesh->index, GL_STATIC_DRAW);
 			
-			gl_error_check(__FILE__, __LINE__);
+			GL_ERROR_CHECK();
 			
 			// =================================================================
 			// Register vertex attributes
@@ -476,7 +478,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			);
 			glEnableVertexAttribArray(attr);
 			
-			gl_error_check(__FILE__, __LINE__);
+			GL_ERROR_CHECK();
 			
 			// =================================================================
 			// =================================================================
@@ -496,7 +498,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			);
 			glEnableVertexAttribArray(attr);
 			
-			gl_error_check(__FILE__, __LINE__);
+			GL_ERROR_CHECK();
 			
 			// =================================================================
 			// =================================================================
@@ -517,7 +519,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			);
 			glEnableVertexAttribArray(attr);
 			
-			gl_error_check(__FILE__, __LINE__);
+			GL_ERROR_CHECK();
 			
 			// =================================================================
 			// =================================================================
@@ -530,7 +532,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			DgFree(mesh->index);
 			mesh->index = NULL;
 			
-			gl_error_check(__FILE__, __LINE__);
+			GL_ERROR_CHECK();
 		}
 		
 		// Bind the currently active textures for this object
@@ -541,14 +543,14 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, gltexture_get_name(&gl->texture, texture_name));
 		
-		gl_error_check(__FILE__, __LINE__);
+		GL_ERROR_CHECK();
 		
 		// Bind buffers
 		glBindVertexArray(mesh->vao);
 		glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ebo);
 		
-		gl_error_check(__FILE__, __LINE__);
+		GL_ERROR_CHECK();
 		
 		glDrawElements(GL_TRIANGLES, mesh->index_count, GL_UNSIGNED_INT, 0);
 	}
@@ -556,6 +558,12 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 	// -------------------------------------------------------------------------
 	// -------------------------------------------------------------------------
 	// -------------------------------------------------------------------------
+	
+	// Disable depth tests
+	glEnable(GL_DEPTH_TEST);
+	
+	// Use the first progam
+	glUseProgram(gl->programs[0]);
 	
 	// Draw Bezier curves
 	for (size_t i = 0; i < gl->curve_count; i++) {
@@ -608,7 +616,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		);
 		glEnableVertexAttribArray(attr);
 		
-		gl_error_check(__FILE__, __LINE__);
+		GL_ERROR_CHECK();
 		
 		// =================================================================
 		// =================================================================
@@ -628,7 +636,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		);
 		glEnableVertexAttribArray(attr);
 		
-		gl_error_check(__FILE__, __LINE__);
+		GL_ERROR_CHECK();
 		
 		// =================================================================
 		// =================================================================
@@ -649,7 +657,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		);
 		glEnableVertexAttribArray(attr);
 		
-		gl_error_check(__FILE__, __LINE__);
+		GL_ERROR_CHECK();
 		
 		// =================================================================
 		// =================================================================
@@ -657,13 +665,19 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		// Bind the currently active textures for this shader
 		glBindTexture(GL_TEXTURE_2D, gltexture_get_name(&gl->texture, "placeholder"));
 		
+		GL_ERROR_CHECK();
+		
 		DgMat4 model = DgMat4New(1.0f);
 		glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
+		
+		GL_ERROR_CHECK();
 		
 		glDrawArrays(GL_LINES, 0, sizeof v / sizeof *v);
 		
 		glDeleteBuffers(1, &vbo);
 		glDeleteVertexArrays(1, &vao);
+		
+		GL_ERROR_CHECK();
 	}
 	
 	// Unbind everything
@@ -673,7 +687,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 	glUseProgram(0);
 	
 	// Check for errors
-	gl_error_check(__FILE__, __LINE__);
+	GL_ERROR_CHECK();
 }
 
 void gl_handle_input(GraphicsSystem* gl) {
@@ -755,6 +769,34 @@ Name graphics_get_camera(GraphicsSystem * restrict gl) {
 	 */
 	
 	return gl->camera;
+}
+
+DgVec2I graphics_get_screen_size(GraphicsSystem * restrict gl) {
+	/**
+	 * The the size of the window.
+	 */
+	
+	DgVec2I size;
+	glfwGetWindowSize(gl->window, &size.x, &size.y);
+	
+	return size;
+}
+
+void graphics_set_mouse_disabled(GraphicsSystem * restrict gl, bool enabled) {
+	/**
+	 * Disable the GLFW mouse controls.
+	 */
+	
+	if (enabled) {
+		glfwSetInputMode(gl->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		
+		if (glfwRawMouseMotionSupported()) {
+			glfwSetInputMode(gl->window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+		}
+	}
+	else {
+		glfwSetInputMode(gl->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
 }
 
 /**

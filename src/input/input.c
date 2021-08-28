@@ -39,3 +39,21 @@ bool getKeyPressed(int key) {
 	
 	glfwi_get_key(key, GLFW_PRESS);
 }
+
+DgVec2 getMousePos(void) {
+	/**
+	 * Return the current position of the mouse pointer, down to the subpixel if
+	 * it is supported.
+	 */
+	
+	return glfwi_get_mouse_pos();
+}
+
+DgVec2 getMouseDelta(void) {
+	/**
+	 * Return the difference between the last mouse position and the current 
+	 * one, down to the subpixel if supported.
+	 */
+	
+	return glfwi_get_mouse_delta();
+}
