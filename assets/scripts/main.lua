@@ -6,11 +6,11 @@
 -- 
 
 at = 0
--- SPEED_MAX = 15.0
--- SPEED_MIN = 3.0
--- speed = 6.0
+SPEED_MAX = 15.0
+SPEED_MIN = 3.0
+speed = 6.0
 
--- p = 0
+p = 0
 
 function init()
 	-- Create camera
@@ -56,28 +56,28 @@ function tick(dt)
 	end
 	at = at + dt
 	
--- 	-- moving the player
--- 	if w then
--- 		speed = speed + dt * 5.0
--- 	end
--- 	
--- 	if s then
--- 		speed = speed - dt * 5.0
--- 	end
--- 	
--- 	-- limit speed to max and min
--- 	speed = math.min(math.max(speed, SPEED_MIN), SPEED_MAX)
--- 	
--- 	-- move the player
--- -- 	move_object(player, 0.0, 0.0, -speed * dt)
-	
+	-- moving the player
 	if w then
-		move_object(player, 0.0, 0.0, -5.0 * dt)
+		speed = speed + dt * 5.0
 	end
 	
 	if s then
-		move_object(player, 0.0, 0.0, 5.0 * dt)
+		speed = speed - dt * 5.0
 	end
+	
+	-- limit speed to max and min
+	speed = math.min(math.max(speed, SPEED_MIN), SPEED_MAX)
+	
+-- 	move the player
+	move_object(player, 0.0, 0.0, -speed * dt)
+	
+-- 	if w then
+-- 		move_object(player, 0.0, 0.0, -10.0 * dt)
+-- 	end
+-- 	
+-- 	if s then
+-- 		move_object(player, 0.0, 0.0, 10.0 * dt)
+-- 	end
 	
 	if a then
 		move_object(player, -5.0 * dt, 0.0, 0.0)
@@ -88,9 +88,9 @@ function tick(dt)
 	end
 	
 	-- jumping
-	if j --[[and p < 0]] then
+	if j and p < 0 then
 		add_force(player, 0.0, 1250.0, 0.0)
--- 		p = 200
+		p = 200
 	end
 	
 -- 	p = p - 1
