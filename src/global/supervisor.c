@@ -129,6 +129,10 @@ Name sup_entity(Supervisor *sup, const uint64_t systems) {
 		graphics_create_mesh(&sup->graphics, name);
 	}
 	
+	if ((systems & ENT_GRAPHICS_MESH2D) == ENT_GRAPHICS_MESH2D) {
+		graphics_create_mesh2d(&sup->graphics, name);
+	}
+	
 	if ((systems & ENT_GRAPHICS_CURVE) == ENT_GRAPHICS_CURVE) {
 		// ...
 	}

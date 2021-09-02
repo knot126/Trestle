@@ -29,6 +29,8 @@ enum {
 	ENT_PHYSICS_AABB = (1 << 5),
 	ENT_PHYSICS_MESH = (1 << 6),
 	
+	ENT_GRAPHICS_MESH2D = (1 << 7),
+	
 };
 
 typedef struct Supervisor {
