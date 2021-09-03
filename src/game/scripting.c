@@ -13,6 +13,7 @@
 #include "lauxlib.h"
 
 #include "game/box.h"
+#include "game/rect.h"
 #include "global/reg.h"
 #include "global/supervisor.h"
 #include "graphics/mesh.h"
@@ -458,6 +459,39 @@ static int scripted_MakeBox(lua_State *script) {
 	return 1;
 }
 
+static int scripted_MakeRect(lua_State *script) {
+	int top = lua_gettop(script);
+	
+	DgVec2 pos = {0.0f, 0.0f}, size = {1.0f, 1.0f};
+	DgVec4 col = {0.75f, 0.75f, 0.75f, 1.0f};
+	const char * texture = NULL;
+	
+	if (top >= 2) {
+		pos.x = lua_tonumber(script, 1);
+		pos.y = lua_tonumber(script, 2);
+	}
+	
+	if (top >= 4) {
+		size.x = lua_tonumber(script, 3);
+		size.y = lua_tonumber(script, 4);
+	}
+	
+	if (top >= 8) {
+		col.r = lua_tonumber(script, 5);
+		col.g = lua_tonumber(script, 6);
+		col.b = lua_tonumber(script, 7);
+		col.a = lua_tonumber(script, 8);
+	}
+	
+	if (top >= 9) {
+		texture = lua_tostring(script, 9);
+	}
+	
+	lua_pushinteger(script, make_rect(supervisor(NULL), pos, size, col, texture));
+	
+	return 1;
+}
+
 static int scripted_RegSet(lua_State *script) {
 	if (lua_gettop(script) != 2) {
 		DgLog(DG_LOG_ERROR, "Invalid usage of reg_set().");
@@ -574,4 +608,5 @@ void regiser_default_script_functions(DgScript *script) {
 	
 	// Objects
 	lua_register(script->state, "make_box", &scripted_MakeBox);
+	lua_register(script->state, "make_rect", &scripted_MakeRect);
 }

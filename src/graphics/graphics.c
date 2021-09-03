@@ -552,6 +552,35 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		
 		GL_ERROR_CHECK();
 		
+		// Push the matrix transform
+		DgVec3 translate = DgVec3New(0.0f, 0.0f, 0.0f);
+		DgVec3 rotate = DgVec3New(0.0f, 0.0f, 0.0f);
+		DgVec3 scale = DgVec3New(1.0f, 1.0f, 1.0f);
+		
+		Transform * const trans = graph_get(graph, id);
+		
+		if (trans) {
+			translate = trans->pos;
+			rotate = trans->rot;
+			scale = trans->scale;
+		}
+		
+		DgMat4 rot_x = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(1.0f, 0.0f, 0.0f), rotate.x);
+		DgMat4 rot_y = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.0f, 1.0f, 0.0f), rotate.y);
+		DgMat4 rot_z = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.0f, 0.0f, 1.0f), rotate.z);
+		DgMat4 rot_mat = DgMat4ByMat4Multiply(rot_z, DgMat4ByMat4Multiply(rot_y, rot_x));
+		
+		DgMat4 model = 
+			DgMat4ByMat4Multiply(
+				DgMat4Translate(DgMat4New(1.0f), translate), 
+				DgMat4ByMat4Multiply(rot_mat, 
+					DgMat4Scale(DgMat4New(1.0f), scale)
+				)
+			);
+		glUniformMatrix4fv(glGetUniformLocation(gl->programs[1], "transform"), 1, GL_TRUE, &model.ax);
+		
+		GL_ERROR_CHECK();
+		
 		glDrawElements(GL_TRIANGLES, mesh->index_count, GL_UNSIGNED_INT, 0);
 	}
 	
@@ -1002,7 +1031,7 @@ Name graphics_set_mesh2d(GraphicsSystem * restrict gl, Name name, uint32_t verte
 	mesh->vertex_count = vertex_count;
 	mesh->index = index;
 	mesh->index_count = index_count;
-	mesh->texture = DgStrdup(texture);
+	mesh->texture = texture ? DgStrdup(texture) : NULL;
 	mesh->updated = true;
 	
 	return name;

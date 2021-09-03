@@ -11,4 +11,4 @@
 #include "global/supervisor.h"
 #include "util/maths.h"
 
-Name make_rect(Supervisor * const restrict sup, const DgVec2 pos, const DgVec2 size, const DgVec4 colour);
+Name make_rect(Supervisor * const restrict sup, const DgVec2 pos, const DgVec2 size, const DgVec4 colour, const char *texture);

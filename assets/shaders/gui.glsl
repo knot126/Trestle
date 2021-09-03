@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
@@ -6,6 +6,8 @@
  */
 
 #ifdef VERTEX 
+uniform mat4 transform;
+
 in vec2 aPos;
 in vec2 aTex;
 in vec4 aCol;
@@ -16,7 +18,7 @@ out vec4 Colour;
 void main() {
 	TexturePos = aTex;
 	Colour = aCol;
-	gl_Position = vec4(aPos, 0.0, 1.0);
+	gl_Position = transform * vec4(aPos, 0.0, 1.0);
 }
 #endif
 
