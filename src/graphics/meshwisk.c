@@ -6,13 +6,17 @@
  * facilites
  */
 
+#include <string.h>
 #include <inttypes.h>
 
 #include "lua.h"
 #include "lualib.h"
 #include "lauxlib.h"
 
+#include "graph/graph.h"
+#include "global/supervisor.h"
 #include "util/alloc.h"
+#include "graphics/graphics.h"
 #include "graphics/mesh.h"
 
 #include "meshwisk.h"
@@ -72,15 +76,22 @@ static int scripted_MeshWhiskerPushIndex(lua_State *script) {
 	 * Push index data to a MeshWhisker
 	 */
 	
+	int top = lua_gettop(script);
+	
 	MeshWhisker *mw = lua_touserdata(script, 1);
 	
 	if (!mw) {
 		QR_LUA_MW_ALLOC_ERROR();
 	}
 	
-	float i = lua_tointeger(script, 2);
+	float i = lua_tointeger(script, 2), j, k;
 	
-	if (mw->index_count >= mw->index_alloc) {
+	if (top > 2) {
+		j = lua_tointeger(script, 3);
+		k = lua_tointeger(script, 4);
+	}
+	
+	if ((mw->index_count + 2) >= mw->index_alloc) {
 		mw->index_alloc = 4 + mw->index_alloc * 2;
 		mw->index = DgRealloc(mw->index, mw->index_alloc);
 		
@@ -90,6 +101,11 @@ static int scripted_MeshWhiskerPushIndex(lua_State *script) {
 	}
 	
 	mw->index[mw->vertex_count++] = i;
+	
+	if (top > 2) {
+		mw->index[mw->vertex_count++] = j;
+		mw->index[mw->vertex_count++] = k;
+	}
 	
 	return 0;
 }
@@ -101,10 +117,39 @@ static int scripted_MeshWhiskerBind(lua_State *script) {
 	
 	MeshWhisker *mw = lua_touserdata(script, 1);
 	float id = lua_tointeger(script, 2);
+	Mesh * const mesh = graphics_get_mesh(&supervisor(NULL)->graphics, id);
 	
-	// just free until new world system is ready
-	DgFree(mw->vertex);
-	DgFree(mw->index);
+	// If there is an error, free and return nil
+	if (!id || !mesh) {
+		DgFree(mw->vertex);
+		DgFree(mw->index);
+		return 0;
+	}
+	
+	// Otherwise, bind the mesh to the wisk.
+	if (mesh->vert) {
+		DgFree(mesh->vert);
+	}
+	
+	if (mesh->index) {
+		DgFree(mesh->index);
+	}
+	
+	mesh->vert = (float *) mw->vertex;
+	mesh->vert_count = mw->vertex_count;
+	mesh->index = mw->index;
+	mesh->index_count = mw->index_count;
+	
+	lua_pushinteger(script, id);
+	
+	return 1;
+}
+
+void register_meshwisk_functions(DgScript *script) {
+	lua_register(script->state, "MeshWisk", &scripted_MeshWhiskerNew);
+	lua_register(script->state, "mw_push_vertex", &scripted_MeshWhiskerPushVertex);
+	lua_register(script->state, "mw_push_index", &scripted_MeshWhiskerPushIndex);
+	lua_register(script->state, "mw_bind", &scripted_MeshWhiskerBind);
 }
 
 #undef QR_LUA_MW_ALLOC_ERROR

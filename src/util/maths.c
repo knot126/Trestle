@@ -279,6 +279,33 @@ inline DgVec3 DgVec3FromString(const char * const s) {
 	return c;
 }
 
+inline DgVec3 DgVec3Rotate(DgVec3 base, DgVec3 rot) {
+	/**
+	 * Rotate the base vector by the given rotation vector.
+	 * 
+	 * WARNING: Do not use this as a substitute for matrix maths.
+	 */
+	
+	DgVec3 orig = base;
+	
+	// X-Rotation
+	base.y = orig.y * DgCos(rot.x) + orig.z * DgSin(rot.x);
+	base.z = orig.z * DgCos(rot.x) + orig.y * DgSin(rot.x);
+	orig = base;
+	
+	// Y-Rotation
+	base.x = orig.x * DgCos(rot.y) + orig.z * DgSin(rot.y);
+	base.z = orig.z * DgCos(rot.y) + orig.x * DgSin(rot.y);
+	orig = base;
+	
+	// Z-Rotation
+	base.x = orig.x * DgCos(rot.z) + orig.y * DgSin(rot.z);
+	base.y = orig.y * DgCos(rot.z) + orig.x * DgSin(rot.z);
+	orig = base;
+	
+	return base;
+}
+
 /*
  * DgVec4
  */

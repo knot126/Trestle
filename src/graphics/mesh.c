@@ -10,7 +10,7 @@
 #include <string.h>
 
 #include "graphics/graphics.h"
-#include "graphics/vertex1.h"
+#include "graphics/vertex3d.h"
 #include "util/fs.h"
 #include "util/alloc.h"
 #include "util/fail.h"

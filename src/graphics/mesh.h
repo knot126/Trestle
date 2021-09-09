@@ -11,7 +11,7 @@
 #include <inttypes.h>
 
 #include "graphics/graphics.h"
-#include "graphics/vertex1.h"
+#include "graphics/vertex3d.h"
 #include "types.h"
 
 bool graphics_load_xml_mesh(GraphicsSystem * restrict this, Name id, const char * const restrict path);

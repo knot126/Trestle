@@ -22,10 +22,10 @@ typedef struct {
 	uint16_t chan;
 } DgBitmap;
 
-DgBitmap *DgBitmapCreate(const uint16_t width, const uint16_t height, const uint16_t chan);
-DgBitmap *DgBitmapFill(DgBitmap *this, DgVec4 colour);
+uint32_t DgBitmapNew(DgBitmap *bitmap, const uint16_t width, const uint16_t height, const uint16_t chan);
+void DgBitmapFree(DgBitmap *bitmap);
 DgBitmap *DgBitmapDrawPixel(DgBitmap *this, uint16_t x, uint16_t y, DgVec4 colour);
+DgBitmap *DgBitmapFill(DgBitmap *this, DgVec4 colour);
 
 DgBitmap *DgBitmapGenTiles(const uint16_t width, const uint16_t height, const uint16_t size);
 DgBitmap *DgBitmapRandom(const uint16_t width, const uint16_t height);
-void DgBitmapFree(DgBitmap *bitmap);

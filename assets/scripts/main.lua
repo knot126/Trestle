@@ -53,50 +53,39 @@ function tick(dt)
 	local x, y, z, rx, ry, rz = get_transform(player)
 	
 	if at > 1.0 then
-		print("POSITION (" .. x .. ", " .. y .. ", " .. z .. ")")
--- 		print("LIFE: " .. reg_get("life"), "OFFSET: " .. reg_get("offset"))
+		print("Position: (" .. x .. ", " .. y .. ", " .. z .. ")")
 		at = 0
 	end
 	at = at + dt
 	
-	-- moving the player
-	if w then
-		speed = speed + dt * 5.0
-	end
-	
-	if s then
-		speed = speed - dt * 5.0
-	end
-	
 	-- limit speed to max and min
 	speed = math.min(math.max(speed, SPEED_MIN), SPEED_MAX)
 	
--- 	move the player
-	move_object(player, 0.0, 0.0, -speed * dt)
+	fx, fy, fz = get_camera_forward(0.0, 0.0, -1.0)
 	
--- 	if w then
--- 		move_object(player, 0.0, 0.0, -10.0 * dt)
+	print(fx,fy,fz)
+	
+	if w then
+		move_object(player, fx * -10.0 * dt, 0.0, fz * 10.0 * dt)
+	end
+	
+	if s then
+		move_object(player, 0.0, 0.0, 10.0 * dt)
+	end
+	
+-- 	if a then
+-- 		move_object(player, -5.0 * dt, 0.0, 0.0)
 -- 	end
 -- 	
--- 	if s then
--- 		move_object(player, 0.0, 0.0, 10.0 * dt)
+-- 	if d then
+-- 		move_object(player, 5.0 * dt, 0.0, 0.0)
 -- 	end
-	
-	if a then
-		move_object(player, -5.0 * dt, 0.0, 0.0)
-	end
-	
-	if d then
-		move_object(player, 5.0 * dt, 0.0, 0.0)
-	end
 	
 	-- jumping
 	if j and p < 0 then
 		add_force(player, 0.0, 1250.0, 0.0)
 		p = 200
 	end
-	
--- 	p = p - 1
 	
 	-- Update the camera's position
 	local sx, sy = get_screen_size()
@@ -109,8 +98,6 @@ function tick(dt)
 	cz = z
 	crx = my
 	cry = mx
-	
--- 	print(mx, my, sx, sy)
 	
 	push_transform(cam, cx, cy, cz, crx, cry, crz)
 end

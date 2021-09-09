@@ -5,18 +5,30 @@
  * Graphics System
  */
 
+/**
+ * Graphics system TODO:
+ * 
+ *   * Refactoring graphics system: a lot of this system was written when I had
+ *     just started programming; there are things that can be done much better.
+ *   * Abstract away GLFW related things: it would be nice to have a more
+ *     generic interface to the windowing and input library.
+ *   * Speaking of that, unbind input and graphics system if it is possible at
+ *     all.
+ *   * Stop making OpenGL calls directly: This is bad for various reasons, 
+ *     mainly that there is a very hard dependency on a very much dying library.
+ * 
+ * And so much more...
+ */
+
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
 
 #include "gl_incl.h"
 
-#include "graphics/vertex1.h"
+#include "graphics/vertex3d.h"
 #include "util/alloc.h"
-#include "util/time.h"
-#include "util/fail.h"
 #include "util/maths.h"
-#include "util/rand.h"
 #include "util/load.h"
 #include "util/ini.h"
 #include "util/str.h"
@@ -33,22 +45,14 @@
 
 #define GL_ERROR_CHECK() gl_error_check(__FILE__, __LINE__)
 
-GraphicsSystem *QR_ACTIVE_GRPAHICS_SYSTEM;
-
-GraphicsSystem *graphics(GraphicsSystem *G) {
-	if (G) {
-		QR_ACTIVE_GRPAHICS_SYSTEM = G;
-		return G;
-	}
-	else {
-		return QR_ACTIVE_GRPAHICS_SYSTEM;
-	}
-}
-
 // Yes, it's odd, but I really rather not include the header files in this file.
 #include "glutils.h"
 
 void gl_set_window_size(GLFWwindow* window, int w, int h) {
+	/**
+	 * GLFW callback to set the window size.
+	 */
+	
 	glViewport(0, 0, w, h);
 }
 
@@ -147,7 +151,7 @@ void graphics_init(GraphicsSystem * restrict gl) {
 	gltexture_init(&gl->texture);
 	
 	// Making textures
-	DgBitmap *bmp = DgBitmapGenTiles(256, 256, 64);
+	DgBitmap *bmp = DgBitmapRandom(64, 64);
 	if (bmp) {
 		gltexture_load_buffer(&gl->texture, "placeholder", bmp);
 		gltexture_set_unit(&gl->texture, "placeholder", GL_TEXTURE0);
@@ -283,7 +287,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			attr = glGetAttribLocation(gl->programs[0], "position");
 			
 			if (attr < 0) {
-				DgFail("Error: No attribute 'position'.\n", 100);
+				DgLog(DG_LOG_ERROR, "Error: No attribute 'position'.\n", 100);
 			}
 			
 			glVertexAttribPointer(
@@ -304,7 +308,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			attr = glGetAttribLocation(gl->programs[0], "texpos");
 			
 			if (attr < 0) {
-				DgFail("Error: No attribute 'texpos'.\n", 100);
+				DgLog(DG_LOG_ERROR, "Error: No attribute 'texpos'.\n", 100);
 			}
 			
 			glVertexAttribPointer(
@@ -324,7 +328,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			attr = glGetAttribLocation(gl->programs[0], "colour");
 			
 			if (attr < 0) {
-				DgFail("Error: No attribute 'colour'.\n", 100);
+				DgLog(DG_LOG_ERROR, "Error: No attribute 'colour'.\n", 100);
 			}
 			
 			glVertexAttribPointer(
@@ -465,7 +469,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			attr = glGetAttribLocation(gl->programs[1], "aPos");
 			
 			if (attr < 0) {
-				DgFail("Error: No attribute 'aPos'.\n", 100);
+				DgLog(DG_LOG_ERROR, "Error: No attribute 'aPos'.\n", 100);
 			}
 			
 			glVertexAttribPointer(
@@ -486,7 +490,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			attr = glGetAttribLocation(gl->programs[1], "aTex");
 			
 			if (attr < 0) {
-				DgFail("Error: No attribute 'aTex'.\n", 100);
+				DgLog(DG_LOG_ERROR, "Error: No attribute 'aTex'.\n", 100);
 			}
 			
 			glVertexAttribPointer(
@@ -506,7 +510,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			attr = glGetAttribLocation(gl->programs[1], "aCol");
 			
 			if (attr < 0) {
-				DgFail("Error: No attribute 'aCol'.\n", 100);
+				DgLog(DG_LOG_ERROR, "Error: No attribute 'aCol'.\n", 100);
 			}
 			
 			glVertexAttribPointer(
@@ -632,7 +636,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		attr = glGetAttribLocation(gl->programs[0], "position");
 		
 		if (attr < 0) {
-			DgFail("Error: No attribute 'position'.\n", 100);
+			DgLog(DG_LOG_ERROR, "Error: No attribute 'position'.\n", 100);
 		}
 		
 		glVertexAttribPointer(
@@ -653,7 +657,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		attr = glGetAttribLocation(gl->programs[0], "texpos");
 		
 		if (attr < 0) {
-			DgFail("Error: No attribute 'texpos'.\n", 100);
+			DgLog(DG_LOG_ERROR, "Error: No attribute 'texpos'.\n", 100);
 		}
 		
 		glVertexAttribPointer(
@@ -673,7 +677,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		attr = glGetAttribLocation(gl->programs[0], "colour");
 		
 		if (attr < 0) {
-			DgFail("Error: No attribute 'colour'.\n", 100);
+			DgLog(DG_LOG_ERROR, "Error: No attribute 'colour'.\n", 100);
 		}
 		
 		glVertexAttribPointer(
@@ -785,10 +789,6 @@ void graphics_set_camera(GraphicsSystem * restrict gl, Name name) {
 	 * has been set and use default matrix in that case.
 	 */
 	
-	if (!gl) {
-		gl = QR_ACTIVE_GRPAHICS_SYSTEM;
-	}
-	
 	gl->camera = name;
 }
 
@@ -798,6 +798,21 @@ Name graphics_get_camera(GraphicsSystem * restrict gl) {
 	 */
 	
 	return gl->camera;
+}
+
+DgVec3 graphics_get_camera_forward(GraphicsSystem * restrict gl, SceneGraph * restrict graph, const DgVec3 *forward) {
+	/**
+	 * From a vector pointing to the real given direction, retrive a vector
+	 * relative to the camera's rotation.
+	 */
+	
+	Transform * const trans = graph_get(graph, gl->camera);
+	
+	if (!trans) {
+		return (DgVec3) {0.0f, 0.0f, 0.0f};
+	}
+	
+	return DgVec3Rotate(*forward, trans->rot);
 }
 
 DgVec2I graphics_get_screen_size(GraphicsSystem * restrict gl) {

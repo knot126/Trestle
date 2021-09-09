@@ -5,3 +5,5 @@ typedef struct QRVertex1 {
 	float u, v;
 	float r, g, b;
 } QRVertex1;
+
+typedef QRVertex1 QRVertex3D;

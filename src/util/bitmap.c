@@ -14,43 +14,55 @@
 #include "bitmap.h"
 
 enum {
-	DG_IMAGE_CHANNELS = 3, // For some random generation functions
+	DG_BITMAP_DEFAULT_CHANNELS_COUNT = 3, // For some random generation functions
 };
 
-DgBitmap *DgBitmapCreate(const uint16_t width, const uint16_t height, const uint16_t chan) {
-	DgBitmap *bitmap = (DgBitmap *) DgAlloc(sizeof *bitmap);
-	
-	if (!bitmap) {
-		return NULL;
-	}
+uint32_t DgBitmapNew(DgBitmap *bitmap, const uint16_t width, const uint16_t height, const uint16_t chan) {
+	/**
+	 * Initialise a bitmap that has already been allocated. Returns 1 on success
+	 * or 0 on failure to allocate memory.
+	 */
 	
 	bitmap->width = width;
 	bitmap->height = height;
 	bitmap->chan = chan;
-	bitmap->src = (uint8_t *) DgAlloc(width * height * DG_IMAGE_CHANNELS * sizeof(uint8_t));
+	bitmap->src = (uint8_t *) DgAlloc(width * height * DG_BITMAP_DEFAULT_CHANNELS_COUNT * sizeof(uint8_t));
 	
 	if (!bitmap->src) {
 		DgFree(bitmap);
-		return NULL;
+		return 0;
 	}
 	
 	uint8_t *src = bitmap->src;
 	
-	return bitmap;
+	return 1;
 }
 
-DgBitmap *DgBitmapFill(DgBitmap *this, DgVec4 colour) {
-	for (size_t x = 0; x < this->width; x++) {
-		for (size_t y = 0; y < this->height; y++) {
-			this->src[(((this->width * y) + x) * this->chan) + 0] = (uint8_t) (colour.r * 255.0f);
-			if (this->chan >= 2) {
-				this->src[(((this->width * y) + x) * this->chan) + 1] = (uint8_t) (colour.g * 255.0f);
-				if (this->chan >= 3) {
-					this->src[(((this->width * y) + x) * this->chan) + 2] = (uint8_t) (colour.b * 255.0f);
-					if (this->chan >= 4) {
-						this->src[(((this->width * y) + x) * this->chan) + 3] = (uint8_t) (colour.a * 255.0f);
-					}
-				}
+void DgBitmapFree(DgBitmap *bitmap) {
+	/**
+	 * Free a bitmap and all of its data.
+	 */
+	
+	if (bitmap->src) {
+		DgFree(bitmap->src);
+	}
+}
+
+DgBitmap *DgBitmapDrawPixel(DgBitmap *this, uint16_t x, uint16_t y, DgVec4 colour) {
+	/**
+	 * Draw a single pixel to a bitmap.
+	 * 
+	 * WARNING: This function's current implementation assumes that the image is
+	 * an 8-bit RGBA image.
+	 */
+	
+	this->src[(((y * this->width) + x) * this->chan) + 0] = (uint8_t) (colour.r * 255.0f);
+	if (this->chan >= 2) {
+		this->src[(((y * this->width) + x) * this->chan) + 1] = (uint8_t) (colour.g * 255.0f);
+		if (this->chan >= 3) {
+			this->src[(((y * this->width) + x) * this->chan) + 2] = (uint8_t) (colour.b * 255.0f);
+			if (this->chan >= 4) {
+				this->src[(((y * this->width) + x) * this->chan) + 3] = (uint8_t) (colour.a * 255.0f);
 			}
 		}
 	}
@@ -58,16 +70,28 @@ DgBitmap *DgBitmapFill(DgBitmap *this, DgVec4 colour) {
 	return this;
 }
 
-DgBitmap *DgBitmapDrawPixel(DgBitmap *this, uint16_t x, uint16_t y, DgVec4 colour) {
-	this->src[(((y * this->width) + x) * this->chan) + 0] = (uint8_t) (colour.r * 255.0f);
-	this->src[(((y * this->width) + x) * this->chan) + 1] = (uint8_t) (colour.g * 255.0f);
-	this->src[(((y * this->width) + x) * this->chan) + 2] = (uint8_t) (colour.b * 255.0f);
-	this->src[(((y * this->width) + x) * this->chan) + 3] = (uint8_t) (colour.a * 255.0f);
+DgBitmap *DgBitmapFill(DgBitmap *this, DgVec4 colour) {
+	/**
+	 * Fill a bitmap with a given colour.
+	 * 
+	 * NOTE: See WARNING on DgBitmapDrawPixel.
+	 */
+	
+	for (size_t x = 0; x < this->width; x++) {
+		for (size_t y = 0; y < this->height; y++) {
+			DgBitmapDrawPixel(this, x, y, colour);
+		}
+	}
 	
 	return this;
 }
 
 DgBitmap *DgBitmapGenTiles(const uint16_t width, const uint16_t height, const uint16_t size) {
+	/**
+	 * Allocates and generates a bitmap in a tile format. The image will have
+	 * three channels (RGB) and be 8-bit.
+	 */
+	
 	DgBitmap *bitmap = (DgBitmap *) DgAlloc(sizeof(DgBitmap));
 	
 	if (!bitmap) {
@@ -76,8 +100,8 @@ DgBitmap *DgBitmapGenTiles(const uint16_t width, const uint16_t height, const ui
 	
 	bitmap->width = width;
 	bitmap->height = height;
-	bitmap->chan = DG_IMAGE_CHANNELS;
-	bitmap->src = (uint8_t *) DgAlloc(width * height * DG_IMAGE_CHANNELS * sizeof(uint8_t));
+	bitmap->chan = DG_BITMAP_DEFAULT_CHANNELS_COUNT;
+	bitmap->src = (uint8_t *) DgAlloc(width * height * DG_BITMAP_DEFAULT_CHANNELS_COUNT * sizeof(uint8_t));
 	
 	if (!bitmap->src) {
 		DgFree(bitmap);
@@ -115,6 +139,10 @@ DgBitmap *DgBitmapGenTiles(const uint16_t width, const uint16_t height, const ui
 }
 
 DgBitmap *DgBitmapRandom(const uint16_t width, const uint16_t height) {
+	/**
+	 * Generate a random bitmap.
+	 */
+	
 	DgBitmap *bitmap = (DgBitmap *) DgAlloc(sizeof(DgBitmap));
 	
 	if (!bitmap) {
@@ -123,8 +151,8 @@ DgBitmap *DgBitmapRandom(const uint16_t width, const uint16_t height) {
 	
 	bitmap->width = width;
 	bitmap->height = height;
-	bitmap->chan = DG_IMAGE_CHANNELS;
-	bitmap->src = (uint8_t *) DgAlloc(width * height * DG_IMAGE_CHANNELS * sizeof(uint8_t));
+	bitmap->chan = DG_BITMAP_DEFAULT_CHANNELS_COUNT;
+	bitmap->src = (uint8_t *) DgAlloc(width * height * DG_BITMAP_DEFAULT_CHANNELS_COUNT * sizeof(uint8_t));
 	
 	if (!bitmap->src) {
 		DgFree(bitmap);
@@ -138,12 +166,4 @@ DgBitmap *DgBitmapRandom(const uint16_t width, const uint16_t height) {
 	}
 	
 	return bitmap;
-}
-
-void DgBitmapFree(DgBitmap *bitmap) {
-	if (bitmap->src) {
-		DgFree(bitmap->src);
-	}
-	
-	DgFree(bitmap);
 }

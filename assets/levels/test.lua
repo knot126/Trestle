@@ -61,6 +61,24 @@ function UpdateRotation(e, dt)
 	push_transform(e, x, y, z, rx, ry, rz, sx, sy, sz)
 end
 
+function GenerateMesh() 
+	-- Generate some entity and mesh and give it back
+	ent = create_entity(ENT_TRANSFORM | ENT_GRAPHICS_MESH)
+	
+	x, y, z = 0.0, 0.0, -32.0
+	
+	push_transform(ent, x, y, z)
+	
+	mesh = MeshWisk()
+	for i = 0, 16 do
+		mw_push_vertex(mesh, mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat())
+		mw_push_index(mesh, i)
+	end
+	mw_bind(mesh, ent)
+	
+	return ent
+end
+
 function init()
 	-- Set the background colour
 	set_background(br, bg, bb, 1.0)

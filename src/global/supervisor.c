@@ -48,7 +48,6 @@ void sup_init(Supervisor * restrict sup) {
 	// Graphics initialisation
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: Graphics");
 	graphics_init(&sup->graphics);
-	graphics(&sup->graphics);
 	
 	// Physics initialisation
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: Physics");

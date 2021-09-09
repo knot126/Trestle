@@ -19,8 +19,9 @@ typedef struct {
 	
 	uint32_t *index;
 	uint32_t  index_count;
-	uint32_t  alloc_count;
+	uint32_t  index_alloc;
 	
 	bool used;
 } MeshWhisker;
 
+void register_meshwisk_functions(DgScript *script);

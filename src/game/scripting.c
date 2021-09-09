@@ -17,6 +17,7 @@
 #include "global/reg.h"
 #include "global/supervisor.h"
 #include "graphics/mesh.h"
+#include "graphics/meshwisk.h"
 #include "util/log.h"
 #include "util/script.h"
 #include "util/xml.h"
@@ -218,6 +219,21 @@ static int scripted_SetCamera(lua_State *script) {
 	graphics_set_camera(&(supervisor(NULL)->graphics), lua_tointeger(script, 1));
 	
 	return 0;
+}
+
+static int scripted_GetCameraForward(lua_State *script) {
+	if (lua_gettop(script) != 3) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of get_camera_forward().");
+		return 0;
+	}
+	
+	DgVec3 result = graphics_get_camera_forward(&(supervisor(NULL)->graphics), &(supervisor(NULL)->graph), &(DgVec3) {lua_tonumber(script, 1), lua_tonumber(script, 2), lua_tonumber(script, 3)});
+	
+	lua_pushnumber(script, result.x);
+	lua_pushnumber(script, result.y);
+	lua_pushnumber(script, result.z);
+	
+	return 3;
 }
 
 static int scripted_SetBackground(lua_State *script) {
@@ -577,6 +593,7 @@ void regiser_default_script_functions(DgScript *script) {
 	// Graphics
 	lua_register(script->state, "set_camera", &scripted_SetCamera);
 	lua_register(script->state, "get_camera", &scripted_GetCamera);
+	lua_register(script->state, "get_camera_forward", &scripted_GetCameraForward);
 	lua_register(script->state, "set_background", &scripted_SetBackground);
 	lua_register(script->state, "get_should_keep_open", &scripted_GetShouldKeepOpen);
 	lua_register(script->state, "get_screen_size", &scripted_GetScreenSize);
@@ -584,6 +601,8 @@ void regiser_default_script_functions(DgScript *script) {
 	lua_register(script->state, "create_mesh", &scripted_CreateMesh);
 	lua_register(script->state, "push_obj_mesh", &scripted_PushOBJMesh);
 	lua_register(script->state, "add_curve", &scripted_AddCurve);
+	
+	register_meshwisk_functions(script);
 	
 	// Physics
 	lua_register(script->state, "create_physics_object", &scripted_CreatePhysicsObject);

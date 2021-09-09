@@ -13,19 +13,27 @@
 #include "graph/graph.h"
 #include "graphics/texture.h"
 #include "graphics/gl_incl.h"
-#include "graphics/vertex1.h"
+#include "graphics/vertex3d.h"
 #include "graphics/vertex2d.h"
 #include "types.h"
 
 /**
  * A 3D mesh that is drawn in the 3D world.
+ * 
+ * For compatibility reasons, vert is a float* and vertex is QRVertex3D*. Always
+ * use vertex (QRVertex3D) now.
  */
 typedef struct Mesh {
-	float *vert;
+	union {
+		float *vert;
+		QRVertex3D *vertex;
+	};
 	uint32_t *index;
 	const char *texture;
 	
-	uint32_t vert_count;
+	union {
+		uint32_t vert_count, vertex_count;
+	};
 	uint32_t index_count;
 	uint32_t vbo, ebo, vao;
 	bool updated;
@@ -102,8 +110,6 @@ typedef struct GraphicsSystem {
 
 typedef GraphicsSystem DgOpenGLContext;
 
-GraphicsSystem *graphics(GraphicsSystem *G);
-
 // Graphics System API
 void graphics_init(GraphicsSystem * restrict gl);
 void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph);
@@ -115,6 +121,7 @@ bool get_should_keep_open(GraphicsSystem *gl);
 void graphics_set_background(GraphicsSystem * restrict gl, const DgVec4 colour);
 void graphics_set_camera(GraphicsSystem * restrict gl, const uint32_t id);
 uint32_t graphics_get_camera(GraphicsSystem * restrict gl);
+DgVec3 graphics_get_camera_forward(GraphicsSystem * restrict gl, SceneGraph * restrict graph, const DgVec3 *forward);
 DgVec2I graphics_get_screen_size(GraphicsSystem * restrict gl);
 void graphics_set_mouse_disabled(GraphicsSystem * restrict gl, bool enabled);
 

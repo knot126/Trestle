@@ -95,6 +95,7 @@ DgVec3 DgVec3New(float x, float y, float z);
 DgVec3 DgVec3Negate(DgVec3 a);
 
 DgVec3 DgVec3FromString(const char * const s);
+DgVec3 DgVec3Rotate(DgVec3 base, DgVec3 rot);
 
 // DgVec4
 
