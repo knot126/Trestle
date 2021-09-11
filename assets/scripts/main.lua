@@ -33,20 +33,26 @@ function init()
 	R = make_rect(0.0, 0.875, 2.0, 0.25, 0.0, 0.0, 0.0, 0.4)
 	
 	-- Open the level script
-	level = script_open("assets://levels/test.lua")
+	level = script_open("assets://levels/pcgroom.lua")
 	
 	-- Enable the physics engine
 	enable_physics(true)
 	
 	-- Disable mouse cursor (for camera)
 	set_mouse_disabled(true)
+	
+	-- Add actions for keys
+	RegisterAction("up", {GLFW_KEY_W, GLFW_KEY_UP})
+	RegisterAction("down", {GLFW_KEY_S, GLFW_KEY_DOWN})
+	RegisterAction("left", {GLFW_KEY_A, GLFW_KEY_LEFT})
+	RegisterAction("right", {GLFW_KEY_D, GLFW_KEY_RIGHT})
 end
 
 function tick(dt)
-	local w = get_key(GLFW_KEY_UP)
-	local s = get_key(GLFW_KEY_DOWN)
-	local a = get_key(GLFW_KEY_LEFT)
-	local d = get_key(GLFW_KEY_RIGHT)
+	local w = GetAction("up") --get_key(GLFW_KEY_UP)
+	local s = GetAction("down") --get_key(GLFW_KEY_DOWN)
+	local a = GetAction("left") --get_key(GLFW_KEY_LEFT)
+	local d = GetAction("right") --get_key(GLFW_KEY_RIGHT)
 	local j = get_key(GLFW_KEY_SPACE)
 	
 	-- unrelated
@@ -63,7 +69,7 @@ function tick(dt)
 	
 	fx, fy, fz = get_camera_forward(0.0, 0.0, -1.0)
 	
-	print(fx,fy,fz)
+-- 	print(fx, fy, fz)
 	
 	if w then
 		move_object(player, fx * -10.0 * dt, 0.0, fz * 10.0 * dt)

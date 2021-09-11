@@ -8,12 +8,16 @@
 
 
 -- glfw keys
+GLFW_KEY_SPACE = 32
+GLFW_KEY_A = 65
+GLFW_KEY_D = 68
+GLFW_KEY_S = 83
+GLFW_KEY_W = 87
 GLFW_KEY_ENTER = 257
 GLFW_KEY_RIGHT = 262
 GLFW_KEY_LEFT = 263
 GLFW_KEY_DOWN = 264
 GLFW_KEY_UP = 265
-GLFW_KEY_SPACE = 32
 
 ENT_TRANSFORM = (1 << 0)
 ENT_GRAPHICS_MESH = (1 << 1)
@@ -35,4 +39,20 @@ function s_load_model(x, y, z, rx, ry, rz, s, model)
 	push_transform(bm, x, y, z, rx, ry, rz, s, s, s)
 	push_obj_mesh(bm, model)
 	return bm
+end
+
+actions = {}
+
+function RegisterAction(name, keys)
+	actions[name] = keys
+end
+
+function GetAction(name)
+	for i = 0, #actions[name] do
+		if get_key(actions[name][i]) then
+			return true
+		end
+	end
+	
+	return false
 end
