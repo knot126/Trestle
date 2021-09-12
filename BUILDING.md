@@ -15,8 +15,8 @@ Firstly, install the following dependncies:
 
 For example, on Arch based distrobutions of linux with a desktop, run:
 
-```c
-sudo pacman -Syu glfw cmake
+```zsh
+sudo pacman -Syu base-devel glfw cmake
 ```
 
 This is assuming that basic development tools and standard desktop things like PulseAudio are already installed, like on most arch based and Manjaro linux.
