@@ -23,7 +23,7 @@
  * For compatibility reasons, vert is a float* and vertex is QRVertex3D*. Always
  * use vertex (QRVertex3D) now.
  */
-typedef struct Mesh {
+typedef struct Mesh3D {
 	union {
 		float *vert;
 		QRVertex3D *vertex;
@@ -38,7 +38,19 @@ typedef struct Mesh {
 	uint32_t vbo, ebo, vao;
 	bool updated;
 	bool shouldFree;
-} Mesh;
+} Mesh3D;
+
+// Compatiblity
+typedef Mesh3D Mesh;
+
+/**
+ * A 3D first-class surface represented by a single or group of Bézier surfaces.
+ */
+typedef struct Surface3D {
+	DgSurface3D *surface;
+	uint32_t     surface_count;
+	uint32_t     surface_alloc;
+} Surface3D;
 
 /**
  * A 2D mesh that is displayed as part of the GUI layer.
@@ -54,6 +66,9 @@ typedef struct Mesh2D {
 	bool updated;
 } Mesh2D;
 
+/**
+ * TODO: What is this doing here???
+ */
 typedef struct TextString {
 	float *vertex;
 	size_t vertex_count;
@@ -65,6 +80,10 @@ typedef struct TextString {
 	size_t length;
 } TextString;
 
+/**
+ * DEPRECATED: The current curves system was only for testing as a proof of
+ * concept. It's dead.
+ */
 typedef struct Curve {
 	DgVec3 points[4];
 } Curve;
@@ -76,15 +95,15 @@ typedef struct GraphicsSystem {
 	 */
 	
 	// Window and subsystems
-	GLFWwindow* window;
+	GLFWwindow *window;
 	OpenGLTextureManager texture;
 	
 	// Programs
-	unsigned* programs;
+	unsigned *programs;
 	size_t programs_count;
 	
 	// Shaders (not needed?)
-	unsigned* shaders;
+	unsigned *shaders;
 	size_t shader_count;
 	
 	// System's global state
@@ -96,6 +115,12 @@ typedef struct GraphicsSystem {
 	Mesh  *mesh;
 	size_t mesh_count;
 	size_t mesh_alloc;
+	
+	// Surface3D objects
+	Name      *surface_name;
+	Surface3D *surface;
+	size_t     surface_count;
+	size_t     surface_alloc;
 	
 	// Mesh2D objects
 	Name    *mesh2d_name;

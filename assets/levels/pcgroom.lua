@@ -1,5 +1,11 @@
 r, g, b = mgRandFloat(), mgRandFloat(), mgRandFloat()
 
+space = {}
+
+function doRoomIteration()
+	
+end
+
 function init()
 	set_background(r, g, b, 1.0)
 	

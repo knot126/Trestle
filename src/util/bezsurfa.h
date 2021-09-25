@@ -2,7 +2,8 @@
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
- * Bèzier surfaces
+ * Bèzier surface core implementation and anything needed for them not provided
+ * by the maths library.
  */
 
 #pragma once

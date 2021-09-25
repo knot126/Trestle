@@ -30,7 +30,7 @@ function init()
 	reg_set("offset", "5230")
 	
 	-- Try making a rectangle
-	R = make_rect(0.0, 0.875, 2.0, 0.25, 0.0, 0.0, 0.0, 0.4)
+	r = make_rect(0.0, 0.875, 2.0, 0.25, 0.0, 0.0, 0.0, 0.4)
 	
 	-- Open the level script
 	level = script_open("assets://levels/pcgroom.lua")
@@ -46,14 +46,15 @@ function init()
 	RegisterAction("down", {GLFW_KEY_S, GLFW_KEY_DOWN})
 	RegisterAction("left", {GLFW_KEY_A, GLFW_KEY_LEFT})
 	RegisterAction("right", {GLFW_KEY_D, GLFW_KEY_RIGHT})
+	RegisterAction("jump", {GLFW_KEY_SPACE})
 end
 
 function tick(dt)
-	local w = GetAction("up") --get_key(GLFW_KEY_UP)
-	local s = GetAction("down") --get_key(GLFW_KEY_DOWN)
-	local a = GetAction("left") --get_key(GLFW_KEY_LEFT)
-	local d = GetAction("right") --get_key(GLFW_KEY_RIGHT)
-	local j = get_key(GLFW_KEY_SPACE)
+	local w = GetAction("up")
+	local s = GetAction("down")
+	local a = GetAction("left")
+	local d = GetAction("right")
+	local j = GetAction("jump")
 	
 	-- unrelated
 	local x, y, z, rx, ry, rz = get_transform(player)
@@ -69,23 +70,13 @@ function tick(dt)
 	
 	fx, fy, fz = get_camera_forward(0.0, 0.0, -1.0)
 	
--- 	print(fx, fy, fz)
-	
 	if w then
 		move_object(player, fx * -10.0 * dt, 0.0, fz * 10.0 * dt)
 	end
 	
 	if s then
-		move_object(player, 0.0, 0.0, 10.0 * dt)
+		move_object(player, fx * 10.0 * dt, 0.0, fz * -10.0 * dt)
 	end
-	
--- 	if a then
--- 		move_object(player, -5.0 * dt, 0.0, 0.0)
--- 	end
--- 	
--- 	if d then
--- 		move_object(player, 5.0 * dt, 0.0, 0.0)
--- 	end
 	
 	-- jumping
 	if j and p < 0 then
