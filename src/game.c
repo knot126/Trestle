@@ -23,7 +23,6 @@
 #include "util/thread.h"
 #include "util/alloc.h"
 #include "util/time.h"
-#include "util/ini.h"
 #include "util/json.h"
 #include "util/log.h"
 #include "util/args.h"
@@ -145,8 +144,7 @@ int game_main(int argc, char* argv[]) {
 	if (DgArgGetFlag("help")) {
 		DgLog(DG_LOG_INFO, "Quick Run (run as %s)", argv[0]);
 		DgLog(DG_LOG_INFO, "");
-		DgLog(DG_LOG_INFO, "\t--config [path]         Specify a custom engine config file to load.");
-		DgLog(DG_LOG_INFO, "\t--assets [path1;path2]  Specify a custom assets ZIP filesystem.");
+		DgLog(DG_LOG_INFO, "\t--image [path1;path2]   Specify a custom assets ZIP filesystem.");
 		DgLog(DG_LOG_INFO, "\t--ignore-fs             Let the game ignore unsuccessful pathfinding.");
 		DgLog(DG_LOG_INFO, "\t--test-mode, -t         Run all tests.");
 		DgLog(DG_LOG_INFO, "\t--help                  Print this help message.");
@@ -167,22 +165,7 @@ int game_main(int argc, char* argv[]) {
 	
 	// File system module init
 	DgLog(DG_LOG_INFO, "Initialising file system paths...");
-	DgInitPaths( DgArgGetFlag("ignore-fs") ? DG_PATH_FAIL_ERROR : DG_PATH_FAIL_FATAL );
-	
-	// Load config
-	DgLog(DG_LOG_INFO, "Loading engine configuration file...");
-	
-	DgINIDocument initconf;
-	char *config = (char *) DgArgGetValue2("config", "assets://config.ini");
-	uint32_t initconf_status = DgINILoad(&initconf, config);
-	
-	if (initconf_status) {
-		DgLog(DG_LOG_FATAL, "Failed to load configuration file at '%s'.", config);
-		return 1;
-	}
-	else {
-		g_quickRunConfig = &initconf;
-	}
+	DgInitPaths( DgArgGetFlag("ignore-fs") ? DgLog(DG_LOG_INFO, "Filesystem errors will be ignored, the engine may behave erattically."), DG_PATH_FAIL_ERROR : DG_PATH_FAIL_FATAL );
 	
 	// Load systems state
 	// The active supervisor must be set first so the script manager can init
@@ -212,15 +195,11 @@ int game_main(int argc, char* argv[]) {
 	DgLog(DG_LOG_INFO, "SubSystem Supervisor Destroy");
 	sup_destroy(&systems);
 	
-	// Cleanup main config file
-	if (!initconf_status) {
-		DgLog(DG_LOG_INFO, "Freeing memory used by config...");
-		DgINIFree(&initconf);
-	}
-	
 	// Cleanup arguments memory
 	DgLog(DG_LOG_INFO, "Freeing memory used by argument parser...");
 	DgArgFree();
+	
+	DgLog(DG_LOG_INFO, "Goodbye, world!");
 	
 	return 0;
 }

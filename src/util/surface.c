@@ -43,3 +43,27 @@ void DgSurface3DFree(DgSurface3D *this) {
 	
 	DgFree(this->points);
 }
+
+DgVec3 DgSurface3DGetPoint(DgSurface3D *this, uint32_t x, uint32_t y) {
+	/**
+	 * Get a control point.
+	 */
+	
+	return this->points[(y * (this->m + 1)) + x];
+}
+
+void DgSurface3DSetPoint(DgSurface3D *this, uint32_t x, uint32_t y, DgVec3 *value) {
+	/**
+	 * Set a control point.
+	 */
+	
+	this->points[(y * (this->m + 1)) + x] = *value;
+}
+
+DgVec3 DgSurface3DGetSample(DgSurface3D *this, uint32_t u, uint32_t v) {
+	/**
+	 * Get a sample along the bezier surface.
+	 */
+	
+	return DgBezSurfVec3(this->n, this->m, this->points, u, v);
+}

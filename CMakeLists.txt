@@ -100,7 +100,6 @@ set(MELON_FILES
 	"src/util/rand.c"
 	"src/util/resource.c"
 	"src/util/script.c"
-	"src/util/script_jax.c"
 	"src/util/socket.c"
 	"src/util/str.c"
 	"src/util/stream.c"

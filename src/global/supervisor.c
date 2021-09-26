@@ -65,10 +65,12 @@ void sup_init(Supervisor * restrict sup) {
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: Registry");
 	registry_init(&sup->reg);
 	
-	// Run the main game script
+	// Initialise the script manager
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: ScriptManager");
 	scriptman_init(&sup->scriptman);
-	scriptman_open(&sup->scriptman, DgINIGet(g_quickRunConfig, "Main", "startup_script_path", "assets://scripts/startup.lua"));
+	
+	// Run the main game script
+	scriptman_open(&sup->scriptman, "assets://init.lua");
 	
 	sup->running = true;
 }

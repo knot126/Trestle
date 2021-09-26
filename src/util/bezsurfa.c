@@ -8,7 +8,7 @@
 
 #include "maths.h"
 
-#include "bezsurf.h"
+#include "bezsurfa.h"
 
 float xbico(float n, float k) {
 	/**

@@ -30,10 +30,10 @@
 #include "util/alloc.h"
 #include "util/maths.h"
 #include "util/load.h"
-#include "util/ini.h"
 #include "util/str.h"
 #include "util/bitmap.h"
 #include "util/log.h"
+#include "util/surface.h"
 #include "types.h" // For g_deltaTime
 
 #include "graph/graph.h"
@@ -75,11 +75,11 @@ void graphics_init(GraphicsSystem * restrict gl) {
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 	
 	// Get window size from config
-	int w_width = atol(DgINIGet(g_quickRunConfig, "Main", "window_width", "1280"));
-	int w_height = atol(DgINIGet(g_quickRunConfig, "Main", "window_height", "720"));
+	int w_width = 1280;
+	int w_height = 720;
 	
 	// Create window
-	char *w_title = DgStrcadf(DgStrcad("Main", " ― Quick Run "), DgINIGet(g_quickRunConfig, "Distribution", "version", "[unknown version]"));
+	char *w_title = DgStrcad("Main", " ― Quick Run");
 	gl->window = glfwCreateWindow(w_width, w_height, w_title, NULL, NULL);
 	DgFree(w_title);
 	
@@ -107,7 +107,7 @@ void graphics_init(GraphicsSystem * restrict gl) {
 	glViewport(0, 0, w_width, w_height);
 	
 	// Set window icon
-	DgImageInfo icon = DgLoadImage(DgINIGet(g_quickRunConfig, "Window", "window_icon", "assets://icon.png"));
+	DgImageInfo icon = DgLoadImage("assets://icon.png");
 	if (icon.data) {
 		GLFWimage icons[1];
 		icons[0].pixels = (unsigned char *) icon.data;
@@ -118,7 +118,7 @@ void graphics_init(GraphicsSystem * restrict gl) {
 		DgFreeImage(&icon);
 	}
 	else {
-		DgLog(DG_LOG_ERROR, "Window icon load error.");
+		DgLog(DG_LOG_ERROR, "Failed to load window icon from static path assets://icon.png.");
 	}
 	
 	// Load shaders

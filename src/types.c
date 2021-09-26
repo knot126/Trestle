@@ -14,7 +14,6 @@ const char* USER_LOOK_PATH[1] = {
 
 float g_physicsDelta = 1.0f / 180.0f;
 float g_deltaTime;
-const DgINIDocument * g_quickRunConfig;
 
 // Unused constants
 const char *strings[] = {

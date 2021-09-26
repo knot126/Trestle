@@ -10,6 +10,7 @@
 #include <stdbool.h>
 
 #include "util/maths.h"
+#include "util/surface.h"
 #include "graph/graph.h"
 #include "graphics/texture.h"
 #include "graphics/gl_incl.h"

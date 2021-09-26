@@ -89,7 +89,7 @@ GameScriptHandle scriptman_create(ScriptManager *this) {
 	DgRegisterRandFuncs(s);
 	regiser_default_script_functions(s);
 	
-	DgScriptLoad(s, DgINIGet(g_quickRunConfig, "Main", "include_script_path", "assets://scripts/include.lua"));
+	DgScriptLoad(s, "assets://scripts/include.lua");
 	
 	// Return handle (which is just `index + 1` for now)
 	return this->script_count;
