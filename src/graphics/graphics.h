@@ -51,6 +51,17 @@ typedef struct Surface3D {
 	DgSurface3D *surface;
 	uint32_t     surface_count;
 	uint32_t     surface_alloc;
+	
+	struct {
+		QRVertex3D *vertex;
+		uint32_t *index;
+		
+		uint32_t vertex_count;
+		uint32_t index_count;
+		
+		uint32_t vbo, ebo, vao;
+		bool updated;
+	} cache;
 } Surface3D;
 
 /**
@@ -110,6 +121,7 @@ typedef struct GraphicsSystem {
 	// System's global state
 	DgVec4 clearColour;
 	Name camera;
+	float curve_render_quality;
 	
 	// Mesh3D objects
 	Name  *mesh_name;
@@ -150,6 +162,7 @@ uint32_t graphics_get_camera(GraphicsSystem * restrict gl);
 DgVec3 graphics_get_camera_forward(GraphicsSystem * restrict gl, SceneGraph * restrict graph, const DgVec3 *forward);
 DgVec2I graphics_get_screen_size(GraphicsSystem * restrict gl);
 void graphics_set_mouse_disabled(GraphicsSystem * restrict gl, bool enabled);
+void graphics_set_curve_render_quality(GraphicsSystem * restrict graphics, float quality);
 
 // Curves
 void graphics_add_curve(GraphicsSystem * restrict gl, DgVec3 p0, DgVec3 p1, DgVec3 p2, DgVec3 p3);
@@ -159,6 +172,10 @@ Name graphics_create_mesh(GraphicsSystem * restrict gl, Name name);
 Name graphics_set_mesh(GraphicsSystem * restrict gl, Name name, size_t vertex_count, QRVertex1 *vertex, size_t index_count, uint32_t *index, const char *texture);
 Mesh * const graphics_get_mesh(GraphicsSystem * restrict gl, Name name);
 size_t graphics_get_mesh_counts(GraphicsSystem * restrict gl, size_t *allocsz);
+
+// 3D Surface
+Name graphics_create_surface3d(GraphicsSystem * const restrict gl, const Name name);
+Name graphics_surface3d_add_patch(GraphicsSystem * const restrict gl, const Name name, DgSurface3D * const restrict patch);
 
 // 2D Meshes
 Name graphics_create_mesh2d(GraphicsSystem * restrict gl, Name name);

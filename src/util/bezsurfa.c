@@ -7,6 +7,7 @@
  */
 
 #include "maths.h"
+#include "log.h"
 
 #include "bezsurfa.h"
 
@@ -44,12 +45,13 @@ DgVec3 DgBezSurfVec3(uint64_t n, uint64_t m, DgVec3 *P, float u, float v) {
 	
 	DgVec3 res = (DgVec3) {0.0f, 0.0f, 0.0f};
 	
-	for (uint64_t i = 1; i <= n; i++) {
+	for (uint64_t i = 0; i <= n; i++) {
 		DgVec3 rowres = (DgVec3) {0.0f, 0.0f, 0.0f};
 		
-		for (uint64_t j = 1; j <= m; j++) {
-			DgVec3 temp = DgVec3Scale(xberpl(n, i, u), DgVec3Scale(xberpl(m, j, v), P[(i * n) + j]));
+		for (uint64_t j = 0; j <= m; j++) {
+			DgVec3 temp = DgVec3Scale(xberpl(n, i, u), DgVec3Scale(xberpl(m, j, v), P[(n * i) + j]));
 			rowres = DgVec3Add(rowres, temp);
+			
 		}
 		
 		res = DgVec3Add(res, rowres);

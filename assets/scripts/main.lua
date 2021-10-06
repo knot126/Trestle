@@ -30,7 +30,7 @@ function init()
 	reg_set("offset", "5230")
 	
 	-- Try making a rectangle
-	r = make_rect(0.0, 0.875, 2.0, 0.25, 0.0, 0.0, 0.0, 0.4)
+-- 	r = make_rect(0.0, 0.875, 2.0, 0.25, 0.0, 0.0, 0.0, 0.4)
 	
 	-- Open the level script
 	level = script_open("assets://levels/pcgroom.lua")

@@ -164,6 +164,7 @@ target_include_directories(${EXEC_NAME} PRIVATE "lib/glfw/include")
 
 target_link_libraries(${EXEC_NAME} m)
 target_link_libraries(${EXEC_NAME} GL)
+target_link_libraries(${EXEC_NAME} vulkan)
 target_link_libraries(${EXEC_NAME} dl)
 target_link_libraries(${EXEC_NAME} glfw)
 target_link_libraries(${EXEC_NAME} pthread)

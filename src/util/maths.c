@@ -69,14 +69,12 @@ float xfac(float n) {
 	return (float) res;
 }
 
-float xpow(float n, uint64_t e) {
-	float res = n;
-	
-	for (int i = 0; i < e; i++) {
-		res *= res;
-	}
-	
-	return res;
+float xfloor(float n) {
+	return (float)(int64_t)(n - 0.5);
+}
+
+float xpow(float n, float e) {
+	return pow(n, e);
 }
 
 /* 

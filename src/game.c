@@ -26,6 +26,7 @@
 #include "util/json.h"
 #include "util/log.h"
 #include "util/args.h"
+#include "util/rand.h"
 #include "physics/physics.h"
 #include "test.h"
 #include "types.h"
@@ -174,6 +175,35 @@ int game_main(int argc, char* argv[]) {
 	Supervisor systems;
 	supervisor(&systems);
 	sup_init(&systems);
+	
+	// test surfaces
+	DgSurface3D md;
+	DgSurface3DInit(&md, 4, 4);
+	
+	DgSurface3DSetPoint(&md, 0, 0, &(DgVec3) {0.0, 1.2, 0.0});
+	DgSurface3DSetPoint(&md, 0, 1, &(DgVec3) {1.0, 1.4, 0.0});
+	DgSurface3DSetPoint(&md, 0, 2, &(DgVec3) {2.0, 1.5, 0.0});
+	DgSurface3DSetPoint(&md, 0, 3, &(DgVec3) {3.0, 1.1, 0.0});
+	
+	DgSurface3DSetPoint(&md, 1, 0, &(DgVec3) {0.0, 1.0, 1.0});
+	DgSurface3DSetPoint(&md, 1, 1, &(DgVec3) {1.0, 1.3, 1.0});
+	DgSurface3DSetPoint(&md, 1, 2, &(DgVec3) {2.0, 1.2, 1.0});
+	DgSurface3DSetPoint(&md, 1, 3, &(DgVec3) {3.0, 1.0, 1.0});
+	
+	DgSurface3DSetPoint(&md, 2, 0, &(DgVec3) {0.0, 1.6, 2.0});
+	DgSurface3DSetPoint(&md, 2, 1, &(DgVec3) {1.0, 1.7, 2.0});
+	DgSurface3DSetPoint(&md, 2, 2, &(DgVec3) {2.0, 1.3, 2.0});
+	DgSurface3DSetPoint(&md, 2, 3, &(DgVec3) {3.0, 1.0, 2.0});
+	
+	DgSurface3DSetPoint(&md, 3, 0, &(DgVec3) {0.0, 1.2, 2.0});
+	DgSurface3DSetPoint(&md, 3, 1, &(DgVec3) {1.0, 1.0, 2.0});
+	DgSurface3DSetPoint(&md, 3, 2, &(DgVec3) {2.0, 1.6, 2.0});
+	DgSurface3DSetPoint(&md, 3, 3, &(DgVec3) {3.0, 1.9, 2.0});
+	
+	Name surf = graphics_create_surface3d(&systems.graphics, sup_next_name(&systems));
+	graph_create(&systems.graph, surf);
+	graph_set(&systems.graph, surf, (Transform){.pos = (DgVec3){0.0f, 1.0f, 0.0f}, .scale = {1.0f, 1.0f, 1.0f}});
+	graphics_surface3d_add_patch(&systems.graphics, surf, &md);
 	
 	/**
 	 * 

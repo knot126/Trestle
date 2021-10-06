@@ -34,6 +34,7 @@
 #include "util/bitmap.h"
 #include "util/log.h"
 #include "util/surface.h"
+#include "util/rand.h"
 #include "types.h" // For g_deltaTime
 
 #include "graph/graph.h"
@@ -48,12 +49,40 @@
 // Yes, it's odd, but I really rather not include the header files in this file.
 #include "glutils.h"
 
-void gl_set_window_size(GLFWwindow* window, int w, int h) {
+void graphics_set_window_size(GLFWwindow* window, int w, int h) {
 	/**
 	 * GLFW callback to set the window size.
 	 */
 	
 	glViewport(0, 0, w, h);
+}
+
+static int32_t graphics_load_default_shaders(GraphicsSystem * restrict gl) {
+	/**
+	 * Load the default shaders
+	 */
+	
+	uint32_t res;
+	
+	// The main 3D shader
+	res = graphicsLoadShader(gl, "assets://shaders/main.glsl");
+	
+	if (res == 2) {
+		DgLog(DG_LOG_ERROR, "Failed to load shader for 3D stuff.");
+		return -1;
+	}
+	
+	glUseProgram(gl->programs[0]);
+	
+	// The main 2D shader
+	res = graphicsLoadShader(gl, "assets://shaders/gui.glsl");
+	
+	if (res == 2) {
+		DgLog(DG_LOG_ERROR, "Failed to load shader for GUI.");
+		return -1;
+	}
+	
+	return 0;
 }
 
 void graphics_init(GraphicsSystem * restrict gl) {
@@ -74,13 +103,13 @@ void graphics_init(GraphicsSystem * restrict gl) {
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 	
-	// Get window size from config
+	// Create window
+	char *w_title = DgStrcad("Main", " ― Quick Run");
 	int w_width = 1280;
 	int w_height = 720;
 	
-	// Create window
-	char *w_title = DgStrcad("Main", " ― Quick Run");
 	gl->window = glfwCreateWindow(w_width, w_height, w_title, NULL, NULL);
+	
 	DgFree(w_title);
 	
 	if (!gl->window) {
@@ -101,10 +130,7 @@ void graphics_init(GraphicsSystem * restrict gl) {
 	glfwSwapInterval(0);
 	
 	// Regiser window resize callback
-	glfwSetFramebufferSizeCallback(gl->window, &gl_set_window_size);
-	
-	// Set viewport size (not needed?)
-	glViewport(0, 0, w_width, w_height);
+	glfwSetFramebufferSizeCallback(gl->window, &graphics_set_window_size);
 	
 	// Set window icon
 	DgImageInfo icon = DgLoadImage("assets://icon.png");
@@ -121,24 +147,7 @@ void graphics_init(GraphicsSystem * restrict gl) {
 		DgLog(DG_LOG_ERROR, "Failed to load window icon from static path assets://icon.png.");
 	}
 	
-	// Load shaders
-	uint32_t res;
-	
-	// The main 3D shader
-	res = graphicsLoadShader(gl, "assets://shaders/main.glsl");
-	
-	if (res == 2) {
-		DgLog(DG_LOG_ERROR, "Failed to load shader.");
-		return;
-	}
-	
-	glUseProgram(gl->programs[0]);
-	
-	// The main 2D shader
-	res = graphicsLoadShader(gl, "assets://shaders/gui.glsl");
-	
-	if (res == 2) {
-		DgLog(DG_LOG_ERROR, "Failed to load shader.");
+	if (graphics_load_default_shaders(gl) < 0) {
 		return;
 	}
 	
@@ -186,8 +195,123 @@ void graphics_init(GraphicsSystem * restrict gl) {
 	glEnable(GL_BLEND);
 	GL_ERROR_CHECK();
 	
+	// Set default curve render quality
+	graphics_set_curve_render_quality(gl, 7.0f);
+	
 	// Set default clear colour
 	gl->clearColour = (DgVec4) {0.5f, 0.5f, 0.5f, 1.0f};
+}
+
+static void graphics_update_mesh(GraphicsSystem * const restrict gl, uint32_t * const restrict vbo, uint32_t * const restrict ebo, uint32_t * const restrict vao, uint32_t vertex_count, QRVertex3D ** vertex, uint32_t index_count, uint32_t ** index, bool * restrict updated) {
+	/**
+	 * Update a mesh by pushing vertex and index data to OpenGL. vbo, vao and
+	 * ebo should be writeable and are used as what they are named respectively.
+	 */
+	
+	if (!*vbo) {
+		glGenBuffers(1, vbo);
+	}
+	
+	if (!*ebo) {
+		glGenBuffers(1, ebo);
+	}
+	
+	if (!*vao) {
+		glGenVertexArrays(1, vao);
+	}
+	
+	GL_ERROR_CHECK();
+	
+	glBindVertexArray(*vao);
+	glBindBuffer(GL_ARRAY_BUFFER, *vbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *ebo);
+	
+	GL_ERROR_CHECK();
+	
+	glBufferData(GL_ARRAY_BUFFER, vertex_count * sizeof **vertex, (void *) (*vertex), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_count * sizeof **index, (void *) (*index), GL_STATIC_DRAW);
+	
+	GL_ERROR_CHECK();
+	
+	// =================================================================
+	// Register vertex attributes
+	// =================================================================
+	
+	GLint attr;
+	
+	attr = glGetAttribLocation(gl->programs[0], "position");
+	
+	if (attr < 0) {
+		DgLog(DG_LOG_ERROR, "Error: No attribute 'position'.\n", 100);
+	}
+	
+	glVertexAttribPointer(
+		attr, 
+		3, 
+		GL_FLOAT, 
+		GL_FALSE, 
+		8 * sizeof(float), 
+		(void *) 0
+	);
+	glEnableVertexAttribArray(attr);
+	
+	GL_ERROR_CHECK();
+	
+	// =================================================================
+	// =================================================================
+	
+	attr = glGetAttribLocation(gl->programs[0], "texpos");
+	
+	if (attr < 0) {
+		DgLog(DG_LOG_ERROR, "Error: No attribute 'texpos'.\n", 100);
+	}
+	
+	glVertexAttribPointer(
+		attr, 
+		2, 
+		GL_FLOAT, 
+		GL_FALSE, 8 * sizeof(float), 
+		(void *) (3 * sizeof(float))
+	);
+	glEnableVertexAttribArray(attr);
+	
+	GL_ERROR_CHECK();
+	
+	// =================================================================
+	// =================================================================
+	
+	attr = glGetAttribLocation(gl->programs[0], "colour");
+	
+	if (attr < 0) {
+		DgLog(DG_LOG_ERROR, "Error: No attribute 'colour'.\n", 100);
+	}
+	
+	glVertexAttribPointer(
+		attr, 
+		3, 
+		GL_FLOAT, 
+		GL_FALSE, 
+		8 * sizeof(float), 
+		(void *) (5 * sizeof(float))
+	);
+	glEnableVertexAttribArray(attr);
+	
+	GL_ERROR_CHECK();
+	
+	// =================================================================
+	// =================================================================
+	
+	if (updated) {
+		*updated = false;
+	}
+	
+	DgFree(*vertex);
+	*vertex = NULL;
+	
+	DgFree(*index);
+	*index = NULL;
+	
+	GL_ERROR_CHECK();
 }
 
 void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) {
@@ -228,10 +352,6 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 	if (gl->camera != 0) {
 		Transform * const camtrans = graph_get(graph, gl->camera);
 		camera = DgTransfromBasicCamera(camtrans->pos, camtrans->rot);
-// 		DgLog(DG_LOG_VERBOSE, "Camera: (%.3f, %.3f, %.3f)", camtrans->pos.x, camtrans->pos.y, camtrans->pos.z);
-	}
-	else {
-		DgLog(DG_LOG_WARNING, "No active camera has been set.");
 	}
 	
 	// Push camera matrix to the GPU
@@ -253,108 +373,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		
 		// Push new verticies if needed
 		if (mesh->updated) {
-			if (!mesh->vbo) {
-				glGenBuffers(1, &mesh->vbo);
-			}
-			
-			if (!mesh->ebo) {
-				glGenBuffers(1, &mesh->ebo);
-			}
-			
-			if (!mesh->vao) {
-				glGenVertexArrays(1, &mesh->vao);
-			}
-			
-			GL_ERROR_CHECK();
-			
-			glBindVertexArray(mesh->vao);
-			glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ebo);
-			
-			GL_ERROR_CHECK();
-			
-			glBufferData(GL_ARRAY_BUFFER, mesh->vert_count * 32, mesh->vert, GL_STATIC_DRAW);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->index_count * sizeof(uint32_t), mesh->index, GL_STATIC_DRAW);
-			
-			GL_ERROR_CHECK();
-			
-			// =================================================================
-			// Register vertex attributes
-			// =================================================================
-			
-			GLint attr;
-			
-			attr = glGetAttribLocation(gl->programs[0], "position");
-			
-			if (attr < 0) {
-				DgLog(DG_LOG_ERROR, "Error: No attribute 'position'.\n", 100);
-			}
-			
-			glVertexAttribPointer(
-				attr, 
-				3, 
-				GL_FLOAT, 
-				GL_FALSE, 
-				8 * sizeof(float), 
-				(void *) 0
-			);
-			glEnableVertexAttribArray(attr);
-			
-			GL_ERROR_CHECK();
-			
-			// =================================================================
-			// =================================================================
-			
-			attr = glGetAttribLocation(gl->programs[0], "texpos");
-			
-			if (attr < 0) {
-				DgLog(DG_LOG_ERROR, "Error: No attribute 'texpos'.\n", 100);
-			}
-			
-			glVertexAttribPointer(
-				attr, 
-				2, 
-				GL_FLOAT, 
-				GL_FALSE, 8 * sizeof(float), 
-				(void *) (3 * sizeof(float))
-			);
-			glEnableVertexAttribArray(attr);
-			
-			GL_ERROR_CHECK();
-			
-			// =================================================================
-			// =================================================================
-			
-			attr = glGetAttribLocation(gl->programs[0], "colour");
-			
-			if (attr < 0) {
-				DgLog(DG_LOG_ERROR, "Error: No attribute 'colour'.\n", 100);
-			}
-			
-			glVertexAttribPointer(
-				attr, 
-				3, 
-				GL_FLOAT, 
-				GL_FALSE, 
-				8 * sizeof(float), 
-				(void *) (5 * sizeof(float))
-			);
-			glEnableVertexAttribArray(attr);
-			
-			GL_ERROR_CHECK();
-			
-			// =================================================================
-			// =================================================================
-			
-			mesh->updated = false;
-			
-			DgFree(mesh->vert);
-			mesh->vert = NULL;
-			
-			DgFree(mesh->index);
-			mesh->index = NULL;
-			
-			GL_ERROR_CHECK();
+			graphics_update_mesh(gl, &mesh->vbo, &mesh->ebo, &mesh->vao, mesh->vertex_count, &mesh->vertex, mesh->index_count, &mesh->index, &mesh->updated);
 		}
 		
 		// Bind the currently active textures for this shader
@@ -401,6 +420,135 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		GL_ERROR_CHECK();
 		
 		glDrawElements(GL_TRIANGLES, mesh->index_count, GL_UNSIGNED_INT, 0);
+		
+		GL_ERROR_CHECK();
+	}
+	
+	// -------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
+	
+	for (size_t i = 0; i < gl->surface_count; i++) {
+		Name id = gl->surface_name[i];
+		Surface3D *surface = &gl->surface[i];
+		
+// 		// If there have been on vericies pushed to the GPU
+// 		if (!surface->cache.vertex_count || !surface->cache.index_count) {
+// 			continue;
+// 		}
+// 		
+// 		// If the mesh is updated and the allocation of the mesh data failed
+// 		if ((!surface->cache.index || !surface->cache.vertex) && surface->cache.updated) {
+// 			continue;
+// 		}
+		
+		// Push new verticies if needed
+		if (surface->cache.updated) {
+			// Calculate sample rate
+			DgVec3 size = DgSurface3DGetBoundingBoxSize(&surface->surface[0]);
+			
+			// Prepare the data
+			uint32_t samp_x = (uint32_t)(size.x * gl->curve_render_quality);
+			uint32_t samp_y = (uint32_t)(size.y * gl->curve_render_quality);
+			
+			DgVec3 *samples = DgAlloc(samp_x * samp_y * sizeof *samples);
+			
+			if (!samples) {
+				continue;
+			}
+			
+			surface->cache.vertex_count = samp_x * samp_y * 4;
+			surface->cache.vertex = DgAlloc(surface->cache.vertex_count * sizeof *(surface->cache.vertex));
+			
+			if (!surface->cache.vertex_count) {
+				continue;
+			}
+			
+			surface->cache.index_count = samp_x * samp_y * 6;
+			surface->cache.index = DgAlloc(surface->cache.index_count * sizeof *(surface->cache.index));
+			
+			if (!surface->cache.index) {
+				continue;
+			}
+			
+			// Calculate the samples data
+			for (uint32_t x = 0; x < samp_x; x++) {
+				for (uint32_t y = 0; y < samp_y; y++) {
+					samples[(y * samp_x) + x] = DgSurface3DGetSample(&surface->surface[0], ((float)x) / ((float)samp_x), ((float)y) / ((float)samp_y));
+				}
+			}
+			
+			// Calculate mesh data
+			// We are finding the square that is to the bottom right of the mesh.
+			for (uint32_t x = 0; x < (samp_x - 1); x++) {
+				for (uint32_t y = 0; y < (samp_y - 1); y++) {
+					DgVec3 p00 = samples[(y * samp_x) + x],
+						p01 = samples[((y + 1) * samp_x) + x],
+						p10 = samples[(y * samp_x) + x + 1],
+						p11 = samples[((y + 1) * samp_x) + x + 1];
+					
+					surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 0] = (QRVertex3D) {p00.x, p00.y, p00.z, 0.0f, 0.0f, DgRandFloat(), DgRandFloat(), DgRandFloat()};
+					surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 1] = (QRVertex3D) {p01.x, p01.y, p01.z, 0.0f, 0.0f, DgRandFloat(), DgRandFloat(), DgRandFloat()};
+					surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 2] = (QRVertex3D) {p10.x, p10.y, p10.z, 0.0f, 0.0f, DgRandFloat(), DgRandFloat(), DgRandFloat()};
+					surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 3] = (QRVertex3D) {p11.x, p11.y, p11.z, 0.0f, 0.0f, DgRandFloat(), DgRandFloat(), DgRandFloat()};
+					
+					surface->cache.index[(y * samp_x * 6) + (x * 6) + 0] = (y * samp_x * 4) + (x * 4) + 0;
+					surface->cache.index[(y * samp_x * 6) + (x * 6) + 1] = (y * samp_x * 4) + (x * 4) + 1;
+					surface->cache.index[(y * samp_x * 6) + (x * 6) + 2] = (y * samp_x * 4) + (x * 4) + 2;
+					surface->cache.index[(y * samp_x * 6) + (x * 6) + 3] = (y * samp_x * 4) + (x * 4) + 1;
+					surface->cache.index[(y * samp_x * 6) + (x * 6) + 4] = (y * samp_x * 4) + (x * 4) + 2;
+					surface->cache.index[(y * samp_x * 6) + (x * 6) + 5] = (y * samp_x * 4) + (x * 4) + 3;
+				}
+			}
+			
+			// Create and update mesh cache
+			graphics_update_mesh(gl, &surface->cache.vbo, &surface->cache.ebo, &surface->cache.vao, surface->cache.vertex_count, &surface->cache.vertex, surface->cache.index_count, &surface->cache.index, &surface->cache.updated);
+		}
+		
+		// Bind the currently active textures for this shader
+// 		const char * texture_name = surface->texture;
+// 		if (!texture_name) {
+// 			texture_name = "placeholder";
+// 		}
+// 		glActiveTexture(GL_TEXTURE0);
+// 		glBindTexture(GL_TEXTURE_2D, gltexture_get_name(&gl->texture, texture_name));
+		
+		glBindVertexArray(surface->cache.vao);
+		glBindBuffer(GL_ARRAY_BUFFER, surface->cache.vbo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, surface->cache.ebo);
+		
+		GL_ERROR_CHECK();
+		
+		// Find the transform
+		DgVec3 translate = DgVec3New(0.0f, 0.0f, 0.0f);
+		DgVec3 rotate = DgVec3New(0.0f, 0.0f, 0.0f);
+		DgVec3 scale = DgVec3New(1.0f, 1.0f, 1.0f);
+		
+		Transform * const trans = graph_get(graph, id);
+		
+		if (trans) {
+			translate = trans->pos;
+			rotate = trans->rot;
+			scale = trans->scale;
+		}
+		
+		DgMat4 rot_x = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(1.0f, 0.0f, 0.0f), rotate.x);
+		DgMat4 rot_y = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.0f, 1.0f, 0.0f), rotate.y);
+		DgMat4 rot_z = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.0f, 0.0f, 1.0f), rotate.z);
+		DgMat4 rot_mat = DgMat4ByMat4Multiply(rot_z, DgMat4ByMat4Multiply(rot_y, rot_x));
+		
+		DgMat4 model = 
+			DgMat4ByMat4Multiply(
+				DgMat4Translate(DgMat4New(1.0f), translate), 
+				DgMat4ByMat4Multiply(rot_mat, 
+					DgMat4Scale(DgMat4New(1.0f), scale)
+				)
+			);
+		glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
+		
+		GL_ERROR_CHECK();
+		
+		glDrawElements(GL_TRIANGLES, surface->cache.index_count, GL_UNSIGNED_INT, 0);
 		
 		GL_ERROR_CHECK();
 	}
@@ -843,6 +991,14 @@ void graphics_set_mouse_disabled(GraphicsSystem * restrict gl, bool enabled) {
 	}
 }
 
+void graphics_set_curve_render_quality(GraphicsSystem * restrict graphics, float quality) {
+	/**
+	 * Set the render quality of curves in samples per cube unit.
+	 */
+	
+	graphics->curve_render_quality = quality;
+}
+
 /**
  * =============================================================================
  * 3D Meshes
@@ -966,6 +1122,102 @@ size_t graphics_get_mesh_counts(GraphicsSystem * restrict gl, size_t *allocsz) {
 	}
 	
 	return gl->mesh_count;
+}
+
+/**
+ * =============================================================================
+ * 3D Surfaces
+ * =============================================================================
+ */
+
+static int graphics_realloc_surface3d(GraphicsSystem * const restrict gl) {
+	/**
+	 * Reallocate the list of surface entities, making sure there is room for
+	 * at least one more surface.
+	 */
+	
+	if (gl->surface_count >= gl->surface_alloc) {
+		gl->surface_alloc = 4 + (gl->surface_alloc * 2);
+		gl->surface = DgRealloc(gl->surface, sizeof *gl->surface * gl->surface_alloc);
+		
+		if (!gl->surface) {
+			return 1;
+		}
+		
+		gl->surface_name = DgRealloc(gl->surface_name, sizeof *gl->surface_name * gl->surface_alloc);
+		
+		if (!gl->surface_name) {
+			return 2;
+		}
+	}
+	
+	return 0;
+}
+
+static size_t graphics_find_surface3d(const GraphicsSystem * const restrict gl, const Name name) {
+	/**
+	 * Find a surface index given its name.
+	 */
+	
+	for (size_t i = 0; i < gl->surface_count; i++) {
+		if (gl->surface_name[i] == name) {
+			return i;
+		}
+	}
+	
+	return -1;
+}
+
+Name graphics_create_surface3d(GraphicsSystem * const restrict gl, const Name name) {
+	/**
+	 * Create a 3D surface.
+	 */
+	
+	if (graphics_realloc_surface3d(gl)) {
+		return 0;
+	}
+	
+	gl->surface_name[gl->surface_count] = name;
+	memset(&gl->surface[gl->surface_count], 0, sizeof *gl->surface);
+	
+	gl->surface[gl->surface_count].cache.updated = true;
+	
+	gl->surface_count++;
+	
+	return name;
+}
+
+Name graphics_surface3d_add_patch(GraphicsSystem * const restrict gl, const Name name, DgSurface3D * const restrict patch) {
+	/**
+	 * Add a single patch to a Surface3D object. This takes the given object, so
+	 * internal memory for it must not be freed.
+	 */
+	
+	size_t index = graphics_find_surface3d(gl, name);
+	
+	if (index == -1) {
+		return 0;
+	}
+	
+	Surface3D *surface = &gl->surface[index];
+	
+	// Reallocate patches
+	if (surface->surface_alloc <= surface->surface_count) {
+		surface->surface_alloc = 2 + (surface->surface_alloc * 2) - (surface->surface_alloc / 2);
+		surface->surface = DgRealloc(surface->surface, sizeof *surface->surface * surface->surface_alloc);
+		
+		if (!surface->surface) {
+			return 0;
+		}
+	}
+	
+	// Set new patch
+	surface->surface[surface->surface_count] = *patch;
+	
+	// Increment number of patches
+	surface->surface_count++;
+	
+	return name;
 }
 
 /**

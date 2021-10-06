@@ -22,7 +22,7 @@ float xsin(float n);
 float xtan(float n);
 float xsqrt(float n);
 float xfac(float n);
-float xpow(float n, uint64_t e);
+float xpow(float n, float e);
 
 // DgVec**
 
