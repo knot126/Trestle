@@ -342,7 +342,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 	// for each frame, allowing dynamic resize of the window.
 	int w, h;
 	glfwGetWindowSize(gl->window, &w, &h);
-	DgMat4 proj = DgMat4NewPerspective2(0.125f, (float) w / (float) h, 0.1f, 100.0f);
+	DgMat4 proj = DgMat4NewPerspective2(0.125f, (float) w / (float) h, 0.000001f, 100.0f);
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "proj"), 1, GL_TRUE, &proj.ax);
 	
 	// Calculate view matrix (camera transform)
@@ -449,7 +449,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			
 			// Prepare the data
 			uint32_t samp_x = (uint32_t)(size.x * gl->curve_render_quality);
-			uint32_t samp_y = (uint32_t)(size.y * gl->curve_render_quality);
+			uint32_t samp_y = (uint32_t)(size.z * gl->curve_render_quality);
 			
 			DgVec3 *samples = DgAlloc(samp_x * samp_y * sizeof *samples);
 			
@@ -472,16 +472,17 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			}
 			
 			// Calculate the samples data
-			for (uint32_t x = 0; x < samp_x; x++) {
-				for (uint32_t y = 0; y < samp_y; y++) {
-					samples[(y * samp_x) + x] = DgSurface3DGetSample(&surface->surface[0], ((float)x) / ((float)samp_x), ((float)y) / ((float)samp_y));
+			for (uint32_t u = 0; u < samp_y; u++) {
+				for (uint32_t v = 0; v < samp_x; v++) {
+					DgVec3 s = DgSurface3DGetSample(&surface->surface[0], ((float)u) / ((float)samp_x), ((float)v) / ((float)samp_y));
+					samples[(v * samp_x) + u] = s;
 				}
 			}
 			
 			// Calculate mesh data
 			// We are finding the square that is to the bottom right of the mesh.
-			for (uint32_t x = 0; x < (samp_x - 1); x++) {
-				for (uint32_t y = 0; y < (samp_y - 1); y++) {
+			for (uint32_t y = 0; y < (samp_y - 1); y++) {
+				for (uint32_t x = 0; x < (samp_x - 1); x++) {
 					DgVec3 p00 = samples[(y * samp_x) + x],
 						p01 = samples[((y + 1) * samp_x) + x],
 						p10 = samples[(y * samp_x) + x + 1],
@@ -548,7 +549,9 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		
 		GL_ERROR_CHECK();
 		
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glDrawElements(GL_TRIANGLES, surface->cache.index_count, GL_UNSIGNED_INT, 0);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		
 		GL_ERROR_CHECK();
 	}
@@ -886,29 +889,29 @@ void graphics_free(GraphicsSystem* gl) {
 	 * Free the graphics subsystem.
 	 */
 	
-	glfwTerminate();
-	
 	for (uint32_t i = 0; i < gl->programs_count; i++) {
 		glDeleteProgram(gl->programs[i]);
 	}
 	
 	// Free meshes
-	for (size_t i = 0; i < gl->mesh_count; i++) {
-		glDeleteBuffers(1, &gl->mesh[i].vbo);
-		glDeleteBuffers(1, &gl->mesh[i].ebo);
-		
-		glDeleteVertexArrays(1, &gl->mesh[i].vao);
-		
-		if (gl->mesh[i].shouldFree) {
-			DgFree(gl->mesh[i].vert);
-			DgFree(gl->mesh[i].index);
-			if (gl->mesh[i].texture) {
-				DgFree((void *) gl->mesh[i].texture);
-			}
-		}
-	}
+// 	for (size_t i = 0; i < gl->mesh_count; i++) {
+// 		glDeleteBuffers(1, &gl->mesh[i].vbo);
+// 		glDeleteBuffers(1, &gl->mesh[i].ebo);
+// 		
+// 		glDeleteVertexArrays(1, &gl->mesh[i].vao);
+// 		
+// 		if (gl->mesh[i].shouldFree) {
+// 			DgFree(gl->mesh[i].vert);
+// 			DgFree(gl->mesh[i].index);
+// 			if (gl->mesh[i].texture) {
+// 				DgFree((void *) gl->mesh[i].texture);
+// 			}
+// 		}
+// 	}
 	
 	gltexture_free(&gl->texture);
+	
+	glfwTerminate();
 	
 	DgFree(gl->shaders);
 }
@@ -1001,13 +1004,13 @@ void graphics_set_curve_render_quality(GraphicsSystem * restrict graphics, float
 
 /**
  * =============================================================================
- * 3D Meshes
+ * Legacy Curves
  * =============================================================================
  */
 
 void graphics_add_curve(GraphicsSystem * restrict gl, DgVec3 p0, DgVec3 p1, DgVec3 p2, DgVec3 p3) {
 	/**
-	 * This API will be updated soon.
+	 * DEPRECATED: This API will be updated soon.
 	 */
 	
 	gl->curve = (Curve *) DgRealloc(gl->curve, sizeof *gl->curve * ++gl->curve_count);
@@ -1022,6 +1025,12 @@ void graphics_add_curve(GraphicsSystem * restrict gl, DgVec3 p0, DgVec3 p1, DgVe
 	gl->curve[gl->curve_count - 1].points[2] = p2;
 	gl->curve[gl->curve_count - 1].points[3] = p3;
 }
+
+/**
+ * =============================================================================
+ * 3D Meshes
+ * =============================================================================
+ */
 
 static int graphics_realloc_mesh(GraphicsSystem * restrict gl) {
 	/**
@@ -1072,6 +1081,41 @@ Name graphics_create_mesh(GraphicsSystem * restrict gl, Name name) {
 	
 	gl->mesh_name[gl->mesh_count++] = name;
 	memset(&gl->mesh[gl->mesh_count - 1], 0, sizeof *gl->mesh);
+	
+	return name;
+}
+
+Name graphics_destroy_mesh(GraphicsSystem * restrict gl, Name name) {
+	/**
+	 * Virtually distroys a mesh, clearing its chunk of memory for later use.
+	 * Returns name on successful free, zero on failure to free.
+	 */
+	
+	size_t idx = graphics_find_mesh(gl, name);
+	
+	if (idx == -1) {
+		return 0;
+	}
+	
+	gl->mesh_name[idx] = 0;
+	
+	Mesh *mesh = &gl->mesh[idx];
+	
+	if (mesh->vertex) {
+		DgFree(mesh->vertex);
+	}
+	
+	if (mesh->index) {
+		DgFree(mesh->index);
+	}
+	
+	if (mesh->texture) {
+		DgFree((void *) mesh->texture);
+	}
+	
+	glDeleteBuffers(1, &mesh->vbo);
+	glDeleteBuffers(1, &mesh->ebo);
+	glDeleteVertexArrays(1, &mesh->vao);
 	
 	return name;
 }
@@ -1187,7 +1231,7 @@ Name graphics_create_surface3d(GraphicsSystem * const restrict gl, const Name na
 	return name;
 }
 
-Name graphics_surface3d_add_patch(GraphicsSystem * const restrict gl, const Name name, DgSurface3D * const restrict patch) {
+Name graphics_add_patch_to_surface3d(GraphicsSystem * const restrict gl, const Name name, DgSurface3D * const restrict patch) {
 	/**
 	 * Add a single patch to a Surface3D object. This takes the given object, so
 	 * internal memory for it must not be freed.
@@ -1218,6 +1262,33 @@ Name graphics_surface3d_add_patch(GraphicsSystem * const restrict gl, const Name
 	surface->surface_count++;
 	
 	return name;
+}
+
+Surface3D * const graphics_get_surface3d(GraphicsSystem * const restrict gl, const Name name) {
+	/**
+	 * Get a pointer to the surface object indentified by `name`.
+	 */
+	
+	size_t idx = graphics_find_surface3d(gl, name);
+	
+	if (idx == -1) {
+		return NULL;
+	}
+	
+	return &gl->surface[idx];
+}
+
+size_t graphics_get_surface3d_counts(const GraphicsSystem * const restrict gl, size_t *allocsz) {
+	/**
+	 * Return the count of surface3D objects and write the count of memory
+	 * allocated to allocsz if not NULL.
+	 */
+	
+	if (allocsz) {
+		*allocsz = gl->surface_alloc;
+	}
+	
+	return gl->surface_count;
 }
 
 /**

@@ -10,8 +10,6 @@ SPEED_MAX = 15.0
 SPEED_MIN = 3.0
 speed = 6.0
 
-p = 0
-
 function init()
 	-- Create camera
 	cam = create_entity(ENT_TRANSFORM)
@@ -71,17 +69,15 @@ function tick(dt)
 	fx, fy, fz = get_camera_forward(0.0, 0.0, -1.0)
 	
 	if w then
-		move_object(player, fx * -10.0 * dt, 0.0, fz * 10.0 * dt)
+		move_object(player, fx * (-10.0 * dt), 0.0, fz * (10.0 * dt))
 	end
 	
 	if s then
-		move_object(player, fx * 10.0 * dt, 0.0, fz * -10.0 * dt)
+		move_object(player, fx * (10.0 * dt), 0.0, fz * (-10.0 * dt))
 	end
 	
-	-- jumping
-	if j and p < 0 then
-		add_force(player, 0.0, 1250.0, 0.0)
-		p = 200
+	if j then
+		move_object(player, 0.0, (10.0 * dt), 0.0)
 	end
 	
 	-- Update the camera's position
@@ -91,12 +87,13 @@ function tick(dt)
 	local cx, cy, cz, crx, cry, crz = get_transform(cam)
 	
 	cx = x
-	cy = y + 3.0
+	cy = y + 0.5
 	cz = z
 	crx = my
 	cry = mx
 	
 	push_transform(cam, cx, cy, cz, crx, cry, crz)
+	push_transform(player, x, y, z, rx, ry, rz, 0.0, 0.0, 0.0)
 end
 
 function free()

@@ -11,27 +11,28 @@
 
 #include "bezsurfa.h"
 
-float xbico(float n, float k) {
+float DgCombination(float n, float k) {
 	/**
-	 * Calculate a binomial coefficent
+	 * Calculate a binomial coefficent (combination)
 	 * 
 	 * @see https://mathworld.wolfram.com/BinomialCoefficient.html
+	 * @see https://www.khanacademy.org/math/precalculus/x9e81a4f98389efdf:prob-comb/x9e81a4f98389efdf:combinations/v/introduction-to-combinations
 	 */
 	
 	return xfac(n) / (xfac(k) * xfac(n - k));
 }
 
-float xberpl(float n, float i, float t) {
+float DgBersteinPolynomial(float n, float i, float t) {
 	/**
 	 * Calculate a berstien basis polynomial
 	 * 
 	 * @see https://mathworld.wolfram.com/BernsteinPolynomial.html
 	 */
 	
-	return xbico(n, i) * xpow(1.0f - t, n - i) * xpow(t, i);
+	return DgCombination(n, i) * xpow(1.0f - t, n - i) * xpow(t, i);
 }
 
-DgVec3 DgBezSurfVec3(uint64_t n, uint64_t m, DgVec3 *P, float u, float v) {
+DgVec3 DgBezSurfVec3(size_t n, size_t m, DgVec3 *points, float u, float v) {
 	/**
 	 * Calculate the mapping from (u, v) to a point on a (n, m) order bezier
 	 * surface.
@@ -43,19 +44,17 @@ DgVec3 DgBezSurfVec3(uint64_t n, uint64_t m, DgVec3 *P, float u, float v) {
 	 * @see https://en.wikipedia.org/wiki/B%C3%A9zier_surface
 	 */
 	
-	DgVec3 res = (DgVec3) {0.0f, 0.0f, 0.0f};
+	DgVec3 s = (DgVec3) {0.0f, 0.0f, 0.0f};
 	
-	for (uint64_t i = 0; i <= n; i++) {
-		DgVec3 rowres = (DgVec3) {0.0f, 0.0f, 0.0f};
+	for (size_t i = 0; i <= n; i++) {
+		DgVec3 r = (DgVec3) {0.0f, 0.0f, 0.0f};
 		
-		for (uint64_t j = 0; j <= m; j++) {
-			DgVec3 temp = DgVec3Scale(xberpl(n, i, u), DgVec3Scale(xberpl(m, j, v), P[(n * i) + j]));
-			rowres = DgVec3Add(rowres, temp);
-			
+		for (size_t j = 0; j <= m; j++) {
+			r = DgVec3Add(r, DgVec3Scale(DgBersteinPolynomial(n, i, u) * DgBersteinPolynomial(m, j, v), points[(n * i) + j]));
 		}
 		
-		res = DgVec3Add(res, rowres);
+		s = DgVec3Add(s, r);
 	}
 	
-	return res;
+	return s;
 }

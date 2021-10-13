@@ -38,7 +38,6 @@ typedef struct Mesh3D {
 	uint32_t index_count;
 	uint32_t vbo, ebo, vao;
 	bool updated;
-	bool shouldFree;
 } Mesh3D;
 
 // Compatiblity
@@ -77,20 +76,6 @@ typedef struct Mesh2D {
 	uint32_t vbo, ebo, vao;
 	bool updated;
 } Mesh2D;
-
-/**
- * TODO: What is this doing here???
- */
-typedef struct TextString {
-	float *vertex;
-	size_t vertex_count;
-	float *index;
-	size_t index_count;
-	
-	float size;
-	const char *text;
-	size_t length;
-} TextString;
 
 /**
  * DEPRECATED: The current curves system was only for testing as a proof of
@@ -169,13 +154,16 @@ void graphics_add_curve(GraphicsSystem * restrict gl, DgVec3 p0, DgVec3 p1, DgVe
 
 // 3D Meshes
 Name graphics_create_mesh(GraphicsSystem * restrict gl, Name name);
+Name graphics_destroy_mesh(GraphicsSystem * restrict gl, Name name);
 Name graphics_set_mesh(GraphicsSystem * restrict gl, Name name, size_t vertex_count, QRVertex1 *vertex, size_t index_count, uint32_t *index, const char *texture);
 Mesh * const graphics_get_mesh(GraphicsSystem * restrict gl, Name name);
 size_t graphics_get_mesh_counts(GraphicsSystem * restrict gl, size_t *allocsz);
 
 // 3D Surface
 Name graphics_create_surface3d(GraphicsSystem * const restrict gl, const Name name);
-Name graphics_surface3d_add_patch(GraphicsSystem * const restrict gl, const Name name, DgSurface3D * const restrict patch);
+Name graphics_add_patch_to_surface3d(GraphicsSystem * const restrict gl, const Name name, DgSurface3D * const restrict patch);
+Surface3D * const graphics_get_surface3d(GraphicsSystem * const restrict gl, const Name name);
+size_t graphics_get_surface3d_counts(const GraphicsSystem * const restrict gl, size_t *allocsz);
 
 // 2D Meshes
 Name graphics_create_mesh2d(GraphicsSystem * restrict gl, Name name);
