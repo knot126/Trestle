@@ -198,6 +198,9 @@ void graphics_init(GraphicsSystem * restrict gl) {
 	// Set default curve render quality
 	graphics_set_curve_render_quality(gl, 7.0f);
 	
+	// Set the default FoV
+	graphics_set_fov(gl, 0.125f);
+	
 	// Set default clear colour
 	gl->clearColour = (DgVec4) {0.5f, 0.5f, 0.5f, 1.0f};
 }
@@ -342,7 +345,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 	// for each frame, allowing dynamic resize of the window.
 	int w, h;
 	glfwGetWindowSize(gl->window, &w, &h);
-	DgMat4 proj = DgMat4NewPerspective2(0.125f, (float) w / (float) h, 0.000001f, 100.0f);
+	DgMat4 proj = DgMat4NewPerspective2(gl->camera_fov, (float) w / (float) h, 0.000001f, 100.0f);
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "proj"), 1, GL_TRUE, &proj.ax);
 	
 	// Calculate view matrix (camera transform)
@@ -1002,6 +1005,14 @@ void graphics_set_curve_render_quality(GraphicsSystem * restrict graphics, float
 	graphics->curve_render_quality = quality;
 }
 
+void graphics_set_fov(GraphicsSystem * restrict graphics, float fov) {
+	/**
+	 * Set the camera FoV in turns. That is, 1.0 turn = 2pi rad = 360 deg.
+	 */
+	
+	graphics->camera_fov = fov;
+}
+
 /**
  * =============================================================================
  * Legacy Curves
@@ -1261,7 +1272,28 @@ Name graphics_add_patch_to_surface3d(GraphicsSystem * const restrict gl, const N
 	// Increment number of patches
 	surface->surface_count++;
 	
+	// Set as updated
+	surface->cache.updated = true;
+	
 	return name;
+}
+
+Name graphics_create_patch_surface3d(GraphicsSystem * const restrict gl, const Name name, const uint32_t x, const uint32_t y, const DgVec3 * const restrict points) {
+	/**
+	 * Create a surface from the x-count, y-count and points.
+	 */
+	
+	DgSurface3D s;
+	
+	DgSurface3DInit(&s, x, y);
+	
+	for (uint32_t i = 0; i < x; i++) {
+		for (uint32_t j = 0; j < y; j++) {
+			DgSurface3DSetPoint(&s, i, j, &points[(x * i) + j]);
+		}
+	}
+	
+	graphics_add_patch_to_surface3d(gl, name, &s);
 }
 
 Surface3D * const graphics_get_surface3d(GraphicsSystem * const restrict gl, const Name name) {

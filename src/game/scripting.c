@@ -28,6 +28,12 @@
 
 #include "scripting.h"
 
+/**
+ * =============================================================================
+ * Supervisor and Entities
+ * =============================================================================
+ */
+
 static int scripted_EntityName(lua_State *script) {
 	if (lua_gettop(script) != 0) {
 		DgLog(DG_LOG_ERROR, "Invalid usage of next_name().");
@@ -62,6 +68,12 @@ static int scripted_Quit(lua_State *script) {
 	
 	return 0;
 }
+
+/**
+ * =============================================================================
+ * Scripts
+ * =============================================================================
+ */
 
 static int scripted_ScriptCreate(lua_State *script) {
 	if (lua_gettop(script) != 0) {
@@ -109,6 +121,12 @@ static int scripted_ScriptOpen(lua_State *script) {
 	return 1;
 }
 
+/**
+ * =============================================================================
+ * XML Parser
+ * =============================================================================
+ */
+
 static int scripted_XMLLoad(lua_State *script) {
 	if (lua_gettop(script) != 1) {
 		DgLog(DG_LOG_ERROR, "Invalid usage of xml_load().");
@@ -122,6 +140,12 @@ static int scripted_XMLLoad(lua_State *script) {
 	
 	return 1;
 }
+
+/**
+ * =============================================================================
+ * Scene Graph
+ * =============================================================================
+ */
 
 static int scripted_CreateTransform(lua_State *script) {
 	int top = lua_gettop(script);
@@ -198,6 +222,12 @@ static int scripted_GetTransform(lua_State *script) {
 	
 	return 9;
 }
+
+/**
+ * =============================================================================
+ * Graphics System
+ * =============================================================================
+ */
 
 static int scripted_GetCamera(lua_State *script) {
 	if (lua_gettop(script) != 0) {
@@ -323,6 +353,23 @@ static int scripted_SetMouseDisabled(lua_State *script) {
 	return 0;
 }
 
+static int scripted_SetCameraFov(lua_State *script) {
+	if (lua_gettop(script) != 1) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of set_camera_fov().");
+		return 0;
+	}
+	
+	graphics_set_fov(&supervisor(NULL)->graphics, lua_tonumber(script, 1));
+	
+	return 0;
+}
+
+/**
+ * =============================================================================
+ * Physics System
+ * =============================================================================
+ */
+
 static int scripted_CreatePhysicsObject(lua_State *script) {
 	if (lua_gettop(script) != 1) {
 		DgLog(DG_LOG_ERROR, "Invalid usage of create_physics_object().");
@@ -442,6 +489,12 @@ static int scripted_SetAABB(lua_State *script) {
 	return 0;
 }
 
+/**
+ * =============================================================================
+ * Higher-level entites
+ * =============================================================================
+ */
+
 static int scripted_MakeBox(lua_State *script) {
 	int top = lua_gettop(script);
 	
@@ -508,6 +561,12 @@ static int scripted_MakeRect(lua_State *script) {
 	return 1;
 }
 
+/**
+ * =============================================================================
+ * Registry
+ * =============================================================================
+ */
+
 static int scripted_RegSet(lua_State *script) {
 	if (lua_gettop(script) != 2) {
 		DgLog(DG_LOG_ERROR, "Invalid usage of reg_set().");
@@ -529,6 +588,12 @@ static int scripted_RegGet(lua_State *script) {
 	
 	return 1;
 }
+
+/**
+ * =============================================================================
+ * Input
+ * =============================================================================
+ */
 
 static int scripted_GetKey(lua_State *script) {
 	if (lua_gettop(script) != 1) {
@@ -598,6 +663,8 @@ void regiser_default_script_functions(DgScript *script) {
 	lua_register(script->state, "get_should_keep_open", &scripted_GetShouldKeepOpen);
 	lua_register(script->state, "get_screen_size", &scripted_GetScreenSize);
 	lua_register(script->state, "set_mouse_disabled", &scripted_SetMouseDisabled);
+	lua_register(script->state, "set_camera_fov", &scripted_SetCameraFov);
+	
 	lua_register(script->state, "create_mesh", &scripted_CreateMesh);
 	lua_register(script->state, "push_obj_mesh", &scripted_PushOBJMesh);
 	lua_register(script->state, "add_curve", &scripted_AddCurve);

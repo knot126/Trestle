@@ -53,7 +53,7 @@ DgVec3 DgSurface3DGetPoint(const DgSurface3D * const restrict this, uint32_t x, 
 	return this->points[(y * (this->m + 1)) + x];
 }
 
-void DgSurface3DSetPoint(DgSurface3D * const restrict this, uint32_t x, uint32_t y, DgVec3 * restrict value) {
+void DgSurface3DSetPoint(DgSurface3D * const restrict this, uint32_t x, uint32_t y, const DgVec3 * restrict value) {
 	/**
 	 * Set a control point.
 	 */

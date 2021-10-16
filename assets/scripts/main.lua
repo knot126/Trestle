@@ -77,7 +77,7 @@ function tick(dt)
 	end
 	
 	if j then
-		move_object(player, 0.0, (10.0 * dt), 0.0)
+		add_force(player, 0.0, 100.0, 0.0)
 	end
 	
 	-- Update the camera's position
@@ -87,13 +87,12 @@ function tick(dt)
 	local cx, cy, cz, crx, cry, crz = get_transform(cam)
 	
 	cx = x
-	cy = y + 0.5
+	cy = y + 4.0
 	cz = z
 	crx = my
 	cry = mx
 	
 	push_transform(cam, cx, cy, cz, crx, cry, crz)
-	push_transform(player, x, y, z, rx, ry, rz, 0.0, 0.0, 0.0)
 end
 
 function free()

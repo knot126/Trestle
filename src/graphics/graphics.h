@@ -107,6 +107,7 @@ typedef struct GraphicsSystem {
 	DgVec4 clearColour;
 	Name camera;
 	float curve_render_quality;
+	float camera_fov;
 	
 	// Mesh3D objects
 	Name  *mesh_name;
@@ -148,6 +149,7 @@ DgVec3 graphics_get_camera_forward(GraphicsSystem * restrict gl, SceneGraph * re
 DgVec2I graphics_get_screen_size(GraphicsSystem * restrict gl);
 void graphics_set_mouse_disabled(GraphicsSystem * restrict gl, bool enabled);
 void graphics_set_curve_render_quality(GraphicsSystem * restrict graphics, float quality);
+void graphics_set_fov(GraphicsSystem * restrict graphics, float fov);
 
 // Curves
 void graphics_add_curve(GraphicsSystem * restrict gl, DgVec3 p0, DgVec3 p1, DgVec3 p2, DgVec3 p3);
