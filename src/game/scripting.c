@@ -364,6 +364,32 @@ static int scripted_SetCameraFov(lua_State *script) {
 	return 0;
 }
 
+static int scripted_PushPatch(lua_State *script) {
+	if (lua_gettop(script) <= 2) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of push_patch().");
+		return 0;
+	}
+	
+	Name name = lua_tointeger(script, 0);
+	size_t x = lua_tointeger(script, 1), y = lua_tointeger(script, 2);
+	
+	DgVec3 points[x][y];
+	
+	size_t head = 3;
+	
+	for (size_t i = 0; i < x; i++) {
+		for (size_t j = 0; j < y; j++) {
+			points[i][j].x = lua_tonumber(script, head++);
+			points[i][j].y = lua_tonumber(script, head++);
+			points[i][j].z = lua_tonumber(script, head++);
+		}
+	}
+	
+	graphics_create_patch_surface3d(&(supervisor(NULL)->graphics), name, x, y, (DgVec3 *) points);
+	
+	return 0;
+}
+
 /**
  * =============================================================================
  * Physics System
@@ -668,6 +694,7 @@ void regiser_default_script_functions(DgScript *script) {
 	lua_register(script->state, "create_mesh", &scripted_CreateMesh);
 	lua_register(script->state, "push_obj_mesh", &scripted_PushOBJMesh);
 	lua_register(script->state, "add_curve", &scripted_AddCurve);
+	lua_register(script->state, "push_patch", &scripted_PushPatch);
 	
 	register_meshwisk_functions(script);
 	

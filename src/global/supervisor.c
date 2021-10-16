@@ -146,5 +146,9 @@ Name sup_entity(Supervisor *sup, const uint64_t systems) {
 		physics_create_aabb(&sup->physics, name);
 	}
 	
+	if ((systems & ENT_GRAPHICS_SURFACE) == ENT_GRAPHICS_SURFACE) {
+		graphics_create_surface3d(&sup->graphics, name);
+	}
+	
 	return name;
 }

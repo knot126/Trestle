@@ -164,6 +164,7 @@ size_t graphics_get_mesh_counts(GraphicsSystem * restrict gl, size_t *allocsz);
 // 3D Surface
 Name graphics_create_surface3d(GraphicsSystem * const restrict gl, const Name name);
 Name graphics_add_patch_to_surface3d(GraphicsSystem * const restrict gl, const Name name, DgSurface3D * const restrict patch);
+Name graphics_create_patch_surface3d(GraphicsSystem * const restrict gl, const Name name, const uint32_t x, const uint32_t y, const DgVec3 * const restrict points);
 Surface3D * const graphics_get_surface3d(GraphicsSystem * const restrict gl, const Name name);
 size_t graphics_get_surface3d_counts(const GraphicsSystem * const restrict gl, size_t *allocsz);
 

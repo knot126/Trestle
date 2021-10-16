@@ -1285,7 +1285,9 @@ Name graphics_create_patch_surface3d(GraphicsSystem * const restrict gl, const N
 	
 	DgSurface3D s;
 	
-	DgSurface3DInit(&s, x, y);
+	if (!DgSurface3DInit(&s, x, y)) {
+		return 0;
+	}
 	
 	for (uint32_t i = 0; i < x; i++) {
 		for (uint32_t j = 0; j < y; j++) {
@@ -1294,6 +1296,8 @@ Name graphics_create_patch_surface3d(GraphicsSystem * const restrict gl, const N
 	}
 	
 	graphics_add_patch_to_surface3d(gl, name, &s);
+	
+	return name;
 }
 
 Surface3D * const graphics_get_surface3d(GraphicsSystem * const restrict gl, const Name name) {

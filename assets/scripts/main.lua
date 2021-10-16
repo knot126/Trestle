@@ -20,15 +20,16 @@ function init()
 	player = make_box(0.0, 2.0, -2.0)
 	set_physics_flags(player, PHYSICS_MODE_PLAYER)
 	
+	-- Some bezier patch
+	be = create_entity(ENT_TRANSFORM | ENT_GRAPHICS_SURFACE)
+	push_patch(be, 2, 2, 1.0, 0.5, 0.75, 0.75, 0.75, 1.0, 4.0, 2.0, 1.0, 1.0, 1.0, 2.5)
+	
 	-- Sync the physics graph after everything has been created
 	physics_sync_graph()
 	
 	-- Set some registry values
 	reg_set("life", "3")
 	reg_set("offset", "5230")
-	
-	-- Try making a rectangle
--- 	r = make_rect(0.0, 0.875, 2.0, 0.25, 0.0, 0.0, 0.0, 0.4)
 	
 	-- Open the level script
 	level = script_open("assets://levels/pcgroom.lua")
