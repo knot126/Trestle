@@ -19,6 +19,14 @@
 #include "types.h"
 
 /**
+ * Graphics system flags
+ */
+enum {
+	QR_GRAPHICS_DRAW_MESHES_AS_LINES = (1 << 0),
+	QR_GRAPHICS_DRAW_CURVES_AS_VERTEXISATIONS = (1 << 1),
+};
+
+/**
  * A 3D mesh that is drawn in the 3D world.
  * 
  * For compatibility reasons, vert is a float* and vertex is QRVertex3D*. Always
@@ -108,6 +116,8 @@ typedef struct GraphicsSystem {
 	Name camera;
 	float curve_render_quality;
 	float camera_fov;
+	size_t frame;
+	uint64_t flags;
 	
 	// Mesh3D objects
 	Name  *mesh_name;

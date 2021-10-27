@@ -43,14 +43,20 @@ static void DgLogPushMessage(const DgLogLevel level, const char * const buf) {
 			break;
 		
 		case DG_LOG_VERBOSE:
-			printf("\033[1;32mVERBOSE: \033[0m");
+			printf("\033[38;2;192;192;192m");
 			break;
 	}
 	
 	printf(buf);
 	
-	if (level == DG_LOG_FATAL) {
-		printf("\033[0m");
+	switch (level) {
+		case DG_LOG_FATAL:
+		case DG_LOG_VERBOSE:
+			printf("\033[0m");
+			break;
+		
+		default:
+			break;
 	}
 	
 	printf("\n");

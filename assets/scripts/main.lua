@@ -22,7 +22,11 @@ function init()
 	
 	-- Some bezier patch
 	be = create_entity(ENT_TRANSFORM | ENT_GRAPHICS_SURFACE)
-	push_patch(be, 2, 2, 1.0, 0.5, 0.75, 0.75, 0.75, 1.0, 4.0, 2.0, 1.0, 1.0, 1.0, 2.5)
+	push_patch(be, 2, 2,
+	           0.0, 0.0, 0.0,    0.0, 1.0, 0.0,
+	           1.0, 0.0, 0.0,    1.0, 1.0, 0.0
+	)
+	push_transform(be, 0.0, 0.0, 0.0)
 	
 	-- Sync the physics graph after everything has been created
 	physics_sync_graph()
@@ -56,7 +60,7 @@ function tick(dt)
 	local j = GetAction("jump")
 	
 	-- unrelated
-	local x, y, z, rx, ry, rz = get_transform(player)
+	local x, y, z, rx, ry, rz = get_transform(be)
 	
 	if at > 1.0 then
 		print("Position: (" .. x .. ", " .. y .. ", " .. z .. ")")
@@ -69,17 +73,17 @@ function tick(dt)
 	
 	fx, fy, fz = get_camera_forward(0.0, 0.0, -1.0)
 	
-	if w then
-		move_object(player, fx * (-10.0 * dt), 0.0, fz * (10.0 * dt))
-	end
-	
-	if s then
-		move_object(player, fx * (10.0 * dt), 0.0, fz * (-10.0 * dt))
-	end
-	
-	if j then
-		add_force(player, 0.0, 100.0, 0.0)
-	end
+-- 	if w then
+-- 		move_object(player, fx * (-10.0 * dt), 0.0, fz * (10.0 * dt))
+-- 	end
+-- 	
+-- 	if s then
+-- 		move_object(player, fx * (10.0 * dt), 0.0, fz * (-10.0 * dt))
+-- 	end
+-- 	
+-- 	if j then
+-- 		add_force(player, 0.0, 100.0, 0.0)
+-- 	end
 	
 	-- Update the camera's position
 	local sx, sy = get_screen_size()
@@ -88,10 +92,16 @@ function tick(dt)
 	local cx, cy, cz, crx, cry, crz = get_transform(cam)
 	
 	cx = x
-	cy = y + 4.0
+-- 	cy = y + 4.0
 	cz = z
 	crx = my
 	cry = mx
+	
+	if w then
+		cy = cy + (3.0 * dt)
+	elseif s then
+		cy = cy - (3.0 * dt)
+	end
 	
 	push_transform(cam, cx, cy, cz, crx, cry, crz)
 end

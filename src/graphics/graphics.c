@@ -45,6 +45,9 @@
 #include "graphics.h"
 
 #define GL_ERROR_CHECK() gl_error_check(__FILE__, __LINE__)
+#define ARRAY2_COL(ARRAY, ROW_WIDTH, X, Y) ARRAY[(ROW_WIDTH * Y) + X]
+#define ARRAY2X_COL(ARRAY, ROW_WIDTH, PER_ITEM, X, Y, OFFSET) ARRAY[(ROW_WIDTH * Y * PER_ITEM) + (X * PER_ITEM) + OFFSET]
+#define ARRAY2XX_COL(ARRAY, START, ROW_WIDTH, PER_ITEM, X, Y, OFFSET) ARRAY[START + ((ROW_WIDTH * Y * PER_ITEM) + (X * PER_ITEM) + OFFSET)]
 
 // Yes, it's odd, but I really rather not include the header files in this file.
 #include "glutils.h"
@@ -196,7 +199,7 @@ void graphics_init(GraphicsSystem * restrict gl) {
 	GL_ERROR_CHECK();
 	
 	// Set default curve render quality
-	graphics_set_curve_render_quality(gl, 7.0f);
+	graphics_set_curve_render_quality(gl, 12.0f);
 	
 	// Set the default FoV
 	graphics_set_fov(gl, 0.125f);
@@ -210,6 +213,11 @@ static void graphics_update_mesh(GraphicsSystem * const restrict gl, uint32_t * 
 	 * Update a mesh by pushing vertex and index data to OpenGL. vbo, vao and
 	 * ebo should be writeable and are used as what they are named respectively.
 	 */
+	
+	if (!*vertex || !*index) {
+		DgLog(DG_LOG_ERROR, "Cannot update mesh: vertex (0x%.16X) or index (0x%.16X) pointer is NULL!", *vertex, *index);
+		return;
+	}
 	
 	if (!*vbo) {
 		glGenBuffers(1, vbo);
@@ -308,9 +316,11 @@ static void graphics_update_mesh(GraphicsSystem * const restrict gl, uint32_t * 
 		*updated = false;
 	}
 	
+	DgLog(DG_LOG_VERBOSE, "Free Vertex");
 	DgFree(*vertex);
 	*vertex = NULL;
 	
+	DgLog(DG_LOG_VERBOSE, "Free Index");
 	DgFree(*index);
 	*index = NULL;
 	
@@ -321,6 +331,9 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 	/*
 	 * Update OpenGL-related state and the graphics system
 	 */
+	
+	// Increment frame count
+	gl->frame++;
 	
 	// Normal OpenGL events
 	glfwSwapBuffers(gl->window);
@@ -431,28 +444,24 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 	// -------------------------------------------------------------------------
 	// -------------------------------------------------------------------------
 	
+	if ((gl->flags & QR_GRAPHICS_DRAW_CURVES_AS_VERTEXISATIONS) == QR_GRAPHICS_DRAW_CURVES_AS_VERTEXISATIONS) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+	
+// #if 0
 	for (size_t i = 0; i < gl->surface_count; i++) {
 		Name id = gl->surface_name[i];
 		Surface3D *surface = &gl->surface[i];
 		
-// 		// If there have been on vericies pushed to the GPU
-// 		if (!surface->cache.vertex_count || !surface->cache.index_count) {
-// 			continue;
-// 		}
-// 		
-// 		// If the mesh is updated and the allocation of the mesh data failed
-// 		if ((!surface->cache.index || !surface->cache.vertex) && surface->cache.updated) {
-// 			continue;
-// 		}
-		
 		// Push new verticies if needed
 		if (surface->cache.updated) {
 			// Calculate sample rate
+// 			DgLog(DG_LOG_VERBOSE, "Address of surface->surface[0]: %X", &surface->surface[0]);
 			DgVec3 size = DgSurface3DGetBoundingBoxSize(&surface->surface[0]);
 			
 			// Prepare the data
-			uint32_t samp_x = (uint32_t)(size.x * gl->curve_render_quality);
-			uint32_t samp_y = (uint32_t)(size.z * gl->curve_render_quality);
+			uint32_t samp_x = (uint32_t)(gl->curve_render_quality);
+			uint32_t samp_y = (uint32_t)(gl->curve_render_quality);
 			
 			DgVec3 *samples = DgAlloc(samp_x * samp_y * sizeof *samples);
 			
@@ -460,14 +469,14 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 				continue;
 			}
 			
-			surface->cache.vertex_count = samp_x * samp_y * 4;
+			surface->cache.vertex_count = (samp_x * samp_y * 4) + (surface->surface[0].n * surface->surface[0].m * 4);
 			surface->cache.vertex = DgAlloc(surface->cache.vertex_count * sizeof *(surface->cache.vertex));
 			
-			if (!surface->cache.vertex_count) {
+			if (!surface->cache.vertex) {
 				continue;
 			}
 			
-			surface->cache.index_count = samp_x * samp_y * 6;
+			surface->cache.index_count = (samp_x * samp_y * 6) + (surface->surface[0].n * surface->surface[0].m * 4);
 			surface->cache.index = DgAlloc(surface->cache.index_count * sizeof *(surface->cache.index));
 			
 			if (!surface->cache.index) {
@@ -477,8 +486,10 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			// Calculate the samples data
 			for (uint32_t u = 0; u < samp_y; u++) {
 				for (uint32_t v = 0; v < samp_x; v++) {
-					DgVec3 s = DgSurface3DGetSample(&surface->surface[0], ((float)u) / ((float)samp_x), ((float)v) / ((float)samp_y));
-					samples[(v * samp_x) + u] = s;
+					DgVec3 s = DgSurface3DGetSample(&surface->surface[0], ((float)u) / ((float)(samp_x - 1)), ((float)v) / ((float)(samp_y - 1)));
+// 					DgLog(DG_LOG_VERBOSE, "u = %d, v = %d $$ (%f, %f, %f)", u, v, s.x, s.y, s.z);
+					samples[(samp_x * u) + v] = s;
+					DgLog(DG_LOG_VERBOSE, "Writ to ind: %d", (samp_x * u) + v);
 				}
 			}
 			
@@ -491,10 +502,12 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 						p10 = samples[(y * samp_x) + x + 1],
 						p11 = samples[((y + 1) * samp_x) + x + 1];
 					
-					surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 0] = (QRVertex3D) {p00.x, p00.y, p00.z, 0.0f, 0.0f, DgRandFloat(), DgRandFloat(), DgRandFloat()};
-					surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 1] = (QRVertex3D) {p01.x, p01.y, p01.z, 0.0f, 0.0f, DgRandFloat(), DgRandFloat(), DgRandFloat()};
-					surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 2] = (QRVertex3D) {p10.x, p10.y, p10.z, 0.0f, 0.0f, DgRandFloat(), DgRandFloat(), DgRandFloat()};
-					surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 3] = (QRVertex3D) {p11.x, p11.y, p11.z, 0.0f, 0.0f, DgRandFloat(), DgRandFloat(), DgRandFloat()};
+					DgVec3 c = {DgRandFloat(), DgRandFloat(), DgRandFloat()};
+					
+					surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 0] = (QRVertex3D) {p00.x, p00.y, p00.z, 0.0f, 0.0f, c.x, c.y, c.z};
+					surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 1] = (QRVertex3D) {p01.x, p01.y, p01.z, 0.0f, 0.0f, c.x, c.y, c.z};
+					surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 2] = (QRVertex3D) {p10.x, p10.y, p10.z, 0.0f, 0.0f, c.x, c.y, c.z};
+					surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 3] = (QRVertex3D) {p11.x, p11.y, p11.z, 0.0f, 0.0f, c.x, c.y, c.z};
 					
 					surface->cache.index[(y * samp_x * 6) + (x * 6) + 0] = (y * samp_x * 4) + (x * 4) + 0;
 					surface->cache.index[(y * samp_x * 6) + (x * 6) + 1] = (y * samp_x * 4) + (x * 4) + 1;
@@ -505,7 +518,40 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 				}
 			}
 			
+			// Debugging mesh data
+			uint32_t dbg_start_vertex = (samp_x * samp_y * 4);
+			uint32_t dbg_start_index = (samp_x * samp_y * 6);
+			DgVec2I sz = DgSurface3DGetOrder(&surface->surface[0]);
+			
+			for (size_t i = 0; i < sz.x - 1; i++) {
+				for (size_t j = 0; j < sz.y - 1; j++) {
+					DgLog(DG_LOG_INFO, "Making debug verticies...");
+					DgVec3 p00 = DgSurface3DGetPoint(&surface->surface[0], i, j),
+						p01 = DgSurface3DGetPoint(&surface->surface[0], i, j + 1),
+						p10 = DgSurface3DGetPoint(&surface->surface[0], i + 1, j),
+						p11 = DgSurface3DGetPoint(&surface->surface[0], i + 1, j + 1);
+					
+					ARRAY2XX_COL(dbg_start_vertex, surface->cache.vertex, sz.x, 4, i, j, 0) = 
+						(QRVertex3D) {p00.x, p00.y, p00.z, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f};
+					ARRAY2XX_COL(dbg_start_vertex, surface->cache.vertex, sz.x, 4, i, j, 1) = 
+						(QRVertex3D) {p01.x, p01.y, p01.z, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f};
+					ARRAY2XX_COL(dbg_start_vertex, surface->cache.vertex, sz.x, 4, i, j, 2) = 
+						(QRVertex3D) {p10.x, p10.y, p10.z, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f};
+					ARRAY2XX_COL(dbg_start_vertex, surface->cache.vertex, sz.x, 4, i, j, 3) = 
+						(QRVertex3D) {p11.x, p11.y, p11.z, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f};
+					
+					
+					surface->cache.index[dbg_start_index + (sz.y * j * 6) + (j * 6) + 0] = dbg_start_vertex + (sz.y * j * 4) + (j * 4) + 0;
+					surface->cache.index[dbg_start_index + (sz.y * j * 6) + (j * 6) + 1] = dbg_start_vertex + (sz.y * j * 4) + (j * 4) + 1;
+					surface->cache.index[dbg_start_index + (sz.y * j * 6) + (j * 6) + 2] = dbg_start_vertex + (sz.y * j * 4) + (j * 4) + 2;
+					surface->cache.index[dbg_start_index + (sz.y * j * 6) + (j * 6) + 3] = dbg_start_vertex + (sz.y * j * 4) + (j * 4) + 1;
+					surface->cache.index[dbg_start_index + (sz.y * j * 6) + (j * 6) + 4] = dbg_start_vertex + (sz.y * j * 4) + (j * 4) + 2;
+					surface->cache.index[dbg_start_index + (sz.y * j * 6) + (j * 6) + 5] = dbg_start_vertex + (sz.y * j * 4) + (j * 4) + 3;
+				}
+			}
+			
 			// Create and update mesh cache
+// 			DgLog(DG_LOG_VERBOSE, "Update the surface things (vertex=%x, index=%x)!", surface->cache.vertex, surface->cache.index);
 			graphics_update_mesh(gl, &surface->cache.vbo, &surface->cache.ebo, &surface->cache.vao, surface->cache.vertex_count, &surface->cache.vertex, surface->cache.index_count, &surface->cache.index, &surface->cache.updated);
 		}
 		
@@ -552,11 +598,14 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		
 		GL_ERROR_CHECK();
 		
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glDrawElements(GL_TRIANGLES, surface->cache.index_count, GL_UNSIGNED_INT, 0);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		
 		GL_ERROR_CHECK();
+	}
+// #endif
+	
+	if ((gl->flags & QR_GRAPHICS_DRAW_CURVES_AS_VERTEXISATIONS) == QR_GRAPHICS_DRAW_CURVES_AS_VERTEXISATIONS) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 	
 	// -------------------------------------------------------------------------
@@ -895,22 +944,6 @@ void graphics_free(GraphicsSystem* gl) {
 	for (uint32_t i = 0; i < gl->programs_count; i++) {
 		glDeleteProgram(gl->programs[i]);
 	}
-	
-	// Free meshes
-// 	for (size_t i = 0; i < gl->mesh_count; i++) {
-// 		glDeleteBuffers(1, &gl->mesh[i].vbo);
-// 		glDeleteBuffers(1, &gl->mesh[i].ebo);
-// 		
-// 		glDeleteVertexArrays(1, &gl->mesh[i].vao);
-// 		
-// 		if (gl->mesh[i].shouldFree) {
-// 			DgFree(gl->mesh[i].vert);
-// 			DgFree(gl->mesh[i].index);
-// 			if (gl->mesh[i].texture) {
-// 				DgFree((void *) gl->mesh[i].texture);
-// 			}
-// 		}
-// 	}
 	
 	gltexture_free(&gl->texture);
 	
@@ -1295,7 +1328,10 @@ Name graphics_create_patch_surface3d(GraphicsSystem * const restrict gl, const N
 		}
 	}
 	
-	graphics_add_patch_to_surface3d(gl, name, &s);
+	if (!graphics_add_patch_to_surface3d(gl, name, &s)) {
+		DgLog(DG_LOG_ERROR, "Failed to add patch to 3d object (id = %d)!!", name);
+		return 0;
+	}
 	
 	return name;
 }
@@ -1437,3 +1473,8 @@ size_t graphics_get_mesh2d_counts(GraphicsSystem * restrict gl, size_t *allocsz)
 	
 	return gl->mesh2d_count;
 }
+
+#undef GL_ERROR_CHECK
+#undef ARRAY2_COL
+#undef ARRAY2X_COL
+#undef ARRAY2XX_COL

@@ -12,12 +12,15 @@
 #include "util/log.h"
 #include "util/json.h"
 #include "util/fs.h"
+#include "util/bezsurfa.h"
 
 typedef struct {
 	DgFileStream *output;
 } Tester;
 
 static const char * test_DgJSON(void) {
+	// test json parser
+	
 	DgLog(DG_LOG_INFO, "JSON test...");
 	
 	DgJSONValue val;
@@ -30,6 +33,26 @@ static const char * test_DgJSON(void) {
 	DgJSONValuePrint(&val);
 	
 	DgJSONValueFree(&val);
+	
+	return "Okay";
+}
+
+static const char * test_DgAvancedMathFuncs(void) {
+	// test advanced maths functions
+	
+	DgLog(DG_LOG_INFO, "Test maths functions...");
+	
+	float r = DgBersteinPolynomial(1.0, 0.0, 0.5);
+	
+	if (r != 0.5) {
+		return "B 1,0 (0.5) != 0.5, should though";
+	}
+	
+	r = DgBersteinPolynomial(1.0, 1.0, 0.5);
+	
+	if (r != 0.5) {
+		return "B 1,1 (0.5) != 0.5, should though";
+	}
 	
 	return "Okay";
 }
@@ -58,6 +81,7 @@ void do_all_tests(void) {
 	
 	// Decent Games Libraries
 	run_test(&t, test_DgJSON, "Test-Json");
+	run_test(&t, test_DgAvancedMathFuncs, "Test-Maths");
 	
 	// Close File
 	DgFileStreamClose(t.output);

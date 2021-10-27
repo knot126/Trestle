@@ -50,7 +50,7 @@ DgVec3 DgSurface3DGetPoint(const DgSurface3D * const restrict this, uint32_t x, 
 	 * Get a control point.
 	 */
 	
-	return this->points[(y * (this->m + 1)) + x];
+	return this->points[(y * (this->n + 1)) + x];
 }
 
 void DgSurface3DSetPoint(DgSurface3D * const restrict this, uint32_t x, uint32_t y, const DgVec3 * restrict value) {
@@ -58,7 +58,9 @@ void DgSurface3DSetPoint(DgSurface3D * const restrict this, uint32_t x, uint32_t
 	 * Set a control point.
 	 */
 	
-	this->points[(y * (this->m + 1)) + x] = *value;
+	DgLog(DG_LOG_VERBOSE, "Setting point at index [%d] to (%f, %f, %f)...", (y * (this->n + 1)) + x, value->x, value->y, value->z);
+	
+	this->points[(y * (this->n + 1)) + x] = *value;
 }
 
 DgVec3 DgSurface3DGetSample(const DgSurface3D * const restrict this, float u, float v) {
@@ -73,6 +75,14 @@ DgVec3 DgSurface3DGetSample(const DgSurface3D * const restrict this, float u, fl
 	return p;
 }
 
+DgVec2I DgSurface3DGetOrder(const DgSurface3D * const restrict this) {
+	/**
+	 * Get the order of a surface.
+	 */
+	
+	return (DgVec2I) {this->n + 1, this->m + 1};
+}
+
 void DgSurface3DGetBoundingBox(const DgSurface3D * const restrict this, DgVec3 * const restrict min, DgVec3 * const restrict max) {
 	/**
 	 * Get the bounding box of the surface.
@@ -80,6 +90,11 @@ void DgSurface3DGetBoundingBox(const DgSurface3D * const restrict this, DgVec3 *
 	
 	*min = (DgVec3) {100000000000000.0f, 100000000000000.0f, 100000000000000.0f};
 	*max = (DgVec3) {-100000000000000.0f, -100000000000000.0f, -100000000000000.0f};
+	
+	if (!this) {
+// 		DgLog(DG_LOG_ERROR, "DgSurface3DGetBoundingBox(): NULL pointer for this!");
+		return;
+	}
 	
 	for (size_t x = 0; x <= this->n; x++) {
 		for (size_t y = 0; y <= this->m; y++) {
@@ -116,6 +131,10 @@ DgVec3 DgSurface3DGetBoundingBoxSize(const DgSurface3D * const restrict this) {
 	/**
 	 * Get the size of the bounding box containing control points.
 	 */
+	
+	if (!this) {
+		return (DgVec3) {0.0f, 0.0f, 0.0f};
+	}
 	
 	DgVec3 min, max;
 	
