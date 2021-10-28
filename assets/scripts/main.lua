@@ -22,9 +22,10 @@ function init()
 	
 	-- Some bezier patch
 	be = create_entity(ENT_TRANSFORM | ENT_GRAPHICS_SURFACE)
-	push_patch(be, 2, 2,
-	           0.0, 0.0, 0.0,    0.0, 1.0, 0.0,
-	           1.0, 0.0, 0.0,    1.0, 1.0, 0.0
+	push_patch(be, 3, 3,
+	           0.0, 0.0, 0.0,    0.0, 1.0, 0.0,    0.0, 2.0, 0.0,
+	           1.0, 0.0, 0.0,    1.0, 1.0, 0.0,    1.0, 2.0, 0.0,
+	           2.0, 0.0, 0.0,    2.0, 1.0, 0.0,    2.0, 2.0, 0.0
 	)
 	push_transform(be, 0.0, 0.0, 0.0)
 	

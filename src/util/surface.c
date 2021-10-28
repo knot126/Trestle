@@ -22,10 +22,8 @@ DgSurface3D *DgSurface3DInit(DgSurface3D * const restrict this, uint32_t rows, u
 	
 	memset(this, 0, sizeof *this);
 	
-	// Convert the number of rows and columns to the number of degrees in each
-	// demension (subtract one to do this)
-	this->n = rows - 1;
-	this->m = cols - 1;
+	this->n = rows;
+	this->m = cols;
 	
 	// NOTE: Remember, order in n or m + 1 = number of rows or columns
 	this->points = DgAlloc(rows * cols * sizeof *this->points);
@@ -50,7 +48,7 @@ DgVec3 DgSurface3DGetPoint(const DgSurface3D * const restrict this, uint32_t x, 
 	 * Get a control point.
 	 */
 	
-	return this->points[(y * (this->n + 1)) + x];
+	return this->points[(y * this->n) + x];
 }
 
 void DgSurface3DSetPoint(DgSurface3D * const restrict this, uint32_t x, uint32_t y, const DgVec3 * restrict value) {
@@ -60,7 +58,7 @@ void DgSurface3DSetPoint(DgSurface3D * const restrict this, uint32_t x, uint32_t
 	
 	DgLog(DG_LOG_VERBOSE, "Setting point at index [%d] to (%f, %f, %f)...", (y * (this->n + 1)) + x, value->x, value->y, value->z);
 	
-	this->points[(y * (this->n + 1)) + x] = *value;
+	this->points[(y * this->n) + x] = *value;
 }
 
 DgVec3 DgSurface3DGetSample(const DgSurface3D * const restrict this, float u, float v) {
@@ -80,7 +78,7 @@ DgVec2I DgSurface3DGetOrder(const DgSurface3D * const restrict this) {
 	 * Get the order of a surface.
 	 */
 	
-	return (DgVec2I) {this->n + 1, this->m + 1};
+	return (DgVec2I) {this->n, this->m};
 }
 
 void DgSurface3DGetBoundingBox(const DgSurface3D * const restrict this, DgVec3 * const restrict min, DgVec3 * const restrict max) {
@@ -96,8 +94,8 @@ void DgSurface3DGetBoundingBox(const DgSurface3D * const restrict this, DgVec3 *
 		return;
 	}
 	
-	for (size_t x = 0; x <= this->n; x++) {
-		for (size_t y = 0; y <= this->m; y++) {
+	for (size_t x = 0; x < this->n; x++) {
+		for (size_t y = 0; y < this->m; y++) {
 			DgVec3 cur = DgSurface3DGetPoint(this, x, y);
 			
 			if (cur.x >= max->x) {

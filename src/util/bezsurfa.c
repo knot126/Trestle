@@ -4,10 +4,6 @@
  * 
  * Bèzier surface core implementation and anything needed for them not provided
  * by the maths library.
- * 
- * WARNING: The way that indices work in this library are a bit screwy since
- * they usually take (count - 1) instead of (count) as the length. This should
- * be reworked soon!
  */
 
 #include "maths.h"
@@ -47,7 +43,7 @@ DgVec3 DgBezCurveVec3(size_t n, DgVec3 *points, float u) {
 	
 	DgVec3 s = (DgVec3) {0.0f, 0.0f, 0.0f};
 	
-	for (size_t i = 0; i <= n; i++) {
+	for (size_t i = 0; i < n; i++) {
 		s = DgVec3Add(s, DgVec3Scale(DgBersteinPolynomial(n, i, u), points[i]));
 	}
 	
@@ -59,10 +55,6 @@ DgVec3 DgBezSurfVec3(size_t n, size_t m, DgVec3 *points, float u, float v) {
 	 * Calculate the mapping from (u, v) to a point on a (n, m) order bezier
 	 * surface.
 	 * 
-	 * NOTE: The array of points must be n + 1 by m + 1 otherwise there will be
-	 * a segfault. If you store the order of a curve by its demensions, then
-	 * please make sure to subtract one from each.
-	 * 
 	 * @see https://en.wikipedia.org/wiki/B%C3%A9zier_surface
 	 */
 	
@@ -73,10 +65,10 @@ DgVec3 DgBezSurfVec3(size_t n, size_t m, DgVec3 *points, float u, float v) {
 // 		printf("\n");
 // 	}
 	
-	DgVec3 mpoints[m + 1];
+	DgVec3 mpoints[m];
 	
-	for (size_t j = 0; j <= m; j++) {
-		mpoints[j] = DgBezCurveVec3(n, &points[(n + 1) * j], u);
+	for (size_t j = 0; j < m; j++) {
+		mpoints[j] = DgBezCurveVec3(n, &points[n * j], u);
 	}
 	
 	return DgBezCurveVec3(m, mpoints, v);

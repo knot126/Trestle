@@ -489,7 +489,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 					DgVec3 s = DgSurface3DGetSample(&surface->surface[0], ((float)u) / ((float)(samp_x - 1)), ((float)v) / ((float)(samp_y - 1)));
 // 					DgLog(DG_LOG_VERBOSE, "u = %d, v = %d $$ (%f, %f, %f)", u, v, s.x, s.y, s.z);
 					samples[(samp_x * u) + v] = s;
-					DgLog(DG_LOG_VERBOSE, "Writ to ind: %d", (samp_x * u) + v);
+// 					DgLog(DG_LOG_VERBOSE, "Writ to ind: %d", (samp_x * u) + v);
 				}
 			}
 			
