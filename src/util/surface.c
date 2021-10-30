@@ -56,7 +56,7 @@ void DgSurface3DSetPoint(DgSurface3D * const restrict this, uint32_t x, uint32_t
 	 * Set a control point.
 	 */
 	
-	DgLog(DG_LOG_VERBOSE, "Setting point at index [%d] to (%f, %f, %f)...", (y * (this->n + 1)) + x, value->x, value->y, value->z);
+	DgLog(DG_LOG_VERBOSE, "Setting point at index [%d] to (%f, %f, %f)...", (y * this->n) + x, value->x, value->y, value->z);
 	
 	this->points[(y * this->n) + x] = *value;
 }
@@ -67,8 +67,6 @@ DgVec3 DgSurface3DGetSample(const DgSurface3D * const restrict this, float u, fl
 	 */
 	
 	const DgVec3 p = DgBezSurfVec3(this->n, this->m, this->points, u, v);
-	
-// 	DgLog(DG_LOG_INFO, "Sample point = %f %f %f", p.x, p.y, p.z);
 	
 	return p;
 }

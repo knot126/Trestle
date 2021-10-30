@@ -49,6 +49,10 @@
 #define ARRAY2X_COL(ARRAY, ROW_WIDTH, PER_ITEM, X, Y, OFFSET) ARRAY[(ROW_WIDTH * Y * PER_ITEM) + (X * PER_ITEM) + OFFSET]
 #define ARRAY2XX_COL(ARRAY, START, ROW_WIDTH, PER_ITEM, X, Y, OFFSET) ARRAY[START + ((ROW_WIDTH * Y * PER_ITEM) + (X * PER_ITEM) + OFFSET)]
 
+enum {
+	QR_DEBUG_MESH = 0,
+};
+
 // Yes, it's odd, but I really rather not include the header files in this file.
 #include "glutils.h"
 
@@ -456,7 +460,6 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		// Push new verticies if needed
 		if (surface->cache.updated) {
 			// Calculate sample rate
-// 			DgLog(DG_LOG_VERBOSE, "Address of surface->surface[0]: %X", &surface->surface[0]);
 			DgVec3 size = DgSurface3DGetBoundingBoxSize(&surface->surface[0]);
 			
 			// Prepare the data
@@ -469,14 +472,16 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 				continue;
 			}
 			
-			surface->cache.vertex_count = (samp_x * samp_y * 4) + (surface->surface[0].n * surface->surface[0].m * 4);
+			surface->cache.vertex_count =
+				(QR_DEBUG_MESH) ? (samp_x * samp_y * 4) + (surface->surface[0].n * surface->surface[0].m * 4) : (samp_x * samp_y * 4);
 			surface->cache.vertex = DgAlloc(surface->cache.vertex_count * sizeof *(surface->cache.vertex));
 			
 			if (!surface->cache.vertex) {
 				continue;
 			}
 			
-			surface->cache.index_count = (samp_x * samp_y * 6) + (surface->surface[0].n * surface->surface[0].m * 4);
+			surface->cache.index_count =
+				(QR_DEBUG_MESH) ? (samp_x * samp_y * 6) + (surface->surface[0].n * surface->surface[0].m * 4) : (samp_x * samp_y * 6);
 			surface->cache.index = DgAlloc(surface->cache.index_count * sizeof *(surface->cache.index));
 			
 			if (!surface->cache.index) {
@@ -487,9 +492,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			for (uint32_t u = 0; u < samp_y; u++) {
 				for (uint32_t v = 0; v < samp_x; v++) {
 					DgVec3 s = DgSurface3DGetSample(&surface->surface[0], ((float)u) / ((float)(samp_x - 1)), ((float)v) / ((float)(samp_y - 1)));
-// 					DgLog(DG_LOG_VERBOSE, "u = %d, v = %d $$ (%f, %f, %f)", u, v, s.x, s.y, s.z);
 					samples[(samp_x * u) + v] = s;
-// 					DgLog(DG_LOG_VERBOSE, "Writ to ind: %d", (samp_x * u) + v);
 				}
 			}
 			
@@ -519,6 +522,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			}
 			
 			// Debugging mesh data
+#if QR_DEBUG_MESH
 			uint32_t dbg_start_vertex = (samp_x * samp_y * 4);
 			uint32_t dbg_start_index = (samp_x * samp_y * 6);
 			DgVec2I sz = DgSurface3DGetOrder(&surface->surface[0]);
@@ -549,9 +553,9 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 					surface->cache.index[dbg_start_index + (sz.y * j * 6) + (j * 6) + 5] = dbg_start_vertex + (sz.y * j * 4) + (j * 4) + 3;
 				}
 			}
+#endif
 			
 			// Create and update mesh cache
-// 			DgLog(DG_LOG_VERBOSE, "Update the surface things (vertex=%x, index=%x)!", surface->cache.vertex, surface->cache.index);
 			graphics_update_mesh(gl, &surface->cache.vbo, &surface->cache.ebo, &surface->cache.vao, surface->cache.vertex_count, &surface->cache.vertex, surface->cache.index_count, &surface->cache.index, &surface->cache.updated);
 		}
 		

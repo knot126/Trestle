@@ -10,6 +10,17 @@ SPEED_MAX = 15.0
 SPEED_MIN = 3.0
 speed = 6.0
 
+freecam = true
+camspeed = 10.0
+
+function mkp(b, uw, vw, a)
+	push_patch(b, 3, 3,
+       0.0, mgRandFloat() * a, 0.0,  0.0, mgRandFloat() * a, 0.5 * vw,  0.0, mgRandFloat() * a, 1.0 * vw,
+       0.5 * uw, mgRandFloat() * a, 0.0,  0.5 * uw, mgRandFloat() * a, 0.5 * vw,  0.5 * uw, mgRandFloat() * a, 1.0 * vw,
+       1.0 * uw, mgRandFloat() * a, 0.0,  1.0 * uw, mgRandFloat() * a, 0.5 * vw,  1.0 * uw, mgRandFloat() * a, 1.0 * vw
+	)
+end
+
 function init()
 	-- Create camera
 	cam = create_entity(ENT_TRANSFORM)
@@ -22,11 +33,12 @@ function init()
 	
 	-- Some bezier patch
 	be = create_entity(ENT_TRANSFORM | ENT_GRAPHICS_SURFACE)
-	push_patch(be, 3, 3,
-	           0.0, 0.0, 0.0,    0.0, 1.0, 0.0,    0.0, 2.0, 0.0,
-	           1.0, 0.0, 0.0,    1.0, 1.0, 0.0,    1.0, 2.0, 0.0,
-	           2.0, 0.0, 0.0,    2.0, 1.0, 0.0,    2.0, 2.0, 0.0
-	)
+	mkp(be, 5.0, 5.0, 5.0)
+	
+-- 	push_patch(be, 3, 3,
+-- 		mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(),
+-- 		mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(),
+-- 		mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat())
 	push_transform(be, 0.0, 0.0, 0.0)
 	
 	-- Sync the physics graph after everything has been created
@@ -92,16 +104,19 @@ function tick(dt)
 	mx, my = ((mx / sx) - 0.5) * 0.3, ((my / sy) - 0.5) * 0.3
 	local cx, cy, cz, crx, cry, crz = get_transform(cam)
 	
-	cx = x
--- 	cy = y + 4.0
-	cz = z
 	crx = my
 	cry = mx
 	
 	if w then
-		cy = cy + (3.0 * dt)
-	elseif s then
-		cy = cy - (3.0 * dt)
+		cx, cy, cz = cx + (fx * dt * camspeed), cy + (fy * dt * camspeed), cz + (fz * dt * camspeed)
+	end
+	
+	if s then
+		cx, cy, cz = cx - (fx * dt * camspeed), cy - (fy * dt * camspeed), cz - (fz * dt * camspeed)
+	end
+	
+	if j then
+		add_force(cam, 0.0, 100.0, 0.0)
 	end
 	
 	push_transform(cam, cx, cy, cz, crx, cry, crz)

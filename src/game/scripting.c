@@ -379,7 +379,6 @@ static int scripted_PushPatch(lua_State *script) {
 	
 	for (size_t i = 0; i < x; i++) {
 		for (size_t j = 0; j < y; j++) {
-// 			DgLog(DG_LOG_VERBOSE, "Lua Push i=%d,j=%d", i, j);
 			points[i][j].x = lua_tonumber(script, head++);
 			points[i][j].y = lua_tonumber(script, head++);
 			points[i][j].z = lua_tonumber(script, head++);
