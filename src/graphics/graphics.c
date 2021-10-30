@@ -320,11 +320,11 @@ static void graphics_update_mesh(GraphicsSystem * const restrict gl, uint32_t * 
 		*updated = false;
 	}
 	
-	DgLog(DG_LOG_VERBOSE, "Free Vertex");
+// 	DgLog(DG_LOG_VERBOSE, "Free Vertex");
 	DgFree(*vertex);
 	*vertex = NULL;
 	
-	DgLog(DG_LOG_VERBOSE, "Free Index");
+// 	DgLog(DG_LOG_VERBOSE, "Free Index");
 	DgFree(*index);
 	*index = NULL;
 	
@@ -457,115 +457,89 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		Name id = gl->surface_name[i];
 		Surface3D *surface = &gl->surface[i];
 		
-		// Push new verticies if needed
-		if (surface->cache.updated) {
-			// Calculate sample rate
-			DgVec3 size = DgSurface3DGetBoundingBoxSize(&surface->surface[0]);
-			
-			// Prepare the data
-			uint32_t samp_x = (uint32_t)(gl->curve_render_quality);
-			uint32_t samp_y = (uint32_t)(gl->curve_render_quality);
-			
-			DgVec3 *samples = DgAlloc(samp_x * samp_y * sizeof *samples);
-			
-			if (!samples) {
-				continue;
-			}
-			
-			surface->cache.vertex_count =
-				(QR_DEBUG_MESH) ? (samp_x * samp_y * 4) + (surface->surface[0].n * surface->surface[0].m * 4) : (samp_x * samp_y * 4);
-			surface->cache.vertex = DgAlloc(surface->cache.vertex_count * sizeof *(surface->cache.vertex));
-			
-			if (!surface->cache.vertex) {
-				continue;
-			}
-			
-			surface->cache.index_count =
-				(QR_DEBUG_MESH) ? (samp_x * samp_y * 6) + (surface->surface[0].n * surface->surface[0].m * 4) : (samp_x * samp_y * 6);
-			surface->cache.index = DgAlloc(surface->cache.index_count * sizeof *(surface->cache.index));
-			
-			if (!surface->cache.index) {
-				continue;
-			}
-			
-			// Calculate the samples data
-			for (uint32_t u = 0; u < samp_y; u++) {
-				for (uint32_t v = 0; v < samp_x; v++) {
-					DgVec3 s = DgSurface3DGetSample(&surface->surface[0], ((float)u) / ((float)(samp_x - 1)), ((float)v) / ((float)(samp_y - 1)));
-					samples[(samp_x * u) + v] = s;
-				}
-			}
-			
-			// Calculate mesh data
-			// We are finding the square that is to the bottom right of the mesh.
-			for (uint32_t y = 0; y < (samp_y - 1); y++) {
-				for (uint32_t x = 0; x < (samp_x - 1); x++) {
-					DgVec3 p00 = samples[(y * samp_x) + x],
-						p01 = samples[((y + 1) * samp_x) + x],
-						p10 = samples[(y * samp_x) + x + 1],
-						p11 = samples[((y + 1) * samp_x) + x + 1];
-					
-					DgVec3 c = {DgRandFloat(), DgRandFloat(), DgRandFloat()};
-					
-					surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 0] = (QRVertex3D) {p00.x, p00.y, p00.z, 0.0f, 0.0f, c.x, c.y, c.z};
-					surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 1] = (QRVertex3D) {p01.x, p01.y, p01.z, 0.0f, 0.0f, c.x, c.y, c.z};
-					surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 2] = (QRVertex3D) {p10.x, p10.y, p10.z, 0.0f, 0.0f, c.x, c.y, c.z};
-					surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 3] = (QRVertex3D) {p11.x, p11.y, p11.z, 0.0f, 0.0f, c.x, c.y, c.z};
-					
-					surface->cache.index[(y * samp_x * 6) + (x * 6) + 0] = (y * samp_x * 4) + (x * 4) + 0;
-					surface->cache.index[(y * samp_x * 6) + (x * 6) + 1] = (y * samp_x * 4) + (x * 4) + 1;
-					surface->cache.index[(y * samp_x * 6) + (x * 6) + 2] = (y * samp_x * 4) + (x * 4) + 2;
-					surface->cache.index[(y * samp_x * 6) + (x * 6) + 3] = (y * samp_x * 4) + (x * 4) + 1;
-					surface->cache.index[(y * samp_x * 6) + (x * 6) + 4] = (y * samp_x * 4) + (x * 4) + 2;
-					surface->cache.index[(y * samp_x * 6) + (x * 6) + 5] = (y * samp_x * 4) + (x * 4) + 3;
-				}
-			}
-			
-			// Debugging mesh data
-#if QR_DEBUG_MESH
-			uint32_t dbg_start_vertex = (samp_x * samp_y * 4);
-			uint32_t dbg_start_index = (samp_x * samp_y * 6);
-			DgVec2I sz = DgSurface3DGetOrder(&surface->surface[0]);
-			
-			for (size_t i = 0; i < sz.x - 1; i++) {
-				for (size_t j = 0; j < sz.y - 1; j++) {
-					DgLog(DG_LOG_INFO, "Making debug verticies...");
-					DgVec3 p00 = DgSurface3DGetPoint(&surface->surface[0], i, j),
-						p01 = DgSurface3DGetPoint(&surface->surface[0], i, j + 1),
-						p10 = DgSurface3DGetPoint(&surface->surface[0], i + 1, j),
-						p11 = DgSurface3DGetPoint(&surface->surface[0], i + 1, j + 1);
-					
-					ARRAY2XX_COL(dbg_start_vertex, surface->cache.vertex, sz.x, 4, i, j, 0) = 
-						(QRVertex3D) {p00.x, p00.y, p00.z, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f};
-					ARRAY2XX_COL(dbg_start_vertex, surface->cache.vertex, sz.x, 4, i, j, 1) = 
-						(QRVertex3D) {p01.x, p01.y, p01.z, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f};
-					ARRAY2XX_COL(dbg_start_vertex, surface->cache.vertex, sz.x, 4, i, j, 2) = 
-						(QRVertex3D) {p10.x, p10.y, p10.z, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f};
-					ARRAY2XX_COL(dbg_start_vertex, surface->cache.vertex, sz.x, 4, i, j, 3) = 
-						(QRVertex3D) {p11.x, p11.y, p11.z, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f};
-					
-					
-					surface->cache.index[dbg_start_index + (sz.y * j * 6) + (j * 6) + 0] = dbg_start_vertex + (sz.y * j * 4) + (j * 4) + 0;
-					surface->cache.index[dbg_start_index + (sz.y * j * 6) + (j * 6) + 1] = dbg_start_vertex + (sz.y * j * 4) + (j * 4) + 1;
-					surface->cache.index[dbg_start_index + (sz.y * j * 6) + (j * 6) + 2] = dbg_start_vertex + (sz.y * j * 4) + (j * 4) + 2;
-					surface->cache.index[dbg_start_index + (sz.y * j * 6) + (j * 6) + 3] = dbg_start_vertex + (sz.y * j * 4) + (j * 4) + 1;
-					surface->cache.index[dbg_start_index + (sz.y * j * 6) + (j * 6) + 4] = dbg_start_vertex + (sz.y * j * 4) + (j * 4) + 2;
-					surface->cache.index[dbg_start_index + (sz.y * j * 6) + (j * 6) + 5] = dbg_start_vertex + (sz.y * j * 4) + (j * 4) + 3;
-				}
-			}
-#endif
-			
-			// Create and update mesh cache
-			graphics_update_mesh(gl, &surface->cache.vbo, &surface->cache.ebo, &surface->cache.vao, surface->cache.vertex_count, &surface->cache.vertex, surface->cache.index_count, &surface->cache.index, &surface->cache.updated);
+		// If this surface has no objects attached, then continue early.
+		if (surface->surface_count <= 0) {
+			continue;
 		}
 		
-		// Bind the currently active textures for this shader
-// 		const char * texture_name = surface->texture;
-// 		if (!texture_name) {
-// 			texture_name = "placeholder";
-// 		}
-// 		glActiveTexture(GL_TEXTURE0);
-// 		glBindTexture(GL_TEXTURE_2D, gltexture_get_name(&gl->texture, texture_name));
+		// Push new verticies if needed
+		if (surface->cache.updated) {
+			// TODO: Complete support for multipule surfaces per rendering object
+			// NOTE: It could be more efficent to update only the changed parts,
+			// but it might only be worth it if (a) the surfaces stay the same
+			// quality in redner and (b) they update often, like in an animation.
+			// In an editor, I think the impact of updating the full surface would
+			// not be so bad.
+			
+			for (size_t si = 0; si < surface->surface_count; si++) {
+				// Calculate sample rate
+				DgVec3 size = DgSurface3DGetBoundingBoxSize(&surface->surface[0]);
+				
+				// Prepare the data
+				// FIXME: Curve render quality calculation is flawed becuase it is
+				// the literal x and y size, not the u and v size.
+				uint32_t samp_x = (uint32_t)(gl->curve_render_quality * (float)size.x);
+				uint32_t samp_y = (uint32_t)(gl->curve_render_quality * (float)size.y);
+				
+				DgVec3 *samples = DgAlloc(samp_x * samp_y * sizeof *samples);
+				
+				if (!samples) {
+					continue;
+				}
+				
+				surface->cache.vertex_count =
+					(QR_DEBUG_MESH) ? (samp_x * samp_y * 4) + (surface->surface[0].n * surface->surface[0].m * 4) : (samp_x * samp_y * 4);
+				surface->cache.vertex = DgAlloc(surface->cache.vertex_count * sizeof *(surface->cache.vertex));
+				
+				if (!surface->cache.vertex) {
+					continue;
+				}
+				
+				surface->cache.index_count =
+					(QR_DEBUG_MESH) ? (samp_x * samp_y * 6) + (surface->surface[0].n * surface->surface[0].m * 4) : (samp_x * samp_y * 6);
+				surface->cache.index = DgAlloc(surface->cache.index_count * sizeof *(surface->cache.index));
+				
+				if (!surface->cache.index) {
+					continue;
+				}
+				
+				// Calculate the samples data
+				for (uint32_t u = 0; u < samp_y; u++) {
+					for (uint32_t v = 0; v < samp_x; v++) {
+						DgVec3 s = DgSurface3DGetSample(&surface->surface[0], ((float)u) / ((float)(samp_x - 1)), ((float)v) / ((float)(samp_y - 1)));
+						samples[(samp_x * u) + v] = s;
+					}
+				}
+				
+				// Calculate mesh data
+				// We are finding the square that is to the bottom right of the mesh.
+				for (uint32_t y = 0; y < (samp_y - 1); y++) {
+					for (uint32_t x = 0; x < (samp_x - 1); x++) {
+						DgVec3 p00 = samples[(y * samp_x) + x],
+							p01 = samples[((y + 1) * samp_x) + x],
+							p10 = samples[(y * samp_x) + x + 1],
+							p11 = samples[((y + 1) * samp_x) + x + 1];
+						
+						DgVec3 c = {DgRandFloat(), DgRandFloat(), DgRandFloat()};
+						
+						surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 0] = (QRVertex3D) {p00.x, p00.y, p00.z, 0.0f, 0.0f, c.x, c.y, c.z};
+						surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 1] = (QRVertex3D) {p01.x, p01.y, p01.z, 0.0f, 0.0f, c.x, c.y, c.z};
+						surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 2] = (QRVertex3D) {p10.x, p10.y, p10.z, 0.0f, 0.0f, c.x, c.y, c.z};
+						surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 3] = (QRVertex3D) {p11.x, p11.y, p11.z, 0.0f, 0.0f, c.x, c.y, c.z};
+						
+						surface->cache.index[(y * samp_x * 6) + (x * 6) + 0] = (y * samp_x * 4) + (x * 4) + 0;
+						surface->cache.index[(y * samp_x * 6) + (x * 6) + 1] = (y * samp_x * 4) + (x * 4) + 1;
+						surface->cache.index[(y * samp_x * 6) + (x * 6) + 2] = (y * samp_x * 4) + (x * 4) + 2;
+						surface->cache.index[(y * samp_x * 6) + (x * 6) + 3] = (y * samp_x * 4) + (x * 4) + 1;
+						surface->cache.index[(y * samp_x * 6) + (x * 6) + 4] = (y * samp_x * 4) + (x * 4) + 2;
+						surface->cache.index[(y * samp_x * 6) + (x * 6) + 5] = (y * samp_x * 4) + (x * 4) + 3;
+					}
+				}
+				
+				// Create and update mesh cache
+				graphics_update_mesh(gl, &surface->cache.vbo, &surface->cache.ebo, &surface->cache.vao, surface->cache.vertex_count, &surface->cache.vertex, surface->cache.index_count, &surface->cache.index, &surface->cache.updated);
+			}
+		}
 		
 		glBindVertexArray(surface->cache.vao);
 		glBindBuffer(GL_ARRAY_BUFFER, surface->cache.vbo);

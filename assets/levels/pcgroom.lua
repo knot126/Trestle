@@ -1,4 +1,4 @@
-r, g, b = mgRandFloat(), mgRandFloat(), mgRandFloat()
+r, g, b = (mgRandFloat() * 0.5) + 0.2, (mgRandFloat() * 0.5) + 0.2, (mgRandFloat() * 0.5) + 0.2
 
 space = {}
 

@@ -13,13 +13,22 @@ speed = 6.0
 freecam = true
 camspeed = 10.0
 
-function mkp(b, uw, vw, a)
-	push_patch(b, 3, 3,
-       0.0, mgRandFloat() * a, 0.0,  0.0, mgRandFloat() * a, 0.5 * vw,  0.0, mgRandFloat() * a, 1.0 * vw,
-       0.5 * uw, mgRandFloat() * a, 0.0,  0.5 * uw, mgRandFloat() * a, 0.5 * vw,  0.5 * uw, mgRandFloat() * a, 1.0 * vw,
-       1.0 * uw, mgRandFloat() * a, 0.0,  1.0 * uw, mgRandFloat() * a, 0.5 * vw,  1.0 * uw, mgRandFloat() * a, 1.0 * vw
-	)
-end
+-- function mkp(b, uw, vw, a)
+-- 	push_patch(b, 3, 3,
+--        0.0, mgRandFloat() * a, 0.0,  0.0, mgRandFloat() * a, 0.5 * vw,  0.0, mgRandFloat() * a, 1.0 * vw,
+--        0.5 * uw, mgRandFloat() * a, 0.0,  0.5 * uw, mgRandFloat() * a, 0.5 * vw,  0.5 * uw, mgRandFloat() * a, 1.0 * vw,
+--        1.0 * uw, mgRandFloat() * a, 0.0,  1.0 * uw, mgRandFloat() * a, 0.5 * vw,  1.0 * uw, mgRandFloat() * a, 1.0 * vw
+-- 	)
+-- end
+
+function mkp(b, uw, vw, a) push_patch(b, 6, 6,  0.0 * uw, mgRandFloat() * a, 0.0 * vw,  0.0 * uw, mgRandFloat() * a, 0.2 * vw,  0.0 * uw, mgRandFloat() * a, 0.4 * vw,  0.0 * uw, mgRandFloat() * a, 0.6 * vw,  0.0 * uw, mgRandFloat() * a, 0.8 * vw,  0.0 * uw, mgRandFloat() * a, 1.0 * vw, 
+ 0.2 * uw, mgRandFloat() * a, 0.0 * vw,  0.2 * uw, mgRandFloat() * a, 0.2 * vw,  0.2 * uw, mgRandFloat() * a, 0.4 * vw,  0.2 * uw, mgRandFloat() * a, 0.6 * vw,  0.2 * uw, mgRandFloat() * a, 0.8 * vw,  0.2 * uw, mgRandFloat() * a, 1.0 * vw, 
+ 0.4 * uw, mgRandFloat() * a, 0.0 * vw,  0.4 * uw, mgRandFloat() * a, 0.2 * vw,  0.4 * uw, mgRandFloat() * a, 0.4 * vw,  0.4 * uw, mgRandFloat() * a, 0.6 * vw,  0.4 * uw, mgRandFloat() * a, 0.8 * vw,  0.4 * uw, mgRandFloat() * a, 1.0 * vw, 
+ 0.6 * uw, mgRandFloat() * a, 0.0 * vw,  0.6 * uw, mgRandFloat() * a, 0.2 * vw,  0.6 * uw, mgRandFloat() * a, 0.4 * vw,  0.6 * uw, mgRandFloat() * a, 0.6 * vw,  0.6 * uw, mgRandFloat() * a, 0.8 * vw,  0.6 * uw, mgRandFloat() * a, 1.0 * vw, 
+ 0.8 * uw, mgRandFloat() * a, 0.0 * vw,  0.8 * uw, mgRandFloat() * a, 0.2 * vw,  0.8 * uw, mgRandFloat() * a, 0.4 * vw,  0.8 * uw, mgRandFloat() * a, 0.6 * vw,  0.8 * uw, mgRandFloat() * a, 0.8 * vw,  0.8 * uw, mgRandFloat() * a, 1.0 * vw, 
+ 1.0 * uw, mgRandFloat() * a, 0.0 * vw,  1.0 * uw, mgRandFloat() * a, 0.2 * vw,  1.0 * uw, mgRandFloat() * a, 0.4 * vw,  1.0 * uw, mgRandFloat() * a, 0.6 * vw,  1.0 * uw, mgRandFloat() * a, 0.8 * vw,  1.0 * uw, mgRandFloat() * a, 1.0 * vw
+) end
+
 
 function init()
 	-- Create camera
@@ -28,17 +37,14 @@ function init()
 	set_camera(cam)
 	
 	-- Initialise player
-	player = make_box(0.0, 2.0, -2.0)
+	player = make_box(0.0, 2.0, -2.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, "tile0")
 	set_physics_flags(player, PHYSICS_MODE_PLAYER)
 	
 	-- Some bezier patch
 	be = create_entity(ENT_TRANSFORM | ENT_GRAPHICS_SURFACE)
 	mkp(be, 5.0, 5.0, 5.0)
+-- 	mkp(be, 5.0, 5.0, 5.0)
 	
--- 	push_patch(be, 3, 3,
--- 		mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(),
--- 		mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(),
--- 		mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat(), mgRandFloat())
 	push_transform(be, 0.0, 0.0, 0.0)
 	
 	-- Sync the physics graph after everything has been created
@@ -108,11 +114,11 @@ function tick(dt)
 	cry = mx
 	
 	if w then
-		cx, cy, cz = cx + (fx * dt * camspeed), cy + (fy * dt * camspeed), cz + (fz * dt * camspeed)
+		cx, cy, cz = cx - (fx * dt * camspeed), cy + (fy * dt * camspeed), cz + (fz * dt * camspeed)
 	end
 	
 	if s then
-		cx, cy, cz = cx - (fx * dt * camspeed), cy - (fy * dt * camspeed), cz - (fz * dt * camspeed)
+		cx, cy, cz = cx + (fx * dt * camspeed), cy - (fy * dt * camspeed), cz - (fz * dt * camspeed)
 	end
 	
 	if j then
