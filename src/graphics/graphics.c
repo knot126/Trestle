@@ -51,6 +51,7 @@
 
 enum {
 	QR_DEBUG_MESH = 0,
+	QR_SURFACE_MAX_SAMPLES = 20,
 };
 
 // Yes, it's odd, but I really rather not include the header files in this file.
@@ -479,7 +480,16 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 				// FIXME: Curve render quality calculation is flawed becuase it is
 				// the literal x and y size, not the u and v size.
 				uint32_t samp_x = (uint32_t)(gl->curve_render_quality * (float)size.x);
-				uint32_t samp_y = (uint32_t)(gl->curve_render_quality * (float)size.y);
+				uint32_t samp_y = (uint32_t)(gl->curve_render_quality * (float)size.z);
+				
+				// Don't allow mesh to be over set number of verticies
+				if (samp_x > QR_SURFACE_MAX_SAMPLES) {
+					samp_x = QR_SURFACE_MAX_SAMPLES;
+				}
+				
+				if (samp_y > QR_SURFACE_MAX_SAMPLES) {
+					samp_y = QR_SURFACE_MAX_SAMPLES;
+				}
 				
 				DgVec3 *samples = DgAlloc(samp_x * samp_y * sizeof *samples);
 				
@@ -487,16 +497,14 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 					continue;
 				}
 				
-				surface->cache.vertex_count =
-					(QR_DEBUG_MESH) ? (samp_x * samp_y * 4) + (surface->surface[0].n * surface->surface[0].m * 4) : (samp_x * samp_y * 4);
+				surface->cache.vertex_count = samp_x * samp_y * 4;
 				surface->cache.vertex = DgAlloc(surface->cache.vertex_count * sizeof *(surface->cache.vertex));
 				
 				if (!surface->cache.vertex) {
 					continue;
 				}
 				
-				surface->cache.index_count =
-					(QR_DEBUG_MESH) ? (samp_x * samp_y * 6) + (surface->surface[0].n * surface->surface[0].m * 4) : (samp_x * samp_y * 6);
+				surface->cache.index_count = samp_x * samp_y * 6;
 				surface->cache.index = DgAlloc(surface->cache.index_count * sizeof *(surface->cache.index));
 				
 				if (!surface->cache.index) {
@@ -776,6 +784,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 	// Disable depth tests
 	glEnable(GL_DEPTH_TEST);
 	
+	/*
 	// Use the first progam
 	glUseProgram(gl->programs[0]);
 	
@@ -893,6 +902,8 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		
 		GL_ERROR_CHECK();
 	}
+	
+	*/
 	
 	// Unbind everything
 	glBindVertexArray(0);
@@ -1035,17 +1046,19 @@ void graphics_add_curve(GraphicsSystem * restrict gl, DgVec3 p0, DgVec3 p1, DgVe
 	 * DEPRECATED: This API will be updated soon.
 	 */
 	
-	gl->curve = (Curve *) DgRealloc(gl->curve, sizeof *gl->curve * ++gl->curve_count);
+// 	gl->curve = (Curve *) DgRealloc(gl->curve, sizeof *gl->curve * ++gl->curve_count);
+// 	
+// 	if (!gl->curve) {
+// 		gl->curve_count = 0;
+// 		return;
+// 	}
+// 	
+// 	gl->curve[gl->curve_count - 1].points[0] = p0;
+// 	gl->curve[gl->curve_count - 1].points[1] = p1;
+// 	gl->curve[gl->curve_count - 1].points[2] = p2;
+// 	gl->curve[gl->curve_count - 1].points[3] = p3;
 	
-	if (!gl->curve) {
-		gl->curve_count = 0;
-		return;
-	}
-	
-	gl->curve[gl->curve_count - 1].points[0] = p0;
-	gl->curve[gl->curve_count - 1].points[1] = p1;
-	gl->curve[gl->curve_count - 1].points[2] = p2;
-	gl->curve[gl->curve_count - 1].points[3] = p3;
+	return;
 }
 
 /**

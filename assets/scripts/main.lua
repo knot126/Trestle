@@ -21,14 +21,16 @@ camspeed = 10.0
 -- 	)
 -- end
 
-function mkp(b, uw, vw, a) push_patch(b, 6, 6,  0.0 * uw, mgRandFloat() * a, 0.0 * vw,  0.0 * uw, mgRandFloat() * a, 0.2 * vw,  0.0 * uw, mgRandFloat() * a, 0.4 * vw,  0.0 * uw, mgRandFloat() * a, 0.6 * vw,  0.0 * uw, mgRandFloat() * a, 0.8 * vw,  0.0 * uw, mgRandFloat() * a, 1.0 * vw, 
- 0.2 * uw, mgRandFloat() * a, 0.0 * vw,  0.2 * uw, mgRandFloat() * a, 0.2 * vw,  0.2 * uw, mgRandFloat() * a, 0.4 * vw,  0.2 * uw, mgRandFloat() * a, 0.6 * vw,  0.2 * uw, mgRandFloat() * a, 0.8 * vw,  0.2 * uw, mgRandFloat() * a, 1.0 * vw, 
- 0.4 * uw, mgRandFloat() * a, 0.0 * vw,  0.4 * uw, mgRandFloat() * a, 0.2 * vw,  0.4 * uw, mgRandFloat() * a, 0.4 * vw,  0.4 * uw, mgRandFloat() * a, 0.6 * vw,  0.4 * uw, mgRandFloat() * a, 0.8 * vw,  0.4 * uw, mgRandFloat() * a, 1.0 * vw, 
- 0.6 * uw, mgRandFloat() * a, 0.0 * vw,  0.6 * uw, mgRandFloat() * a, 0.2 * vw,  0.6 * uw, mgRandFloat() * a, 0.4 * vw,  0.6 * uw, mgRandFloat() * a, 0.6 * vw,  0.6 * uw, mgRandFloat() * a, 0.8 * vw,  0.6 * uw, mgRandFloat() * a, 1.0 * vw, 
- 0.8 * uw, mgRandFloat() * a, 0.0 * vw,  0.8 * uw, mgRandFloat() * a, 0.2 * vw,  0.8 * uw, mgRandFloat() * a, 0.4 * vw,  0.8 * uw, mgRandFloat() * a, 0.6 * vw,  0.8 * uw, mgRandFloat() * a, 0.8 * vw,  0.8 * uw, mgRandFloat() * a, 1.0 * vw, 
- 1.0 * uw, mgRandFloat() * a, 0.0 * vw,  1.0 * uw, mgRandFloat() * a, 0.2 * vw,  1.0 * uw, mgRandFloat() * a, 0.4 * vw,  1.0 * uw, mgRandFloat() * a, 0.6 * vw,  1.0 * uw, mgRandFloat() * a, 0.8 * vw,  1.0 * uw, mgRandFloat() * a, 1.0 * vw
-) end
-
+function mkp(b, uw, vw, a) 
+        push_patch(b, 6, 6, 
+         0.0 * uw, mgRandFloat() * a, 0.0 * vw,  0.0 * uw, mgRandFloat() * a, 0.2 * vw,  0.0 * uw, mgRandFloat() * a, 0.4 * vw,  0.0 * uw, mgRandFloat() * a, 0.6 * vw,  0.0 * uw, mgRandFloat() * a, 0.8 * vw,  0.0 * uw, mgRandFloat() * a, 1.0 * vw, 
+         0.2 * uw, mgRandFloat() * a, 0.0 * vw,  0.2 * uw, mgRandFloat() * a, 0.2 * vw,  0.2 * uw, mgRandFloat() * a, 0.4 * vw,  0.2 * uw, mgRandFloat() * a, 0.6 * vw,  0.2 * uw, mgRandFloat() * a, 0.8 * vw,  0.2 * uw, mgRandFloat() * a, 1.0 * vw, 
+         0.4 * uw, mgRandFloat() * a, 0.0 * vw,  0.4 * uw, mgRandFloat() * a, 0.2 * vw,  0.4 * uw, mgRandFloat() * a, 0.4 * vw,  0.4 * uw, mgRandFloat() * a, 0.6 * vw,  0.4 * uw, mgRandFloat() * a, 0.8 * vw,  0.4 * uw, mgRandFloat() * a, 1.0 * vw, 
+         0.6 * uw, mgRandFloat() * a, 0.0 * vw,  0.6 * uw, mgRandFloat() * a, 0.2 * vw,  0.6 * uw, mgRandFloat() * a, 0.4 * vw,  0.6 * uw, mgRandFloat() * a, 0.6 * vw,  0.6 * uw, mgRandFloat() * a, 0.8 * vw,  0.6 * uw, mgRandFloat() * a, 1.0 * vw, 
+         0.8 * uw, mgRandFloat() * a, 0.0 * vw,  0.8 * uw, mgRandFloat() * a, 0.2 * vw,  0.8 * uw, mgRandFloat() * a, 0.4 * vw,  0.8 * uw, mgRandFloat() * a, 0.6 * vw,  0.8 * uw, mgRandFloat() * a, 0.8 * vw,  0.8 * uw, mgRandFloat() * a, 1.0 * vw, 
+         1.0 * uw, mgRandFloat() * a, 0.0 * vw,  1.0 * uw, mgRandFloat() * a, 0.2 * vw,  1.0 * uw, mgRandFloat() * a, 0.4 * vw,  1.0 * uw, mgRandFloat() * a, 0.6 * vw,  1.0 * uw, mgRandFloat() * a, 0.8 * vw,  1.0 * uw, mgRandFloat() * a, 1.0 * vw
+        ) 
+end
 
 function init()
 	-- Create camera
@@ -42,8 +44,8 @@ function init()
 	
 	-- Some bezier patch
 	be = create_entity(ENT_TRANSFORM | ENT_GRAPHICS_SURFACE)
-	mkp(be, 5.0, 5.0, 5.0)
--- 	mkp(be, 5.0, 5.0, 5.0)
+	mkp(be, 100, 100, 100)
+-- 	mkp(be, 5.0, 5.0, 1.0)
 	
 	push_transform(be, 0.0, 0.0, 0.0)
 	

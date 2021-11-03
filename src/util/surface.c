@@ -56,7 +56,7 @@ void DgSurface3DSetPoint(DgSurface3D * const restrict this, uint32_t x, uint32_t
 	 * Set a control point.
 	 */
 	
-// 	DgLog(DG_LOG_VERBOSE, "Setting point at index [%d] to (%f, %f, %f)...", (y * this->n) + x, value->x, value->y, value->z);
+	DgLog(DG_LOG_VERBOSE, "Setting point at index [%d | %d %d ] to (%f, %f, %f)...", (y * this->n) + x, x, y, value->x, value->y, value->z);
 	
 	this->points[(y * this->n) + x] = *value;
 }
@@ -66,7 +66,25 @@ DgVec3 DgSurface3DGetSample(const DgSurface3D * const restrict this, float u, fl
 	 * Get a sample along the bezier surface.
 	 */
 	
+	if (u > 1.0f) {
+		u = 1.0f;
+	}
+	
+	if (v > 1.0f) {
+		v = 1.0f;
+	}
+	
+	if (u < 0.0f) {
+		u = 0.0f;
+	}
+	
+	if (v < 0.0f) {
+		v = 0.0f;
+	}
+	
 	const DgVec3 p = DgBezSurfVec3(this->n, this->m, this->points, u, v);
+	
+// 	DgLog(DG_LOG_VERBOSE, "(%f, %f) -> (%f, %f, %f)", u, v, p.x, p.y, p.z);
 	
 	return p;
 }

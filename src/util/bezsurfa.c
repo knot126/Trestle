@@ -11,6 +11,20 @@
 
 #include "bezsurfa.h"
 
+static float DgFacBetween(float n, float m) {
+	/**
+	 * Compute factorial between two values.
+	 */
+	
+	float r = 1.0f;
+	
+	for (float j = m + 1.0f; j <= n; j += 1.0f) {
+		r *= j;
+	}
+	
+	return r;
+}
+
 float DgCombination(float n, float k) {
 	/**
 	 * Calculate a binomial coefficent (same as a combination)
@@ -19,8 +33,10 @@ float DgCombination(float n, float k) {
 	 * @see https://www.khanacademy.org/math/precalculus/x9e81a4f98389efdf:prob-comb/x9e81a4f98389efdf:combinations/v/introduction-to-combinations
 	 */
 	
-	float res = xfac(n) / (xfac(k) * xfac(n - k));
+// 	float res = xfac(n) / (xfac(k) * xfac(n - k));
 // 	DgLog(DG_LOG_VERBOSE, "(%f %f) = %f", n, k, res);
+	
+	float res = DgFacBetween(n, n - k) / xfac(k);
 	return res;
 }
 

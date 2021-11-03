@@ -138,8 +138,8 @@ typedef struct GraphicsSystem {
 	size_t   mesh2d_count;
 	
 	// Curve objects
-	Curve *curve;
-	size_t curve_count;
+// 	Curve *curve;
+// 	size_t curve_count;
 } GraphicsSystem;
 
 typedef GraphicsSystem DgOpenGLContext;
