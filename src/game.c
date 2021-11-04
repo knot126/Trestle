@@ -23,7 +23,6 @@
 #include "util/thread.h"
 #include "util/alloc.h"
 #include "util/time.h"
-#include "util/json.h"
 #include "util/log.h"
 #include "util/args.h"
 #include "util/rand.h"

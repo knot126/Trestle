@@ -29,7 +29,6 @@
 #include "graphics/vertex3d.h"
 #include "util/alloc.h"
 #include "util/maths.h"
-#include "util/load.h"
 #include "util/str.h"
 #include "util/bitmap.h"
 #include "util/log.h"

@@ -20,7 +20,6 @@
 #include "graphics/meshwisk.h"
 #include "util/log.h"
 #include "util/script.h"
-#include "util/xml.h"
 #include "input/input.h"
 #include "game/box.h"
 #include "game/scriptman.h"
@@ -117,26 +116,6 @@ static int scripted_ScriptOpen(lua_State *script) {
 	const char *path = lua_tostring(script, 1);
 	
 	lua_pushinteger(script, scriptman_open(&supervisor(NULL)->scriptman, (char *) path));
-	
-	return 1;
-}
-
-/**
- * =============================================================================
- * XML Parser
- * =============================================================================
- */
-
-static int scripted_XMLLoad(lua_State *script) {
-	if (lua_gettop(script) != 1) {
-		DgLog(DG_LOG_ERROR, "Invalid usage of xml_load().");
-		return 0;
-	}
-	
-	DgXMLNode *node = lua_newuserdata(script, sizeof *node);
-	const char *path = lua_tostring(script, 1);
-	
-	DgXMLLoad(node, path);
 	
 	return 1;
 }
