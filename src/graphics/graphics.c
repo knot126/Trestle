@@ -71,22 +71,18 @@ static int32_t graphics_load_default_shaders(GraphicsSystem * restrict gl) {
 	
 	uint32_t res;
 	
-	// The main 3D shader
-	res = graphicsLoadShader(gl, "assets://shaders/main.glsl");
-	
-	if (res == 2) {
-		DgLog(DG_LOG_ERROR, "Failed to load shader for 3D stuff.");
-		return -1;
-	}
-	
-	glUseProgram(gl->programs[0]);
+	const char *Shaders[] = {"assets://shaders/main.glsl", "assets://shaders/gui.glsl"};
 	
 	// The main 2D shader
-	res = graphicsLoadShader(gl, "assets://shaders/gui.glsl");
-	
-	if (res == 2) {
-		DgLog(DG_LOG_ERROR, "Failed to load shader for GUI.");
-		return -1;
+	for (size_t i = 0; i < 2; i++) {
+		DgLog(DG_LOG_INFO, "Iteration %d", i);
+		
+		res = graphicsLoadShader(gl, Shaders[i]);
+		
+		if (res == 2) {
+			DgLog(DG_LOG_ERROR, "Failed to load shader for GUI.");
+			return -1;
+		}
 	}
 	
 	return 0;
