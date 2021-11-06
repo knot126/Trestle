@@ -7,9 +7,10 @@
 
 #include <stdbool.h>
 
-#include "graphics/opengl.h"
-#include "graphics/graphics.h"
+#include <GLFW/glfw3.h>
 #include "input/glfwi.h"
+
+#include "util/maths.h"
 
 #include "input.h"
 
@@ -29,7 +30,7 @@ void input_update(InputSystem *input) {
 	 * Update the input keypresses.
 	 */
 	
-	gl_handle_input(input->graphics);
+	graphics_handle_input(input->graphics);
 }
 
 bool getKeyPressed(int key) {

@@ -10,24 +10,13 @@
 #include <inttypes.h>
 
 #include "util/bitmap.h"
-#include "gl_incl.h"
-
-typedef struct OpenGLTexturePair {
-	const char *key;
-	uint32_t value;
-} OpenGLTexturePair;
-
-typedef struct OpenGLTextureManager {
-	OpenGLTexturePair *textures;
-	uint32_t count;
-} OpenGLTextureManager;
 
 // Main texture manager object
-void gltexture_init(OpenGLTextureManager *resman);
-void gltexture_free(OpenGLTextureManager *resman);
+void gltexture_init(void *resman);
+void gltexture_free(void *resman);
 
-uint32_t gltexture_load_file(OpenGLTextureManager *resman, const char * const name, char *path);
-uint32_t gltexture_load_buffer(OpenGLTextureManager *resman, const char * const name, DgBitmap *buffer);
-void gltexture_set_unit(OpenGLTextureManager *resman, const char * const name, GLenum unit);
-uint32_t gltexture_get_name(OpenGLTextureManager *resman, const char * const name);
-void gltexture_load_list(OpenGLTextureManager *resman, const char * const path);
+uint32_t gltexture_load_file(void *resman, const char * const name, char *path);
+uint32_t gltexture_load_buffer(void *resman, const char * const name, DgBitmap *buffer);
+void gltexture_set_unit(void *resman, const char * const name, unsigned unit);
+uint32_t gltexture_get_name(void *resman, const char * const name);
+void gltexture_load_list(void *resman, const char * const path);

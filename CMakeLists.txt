@@ -114,17 +114,15 @@ set(EXEC_FILES
 	"src/global/supervisor.c"
 	"src/graph/graph.c"
 	"src/graphics/extern/glad.c"
-	"src/graphics/font.c"
 	"src/graphics/mesh.c"
-	"src/graphics/meshwisk.c"
 	"src/graphics/graphics.c"
 	"src/graphics/texture.c"
 	"src/graphics/image.c"
-	"src/graphics/window.c"
 	"src/input/input.c"
 	"src/input/glfwi.c"
 	"src/physics/physics.c"
 	"src/resman/resman.c"
+	"src/window/window.c"
 	"src/game.c"
 	"src/main.c"
 	"src/test.c"
@@ -146,14 +144,16 @@ endif()
 add_executable(${EXEC_NAME} ${EXEC_FILES})
 add_library(${MELON_NAME} SHARED ${MELON_FILES})
 
+# Include dirs for built-in libraries
 target_include_directories(${EXEC_NAME} PRIVATE ${LUA_DIR})
 target_include_directories(${MELON_NAME} PRIVATE ${LUA_DIR})
 
 target_include_directories(${EXEC_NAME} PRIVATE "src")
 target_include_directories(${EXEC_NAME} PRIVATE "lib/glfw/include")
+target_include_directories(${EXEC_NAME} PRIVATE "lib/Vulkan-Headers/include")
 
+# Link options for EXEC
 target_link_libraries(${EXEC_NAME} m)
-target_link_libraries(${EXEC_NAME} GL)
 target_link_libraries(${EXEC_NAME} vulkan)
 target_link_libraries(${EXEC_NAME} dl)
 target_link_libraries(${EXEC_NAME} glfw)

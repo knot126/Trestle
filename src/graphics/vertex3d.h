@@ -1,9 +1,9 @@
 #pragma once
 
-typedef struct QRVertex1 {
+typedef struct QRVertex3D {
 	float x, y, z;
 	float u, v;
-	float r, g, b;
-} QRVertex1;
+	float r, g, b, a;
+} QRVertex3D;
 
-typedef QRVertex1 QRVertex3D;
+typedef QRVertex3D QRVertex1;

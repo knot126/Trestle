@@ -17,7 +17,6 @@
 #include "global/reg.h"
 #include "global/supervisor.h"
 #include "graphics/mesh.h"
-#include "graphics/meshwisk.h"
 #include "util/log.h"
 #include "util/script.h"
 #include "input/input.h"
@@ -677,8 +676,6 @@ void regiser_default_script_functions(DgScript *script) {
 	lua_register(script->state, "push_obj_mesh", &scripted_PushOBJMesh);
 	lua_register(script->state, "add_curve", &scripted_AddCurve);
 	lua_register(script->state, "push_patch", &scripted_PushPatch);
-	
-	register_meshwisk_functions(script);
 	
 	// Physics
 	lua_register(script->state, "create_physics_object", &scripted_CreatePhysicsObject);

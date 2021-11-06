@@ -13,11 +13,10 @@
 #include "util/surface.h"
 #include "graph/graph.h"
 #include "graphics/texture.h"
+#include "graphics/gl_incl.h"
 #include "graphics/vertex3d.h"
 #include "graphics/vertex2d.h"
 #include "types.h"
-
-#include <GLFW/glfw3.h>
 
 /**
  * Graphics system flags
@@ -102,6 +101,7 @@ typedef struct GraphicsSystem {
 	
 	// Window and subsystems
 	GLFWwindow *window;
+	OpenGLTextureManager texture;
 	
 	// Programs
 	unsigned *programs;
@@ -142,42 +142,44 @@ typedef struct GraphicsSystem {
 // 	size_t curve_count;
 } GraphicsSystem;
 
+typedef GraphicsSystem DgOpenGLContext;
+
 // Graphics System API
-void graphics_init(GraphicsSystem * restrict graphics);
-void graphics_update(GraphicsSystem * restrict graphics, SceneGraph * restrict graph);
-void graphics_free(GraphicsSystem *graphics);
-void graphics_handle_input(GraphicsSystem *graphics);
-bool get_should_keep_open(GraphicsSystem *graphics);
+void graphics_init(GraphicsSystem * restrict gl);
+void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph);
+void graphics_free(GraphicsSystem *gl);
+void gl_handle_input(GraphicsSystem *gl);
+bool get_should_keep_open(GraphicsSystem *gl);
 
 // Global Graphics State
-void graphics_set_background(GraphicsSystem * restrict graphics, const DgVec4 colour);
-void graphics_set_camera(GraphicsSystem * restrict graphics, const uint32_t id);
-uint32_t graphics_get_camera(GraphicsSystem * restrict graphics);
-DgVec3 graphics_get_camera_forward(GraphicsSystem * restrict graphics, SceneGraph * restrict graph, const DgVec3 *forward);
-DgVec2I graphics_get_screen_size(GraphicsSystem * restrict graphics);
-void graphics_set_mouse_disabled(GraphicsSystem * restrict graphics, bool enabled);
+void graphics_set_background(GraphicsSystem * restrict gl, const DgVec4 colour);
+void graphics_set_camera(GraphicsSystem * restrict gl, const uint32_t id);
+uint32_t graphics_get_camera(GraphicsSystem * restrict gl);
+DgVec3 graphics_get_camera_forward(GraphicsSystem * restrict gl, SceneGraph * restrict graph, const DgVec3 *forward);
+DgVec2I graphics_get_screen_size(GraphicsSystem * restrict gl);
+void graphics_set_mouse_disabled(GraphicsSystem * restrict gl, bool enabled);
 void graphics_set_curve_render_quality(GraphicsSystem * restrict graphics, float quality);
 void graphics_set_fov(GraphicsSystem * restrict graphics, float fov);
 
 // Curves
-void graphics_add_curve(GraphicsSystem * restrict graphics, DgVec3 p0, DgVec3 p1, DgVec3 p2, DgVec3 p3);
+void graphics_add_curve(GraphicsSystem * restrict gl, DgVec3 p0, DgVec3 p1, DgVec3 p2, DgVec3 p3);
 
 // 3D Meshes
-Name graphics_create_mesh(GraphicsSystem * restrict graphics, Name name);
-Name graphics_destroy_mesh(GraphicsSystem * restrict graphics, Name name);
-Name graphics_set_mesh(GraphicsSystem * restrict graphics, Name name, size_t vertex_count, QRVertex1 *vertex, size_t index_count, uint32_t *index, const char *texture);
-Mesh * const graphics_get_mesh(GraphicsSystem * restrict graphics, Name name);
-size_t graphics_get_mesh_counts(GraphicsSystem * restrict graphics, size_t *allocsz);
+Name graphics_create_mesh(GraphicsSystem * restrict gl, Name name);
+Name graphics_destroy_mesh(GraphicsSystem * restrict gl, Name name);
+Name graphics_set_mesh(GraphicsSystem * restrict gl, Name name, size_t vertex_count, QRVertex1 *vertex, size_t index_count, uint32_t *index, const char *texture);
+Mesh * const graphics_get_mesh(GraphicsSystem * restrict gl, Name name);
+size_t graphics_get_mesh_counts(GraphicsSystem * restrict gl, size_t *allocsz);
 
 // 3D Surface
-Name graphics_create_surface3d(GraphicsSystem * const restrict graphics, const Name name);
-Name graphics_add_patch_to_surface3d(GraphicsSystem * const restrict graphics, const Name name, DgSurface3D * const restrict patch);
-Name graphics_create_patch_surface3d(GraphicsSystem * const restrict graphics, const Name name, const uint32_t x, const uint32_t y, const DgVec3 * const restrict points);
-Surface3D * const graphics_get_surface3d(GraphicsSystem * const restrict graphics, const Name name);
-size_t graphics_get_surface3d_counts(const GraphicsSystem * const restrict graphics, size_t *allocsz);
+Name graphics_create_surface3d(GraphicsSystem * const restrict gl, const Name name);
+Name graphics_add_patch_to_surface3d(GraphicsSystem * const restrict gl, const Name name, DgSurface3D * const restrict patch);
+Name graphics_create_patch_surface3d(GraphicsSystem * const restrict gl, const Name name, const uint32_t x, const uint32_t y, const DgVec3 * const restrict points);
+Surface3D * const graphics_get_surface3d(GraphicsSystem * const restrict gl, const Name name);
+size_t graphics_get_surface3d_counts(const GraphicsSystem * const restrict gl, size_t *allocsz);
 
 // 2D Meshes
-Name graphics_create_mesh2d(GraphicsSystem * restrict graphics, Name name);
-Name graphics_set_mesh2d(GraphicsSystem * restrict graphics, Name name, uint32_t vertex_count, QRVertex2D *vertex, uint32_t index_count, uint32_t *index, const char *texture);
-Mesh2D * const graphics_get_mesh2d(GraphicsSystem * restrict graphics, Name name);
-size_t graphics_get_mesh2d_counts(GraphicsSystem * restrict graphics, size_t *allocsz);
+Name graphics_create_mesh2d(GraphicsSystem * restrict gl, Name name);
+Name graphics_set_mesh2d(GraphicsSystem * restrict gl, Name name, uint32_t vertex_count, QRVertex2D *vertex, uint32_t index_count, uint32_t *index, const char *texture);
+Mesh2D * const graphics_get_mesh2d(GraphicsSystem * restrict gl, Name name);
+size_t graphics_get_mesh2d_counts(GraphicsSystem * restrict gl, size_t *allocsz);
