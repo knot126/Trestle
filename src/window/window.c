@@ -26,6 +26,9 @@ Window *window_init(Window *this) {
 		if (!glfwInit()) {
 			return NULL;
 		}
+		else {
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		}
 	}
 	
 	this->window = glfwCreateWindow(1280, 720, "Set window title using window_set_title(window, title)", NULL, NULL);
