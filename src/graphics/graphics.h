@@ -20,14 +20,6 @@
 #include <GLFW/glfw3.h>
 
 /**
- * Graphics system flags
- */
-enum {
-	QR_GRAPHICS_DRAW_MESHES_AS_LINES = (1 << 0),
-	QR_GRAPHICS_DRAW_CURVES_AS_VERTEXISATIONS = (1 << 1),
-};
-
-/**
  * A 3D mesh that is drawn in the 3D world.
  * 
  * For compatibility reasons, vert is a float* and vertex is QRVertex3D*. Always

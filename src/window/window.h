@@ -23,7 +23,7 @@ typedef struct Window {
 typedef int Keycode;
 
 Window *window_init(Window *this);
-void window_destroy(Window *this);
+void window_free(Window *this);
 
 void window_set_title(Window *this, const char * title);
 DgVec2I window_get_size(Window *this);

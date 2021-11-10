@@ -40,7 +40,7 @@ Window *window_init(Window *this) {
 	return this;
 }
 
-void window_destroy(Window *this) {
+void window_free(Window *this) {
 	/**
 	 * Destroy a window
 	 */

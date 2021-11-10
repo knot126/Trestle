@@ -17,6 +17,8 @@
 #include "graph/graph.h"
 #include "physics/physics.h"
 #include "input/input.h"
+#include "window/window.h"
+#include "vulkan/core.h"
 
 enum {
 	ENT_TRANSFORM = (1 << 0),
@@ -38,17 +40,17 @@ typedef struct Supervisor {
 	 * Structure containing all of the system states.
 	 */
 	
-	// G
 	GraphicsSystem graphics;
-	// I
 	InputSystem input;
-	// P
 	PhysicsSystem physics;
-	// R
 	Registry reg;
-	// S
 	SceneGraph graph;
 	ScriptManager scriptman;
+	
+	// NOTE: These maybe probably be replaced with systems that allow creating
+	// multipule of them.
+	Window window;
+	VulkanSocket vulkan;
 	
 	// very basic gloal state
 	Name next;
