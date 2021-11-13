@@ -104,6 +104,7 @@ static void window_update_fb(Window_t *this, Framebuffer *framebuffer) {
 	// Draw points
 	for (int y = 0; /*(y < framebuffer->y) &&*/ (y < size.y); y++) {
 		for (int x = 0; /*(x < framebuffer->x) &&*/ (x < size.x); x++) {
+			XSetForeground(display, context, DgRandInt());
 			XDrawPoint(display, window, context, y, x);
 		}
 	}
