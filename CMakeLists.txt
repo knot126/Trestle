@@ -123,6 +123,7 @@ set(EXEC_FILES
 	"src/physics/physics.c"
 	"src/resman/resman.c"
 	"src/vulkan/core.c"
+	"src/window/framebuffer.c"
 	"src/window/window.c"
 	"src/game.c"
 	"src/main.c"
@@ -161,3 +162,4 @@ target_link_libraries(${EXEC_NAME} glfw)
 target_link_libraries(${EXEC_NAME} pthread)
 target_link_libraries(${EXEC_NAME} pulse)
 target_link_libraries(${EXEC_NAME} pulse-simple)
+target_link_libraries(${EXEC_NAME} X11)

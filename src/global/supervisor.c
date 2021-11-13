@@ -52,7 +52,9 @@ void sup_init(Supervisor * restrict sup) {
 	
 	// Vulkan initialisation
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: Vulkan");
-	vulkan_init(&sup->vulkan);
+	if (!vulkan_init(&sup->vulkan)) {
+		DgLog(DG_LOG_ERROR, "Vulkan initialisation failed!");
+	}
 	
 	// Graphics initialisation
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: Graphics");

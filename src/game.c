@@ -27,6 +27,7 @@
 #include "util/args.h"
 #include "util/rand.h"
 #include "physics/physics.h"
+#include "window/window.h"
 #include "test.h"
 #include "types.h"
 
@@ -107,6 +108,7 @@ static int game_loop(Supervisor *sys) {
 		
 		// Update subsystems
 		graphics_update(&sys->graphics, &sys->graph);
+		window_update(&sys->window);
 		input_update(&sys->input);
 		scriptman_update(&sys->scriptman, g_deltaTime);
 		

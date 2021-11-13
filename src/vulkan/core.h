@@ -11,6 +11,10 @@
 
 typedef struct VulkanSocket {
 	VkInstance instance;
+	VkResult error;
+	uint32_t version;
+	VkInstanceCreateInfo instance_create_info;
+	VkApplicationInfo application_info;
 } VulkanSocket;
 
 VulkanSocket *vulkan_init(VulkanSocket *this);

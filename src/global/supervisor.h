@@ -49,7 +49,7 @@ typedef struct Supervisor {
 	
 	// NOTE: These maybe probably be replaced with systems that allow creating
 	// multipule of them.
-	Window window;
+	Window_t window;
 	VulkanSocket vulkan;
 	
 	// very basic gloal state
