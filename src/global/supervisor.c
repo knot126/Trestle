@@ -51,10 +51,8 @@ void sup_init(Supervisor * restrict sup) {
 	window_init(&sup->window);
 	
 	// Vulkan initialisation
-	DgLog(DG_LOG_INFO, "Supervisor Initialise: Vulkan");
-	if (vulkan_init_simple(&sup->vulkan)) {
-		DgLog(DG_LOG_ERROR, "Vulkan initialisation failed!");
-	}
+	DgLog(DG_LOG_INFO, "Supervisor Initialise: Compute");
+	DgLog(DG_LOG_WARNING, "todo: implement compute in supervisor");
 	
 	// Graphics initialisation
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: Graphics");
@@ -109,8 +107,8 @@ void sup_destroy(Supervisor * restrict sup) {
 	DgLog(DG_LOG_INFO, "Supervisor Destroy: Graphics");
 	graphics_free(&sup->graphics);
 	
-	DgLog(DG_LOG_INFO, "Supervisor Destroy: Vulkan");
-	vulkan_free(&sup->vulkan);
+	DgLog(DG_LOG_INFO, "Supervisor Destroy: Compute");
+	DgLog(DG_LOG_WARNING, "todo: implement compute in supervisor");
 	
 	DgLog(DG_LOG_INFO, "Supervisor Destroy: Window");
 	window_free(&sup->window);

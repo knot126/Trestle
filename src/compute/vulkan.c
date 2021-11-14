@@ -2,7 +2,7 @@
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
- * Vulkan Communication Module
+ * Vulkan low-level utilities
  */
 
 #include <string.h>
@@ -18,84 +18,43 @@ DG_CREATE_ARRAY_DEFS(VulkanString, const char *, uint32_t);
 DG_CREATE_ARRAY_DEFS(VkPhysicalDevice, VkPhysicalDevice, uint32_t);
 
 // =============================================================================
-// Utility functions
-// =============================================================================
-
-static const char ** vulkan_copy_string_array(uint32_t length, const char **array) {
-	/**
-	 * Make a copy of a string array.
-	 */
-	
-	if (!array || !length) {
-		return NULL;
-	}
-	
-	const char ** new_array = DgAlloc(sizeof *new_array * length);
-	
-	if (!new_array) {
-		return NULL;
-	}
-	
-	for (uint32_t i = 0; i < length; i++) {
-		new_array[i] = DgStrdup(array[i]);
-		
-		if (!new_array[i]) {
-			// Clean up so memory is not leaked
-			for (uint32_t j = 0; j < i; j++) {
-				DgFree((void *) new_array[j]);
-			}
-			
-			DgFree(new_array);
-			return NULL;
-		}
-	}
-	
-	return new_array;
-}
-
-static void vulkan_free_string_array(uint32_t length, const char **array) {
-	/**
-	 * Free a given string array fully.
-	 */
-	
-	if (!array) {
-		return;
-	}
-	
-	for (uint32_t i = 0; i < length; i++) {
-		DgFree((void *) array[i]);
-	}
-	
-	DgFree(array);
-}
-
-// =============================================================================
 // Instance
 // =============================================================================
 
-static VkResult vulkan_instance_init(VulkanSocket *this, uint32_t extension_count, const char **extensions, uint32_t layer_count, const char **layers) {
+VkResult vulkan_instance_init(
+	VkInstance *instance,
+	uint32_t *version,
+	VkApplicationInfo *application_info,
+	VkInstanceCreateInfo *instance_create_info,
+	uint32_t extension_count, const char **extensions,
+	uint32_t layer_count, const char **layers)
+{
 	/**
-	 * Initialise a new vulkan instance
+	 * Initialise a new vulkan instance.
+	 * 
+	 *  - instance: Pointer to an unused VkInstance object.
+	 *  - version: uint32_t that the Vulkan version will be written to, or NULL not to check.
+	 *  - application_info: A pointer to the VkApplicationInfo structure to allocate.
+	 *  - instance_create_info: A pointer to the VkInstanceCreateInfo structure to allocate.
+	 *  - extensions: List of extenstions to enable, or 0 and NULL.
+	 *  - layers: List of layers to enable, or 0 and NULL.
+	 * 
+	 * Returns the same code as the first error or VK_SUCCESS.
 	 */
 	
 	VkResult status;
 	
-	// Clear memory
-	memset(this, 0, sizeof *this);
-	
-	// Copy layer and extension arrays
-	this->layer = vulkan_copy_string_array(this->layer_count = layer_count, layers);
-	this->extension = vulkan_copy_string_array(this->extension_count = extension_count, extensions);
-	
 	// Get instance version
-	status = vkEnumerateInstanceVersion(&this->version);
-	
-	if (status != VK_SUCCESS) {
-		return status;
+	if (version) {
+		status = vkEnumerateInstanceVersion(version);
+		
+		if (status != VK_SUCCESS) {
+			return status;
+		}
 	}
 	
 	// Create the vulkan instance
-	this->application_info = (VkApplicationInfo) {
+	*application_info = (VkApplicationInfo) {
 		.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
 		.pNext = NULL,
 		.pApplicationName = "",
@@ -105,18 +64,18 @@ static VkResult vulkan_instance_init(VulkanSocket *this, uint32_t extension_coun
 		.apiVersion = VK_MAKE_VERSION(1, 1, 0),
 	};
 	
-	this->instance_create_info = (VkInstanceCreateInfo) {
+	*instance_create_info = (VkInstanceCreateInfo) {
 		.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
 		.pNext = NULL,
 		.flags = 0,
-		.pApplicationInfo = &this->application_info,
-		.enabledLayerCount = this->layer_count,
-		.ppEnabledLayerNames = this->layer,
-		.enabledExtensionCount = this->extension_count,
-		.ppEnabledExtensionNames = this->extension,
+		.pApplicationInfo = application_info,
+		.enabledLayerCount = layer_count,
+		.ppEnabledLayerNames = layers,
+		.enabledExtensionCount = extension_count,
+		.ppEnabledExtensionNames = extensions,
 	};
 	
-	status = vkCreateInstance(&this->instance_create_info, NULL, &this->instance);
+	status = vkCreateInstance(instance_create_info, NULL, instance);
 	
 	if (status != VK_SUCCESS) {
 		return status;
@@ -125,84 +84,40 @@ static VkResult vulkan_instance_init(VulkanSocket *this, uint32_t extension_coun
 	return VK_SUCCESS;
 }
 
-static void vulkan_instance_free(VulkanSocket *this) {
+void vulkan_instance_free(VkInstance instance) {
 	/**
 	 * Free a vulkan instance
 	 */
 	
-	vulkan_free_string_array(this->extension_count, this->extension);
-	vulkan_free_string_array(this->layer_count, this->layer);
-	
-	vkDestroyInstance(this->instance, NULL);
+	vkDestroyInstance(instance, NULL);
 }
 
 // =============================================================================
 // Physical and virtual devices
 // =============================================================================
 
-static VkResult vulkan_enumerate_devices(VulkanSocket *this) {
+VkResult vulkan_enumerate_devices(
+	VkInstance instance,
+	uint32_t *physical_device_count,
+	VkPhysicalDevice **physical_device)
+{
 	/**
 	 * Retrive a list of physical devices in the system.
+	 * 
+	 *  * `instance`: The instance to enumerate physical devices for.
+	 *  * `physical_device_count`: Pointer to the uint32_t storing physical device counts.
+	 *  * `physical_device`: Pointer to an array of vulkan physical devices.
 	 */
 	
-	vkEnumeratePhysicalDevices(this->instance, &this->physical_device_count, NULL);
+	vkEnumeratePhysicalDevices(instance, physical_device_count, NULL);
 	
-	this->physical_device = DgAlloc(sizeof *this->physical_device * this->physical_device_count);
+	*physical_device = DgAlloc(sizeof **physical_device * *physical_device_count);
 	
-	if (!this->physical_device) {
+	if (!physical_device) {
 		return VK_ERROR_OUT_OF_HOST_MEMORY;
 	}
 	
-	vkEnumeratePhysicalDevices(this->instance, &this->physical_device_count, this->physical_device);
-}
-
-static VkResult vulkan_devices_init(VulkanSocket *this) {
-	/**
-	 * Initialise vulkan state related to devices.
-	 */
-	
-	vulkan_enumerate_devices(this);
-}
-
-static void vulkan_devices_free(VulkanSocket *this) {
-	/**
-	 * Free any state related to devices.
-	 */
-}
-
-// =============================================================================
-// Full init and free
-// =============================================================================
-
-VkResult vulkan_init(VulkanSocket *this, uint32_t extension_count, const char **extensions, uint32_t layer_count, const char **layers) {
-	/**
-	 * Initialise a connection to the Vulkan API
-	 */
-	
-	VkResult status;
-	
-	status = vulkan_instance_init(this, extension_count, extensions, layer_count, layers);
-	
-	if (status != VK_SUCCESS) {
-		return status;
-	}
+	vkEnumeratePhysicalDevices(instance, physical_device_count, *physical_device);
 	
 	return VK_SUCCESS;
-}
-
-VkResult vulkan_init_simple(VulkanSocket *this) {
-	/**
-	 * Initialise a vulkan socket without asking for the details to use when
-	 * cerating that socket.
-	 */
-	
-	vulkan_init(this, 0, NULL, 0, NULL);
-}
-
-void vulkan_free(VulkanSocket *this) {
-	/**
-	 * Break a connection to the vulkan API
-	 */
-	
-	vulkan_instance_free(this);
 }

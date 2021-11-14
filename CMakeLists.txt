@@ -122,6 +122,7 @@ set(EXEC_FILES
 	"src/input/glfwi.c"
 	"src/physics/physics.c"
 	"src/resman/resman.c"
+	"src/compute/vksock.c"
 	"src/compute/vulkan.c"
 	"src/window/framebuffer.c"
 	"src/window/window.c"
