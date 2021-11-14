@@ -18,7 +18,7 @@
 #include "util/log.h"
 #include "physics/physics.h"
 #include "window/window.h"
-#include "vulkan/core.h"
+#include "compute/vulkan.h"
 #include "types.h"
 
 #include "supervisor.h"
@@ -52,7 +52,7 @@ void sup_init(Supervisor * restrict sup) {
 	
 	// Vulkan initialisation
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: Vulkan");
-	if (!vulkan_init(&sup->vulkan)) {
+	if (vulkan_init_simple(&sup->vulkan)) {
 		DgLog(DG_LOG_ERROR, "Vulkan initialisation failed!");
 	}
 	

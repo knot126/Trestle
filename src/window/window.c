@@ -8,10 +8,12 @@
 #include <stddef.h>
 #include <string.h>
 #include <stdbool.h>
-#define DG_INCLUDE_NATIVE_WINDOW_API
+// #define DG_INCLUDE_NATIVE_WINDOW_API
 #include "misc/grpreq.h"
-#undef DG_INCLUDE_NATIVE_WINDOW_API
+// #undef DG_INCLUDE_NATIVE_WINDOW_API
+#include "util/alloc.h"
 #include "util/maths.h"
+#include "util/log.h"
 #include "window/framebuffer.h"
 
 #include "window.h"
@@ -88,30 +90,7 @@ static void window_update_fb(Window_t *this, Framebuffer *framebuffer) {
 	 * Update the window contents using a specific framebuffer.
 	 */
 	
-#if !defined(QR_WINDOW_DISABLE_XORG)
-	// Get X display, window and size
-	Display *display = glfwGetX11Display();
-	Window window = glfwGetX11Window(this->window);
-	DgVec2I size = window_get_size(this);
-	
-	// Create graphics context (needed to draw)
-	XGCValues gc_values;
-	GC context = XCreateGC(display, window, 0, &gc_values);
-	
-	// Flush event queue
-	XSync(display, False);
-	
-	// Draw points
-	for (int y = 0; /*(y < framebuffer->y) &&*/ (y < size.y); y++) {
-		for (int x = 0; /*(x < framebuffer->x) &&*/ (x < size.x); x++) {
-			XSetForeground(display, context, DgRandInt());
-			XDrawPoint(display, window, context, y, x);
-		}
-	}
-	
-	// Flush event queue
-	XSync(display, False);
-#endif
+	return;
 }
 
 void window_update(Window_t *this) {

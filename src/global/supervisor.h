@@ -18,7 +18,7 @@
 #include "physics/physics.h"
 #include "input/input.h"
 #include "window/window.h"
-#include "vulkan/core.h"
+#include "compute/vulkan.h"
 
 enum {
 	ENT_TRANSFORM = (1 << 0),
