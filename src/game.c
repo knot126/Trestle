@@ -123,6 +123,11 @@ static int game_loop(Supervisor *sys) {
 			DgLog(DG_LOG_VERBOSE, "Frame Time: %fms", frame_time * 1000.0f, 1.0f / frame_time);
 			show_fps = 0.0f;
 		}
+		
+		if (DgTime() > 4.0f) {
+			DgLog(DG_LOG_INFO, "Running for 4 sec, quitting! (to disable, comment line %d in game.c)", __LINE__);
+			sys->running = false;
+		}
 	} // while (sys->running)
 	
 	DgThreadJoin(&t_physics);

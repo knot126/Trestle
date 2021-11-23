@@ -1,13 +1,10 @@
 cmake_minimum_required(VERSION 3.18)
 
 # Set project
-project(Engine VERSION 0.1.1)
+project(Engine VERSION 0.3.0)
 
 set(EXEC_NAME quickrun)
 set(MELON_NAME melon)
-
-# Find OpenGL
-include("FindOpenGL")
 
 # Include lua
 set(LUA_DIR "lib/lua/src")
@@ -122,7 +119,7 @@ set(EXEC_FILES
 	"src/input/glfwi.c"
 	"src/physics/physics.c"
 	"src/resman/resman.c"
-	"src/compute/vksock.c"
+	"src/compute/compute.c"
 	"src/compute/vulkan.c"
 	"src/window/framebuffer.c"
 	"src/window/window.c"

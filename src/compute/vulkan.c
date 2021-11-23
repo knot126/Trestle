@@ -18,6 +18,56 @@ DG_CREATE_ARRAY_DEFS(VulkanString, const char *, uint32_t);
 DG_CREATE_ARRAY_DEFS(VkPhysicalDevice, VkPhysicalDevice, uint32_t);
 
 // =============================================================================
+// Misc. Utilites
+// =============================================================================
+
+uint32_t vulkan_format_version(int part, uint32_t version) {
+	/**
+	 * Format a vulkan version, where part is variant = 0, major = 1, minor = 2, patch = 3.
+	 */
+	
+	uint32_t r;
+	
+	switch (part) {
+		case 0: {
+			r = (uint32_t)((version & 0b1100000000000000000000000000000) >> 29);
+			break;
+		}
+		
+		case 1: {
+			r = (uint32_t)((version & 0b0011111110000000000000000000000) >> 22);
+			break;
+		}
+		
+		case 2: {
+			r = (uint32_t)((version & 0b0000000001111111111000000000000) >> 12);
+			break;
+		}
+		
+		case 3: {
+			r = (uint32_t)((version & 0b0000000000000000000111111111111) >> 0);
+			break;
+		}
+	}
+	
+	return r;
+}
+
+const char *vulkan_stringify_device_type(VkPhysicalDeviceType type) {
+	/**
+	 * Stringify a vulkan device type.
+	 */
+	
+	switch (type) {
+		case VK_PHYSICAL_DEVICE_TYPE_OTHER: return "Other";
+		case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU: return "Integrated Graphics";
+		case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU: return "Descrete Graphics";
+		case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU: return "Virtual Graphics";
+		case VK_PHYSICAL_DEVICE_TYPE_CPU: return "Generic Processor";
+	}
+}
+
+// =============================================================================
 // Instance
 // =============================================================================
 
@@ -120,4 +170,33 @@ VkResult vulkan_enumerate_devices(
 	vkEnumeratePhysicalDevices(instance, physical_device_count, *physical_device);
 	
 	return VK_SUCCESS;
+}
+
+void vulkan_print_device_properties(uint32_t count, VkPhysicalDevice *devices) {
+	/**
+	 * Print out the properties of all enumerated devices.
+	 */
+	
+	VkPhysicalDeviceProperties device;
+	
+	for (size_t i = 0; i < count; i++) {
+		vkGetPhysicalDeviceProperties(devices[i], &device);
+		
+		DgLog(DG_LOG_VERBOSE, "Device %d:", i);
+		DgLog(DG_LOG_VERBOSE, "\tDevice Name: %s", &device.deviceName);
+		DgLog(DG_LOG_VERBOSE, "\tAPI Version: %d.%d.%d (variant %d)", vulkan_format_version(1, device.apiVersion), vulkan_format_version(2, device.apiVersion), vulkan_format_version(3, device.apiVersion), vulkan_format_version(0, device.apiVersion));
+		DgLog(DG_LOG_VERBOSE, "\tDriver Version: %d.%d.%d (variant %d)", vulkan_format_version(1, device.driverVersion), vulkan_format_version(2, device.driverVersion), vulkan_format_version(3, device.driverVersion), vulkan_format_version(0, device.driverVersion));
+		DgLog(DG_LOG_VERBOSE, "\tVendor ID: %.8X", device.vendorID);
+		DgLog(DG_LOG_VERBOSE, "\tDevice ID: %.8X", device.deviceID);
+		DgLog(DG_LOG_VERBOSE, "\tDevice Type: %s", vulkan_stringify_device_type(device.deviceType));
+	}
+}
+
+VkPhysicalDevice vulkan_get_best_device_index(uint32_t count, VkPhysicalDevice *devices) {
+	/**
+	 * Returns the handle to the most optimal physical device in the system.
+	 */
+	
+	// TODO: Implement properly
+	return devices[0];
 }

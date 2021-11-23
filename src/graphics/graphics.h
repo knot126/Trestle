@@ -128,10 +128,6 @@ typedef struct GraphicsSystem {
 	Mesh2D  *mesh2d;
 	size_t   mesh2d_alloc;
 	size_t   mesh2d_count;
-	
-	// Curve objects
-// 	Curve *curve;
-// 	size_t curve_count;
 } GraphicsSystem;
 
 // Graphics System API

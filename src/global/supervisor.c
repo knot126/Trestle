@@ -18,7 +18,7 @@
 #include "util/log.h"
 #include "physics/physics.h"
 #include "window/window.h"
-#include "compute/vulkan.h"
+#include "compute/compute.h"
 #include "types.h"
 
 #include "supervisor.h"
@@ -50,9 +50,9 @@ void sup_init(Supervisor * restrict sup) {
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: Window");
 	window_init(&sup->window);
 	
-	// Vulkan initialisation
+	// Compute initialisation
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: Compute");
-	DgLog(DG_LOG_WARNING, "todo: implement compute in supervisor");
+	compute_init(&sup->compute);
 	
 	// Graphics initialisation
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: Graphics");
@@ -108,7 +108,7 @@ void sup_destroy(Supervisor * restrict sup) {
 	graphics_free(&sup->graphics);
 	
 	DgLog(DG_LOG_INFO, "Supervisor Destroy: Compute");
-	DgLog(DG_LOG_WARNING, "todo: implement compute in supervisor");
+	compute_free(&sup->compute);
 	
 	DgLog(DG_LOG_INFO, "Supervisor Destroy: Window");
 	window_free(&sup->window);

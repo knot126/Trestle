@@ -18,7 +18,7 @@
 #include "physics/physics.h"
 #include "input/input.h"
 #include "window/window.h"
-#include "compute/vulkan.h"
+#include "compute/compute.h"
 
 enum {
 	ENT_TRANSFORM = (1 << 0),
@@ -40,6 +40,7 @@ typedef struct Supervisor {
 	 * Structure containing all of the system states.
 	 */
 	
+	ComputeSystem compute;
 	GraphicsSystem graphics;
 	InputSystem input;
 	PhysicsSystem physics;
