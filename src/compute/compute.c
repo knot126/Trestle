@@ -12,6 +12,59 @@
 
 #include "compute.h"
 
+static ComputeStatus compute_init_device(ComputeDevice * restrict this, VkPhysicalDevice handle, ComputeSystem * restrict sys) {
+	/**
+	 * Initialise a compute device, given its handle. If the ComputeSystem is
+	 * not NULL, then the extensions will be taken from it.
+	 */
+	
+	memset(this, 0, sizeof *this);
+	
+	this->physical_device = handle;
+	
+	if (vulkan_enumerate_queue_family_properties(handle, &this->queue_info_count, &this->queue_info) != VK_SUCCESS) {
+		DgLog(DG_LOG_ERROR, "Failed to enumerate queue family properties.");
+		return TR_COMPUTE_FAILURE;
+	}
+	
+	this->used_counts = DgAlloc(sizeof *this->used_counts * this->queue_info_count);
+	
+	if (!this->used_counts) {
+		DgLog(DG_LOG_ERROR, "Failed to allocate memory for ComputeDevice::used_counts.");
+		return TR_COMPUTE_FAILURE;
+	}
+	
+	memset(this->used_counts, 0, sizeof *this->used_counts * this->queue_info_count);
+	
+	if (vulkan_create_logical_device(
+		this->physical_device,
+		&this->device,
+		this->queue_info_count,
+		this->queue_info,
+		(sys) ? sys->extension_count : 0,
+		(sys) ? sys->extension : NULL) != VK_SUCCESS
+	)
+	{
+		DgLog(DG_LOG_ERROR, "Failed to create logical vulkan device.");
+		return TR_COMPUTE_FAILURE;
+	}
+	
+	return TR_COMPUTE_SUCCESS;
+}
+
+static ComputeStatus compute_free_device(ComputeDevice * restrict this) {
+	/**
+	 * Free a compute device.
+	 */
+	
+	DgFree(this->queue_info);
+	DgFree(this->used_counts);
+	
+	vulkan_free_logical_device(this->device);
+	
+	return TR_COMPUTE_SUCCESS;
+}
+
 static ComputeStatus compute_init_vulkan(ComputeSystem * restrict this) {
 	/**
 	 * Initialise the vulkan instance.
@@ -57,6 +110,13 @@ static ComputeStatus compute_init_vulkan(ComputeSystem * restrict this) {
 	
 	vulkan_print_device_properties(physical_device_count, physical_device);
 	
+	// Set up the best device
+	if (compute_init_device(&this->main_device, vulkan_get_best_device_handle(physical_device_count, physical_device), NULL) != TR_COMPUTE_SUCCESS) {
+		return TR_COMPUTE_FAILURE;
+	}
+	
+	DgFree(physical_device);
+	
 	return TR_COMPUTE_SUCCESS;
 }
 
@@ -81,6 +141,8 @@ void compute_free(ComputeSystem * restrict this) {
 	 * Release the compute system and any subsystems that only it operates with.
 	 */
 	
-	vkDestroyInstance(this->instance);
+	compute_free_device(&this->main_device);
+	
+	vkDestroyInstance(this->instance, NULL);
 }
 

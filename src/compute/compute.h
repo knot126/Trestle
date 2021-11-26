@@ -10,6 +10,26 @@
 #include <inttypes.h>
 
 /**
+ * Compute Device
+ * ==============
+ * 
+ * A structure representing a device that can do compute work, along with its 
+ * properties.
+ */
+typedef struct ComputeDevice {
+	// Physical Device
+	VkPhysicalDevice physical_device;
+	
+	// Queue info
+	uint32_t queue_info_count;
+	VkQueueFamilyProperties *queue_info;
+	uint32_t *used_counts;
+	
+	// Logical device
+	VkDevice device;
+} ComputeDevice;
+
+/**
  * Compute System
  * ==============
  * 
@@ -28,7 +48,7 @@ typedef struct ComputeSystem {
 	VkApplicationInfo appinfo;
 	
 	// Devices
-	VkDevice device;
+	ComputeDevice main_device;
 } ComputeSystem;
 
 /**
@@ -44,9 +64,24 @@ enum {
 	TR_COMPUTE_OUT_OF_NEAR_MEMORY = -0x0001,
 	TR_COMPUTE_OUT_OF_FAR_MEMORY = -0x0002,
 	TR_COMPUTE_FAILURE = -0x0003,
+	TR_COMPUTE_INVALID = -0x0004,
 };
 
 typedef int_fast16_t ComputeStatus;
+
+/**
+ * Compute Mode
+ * ============
+ * 
+ * Specifies the mode to use for compute.
+ */
+enum {
+	TR_COMPUTE_MODE_NONE = 0x0000,
+	TR_COMPUTE_MODE_GRAPHICS = 0x0001,
+	TR_COMPUTE_MODE_COMPUTE = 0x0002,
+};
+
+typedef int_fast16_t ComputeMode;
 
 ComputeStatus compute_init(ComputeSystem * restrict this);
 void compute_free(ComputeSystem * restrict this);

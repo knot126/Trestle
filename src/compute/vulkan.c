@@ -159,7 +159,11 @@ VkResult vulkan_enumerate_devices(
 	 *  * `physical_device`: Pointer to an array of vulkan physical devices.
 	 */
 	
-	vkEnumeratePhysicalDevices(instance, physical_device_count, NULL);
+	VkResult status;
+	
+	if ((status = vkEnumeratePhysicalDevices(instance, physical_device_count, NULL)) != VK_SUCCESS) {
+		return status;
+	}
 	
 	*physical_device = DgAlloc(sizeof **physical_device * *physical_device_count);
 	
@@ -167,7 +171,9 @@ VkResult vulkan_enumerate_devices(
 		return VK_ERROR_OUT_OF_HOST_MEMORY;
 	}
 	
-	vkEnumeratePhysicalDevices(instance, physical_device_count, *physical_device);
+	if ((status = vkEnumeratePhysicalDevices(instance, physical_device_count, *physical_device)) != VK_SUCCESS) {
+		return status;
+	}
 	
 	return VK_SUCCESS;
 }
@@ -192,11 +198,107 @@ void vulkan_print_device_properties(uint32_t count, VkPhysicalDevice *devices) {
 	}
 }
 
-VkPhysicalDevice vulkan_get_best_device_index(uint32_t count, VkPhysicalDevice *devices) {
+VkPhysicalDevice vulkan_get_best_device_handle(uint32_t count, VkPhysicalDevice *devices) {
 	/**
 	 * Returns the handle to the most optimal physical device in the system.
 	 */
 	
 	// TODO: Implement properly
 	return devices[0];
+}
+
+VkResult vulkan_enumerate_queue_family_properties(VkPhysicalDevice device, uint32_t *prop_count, VkQueueFamilyProperties **prop) {
+	/**
+	 * Enumerate the properties of a queue family for a given device.
+	 */
+	
+	vkGetPhysicalDeviceQueueFamilyProperties(device, prop_count, NULL);
+	
+	*prop = DgAlloc(sizeof **prop * *prop_count);
+	
+	if (!*prop) {
+		return VK_ERROR_OUT_OF_HOST_MEMORY;
+	}
+	
+	vkGetPhysicalDeviceQueueFamilyProperties(device, prop_count, *prop);
+	
+	return VK_SUCCESS;
+}
+
+VkResult vulkan_create_logical_device(VkPhysicalDevice physical_device, VkDevice *device, uint32_t queue_count, VkQueueFamilyProperties *queue, uint32_t extension_count, const char ** extension) {
+	/**
+	 * Creates a logical vulkan device, with all queues available.
+	 */
+	
+	VkDeviceQueueCreateInfo *queue_create_infos = DgAlloc(sizeof *queue_create_infos * queue_count);
+	
+	if (!queue_create_infos) {
+		return VK_ERROR_OUT_OF_HOST_MEMORY;
+	}
+	
+	float **priorities = DgAlloc(sizeof *priorities * queue_count);
+	
+	if (!priorities) {
+		return VK_ERROR_OUT_OF_HOST_MEMORY;
+	}
+	
+	for (size_t i = 0; i < queue_count; i++) {
+		size_t qc = queue[i].queueCount;
+		
+		priorities[i] = DgAlloc(sizeof **priorities * qc);
+		
+		if (!priorities[i]) {
+			return VK_ERROR_OUT_OF_HOST_MEMORY;
+		}
+		
+		for (size_t j = 0; j < qc; j++) {
+			priorities[i][j] = 1.0f;
+		}
+		
+		queue_create_infos[i].sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+		queue_create_infos[i].pNext = NULL;
+		queue_create_infos[i].flags = 0;
+		queue_create_infos[i].queueFamilyIndex = i;
+		queue_create_infos[i].queueCount = queue[i].queueCount;
+		queue_create_infos[i].pQueuePriorities = priorities[i];
+	}
+	
+	VkDeviceCreateInfo device_create_info = {
+		.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+		.pNext = NULL,
+		.flags = 0,
+		.queueCreateInfoCount = queue_count,
+		.pQueueCreateInfos = queue_create_infos,
+		.enabledLayerCount = 0,
+		.ppEnabledLayerNames = NULL,
+		.enabledExtensionCount = extension_count,
+		.ppEnabledExtensionNames = extension,
+		.pEnabledFeatures = NULL
+	};
+	
+	VkResult status;
+	
+	if ((status = vkCreateDevice(physical_device, &device_create_info, NULL, device)) != VK_SUCCESS) {
+		return status;
+	}
+	
+	for (size_t i = 0; i < queue_count; i++) {
+		DgFree(priorities[i]);
+	}
+	
+	DgFree(priorities);
+	DgFree(queue_create_infos);
+	
+	return VK_SUCCESS;
+}
+
+void vulkan_free_logical_device(VkDevice device) {
+	/**
+	 * Destroys a logical vulkan device.
+	 */
+	
+	if (device != VK_NULL_HANDLE) {
+		vkDeviceWaitIdle(device);
+		vkDestroyDevice(device, NULL);
+	}
 }

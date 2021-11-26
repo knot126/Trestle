@@ -107,7 +107,7 @@ static int game_loop(Supervisor *sys) {
 		sys->running = get_should_keep_open(&sys->graphics);
 		
 		// Update subsystems
-		graphics_update(&sys->graphics, &sys->graph);
+		graphics_update(&sys->graphics, &sys->window, &sys->graph);
 		window_update(&sys->window);
 		input_update(&sys->input);
 		scriptman_update(&sys->scriptman, g_deltaTime);

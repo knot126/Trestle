@@ -45,12 +45,14 @@ void graphics_init(GraphicsSystem * restrict this) {
 	 * Initialise graphics system
 	 */
 	
+	
 }
 
-void graphics_update(GraphicsSystem * restrict this, SceneGraph * restrict graph) {
+void graphics_update(GraphicsSystem * restrict this, Window_t * restrict window, SceneGraph * restrict graph) {
 	/*
 	 * Update the entire graphics system
 	 */
+	
 	
 }
 

@@ -15,6 +15,7 @@
 #include "graphics/texture.h"
 #include "graphics/vertex3d.h"
 #include "graphics/vertex2d.h"
+#include "window/window.h"
 #include "types.h"
 
 #include <GLFW/glfw3.h>
@@ -132,7 +133,7 @@ typedef struct GraphicsSystem {
 
 // Graphics System API
 void graphics_init(GraphicsSystem * restrict graphics);
-void graphics_update(GraphicsSystem * restrict graphics, SceneGraph * restrict graph);
+void graphics_update(GraphicsSystem * restrict this, Window_t * restrict window, SceneGraph * restrict graph);
 void graphics_free(GraphicsSystem *graphics);
 void graphics_handle_input(GraphicsSystem *graphics);
 bool get_should_keep_open(GraphicsSystem *graphics);
