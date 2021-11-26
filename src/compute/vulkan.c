@@ -225,6 +225,25 @@ VkResult vulkan_enumerate_queue_family_properties(VkPhysicalDevice device, uint3
 	return VK_SUCCESS;
 }
 
+void vulkan_print_queue_family_properties(uint32_t count, VkQueueFamilyProperties *properties) {
+	/**
+	 * Print out the queue family properties to the console.
+	 */
+	
+	for (size_t i = 0; i < count; i++) {
+		DgLog(DG_LOG_VERBOSE, "Queue family %d:", i);
+		DgLog(DG_LOG_VERBOSE, "\tFlags:");
+		DgLog(DG_LOG_VERBOSE, "\t\tGraphics: %s", (properties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) ? "Yes" : "No");
+		DgLog(DG_LOG_VERBOSE, "\t\tCompute: %s", (properties[i].queueFlags & VK_QUEUE_COMPUTE_BIT) ? "Yes" : "No");
+		DgLog(DG_LOG_VERBOSE, "\t\tTransfer: %s", (properties[i].queueFlags & VK_QUEUE_TRANSFER_BIT) ? "Yes" : "No");
+		DgLog(DG_LOG_VERBOSE, "\t\tSparse binding: %s", (properties[i].queueFlags & VK_QUEUE_SPARSE_BINDING_BIT) ? "Yes" : "No");
+		DgLog(DG_LOG_VERBOSE, "\t\tProtection: %s", (properties[i].queueFlags & VK_QUEUE_PROTECTED_BIT) ? "Yes" : "No");
+		DgLog(DG_LOG_VERBOSE, "\tMax queues: %d", properties[i].queueCount);
+		DgLog(DG_LOG_VERBOSE, "\tValid timestamp bits: %d", properties[i].timestampValidBits);
+		DgLog(DG_LOG_VERBOSE, "\tTransfer granularity: (%d, %d, %d)", properties[i].minImageTransferGranularity.width, properties[i].minImageTransferGranularity.height, properties[i].minImageTransferGranularity.depth);
+	}
+}
+
 VkResult vulkan_create_logical_device(VkPhysicalDevice physical_device, VkDevice *device, uint32_t queue_count, VkQueueFamilyProperties *queue, uint32_t extension_count, const char ** extension) {
 	/**
 	 * Creates a logical vulkan device, with all queues available.

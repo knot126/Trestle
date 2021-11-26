@@ -27,14 +27,19 @@ static ComputeStatus compute_init_device(ComputeDevice * restrict this, VkPhysic
 		return TR_COMPUTE_FAILURE;
 	}
 	
-	this->used_counts = DgAlloc(sizeof *this->used_counts * this->queue_info_count);
+	vulkan_print_queue_family_properties(this->queue_info_count, this->queue_info);
 	
-	if (!this->used_counts) {
-		DgLog(DG_LOG_ERROR, "Failed to allocate memory for ComputeDevice::used_counts.");
-		return TR_COMPUTE_FAILURE;
+	// Create used counts array
+	{
+		this->used_counts = DgAlloc(sizeof *this->used_counts * this->queue_info_count);
+		
+		if (!this->used_counts) {
+			DgLog(DG_LOG_ERROR, "Failed to allocate memory for ComputeDevice::used_counts.");
+			return TR_COMPUTE_FAILURE;
+		}
+		
+		memset(this->used_counts, 0, sizeof *this->used_counts * this->queue_info_count);
 	}
-	
-	memset(this->used_counts, 0, sizeof *this->used_counts * this->queue_info_count);
 	
 	if (vulkan_create_logical_device(
 		this->physical_device,

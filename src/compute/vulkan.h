@@ -29,6 +29,7 @@ VkResult vulkan_enumerate_devices(
 void vulkan_print_device_properties(uint32_t count, VkPhysicalDevice *devices);
 VkPhysicalDevice vulkan_get_best_device_handle(uint32_t count, VkPhysicalDevice *devices);
 VkResult vulkan_enumerate_queue_family_properties(VkPhysicalDevice device, uint32_t *prop_count, VkQueueFamilyProperties **prop);
+void vulkan_print_queue_family_properties(uint32_t count, VkQueueFamilyProperties *properties);
 
 VkResult vulkan_create_logical_device(VkPhysicalDevice physical_device, VkDevice *device, uint32_t queue_count, VkQueueFamilyProperties *queue, uint32_t extension_count, const char ** extension);
 void vulkan_free_logical_device(VkDevice device);
