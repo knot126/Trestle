@@ -21,7 +21,7 @@ DG_CREATE_ARRAY_DEFS(VkPhysicalDevice, VkPhysicalDevice, uint32_t);
 // Misc. Utilites
 // =============================================================================
 
-uint32_t vulkan_format_version(int part, uint32_t version) {
+static uint32_t vulkan_format_version(int part, uint32_t version) {
 	/**
 	 * Format a vulkan version, where part is variant = 0, major = 1, minor = 2, patch = 3.
 	 */
@@ -53,7 +53,7 @@ uint32_t vulkan_format_version(int part, uint32_t version) {
 	return r;
 }
 
-const char *vulkan_stringify_device_type(VkPhysicalDeviceType type) {
+static const char *vulkan_stringify_device_type(VkPhysicalDeviceType type) {
 	/**
 	 * Stringify a vulkan device type.
 	 */
@@ -71,14 +71,7 @@ const char *vulkan_stringify_device_type(VkPhysicalDeviceType type) {
 // Instance
 // =============================================================================
 
-VkResult vulkan_instance_init(
-	VkInstance *instance,
-	uint32_t *version,
-	VkApplicationInfo *application_info,
-	VkInstanceCreateInfo *instance_create_info,
-	uint32_t extension_count, const char **extensions,
-	uint32_t layer_count, const char **layers)
-{
+VkResult vulkan_instance_init(VkInstance *instance, uint32_t *version, VkApplicationInfo *application_info, VkInstanceCreateInfo *instance_create_info, uint32_t extension_count, const char **extensions, uint32_t layer_count, const char **layers) {
 	/**
 	 * Initialise a new vulkan instance.
 	 * 
@@ -146,11 +139,7 @@ void vulkan_instance_free(VkInstance instance) {
 // Physical and virtual devices
 // =============================================================================
 
-VkResult vulkan_enumerate_devices(
-	VkInstance instance,
-	uint32_t *physical_device_count,
-	VkPhysicalDevice **physical_device)
-{
+VkResult vulkan_enumerate_devices(VkInstance instance, uint32_t *physical_device_count, VkPhysicalDevice **physical_device) {
 	/**
 	 * Retrive a list of physical devices in the system.
 	 * 
@@ -255,12 +244,14 @@ VkResult vulkan_create_logical_device(VkPhysicalDevice physical_device, VkDevice
 		return VK_ERROR_OUT_OF_HOST_MEMORY;
 	}
 	
+	// create the priorities array (since this is still required for some reason)
 	float **priorities = DgAlloc(sizeof *priorities * queue_count);
 	
 	if (!priorities) {
 		return VK_ERROR_OUT_OF_HOST_MEMORY;
 	}
 	
+	// Assign properties of each queue
 	for (size_t i = 0; i < queue_count; i++) {
 		size_t qc = queue[i].queueCount;
 		
@@ -305,6 +296,7 @@ VkResult vulkan_create_logical_device(VkPhysicalDevice physical_device, VkDevice
 		DgFree(priorities[i]);
 	}
 	
+	// free uneeded structures
 	DgFree(priorities);
 	DgFree(queue_create_infos);
 	
@@ -320,4 +312,16 @@ void vulkan_free_logical_device(VkDevice device) {
 		vkDeviceWaitIdle(device);
 		vkDestroyDevice(device, NULL);
 	}
+}
+
+// =============================================================================
+// Physical and virtual devices
+// =============================================================================
+
+VkResult vulkan_get_device_queue(VkDevice device, VkQueueFlagBits type, VkQueue *queue) {
+	/**
+	 * Retrives a device queue from the selected device.
+	 */
+	
+	
 }

@@ -52,6 +52,19 @@ typedef struct ComputeSystem {
 } ComputeSystem;
 
 /**
+ * Compute Connection
+ * ==================
+ * 
+ * A connection to the compute API.
+ */
+typedef struct ComputeConnection {
+	VkQueue queue;
+	VkCommandPool command_pool;
+	VkCommandBuffer command_buffer;
+	ComputeSystem *compute_system;
+} ComputeConnection;
+
+/**
  * Compute Status
  * ==============
  * 
