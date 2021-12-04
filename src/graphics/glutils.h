@@ -14,30 +14,14 @@ GLuint gl_load_shader(char* filename, GLenum type) {
 	/* 
 	 * Load and create an OpenGL shader `filename`, of type `type`.
 	 */
-	
 	char* path = DgEvalPath(filename);
-	struct X {
-		char *data;
-		size_t size;
-	} shader_source_x;
 	
-	struct X *shader_source = &shader_source_x;
+	DgLoadBinaryFileInfo* shader_source = DgLoadBinaryFile(path);
 	
-	// Load data
-	DgFileStream *f = DgFileStreamOpen(path, "rb");
-	
-	if (!f) {
+	if (!shader_source) {
+		printf("Error: Failed to load shader '%s'.\n", filename);
 		return 0;
 	}
-	
-	shader_source->size = DgFileStreamLength(f);
-	shader_source->data = DgAlloc(shader_source->size);
-	
-	if (!shader_source->data) {
-		return 0;
-	}
-	
-	DgFileStreamRead(f, shader_source->size, shader_source->data);
 	
 	// Construct the shader source string from some strings and a file
 	GLchar *strings[3];
@@ -68,9 +52,8 @@ GLuint gl_load_shader(char* filename, GLenum type) {
 		(const GLchar* const *) strings, 
 		(const GLint *) strings_lengths);
 	
-	// Cleanup unneeded resources
-	DgFileStreamClose(f);
-	DgFree(shader_source->data);
+	// Cleanup path
+	DgUnloadBinaryFile(shader_source);
 	DgFree(path);
 	
 	// Compile the shader

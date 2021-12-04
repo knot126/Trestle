@@ -10,7 +10,7 @@
 #include <inttypes.h>
 
 typedef struct DgImageInfo {
-	uint8_t *data;
+	byte *data;
 	int width;
 	int height;
 	int channels;

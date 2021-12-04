@@ -10,12 +10,32 @@
 #include <stdio.h>
 
 #include "util/log.h"
+#include "util/json.h"
 #include "util/fs.h"
 #include "util/bezsurfa.h"
 
 typedef struct {
 	DgFileStream *output;
 } Tester;
+
+static const char * test_DgJSON(void) {
+	// test json parser
+	
+	DgLog(DG_LOG_INFO, "JSON test...");
+	
+	DgJSONValue val;
+	const char a[] = "{\"test\": 6.30,\n\t\"abc\": \"def\", \"q\": [0, 0, 0],\n\t\"np\": null,\n\t\"a-true\": true, \"a-false\": false\n, \"objec\": {}, \"arre\": [], \"thing\": {\"ssss\": 534}}";
+	
+	if (DgJSONParse(&val, sizeof a - 1, a)) {
+		return "Failed to load JSON document.";
+	}
+	
+	DgJSONValuePrint(&val);
+	
+	DgJSONValueFree(&val);
+	
+	return "Okay";
+}
 
 static const char * test_DgAvancedMathFuncs(void) {
 	// test advanced maths functions
@@ -60,6 +80,7 @@ void do_all_tests(void) {
 	}
 	
 	// Decent Games Libraries
+	run_test(&t, test_DgJSON, "Test-Json");
 	run_test(&t, test_DgAvancedMathFuncs, "Test-Maths");
 	
 	// Close File

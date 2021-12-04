@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 3.18)
 
 # Set project
-project(Engine VERSION 0.3.0)
+project(Engine VERSION 0.1.1)
 
 set(EXEC_NAME quickrun)
 set(MELON_NAME melon)
+
+# Find OpenGL
+include("FindOpenGL")
 
 # Include lua
 set(LUA_DIR "lib/lua/src")
@@ -79,21 +82,31 @@ set(LUA_INCLUDE_FILES
 set(MELON_FILES
 	"src/util/alloc.c"
 	"src/util/args.c"
+	"src/util/audio.c"
+	"src/util/bag.c"
 	"src/util/bezsurfa.c"
 	"src/util/surface.c"
 	"src/util/bitmap.c"
+	"src/util/fail.c"
 	"src/util/fs.c"
 	"src/util/hash.c"
+	"src/util/http.c"
+	"src/util/ini.c"
+	"src/util/json.c"
+	"src/util/load.c"
 	"src/util/log.c"
 	"src/util/maths.c"
 	"src/util/obj.c"
 	"src/util/rand.c"
+	"src/util/resource.c"
 	"src/util/script.c"
+	"src/util/socket.c"
 	"src/util/str.c"
 	"src/util/stream.c"
 	"src/util/thread.c"
 	"src/util/time.c"
 	"src/util/value.c"
+	"src/util/xml.c"
 	${LUA_INCLUDE_FILES}
 )
 
@@ -111,18 +124,17 @@ set(EXEC_FILES
 	"src/global/supervisor.c"
 	"src/graph/graph.c"
 	"src/graphics/extern/glad.c"
+	"src/graphics/font.c"
 	"src/graphics/mesh.c"
+	"src/graphics/meshwisk.c"
 	"src/graphics/graphics.c"
 	"src/graphics/texture.c"
 	"src/graphics/image.c"
+	"src/graphics/window.c"
 	"src/input/input.c"
 	"src/input/glfwi.c"
 	"src/physics/physics.c"
 	"src/resman/resman.c"
-	"src/compute/compute.c"
-	"src/compute/vulkan.c"
-	"src/window/framebuffer.c"
-	"src/window/window.c"
 	"src/game.c"
 	"src/main.c"
 	"src/test.c"
@@ -144,16 +156,14 @@ endif()
 add_executable(${EXEC_NAME} ${EXEC_FILES})
 add_library(${MELON_NAME} SHARED ${MELON_FILES})
 
-# Include dirs for built-in libraries
 target_include_directories(${EXEC_NAME} PRIVATE ${LUA_DIR})
 target_include_directories(${MELON_NAME} PRIVATE ${LUA_DIR})
 
 target_include_directories(${EXEC_NAME} PRIVATE "src")
 target_include_directories(${EXEC_NAME} PRIVATE "lib/glfw/include")
-target_include_directories(${EXEC_NAME} PRIVATE "lib/Vulkan-Headers/include")
 
-# Link options for EXEC
 target_link_libraries(${EXEC_NAME} m)
+target_link_libraries(${EXEC_NAME} GL)
 target_link_libraries(${EXEC_NAME} vulkan)
 target_link_libraries(${EXEC_NAME} dl)
 target_link_libraries(${EXEC_NAME} glfw)

@@ -8,9 +8,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include <GLFW/glfw3.h>
-
-#include "util/maths.h"
+#include "graphics/gl_incl.h"
+#include "graphics/opengl.h"
 
 #include "glfwi.h"
 
@@ -44,6 +43,7 @@ DgVec2 glfwi_get_mouse_delta(void) {
 	return mouseDelta;
 }
 
-void glfwi_init(void *context) {
-	
+void glfwi_init(GraphicsSystem *context) {
+	glfwSetKeyCallback(context->window, &glfwi_callback_keypress);
+	glfwSetCursorPosCallback(context->window, &glfwi_callback_mouse);
 }

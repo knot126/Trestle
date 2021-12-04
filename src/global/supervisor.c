@@ -16,9 +16,8 @@
 #include "graphics/graphics.h"
 #include "input/input.h"
 #include "util/log.h"
+#include "util/ini.h"
 #include "physics/physics.h"
-#include "window/window.h"
-#include "compute/compute.h"
 #include "types.h"
 
 #include "supervisor.h"
@@ -45,14 +44,6 @@ void sup_init(Supervisor * restrict sup) {
 	// Set to null
 	memset(sup, 0, sizeof(Supervisor));
 	sup->next = 1;
-	
-	// Window initialisation
-	DgLog(DG_LOG_INFO, "Supervisor Initialise: Window");
-	window_init(&sup->window);
-	
-	// Compute initialisation
-	DgLog(DG_LOG_INFO, "Supervisor Initialise: Compute");
-	compute_init(&sup->compute);
 	
 	// Graphics initialisation
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: Graphics");
@@ -106,12 +97,6 @@ void sup_destroy(Supervisor * restrict sup) {
 	
 	DgLog(DG_LOG_INFO, "Supervisor Destroy: Graphics");
 	graphics_free(&sup->graphics);
-	
-	DgLog(DG_LOG_INFO, "Supervisor Destroy: Compute");
-	compute_free(&sup->compute);
-	
-	DgLog(DG_LOG_INFO, "Supervisor Destroy: Window");
-	window_free(&sup->window);
 }
 
 void sup_close(Supervisor *sup) {

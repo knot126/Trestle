@@ -9,9 +9,8 @@
 
 #include <stdbool.h>
 
+#include "graphics/opengl.h"
 #include "graphics/graphics.h"
-
-#include <GLFW/glfw3.h>
 
 typedef struct {
 	GraphicsSystem *graphics;

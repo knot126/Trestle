@@ -9,11 +9,10 @@
 
 #include <stdbool.h>
 
-#include <GLFW/glfw3.h>
-
-#include "util/maths.h"
+#include "graphics/gl_incl.h"
+#include "../graphics/opengl.h"
 
 bool glfwi_get_key(int key, int mode);
 DgVec2 glfwi_get_mouse_pos(void);
 DgVec2 glfwi_get_mouse_delta(void);
-void glfwi_init(void *context);
+void glfwi_init(GraphicsSystem *context);

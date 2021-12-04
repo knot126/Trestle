@@ -17,8 +17,6 @@
 #include "graph/graph.h"
 #include "physics/physics.h"
 #include "input/input.h"
-#include "window/window.h"
-#include "compute/compute.h"
 
 enum {
 	ENT_TRANSFORM = (1 << 0),
@@ -40,17 +38,17 @@ typedef struct Supervisor {
 	 * Structure containing all of the system states.
 	 */
 	
-	ComputeSystem compute;
+	// G
 	GraphicsSystem graphics;
+	// I
 	InputSystem input;
+	// P
 	PhysicsSystem physics;
+	// R
 	Registry reg;
+	// S
 	SceneGraph graph;
 	ScriptManager scriptman;
-	
-	// NOTE: These maybe probably be replaced with systems that allow creating
-	// multipule of them.
-	Window_t window;
 	
 	// very basic gloal state
 	Name next;

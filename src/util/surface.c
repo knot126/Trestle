@@ -56,6 +56,8 @@ void DgSurface3DSetPoint(DgSurface3D * const restrict this, uint32_t x, uint32_t
 	 * Set a control point.
 	 */
 	
+	DgLog(DG_LOG_VERBOSE, "Setting point at index [%d | %d %d ] to (%f, %f, %f)...", (y * this->n) + x, x, y, value->x, value->y, value->z);
+	
 	this->points[(y * this->n) + x] = *value;
 }
 

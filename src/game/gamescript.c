@@ -82,7 +82,7 @@ void game_script_update(GameScript *gs) {
 		regiser_default_script_functions(&gs->script);
 		game_script_script_functions(&gs->script);
 		
-		DgScriptLoad(&gs->script, "assets://scripts/include.lua");
+		DgScriptLoad(&gs->script, DgINIGet(NULL, "Main", "include_script_path", "assets://scripts/include.lua"));
 		DgScriptLoad(&gs->script, next);
 		
 		DgFree(next);

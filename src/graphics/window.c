@@ -11,6 +11,8 @@
 
 #include "gl_incl.h"
 
+#include "util/ini.h"
+
 #include "window.h"
 
 int32_t window_init(Window *this) {

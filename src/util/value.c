@@ -15,7 +15,6 @@ uint8_t DgObjectInit(DgValue *val) {
 	/**
 	 * Initialise an object given a value container. Returns 0 on success.
 	 */
-	
 	DgObject *obj = (DgObject *) DgAlloc(sizeof(DgObject));
 	
 	if (!obj) {
@@ -33,7 +32,6 @@ uint8_t DgArrayInit(DgValue *val) {
 	/**
 	 * Initialise an array given a value container. Returns 0 on success.
 	 */
-	
 	DgValueArray *arr = (DgValueArray *) DgAlloc(sizeof(DgValueArray));
 	
 	if (!arr) {

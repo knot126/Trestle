@@ -23,11 +23,11 @@
 #include "util/thread.h"
 #include "util/alloc.h"
 #include "util/time.h"
+#include "util/json.h"
 #include "util/log.h"
 #include "util/args.h"
 #include "util/rand.h"
 #include "physics/physics.h"
-#include "window/window.h"
 #include "test.h"
 #include "types.h"
 
@@ -107,8 +107,7 @@ static int game_loop(Supervisor *sys) {
 		sys->running = get_should_keep_open(&sys->graphics);
 		
 		// Update subsystems
-		graphics_update(&sys->graphics, &sys->window, &sys->graph);
-		window_update(&sys->window);
+		graphics_update(&sys->graphics, &sys->graph);
 		input_update(&sys->input);
 		scriptman_update(&sys->scriptman, g_deltaTime);
 		
@@ -122,11 +121,6 @@ static int game_loop(Supervisor *sys) {
 		if (show_fps > 1.0f) {
 			DgLog(DG_LOG_VERBOSE, "Frame Time: %fms", frame_time * 1000.0f, 1.0f / frame_time);
 			show_fps = 0.0f;
-		}
-		
-		if (DgTime() > 4.0f) {
-			DgLog(DG_LOG_INFO, "Running for 4 sec, quitting! (to disable, comment line %d in game.c)", __LINE__);
-			sys->running = false;
 		}
 	} // while (sys->running)
 	
