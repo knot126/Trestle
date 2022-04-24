@@ -23,12 +23,10 @@
 #include "util/thread.h"
 #include "util/alloc.h"
 #include "util/time.h"
-#include "util/json.h"
 #include "util/log.h"
 #include "util/args.h"
 #include "util/rand.h"
 #include "physics/physics.h"
-#include "test.h"
 #include "types.h"
 
 #include "game.h"
@@ -147,16 +145,8 @@ int game_main(int argc, char* argv[]) {
 		DgLog(DG_LOG_INFO, "");
 		DgLog(DG_LOG_INFO, "\t--image [path1;path2]   Specify a custom assets ZIP filesystem.");
 		DgLog(DG_LOG_INFO, "\t--ignore-fs             Let the game ignore unsuccessful pathfinding.");
-		DgLog(DG_LOG_INFO, "\t--test-mode, -t         Run all tests.");
 		DgLog(DG_LOG_INFO, "\t--help                  Print this help message.");
 		DgLog(DG_LOG_INFO, "");
-		DgLog(DG_LOG_VERBOSE, "Will not clean up resources because we are just exiting to OS next.");
-		return 0;
-	}
-	
-	// Do tests
-	if (DgArgGetFlag("test-mode") || DgArgGetFlag("t")) {
-		do_all_tests();
 		DgLog(DG_LOG_VERBOSE, "Will not clean up resources because we are just exiting to OS next.");
 		return 0;
 	}

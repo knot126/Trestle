@@ -33,7 +33,7 @@ DgImageInfo DgLoadImage(char* path) {
 	
 	char *res_path = DgEvalPath(path);
 	
-	info.data = (byte *) stbi_load(res_path, &info.width, &info.height, &info.channels, 0);
+	info.data = (uint8_t *) stbi_load(res_path, &info.width, &info.height, &info.channels, 0);
 	
 	if (!info.data) {
 		DgLog(DG_LOG_ERROR, "DgLoadImage: Loaded image at '%s'.", path);

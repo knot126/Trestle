@@ -29,7 +29,6 @@
 #include "graphics/vertex3d.h"
 #include "util/alloc.h"
 #include "util/maths.h"
-#include "util/load.h"
 #include "util/str.h"
 #include "util/bitmap.h"
 #include "util/log.h"
@@ -168,11 +167,13 @@ void graphics_init(GraphicsSystem * restrict gl) {
 	gltexture_init(&gl->texture);
 	
 	// Making textures
-	DgBitmap *bmp = DgBitmapRandom(64, 64);
-	if (bmp) {
-		gltexture_load_buffer(&gl->texture, "placeholder", bmp);
+	DgBitmap bmp;
+	
+	if (DgBitmapInit(&bmp, 64, 64, 3) == false) {
+		DgBitmapFill(&bmp, (DgColour) {1.0, 1.0, 1.0, 1.0});
+		gltexture_load_buffer(&gl->texture, "placeholder", &bmp);
 		gltexture_set_unit(&gl->texture, "placeholder", GL_TEXTURE0);
-		DgBitmapFree(bmp);
+		DgBitmapFree(&bmp);
 	}
 	else {
 		DgLog(DG_LOG_ERROR, "Failed to generate default placeholder texture.");
@@ -363,7 +364,8 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 	// for each frame, allowing dynamic resize of the window.
 	int w, h;
 	glfwGetWindowSize(gl->window, &w, &h);
-	DgMat4 proj = DgMat4NewPerspective2(gl->camera_fov, (float) w / (float) h, 0.000001f, 100.0f);
+	//DgMat4 proj = DgMat4NewPerspective2(gl->camera_fov, (float) w / (float) h, 0.000001f, 100.0f);
+	DgMat4 proj = DgMat4New(1.0f);
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "proj"), 1, GL_TRUE, &proj.ax);
 	
 	// Calculate view matrix (camera transform)

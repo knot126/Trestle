@@ -1,8 +1,0 @@
-<!-- XML listing of all the textures in the game and their names.
-     These will be loaded on the initial game loading. -->
-<textures>
-	<texture path="assets://gfx/splash.png" name="splash" />
-	<texture path="assets://gfx/0.jpg" name="player_temp" />
-	<texture path="assets://gfx/tile0.png" name="tile0" />
-	<texture path="assets://gfx/tile1.png" name="tile1" />
-</textures>

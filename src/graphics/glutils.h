@@ -11,12 +11,11 @@
 #define TRESTLE_OPENGL_UTILITIES_INCLUDED
 
 GLuint gl_load_shader(char* filename, GLenum type) {
-	/* 
+	/**
 	 * Load and create an OpenGL shader `filename`, of type `type`.
 	 */
-	char* path = DgEvalPath(filename);
 	
-	DgLoadBinaryFileInfo* shader_source = DgLoadBinaryFile(path);
+	uint8_t* shader_source = DgFileLoad(filename, NULL);
 	
 	if (!shader_source) {
 		printf("Error: Failed to load shader '%s'.\n", filename);
@@ -27,7 +26,10 @@ GLuint gl_load_shader(char* filename, GLenum type) {
 	GLchar *strings[3];
 	GLint strings_lengths[3];
 	
+	// Add version string
 	strings[0] = "#version 330 core\n";
+	
+	// Add shader type string
 	switch (type) {
 		case GL_VERTEX_SHADER:
 			strings[1] = "#define VERTEX\n\n";
@@ -39,22 +41,21 @@ GLuint gl_load_shader(char* filename, GLenum type) {
 			strings[1] = "#define GEOMETRY\n\n";
 			break;
 	}
-	strings[2] = (GLchar *) shader_source->data;
 	
+	// Add data string
+	strings[2] = (GLchar *) shader_source;
+	
+	// Set string lengths
 	strings_lengths[0] = strlen(strings[0]);
 	strings_lengths[1] = strlen(strings[1]);
-	strings_lengths[2] = shader_source->size;
+	strings_lengths[2] = strlen(strings[2]);
 	
 	// Create shader and load source
 	GLuint shader = glCreateShader(type);
-	glShaderSource(shader,
-		3, 
-		(const GLchar* const *) strings, 
-		(const GLint *) strings_lengths);
+	glShaderSource(shader, 3, (const GLchar* const *) strings, (const GLint *) strings_lengths);
 	
-	// Cleanup path
-	DgUnloadBinaryFile(shader_source);
-	DgFree(path);
+	// Cleanup source (it is not needed after pushing source)
+	DgFree(shader_source);
 	
 	// Compile the shader
 	glCompileShader(shader);
@@ -74,6 +75,8 @@ GLuint gl_load_shader(char* filename, GLenum type) {
 		return 0;
 	}
 	
+	/// @todo ^^ Resource leak ??
+	
 	return shader;
 }
 
@@ -85,23 +88,23 @@ void gl_error_check(char* file, int line) {
 		
 		switch (e) {
 			case GL_INVALID_ENUM:
-				msg = "[OpenGL] Invalid enum: a bad enum was passed to a function.";
+				msg = "OpenGL: Invalid enum: a bad enum was passed to a function.";
 				break;
 			case GL_INVALID_VALUE:
-				msg = "[OpenGL] Invalid value: a bad value was passed to a function.";
+				msg = "OpenGL: Invalid value: a bad value was passed to a function.";
 				break;
 			case GL_INVALID_OPERATION:
-				msg = "[OpenGL] Invalid operation: the operation is not allowed in the current state.";
+				msg = "OpenGL: Invalid operation: the operation is not allowed in the current state.";
 				break;
 			case GL_INVALID_FRAMEBUFFER_OPERATION:
-				msg = "[OpenGL] Framebuffer not ready: the framebuffer was not ready for the operation.";
+				msg = "OpenGL: Framebuffer not ready: the framebuffer was not ready for the operation.";
 				break;
 			case GL_OUT_OF_MEMORY:
-				msg = "[OpenGL] Out of memory: the system has run out of memory.";
+				msg = "OpenGL: Out of memory: the system has run out of memory.";
 				break;
 		}
 		
-		DgLog(DG_LOG_ERROR, "%s (Line %d, File %s)", msg, line, file);
+		DgLog(DG_LOG_ERROR, "%s:%d: %s", file, line, msg);
 	}
 }
 

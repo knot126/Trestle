@@ -16,7 +16,6 @@
 #include "graphics/graphics.h"
 #include "input/input.h"
 #include "util/log.h"
-#include "util/ini.h"
 #include "physics/physics.h"
 #include "types.h"
 

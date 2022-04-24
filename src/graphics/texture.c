@@ -14,7 +14,6 @@
 #include "util/alloc.h"
 #include "util/types.h"
 #include "util/bitmap.h"
-#include "util/xml.h"
 
 #include "gl_incl.h"
 #include "image.h"
@@ -194,43 +193,43 @@ void gltexture_load_list(OpenGLTextureManager *resman, const char * const path) 
 	 * textures in the game that need to be loaded.
 	 */
 	
-	DgXMLNode root;
-	if (DgXMLLoad(&root, "assets://gfx/textures.xml")) {
-		DgXMLNodeFree(&root);
-		DgLog(DG_LOG_ERROR, "Failed parsing textures XML document.");
-		return;
-	}
-	
-	if (!!strcmp(root.name, "textures")) {
-		DgXMLNodeFree(&root);
-		DgLog(DG_LOG_ERROR, "Did not load textures from list: not a textures file.");
-		return;
-	}
-	
-	for (size_t i = 0; i < root.sub_count; i++) {
-		if (!strcmp(root.sub[i].name, "texture")) {
-			const     char *name = DgXMLGetAttrib(&root.sub[i], "name", NULL);
-			/*const*/ char *path = DgXMLGetAttrib(&root.sub[i], "path", NULL);
-			
-			if (!path) {
-				DgLog(DG_LOG_WARNING, "Texture node does not have path, skipping...");
-			}
-			
-			if (!name) {
-				DgLog(DG_LOG_WARNING, "Texture node does not have name, skipping...");
-			}
-			
-			if (!name || !path) {
-				continue;
-			}
-			
-			gltexture_load_file(resman, name, path);
-			gltexture_set_unit(resman, name, GL_TEXTURE0);
-		}
-		else {
-			DgLog(DG_LOG_WARNING, "Skipping element in texture file not named texture.");
-		}
-	}
-	
-	DgXMLNodeFree(&root);
+// 	DgXMLNode root;
+// 	if (DgXMLLoad(&root, "assets://gfx/textures.xml")) {
+// 		DgXMLNodeFree(&root);
+// 		DgLog(DG_LOG_ERROR, "Failed parsing textures XML document.");
+// 		return;
+// 	}
+// 	
+// 	if (!!strcmp(root.name, "textures")) {
+// 		DgXMLNodeFree(&root);
+// 		DgLog(DG_LOG_ERROR, "Did not load textures from list: not a textures file.");
+// 		return;
+// 	}
+// 	
+// 	for (size_t i = 0; i < root.sub_count; i++) {
+// 		if (!strcmp(root.sub[i].name, "texture")) {
+// 			const     char *name = DgXMLGetAttrib(&root.sub[i], "name", NULL);
+// 			/*const*/ char *path = DgXMLGetAttrib(&root.sub[i], "path", NULL);
+// 			
+// 			if (!path) {
+// 				DgLog(DG_LOG_WARNING, "Texture node does not have path, skipping...");
+// 			}
+// 			
+// 			if (!name) {
+// 				DgLog(DG_LOG_WARNING, "Texture node does not have name, skipping...");
+// 			}
+// 			
+// 			if (!name || !path) {
+// 				continue;
+// 			}
+// 			
+// 			gltexture_load_file(resman, name, path);
+// 			gltexture_set_unit(resman, name, GL_TEXTURE0);
+// 		}
+// 		else {
+// 			DgLog(DG_LOG_WARNING, "Skipping element in texture file not named texture.");
+// 		}
+// 	}
+// 	
+// 	DgXMLNodeFree(&root);
 }

@@ -6,7 +6,6 @@
  */
 
 #include "types.h"
-#include "util/ini.h"
 
 const char* USER_LOOK_PATH[1] = {
 	"$HOME",

@@ -81,32 +81,24 @@ set(LUA_INCLUDE_FILES
 # Melon Source files
 set(MELON_FILES
 	"src/util/alloc.c"
-	"src/util/args.c"
-	"src/util/audio.c"
-	"src/util/bag.c"
-	"src/util/bezsurfa.c"
-	"src/util/surface.c"
 	"src/util/bitmap.c"
-	"src/util/fail.c"
 	"src/util/fs.c"
-	"src/util/hash.c"
-	"src/util/http.c"
-	"src/util/ini.c"
-	"src/util/json.c"
-	"src/util/load.c"
 	"src/util/log.c"
-	"src/util/maths.c"
 	"src/util/obj.c"
-	"src/util/rand.c"
-	"src/util/resource.c"
 	"src/util/script.c"
-	"src/util/socket.c"
-	"src/util/str.c"
 	"src/util/stream.c"
-	"src/util/thread.c"
+	"src/util/surface_implementation.c"
 	"src/util/time.c"
+	"src/util/window.c"
+	"src/util/args.c"
+	"src/util/draw.c"
+	"src/util/hash.c"
+	"src/util/maths.c"
+	"src/util/rand.c"
+	"src/util/str.c"
+	"src/util/surface.c"
+	"src/util/thread.c"
 	"src/util/value.c"
-	"src/util/xml.c"
 	${LUA_INCLUDE_FILES}
 )
 
@@ -170,3 +162,5 @@ target_link_libraries(${EXEC_NAME} glfw)
 target_link_libraries(${EXEC_NAME} pthread)
 target_link_libraries(${EXEC_NAME} pulse)
 target_link_libraries(${EXEC_NAME} pulse-simple)
+
+add_compile_definitions(DG_NO_SDL)
