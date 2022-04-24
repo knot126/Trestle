@@ -1,3 +1,5 @@
+**Important**: This engine was originally created for a game I was developing (that I might still make eventually). Currently, I want to rework the engine to make it work better - and so I don't have to start on a new engine (yet). :)
+
 # Trestle Engine
 
 This is the main repository for Decentix's Trestle Engine, which currently aims to implement Quick Run. Please note that it is **not yet feature complete**, and it is missing many things.
