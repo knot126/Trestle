@@ -168,7 +168,7 @@ void gltexture_set_unit(OpenGLTextureManager *resman, const char * const name, G
 		}
 	}
 	
-	DgLog(DG_LOG_ERROR, "Could not find texture by name: '%s'.", name);
+	//DgLog(DG_LOG_ERROR, "Could not find texture by name: '%s'.", name);
 }
 
 uint32_t gltexture_get_name(OpenGLTextureManager *resman, const char * const name) {
@@ -182,7 +182,7 @@ uint32_t gltexture_get_name(OpenGLTextureManager *resman, const char * const nam
 		}
 	}
 	
-	DgLog(DG_LOG_ERROR, "Could not find texture by name: '%s'.", name);
+	//DgLog(DG_LOG_ERROR, "Could not find texture by name: '%s'.", name);
 	
 	return 0;
 }

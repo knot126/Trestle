@@ -85,14 +85,6 @@ typedef struct Mesh2D {
 	bool updated;
 } Mesh2D;
 
-/**
- * DEPRECATED: The current curves system was only for testing as a proof of
- * concept. It's dead.
- */
-typedef struct Curve {
-	DgVec3 points[4];
-} Curve;
-
 typedef struct GraphicsSystem {
 	/**
 	 * An OpenGL-based graphics system wrapper, which takes care of most of the
@@ -118,6 +110,7 @@ typedef struct GraphicsSystem {
 	float camera_fov;
 	size_t frame;
 	uint64_t flags;
+	DgMat4 projection_matrix;
 	
 	// Mesh3D objects
 	Name  *mesh_name;
@@ -136,10 +129,6 @@ typedef struct GraphicsSystem {
 	Mesh2D  *mesh2d;
 	size_t   mesh2d_alloc;
 	size_t   mesh2d_count;
-	
-	// Curve objects
-// 	Curve *curve;
-// 	size_t curve_count;
 } GraphicsSystem;
 
 typedef GraphicsSystem DgOpenGLContext;
@@ -160,9 +149,6 @@ DgVec2I graphics_get_screen_size(GraphicsSystem * restrict gl);
 void graphics_set_mouse_disabled(GraphicsSystem * restrict gl, bool enabled);
 void graphics_set_curve_render_quality(GraphicsSystem * restrict graphics, float quality);
 void graphics_set_fov(GraphicsSystem * restrict graphics, float fov);
-
-// Curves
-void graphics_add_curve(GraphicsSystem * restrict gl, DgVec3 p0, DgVec3 p1, DgVec3 p2, DgVec3 p3);
 
 // 3D Meshes
 Name graphics_create_mesh(GraphicsSystem * restrict gl, Name name);

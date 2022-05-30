@@ -29,9 +29,7 @@
 #include "physics/physics.h"
 #include "types.h"
 
-#include "game.h"
-
-// #define QR_EXPRIMENTAL_THREADING
+DgArgs args;
 
 typedef struct GameLoopArgs {
 	bool *keep_open;
@@ -137,14 +135,13 @@ int game_main(int argc, char* argv[]) {
 	
 	// Parse command line arguments
 	DgLog(DG_LOG_INFO, "Parsing command line arguments...");
-	DgArgParse(argc, argv);
+	DgArgParse(&args, argc, argv);
 	
 	// Print help
-	if (DgArgGetFlag("help")) {
+	if (DgArgGetFlag(&args, "help")) {
 		DgLog(DG_LOG_INFO, "Quick Run (run as %s)", argv[0]);
 		DgLog(DG_LOG_INFO, "");
-		DgLog(DG_LOG_INFO, "\t--image [path1;path2]   Specify a custom assets ZIP filesystem.");
-		DgLog(DG_LOG_INFO, "\t--ignore-fs             Let the game ignore unsuccessful pathfinding.");
+		DgLog(DG_LOG_INFO, "\t--assets=<path>         Specify a custom assets filesystem (Dir/ZIP).");
 		DgLog(DG_LOG_INFO, "\t--help                  Print this help message.");
 		DgLog(DG_LOG_INFO, "");
 		DgLog(DG_LOG_VERBOSE, "Will not clean up resources because we are just exiting to OS next.");
@@ -156,7 +153,7 @@ int game_main(int argc, char* argv[]) {
 	
 	// File system module init
 	DgLog(DG_LOG_INFO, "Initialising file system paths...");
-	DgInitPaths( DgArgGetFlag("ignore-fs") ? DgLog(DG_LOG_INFO, "Filesystem errors will be ignored, the engine may behave erattically."), DG_PATH_FAIL_ERROR : DG_PATH_FAIL_FATAL );
+	DgInitPaths2(DgArgGetValue2(&args, "assets", "/home/user/Development/personal/TR_QuickRun/assets"));
 	
 	// Load systems state
 	// The active supervisor must be set first so the script manager can init
@@ -188,9 +185,14 @@ int game_main(int argc, char* argv[]) {
 	
 	// Cleanup arguments memory
 	DgLog(DG_LOG_INFO, "Freeing memory used by argument parser...");
-	DgArgFree();
+	DgArgFree(&args);
 	
 	DgLog(DG_LOG_INFO, "Goodbye, world!");
 	
 	return 0;
+}
+
+
+int main(int argc, char *argv[]) {
+	return game_main(argc, argv);
 }

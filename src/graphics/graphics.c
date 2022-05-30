@@ -205,7 +205,7 @@ void graphics_init(GraphicsSystem * restrict gl) {
 	GL_ERROR_CHECK();
 	
 	// Set default curve render quality
-	graphics_set_curve_render_quality(gl, 12.0f);
+	graphics_set_curve_render_quality(gl, 10.0f);
 	
 	// Set the default FoV
 	graphics_set_fov(gl, 0.125f);
@@ -333,6 +333,65 @@ static void graphics_update_mesh(GraphicsSystem * const restrict gl, uint32_t * 
 	GL_ERROR_CHECK();
 }
 
+static DgMat4 trCreatePerspectiveMatrixFromPlaneDistances(float left, float right, float bottom, float top, float near, float far) {
+	/**
+	 * Create a new perspective projection matrix, using left, right, back,
+	 * front near and far planes.
+	 * 
+	 * @note The matrix cannot actually do the perspective divide; this is just
+	 * the OpenGL perspective matrix.
+	 * @note It is probably easier to understand doing things without using a
+	 * matrix. See also scratchapixel.
+	 * 
+	 * @see https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix
+	 * 
+	 * @param left Left plane distance from zero
+	 * @param right Right plane distance from zero
+	 * @param bottom Bottom plane distance from zero
+	 * @param top Top plane distance from zero
+	 * @param near Back plane distance from zero
+	 * @param far Front plane distance from zero
+	 * @return Matrix representing a perspective projection (w divide not applied)
+	 */
+	
+	DgMat4 proj = DgMat4New(1.0f);
+	
+	// Projection for the x-coordinate
+	proj.ax = (2 * near) / (right - left);
+	proj.az = (right + left) / (right - left);
+	
+	// Projection for the y-coordinate
+	proj.by = (2 * near) / (top - bottom);
+	proj.bz = (top + bottom) / (top - bottom);
+	
+	// Divide for z (negative for ... cg "best practises")
+	proj.cz = -(far + near) / (far - near);
+	proj.cw = -(2 * far * near) / (far - near);
+	
+	// w-coordinate should now be -z
+	proj.dz = -1;
+	
+	return proj;
+}
+
+DgMat4 trCreatePerspectiveMatrix(float fov, float ratio, float near, float far) {
+	/**
+	 * Create a new perspective projection matrix.
+	 * 
+	 * @param fov Feild of view
+	 * @param ratio Ratio between height and width
+	 * @param near Z-value of near plane
+	 * @param far Z-value of far plane
+	 * @return Matrix representing a perspective projection (w divide not applied)
+	 */
+	
+	float tangent = DgTan(fov / 2);
+	float height = near * tangent;
+	float width = height * ratio;
+	
+	return trCreatePerspectiveMatrixFromPlaneDistances(-width, width, -height, height, near, far);
+}
+
 void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) {
 	/*
 	 * Update OpenGL-related state and the graphics system
@@ -364,8 +423,8 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 	// for each frame, allowing dynamic resize of the window.
 	int w, h;
 	glfwGetWindowSize(gl->window, &w, &h);
-	//DgMat4 proj = DgMat4NewPerspective2(gl->camera_fov, (float) w / (float) h, 0.000001f, 100.0f);
-	DgMat4 proj = DgMat4New(1.0f);
+	DgMat4 proj = trCreatePerspectiveMatrix(gl->camera_fov, (float) w / (float) h, 0.001f, 100.0f);
+	//DgMat4 proj = gl->projection_matrix;
 	glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "proj"), 1, GL_TRUE, &proj.ax);
 	
 	// Calculate view matrix (camera transform)
@@ -455,7 +514,6 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 	
-// #if 0
 	for (size_t i = 0; i < gl->surface_count; i++) {
 		Name id = gl->surface_name[i];
 		Surface3D *surface = &gl->surface[i];
@@ -530,7 +588,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 							p10 = samples[(y * samp_x) + x + 1],
 							p11 = samples[((y + 1) * samp_x) + x + 1];
 						
-						DgVec3 c = {DgRandFloat(), DgRandFloat(), DgRandFloat()};
+						DgVec3 c = (DgVec3) {0.91f, DgRandFloat(), 0.97f};
 						
 						surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 0] = (QRVertex3D) {p00.x, p00.y, p00.z, 0.0f, 0.0f, c.x, c.y, c.z};
 						surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 1] = (QRVertex3D) {p01.x, p01.y, p01.z, 0.0f, 0.0f, c.x, c.y, c.z};
@@ -616,9 +674,9 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			continue;
 		}
 		
-		// If the mesh is updated and the allocation of the mesh data failed,
+		// If the mesh is updated or the allocation of the mesh data failed,
 		// then just ignore this mesh.
-		if ((!mesh->index || !mesh->vertex) && mesh->updated) {
+		if (!mesh->index || !mesh->vertex || mesh->updated) {
 			continue;
 		}
 		
@@ -785,127 +843,6 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 	
 	// Disable depth tests
 	glEnable(GL_DEPTH_TEST);
-	
-	/*
-	// Use the first progam
-	glUseProgram(gl->programs[0]);
-	
-	// Draw Bezier curves
-	for (size_t i = 0; i < gl->curve_count; i++) {
-		Curve *curve = &gl->curve[i];
-		
-		// Generate verticies
-		QRVertex1 v[30];
-		
-		for (size_t j = 0; j < sizeof v / sizeof *v; j++) {
-			DgVec3 a = DgVec3Bez4((float)j / (float)(sizeof v / sizeof *v), curve->points[0], curve->points[1], curve->points[2], curve->points[3]);
-			v[j].x = a.x;
-			v[j].y = a.y;
-			v[j].z = a.z;
-			v[j].u = 0.0f;
-			v[j].v = 0.0f;
-			v[j].r = 1.0f;
-			v[j].g = 1.0f;
-			v[j].b = 1.0f;
-		}
-		
-		// Push new verticies
-		unsigned vbo, ebo, vao;
-		glGenBuffers(1, &vbo);
-		glGenVertexArrays(1, &vao);
-		
-		glBindVertexArray(vao);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		
-		glBufferData(GL_ARRAY_BUFFER, sizeof v, v, GL_STATIC_DRAW);
-		
-		// =================================================================
-		// Register vertex attributes
-		// =================================================================
-		
-		GLint attr;
-		
-		attr = glGetAttribLocation(gl->programs[0], "position");
-		
-		if (attr < 0) {
-			DgLog(DG_LOG_ERROR, "Error: No attribute 'position'.\n", 100);
-		}
-		
-		glVertexAttribPointer(
-			attr, 
-			3, 
-			GL_FLOAT, 
-			GL_FALSE, 
-			8 * sizeof(float), 
-			(void *) 0
-		);
-		glEnableVertexAttribArray(attr);
-		
-		GL_ERROR_CHECK();
-		
-		// =================================================================
-		// =================================================================
-		
-		attr = glGetAttribLocation(gl->programs[0], "texpos");
-		
-		if (attr < 0) {
-			DgLog(DG_LOG_ERROR, "Error: No attribute 'texpos'.\n", 100);
-		}
-		
-		glVertexAttribPointer(
-			attr, 
-			2, 
-			GL_FLOAT, 
-			GL_FALSE, 8 * sizeof(float), 
-			(void *) (3 * sizeof(float))
-		);
-		glEnableVertexAttribArray(attr);
-		
-		GL_ERROR_CHECK();
-		
-		// =================================================================
-		// =================================================================
-		
-		attr = glGetAttribLocation(gl->programs[0], "colour");
-		
-		if (attr < 0) {
-			DgLog(DG_LOG_ERROR, "Error: No attribute 'colour'.\n", 100);
-		}
-		
-		glVertexAttribPointer(
-			attr, 
-			3, 
-			GL_FLOAT, 
-			GL_FALSE, 
-			8 * sizeof(float), 
-			(void *) (5 * sizeof(float))
-		);
-		glEnableVertexAttribArray(attr);
-		
-		GL_ERROR_CHECK();
-		
-		// =================================================================
-		// =================================================================
-		
-		// Bind the currently active textures for this shader
-		glBindTexture(GL_TEXTURE_2D, gltexture_get_name(&gl->texture, "placeholder"));
-		
-		GL_ERROR_CHECK();
-		
-		DgMat4 model = DgMat4New(1.0f);
-		glUniformMatrix4fv(glGetUniformLocation(gl->programs[0], "model"), 1, GL_TRUE, &model.ax);
-		
-		GL_ERROR_CHECK();
-		
-		glDrawArrays(GL_LINES, 0, sizeof v / sizeof *v);
-		
-		glDeleteBuffers(1, &vbo);
-		glDeleteVertexArrays(1, &vao);
-		
-		GL_ERROR_CHECK();
-	}
-	
-	*/
 	
 	// Unbind everything
 	glBindVertexArray(0);
