@@ -534,7 +534,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			
 			for (size_t si = 0; si < surface->surface_count; si++) {
 				// Calculate sample rate
-				DgVec3 size = DgSurface3DGetBoundingBoxSize(&surface->surface[0]);
+				DgVec3 size = DgSurface3DGetBoundingBoxSize(&surface->surface[si]);
 				
 				// Prepare the data
 				// FIXME: Curve render quality calculation is flawed becuase it is
@@ -574,7 +574,7 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 				// Calculate the samples data
 				for (uint32_t u = 0; u < samp_y; u++) {
 					for (uint32_t v = 0; v < samp_x; v++) {
-						DgVec3 s = DgSurface3DGetSample(&surface->surface[0], ((float)u) / ((float)(samp_x - 1)), ((float)v) / ((float)(samp_y - 1)));
+						DgVec3 s = DgSurface3DGetSample(&surface->surface[si], ((float)u) / ((float)(samp_x - 1)), ((float)v) / ((float)(samp_y - 1)));
 						samples[(samp_x * u) + v] = s;
 					}
 				}
@@ -963,6 +963,8 @@ void graphics_set_curve_render_quality(GraphicsSystem * restrict graphics, float
 	 * Set the render quality of curves in samples per cube unit.
 	 */
 	
+	DgLog(DG_LOG_VERBOSE, "Set curve quality to %.3f", quality);
+	
 	graphics->curve_render_quality = quality;
 }
 
@@ -972,32 +974,6 @@ void graphics_set_fov(GraphicsSystem * restrict graphics, float fov) {
 	 */
 	
 	graphics->camera_fov = fov;
-}
-
-/**
- * =============================================================================
- * Legacy Curves
- * =============================================================================
- */
-
-void graphics_add_curve(GraphicsSystem * restrict gl, DgVec3 p0, DgVec3 p1, DgVec3 p2, DgVec3 p3) {
-	/**
-	 * DEPRECATED: This API will be updated soon.
-	 */
-	
-// 	gl->curve = (Curve *) DgRealloc(gl->curve, sizeof *gl->curve * ++gl->curve_count);
-// 	
-// 	if (!gl->curve) {
-// 		gl->curve_count = 0;
-// 		return;
-// 	}
-// 	
-// 	gl->curve[gl->curve_count - 1].points[0] = p0;
-// 	gl->curve[gl->curve_count - 1].points[1] = p1;
-// 	gl->curve[gl->curve_count - 1].points[2] = p2;
-// 	gl->curve[gl->curve_count - 1].points[3] = p3;
-	
-	return;
 }
 
 /**
@@ -1221,7 +1197,7 @@ Name graphics_add_patch_to_surface3d(GraphicsSystem * const restrict gl, const N
 	
 	// Reallocate patches
 	if (surface->surface_alloc <= surface->surface_count) {
-		surface->surface_alloc = 2 + (surface->surface_alloc * 2) - (surface->surface_alloc / 2);
+		surface->surface_alloc = 2 + (surface->surface_alloc * 2);
 		surface->surface = DgRealloc(surface->surface, sizeof *surface->surface * surface->surface_alloc);
 		
 		if (!surface->surface) {

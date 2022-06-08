@@ -280,22 +280,6 @@ static int scripted_CreateMesh(lua_State *script) {
 	return 1;
 }
 
-static int scripted_AddCurve(lua_State *script) {
-	if (lua_gettop(script) != 12) {
-		DgLog(DG_LOG_ERROR, "Invalid usage of add_curve().");
-		return 0;
-	}
-	
-	DgVec3 p0 = (DgVec3) {lua_tonumber(script, 1), lua_tonumber(script, 2), lua_tonumber(script, 3)};
-	DgVec3 p1 = (DgVec3) {lua_tonumber(script, 4), lua_tonumber(script, 5), lua_tonumber(script, 6)};
-	DgVec3 p2 = (DgVec3) {lua_tonumber(script, 7), lua_tonumber(script, 8), lua_tonumber(script, 9)};
-	DgVec3 p3 = (DgVec3) {lua_tonumber(script, 10), lua_tonumber(script, 11), lua_tonumber(script, 12)};
-	
-	graphics_add_curve(&(supervisor(NULL)->graphics), p0, p1, p2, p3);
-	
-	return 0;
-}
-
 static int scripted_GetShouldKeepOpen(lua_State *script) {
 	if (lua_gettop(script) != 0) {
 		DgLog(DG_LOG_ERROR, "Invalid usage of get_should_keep_open().");
@@ -675,7 +659,6 @@ void regiser_default_script_functions(DgScript *script) {
 	
 	lua_register(script->state, "create_mesh", &scripted_CreateMesh);
 	lua_register(script->state, "push_obj_mesh", &scripted_PushOBJMesh);
-	lua_register(script->state, "add_curve", &scripted_AddCurve);
 	lua_register(script->state, "push_patch", &scripted_PushPatch);
 	
 	register_meshwisk_functions(script);
