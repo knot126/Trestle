@@ -1,3 +1,5 @@
+**Note**: These instructions are likely to become out of date once a new custom build system is completely implemented.
+
 # Building Trestle
 
 This document contains instructions for building the Trestle engine.
