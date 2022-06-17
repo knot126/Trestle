@@ -522,6 +522,8 @@ void regiser_default_script_functions(DgScript *script) {
 	lua_register(script->state, "get_transform", &scripted_GetTransform);
 	
 	// Graphics
+	lua_register(script->state, "graphics_update", &scripted_GraphicsUpdate);
+	
 	lua_register(script->state, "set_camera", &scripted_SetCamera);
 	lua_register(script->state, "get_camera", &scripted_GetCamera);
 	lua_register(script->state, "get_camera_forward", &scripted_GetCameraForward);
