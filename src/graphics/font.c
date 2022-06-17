@@ -19,11 +19,6 @@ void font_init(Font *this, const char * const path) {
 	 * Load a TrueType font (.ttf) file.
 	 */
 	
-	DgFile f = DgFileStreamOpen((char *) path, "rb");
-	
-	this->data = DgFileStreamLoad(f);
-	
-	stbtt_InitFont(&this->font, this->data, stbtt_GetFontOffsetForIndex(this->data, 0));
 }
 
 void font_free(Font *this) {
@@ -31,5 +26,4 @@ void font_free(Font *this) {
 	 * Free a font file.
 	 */
 	
-	DgFree(this->data);
 }

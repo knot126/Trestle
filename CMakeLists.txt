@@ -95,7 +95,7 @@ set(MELON_FILES
 	"src/util/hash.c"
 	"src/util/maths.c"
 	"src/util/rand.c"
-	"src/util/str.c"
+	"src/util/string.c"
 	"src/util/surface.c"
 	"src/util/thread.c"
 	"src/util/value.c"

@@ -473,9 +473,9 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		GL_ERROR_CHECK();
 		
 		// Find the transform
-		DgVec3 translate = DgVec3New(0.0f, 0.0f, 0.0f);
-		DgVec3 rotate = DgVec3New(0.0f, 0.0f, 0.0f);
-		DgVec3 scale = DgVec3New(1.0f, 1.0f, 1.0f);
+		DgVec3 translate = (DgVec3) {0.0f, 0.0f, 0.0f};
+		DgVec3 rotate = (DgVec3) {0.0f, 0.0f, 0.0f};
+		DgVec3 scale = (DgVec3) {1.0f, 1.0f, 1.0f};
 		
 		Transform * const trans = graph_get(graph, id);
 		
@@ -485,9 +485,9 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			scale = trans->scale;
 		}
 		
-		DgMat4 rot_x = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(1.0f, 0.0f, 0.0f), rotate.x);
-		DgMat4 rot_y = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.0f, 1.0f, 0.0f), rotate.y);
-		DgMat4 rot_z = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.0f, 0.0f, 1.0f), rotate.z);
+		DgMat4 rot_x = DgMat4Rotate(DgMat4New(1.0f), (DgVec3) {1.0f, 0.0f, 0.0f}, rotate.x);
+		DgMat4 rot_y = DgMat4Rotate(DgMat4New(1.0f), (DgVec3) {0.0f, 1.0f, 0.0f}, rotate.y);
+		DgMat4 rot_z = DgMat4Rotate(DgMat4New(1.0f), (DgVec3) {0.0f, 0.0f, 1.0f}, rotate.z);
 		DgMat4 rot_mat = DgMat4ByMat4Multiply(rot_z, DgMat4ByMat4Multiply(rot_y, rot_x));
 		
 		DgMat4 model = 
@@ -616,9 +616,9 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		GL_ERROR_CHECK();
 		
 		// Find the transform
-		DgVec3 translate = DgVec3New(0.0f, 0.0f, 0.0f);
-		DgVec3 rotate = DgVec3New(0.0f, 0.0f, 0.0f);
-		DgVec3 scale = DgVec3New(1.0f, 1.0f, 1.0f);
+		DgVec3 translate = (DgVec3) {0.0f, 0.0f, 0.0f};
+		DgVec3 rotate = (DgVec3) {0.0f, 0.0f, 0.0f};
+		DgVec3 scale = (DgVec3) {1.0f, 1.0f, 1.0f};
 		
 		Transform * const trans = graph_get(graph, id);
 		
@@ -628,9 +628,9 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			scale = trans->scale;
 		}
 		
-		DgMat4 rot_x = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(1.0f, 0.0f, 0.0f), rotate.x);
-		DgMat4 rot_y = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.0f, 1.0f, 0.0f), rotate.y);
-		DgMat4 rot_z = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.0f, 0.0f, 1.0f), rotate.z);
+		DgMat4 rot_x = DgMat4Rotate(DgMat4New(1.0f), (DgVec3) {1.0f, 0.0f, 0.0f}, rotate.x);
+		DgMat4 rot_y = DgMat4Rotate(DgMat4New(1.0f), (DgVec3) {0.0f, 1.0f, 0.0f}, rotate.y);
+		DgMat4 rot_z = DgMat4Rotate(DgMat4New(1.0f), (DgVec3) {0.0f, 0.0f, 1.0f}, rotate.z);
 		DgMat4 rot_mat = DgMat4ByMat4Multiply(rot_z, DgMat4ByMat4Multiply(rot_y, rot_x));
 		
 		DgMat4 model = 
@@ -806,9 +806,9 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 		GL_ERROR_CHECK();
 		
 		// Push the matrix transform
-		DgVec3 translate = DgVec3New(0.0f, 0.0f, 0.0f);
-		DgVec3 rotate = DgVec3New(0.0f, 0.0f, 0.0f);
-		DgVec3 scale = DgVec3New(1.0f, 1.0f, 1.0f);
+		DgVec3 translate = (DgVec3) {0.0f, 0.0f, 0.0f};
+		DgVec3 rotate = (DgVec3) {0.0f, 0.0f, 0.0f};
+		DgVec3 scale = (DgVec3) {1.0f, 1.0f, 1.0f};
 		
 		Transform * const trans = graph_get(graph, id);
 		
@@ -818,9 +818,9 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 			scale = trans->scale;
 		}
 		
-		DgMat4 rot_x = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(1.0f, 0.0f, 0.0f), rotate.x);
-		DgMat4 rot_y = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.0f, 1.0f, 0.0f), rotate.y);
-		DgMat4 rot_z = DgMat4Rotate(DgMat4New(1.0f), DgVec3New(0.0f, 0.0f, 1.0f), rotate.z);
+		DgMat4 rot_x = DgMat4Rotate(DgMat4New(1.0f), (DgVec3) {1.0f, 0.0f, 0.0f}, rotate.x);
+		DgMat4 rot_y = DgMat4Rotate(DgMat4New(1.0f), (DgVec3) {0.0f, 1.0f, 0.0f}, rotate.y);
+		DgMat4 rot_z = DgMat4Rotate(DgMat4New(1.0f), (DgVec3) {0.0f, 0.0f, 1.0f}, rotate.z);
 		DgMat4 rot_mat = DgMat4ByMat4Multiply(rot_z, DgMat4ByMat4Multiply(rot_y, rot_x));
 		
 		DgMat4 model = 
