@@ -10,6 +10,3 @@
 #include <inttypes.h>
 
 typedef uint32_t Name;
-
-extern float g_physicsDelta;
-extern float g_deltaTime;

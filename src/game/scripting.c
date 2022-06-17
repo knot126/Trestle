@@ -138,7 +138,7 @@ static int scripted_CreateTransform(lua_State *script) {
 	return 1;
 }
 
-static int scripted_PushTransform(lua_State *script) {
+static int scripted_SetTransform(lua_State *script) {
 	int top = lua_gettop(script);
 	
 	if (top < 4) {
@@ -514,11 +514,9 @@ void regiser_default_script_functions(DgScript *script) {
 	lua_register(script->state, "script_load", &scripted_ScriptLoad);
 	lua_register(script->state, "script_open", &scripted_ScriptOpen);
 	
-	// XML Parser
-	
 	// Scene Graph
 	lua_register(script->state, "create_transform", &scripted_CreateTransform);
-	lua_register(script->state, "push_transform", &scripted_PushTransform);
+	lua_register(script->state, "set_transform", &scripted_SetTransform);
 	lua_register(script->state, "get_transform", &scripted_GetTransform);
 	
 	// Graphics

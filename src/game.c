@@ -2,12 +2,6 @@
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
- * This file is part of the Decent Games Engine. Please do not redistribute the
- * sources without prior permission from Decent Games and/or contributours.
- * 
- * Contributours:
- *  - cdde <cddepppp256@protonmail.com>
- * 
  * Main game loop and startup functions
  */
 
@@ -27,6 +21,14 @@
 #include "util/args.h"
 #include "util/rand.h"
 #include "types.h"
+
+// Copyright and ID strings (never used)
+const char *strings[] = {
+	"Copyright (C) Knot126, Trestle Engine Developers. ",
+	"Powered by GPU compute, mathematics and logic !",
+	"Trestle Engine (aka Quick Engine) version 0.4.0, Knot126",
+	"Do your homework ! https://khanacademy.org/math "
+};
 
 DgArgs args;
 
