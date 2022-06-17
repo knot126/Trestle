@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 
 # Set project
-project(Engine VERSION 0.1.1)
+project(Engine VERSION 0.4.0)
 
 set(EXEC_NAME quickrun)
 set(MELON_NAME melon)
