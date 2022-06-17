@@ -9,14 +9,12 @@
 #include <inttypes.h>
 #include <stdbool.h>
 
-#include "game/gamescript.h"
 #include "game/scriptman.h"
 #include "global/reg.h"
 #include "graph/graph.h"
 #include "graphics/graphics.h"
 #include "input/input.h"
 #include "util/log.h"
-#include "physics/physics.h"
 #include "types.h"
 
 #include "supervisor.h"
@@ -47,10 +45,6 @@ void sup_init(Supervisor * restrict sup) {
 	// Graphics initialisation
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: Graphics");
 	graphics_init(&sup->graphics);
-	
-	// Physics initialisation
-	DgLog(DG_LOG_INFO, "Supervisor Initialise: Physics");
-	physics_init(&sup->physics);
 	
 	// Scene graph initialisation
 	DgLog(DG_LOG_INFO, "Supervisor Initialise: Scene Graph");
@@ -91,9 +85,6 @@ void sup_destroy(Supervisor * restrict sup) {
 	DgLog(DG_LOG_INFO, "Supervisor Destroy: Scene Graph");
 	graph_free(&sup->graph);
 	
-	DgLog(DG_LOG_INFO, "Supervisor Destroy: Physics");
-	physics_free(&sup->physics);
-	
 	DgLog(DG_LOG_INFO, "Supervisor Destroy: Graphics");
 	graphics_free(&sup->graphics);
 }
@@ -131,18 +122,6 @@ Name sup_entity(Supervisor *sup, const uint64_t systems) {
 	
 	if ((systems & ENT_GRAPHICS_MESH2D) == ENT_GRAPHICS_MESH2D) {
 		graphics_create_mesh2d(&sup->graphics, name);
-	}
-	
-	if ((systems & ENT_GRAPHICS_CURVE) == ENT_GRAPHICS_CURVE) {
-		// ...
-	}
-	
-	if ((systems & ENT_PHYSICS_OBJECT) == ENT_PHYSICS_OBJECT) {
-		physics_create_object(&sup->physics, name);
-	}
-	
-	if ((systems & ENT_PHYSICS_AABB) == ENT_PHYSICS_AABB) {
-		physics_create_aabb(&sup->physics, name);
 	}
 	
 	if ((systems & ENT_GRAPHICS_SURFACE) == ENT_GRAPHICS_SURFACE) {

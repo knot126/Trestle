@@ -74,7 +74,7 @@ static int32_t graphics_load_default_shaders(GraphicsSystem * restrict gl) {
 	// The main 3D shader
 	res = graphicsLoadShader(gl, "assets://shaders/main.glsl");
 	
-	if (res == 2) {
+	if (res == 2) { /// @todo Improve error codes
 		DgLog(DG_LOG_ERROR, "Failed to load shader for 3D stuff.");
 		return -1;
 	}
@@ -84,7 +84,7 @@ static int32_t graphics_load_default_shaders(GraphicsSystem * restrict gl) {
 	// The main 2D shader
 	res = graphicsLoadShader(gl, "assets://shaders/gui.glsl");
 	
-	if (res == 2) {
+	if (res == 2) { /// @todo Improve error codes
 		DgLog(DG_LOG_ERROR, "Failed to load shader for GUI.");
 		return -1;
 	}

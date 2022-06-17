@@ -17,7 +17,6 @@
 #include "global/reg.h"
 #include "global/supervisor.h"
 #include "graphics/mesh.h"
-#include "graphics/meshwisk.h"
 #include "util/log.h"
 #include "util/script.h"
 #include "input/input.h"
@@ -208,6 +207,17 @@ static int scripted_GetTransform(lua_State *script) {
  * =============================================================================
  */
 
+static int scripted_GraphicsUpdate(lua_State *script) {
+	if (lua_gettop(script) != 0) {
+		DgLog(DG_LOG_ERROR, "Invalid usage of graphics_update().");
+		return 0;
+	}
+	
+	graphics_update(&(supervisor(NULL))->graphics, &(supervisor(NULL))->graph);
+	
+	lua_pushboolean(script, true);
+}
+
 static int scripted_GetCamera(lua_State *script) {
 	if (lua_gettop(script) != 0) {
 		DgLog(DG_LOG_ERROR, "Invalid usage of get_camera().");
@@ -252,17 +262,6 @@ static int scripted_SetBackground(lua_State *script) {
 	}
 	
 	graphics_set_background(&(supervisor(NULL)->graphics), (DgVec4) {lua_tonumber(script, 1), lua_tonumber(script, 2), lua_tonumber(script, 3), lua_tonumber(script, 4)});
-	
-	return 0;
-}
-
-static int scripted_PushOBJMesh(lua_State *script) {
-	if (lua_gettop(script) != 2) {
-		DgLog(DG_LOG_ERROR, "Invalid usage of push_obj_mesh().");
-		return 0;
-	}
-	
-	graphics_load_obj_mesh(&(supervisor(NULL)->graphics), lua_tointeger(script, 1), lua_tostring(script, 2));
 	
 	return 0;
 }
@@ -354,131 +353,6 @@ static int scripted_PushPatch(lua_State *script) {
 	
 	lua_pushinteger(script, name);
 	return 1;
-}
-
-/**
- * =============================================================================
- * Physics System
- * =============================================================================
- */
-
-static int scripted_CreatePhysicsObject(lua_State *script) {
-	if (lua_gettop(script) != 1) {
-		DgLog(DG_LOG_ERROR, "Invalid usage of create_physics_object().");
-		return 0;
-	}
-	
-	lua_pushinteger(script, physics_create_object(&(supervisor(NULL)->physics), lua_tointeger(script, 1)));
-	
-	return 1;
-}
-
-static int scripted_ClearPhysicsObject(lua_State *script) {
-	if (lua_gettop(script) != 1) {
-		DgLog(DG_LOG_ERROR, "Invalid usage of clear_physics_object().");
-		return 0;
-	}
-	
-	physics_clear_object(&(supervisor(NULL)->physics), lua_tointeger(script, 1));
-	
-	return 0;
-}
-
-static int scripted_SetAccel(lua_State *script) {
-	if (lua_gettop(script) != 4) {
-		DgLog(DG_LOG_ERROR, "Invalid usage of set_accel().");
-		return 0;
-	}
-	
-	physics_set_accel(&(supervisor(NULL)->physics), lua_tointeger(script, 1), (DgVec3) {lua_tonumber(script, 2), lua_tonumber(script, 3), lua_tonumber(script, 4)});
-	
-	return 0;
-}
-
-static int scripted_SetPhysicsFlags(lua_State *script) {
-	if (lua_gettop(script) != 2) {
-		DgLog(DG_LOG_ERROR, "Invalid usage of set_physics_flags().");
-		return 0;
-	}
-	
-	int name = lua_tointeger(script, 1);
-	uint64_t flag = lua_tointeger(script, 2);
-	
-	physics_set_flags(&(supervisor(NULL)->physics), name, flag);
-	
-	return 0;
-}
-
-static int scripted_AddForce(lua_State *script) {
-	if (lua_gettop(script) != 4) {
-		DgLog(DG_LOG_ERROR, "Invalid usage of add_force().");
-		return 0;
-	}
-	
-	int name = lua_tointeger(script, 1);
-	
-	physics_add_forces(&(supervisor(NULL)->physics), name, (DgVec3) {lua_tonumber(script, 2), lua_tonumber(script, 3), lua_tonumber(script, 4)});
-	
-	return 0;
-}
-
-static int scripted_DirectMove(lua_State *script) {
-	if (lua_gettop(script) != 4) {
-		DgLog(DG_LOG_ERROR, "Invalid usage of move_object().");
-		return 0;
-	}
-	
-	int name = lua_tointeger(script, 1);
-	
-	physics_move_object(&(supervisor(NULL)->physics), name, (DgVec3) {lua_tonumber(script, 2), lua_tonumber(script, 3), lua_tonumber(script, 4)});
-	
-	return 0;
-}
-
-static int scripted_EnablePhysics(lua_State *script) {
-	if (lua_gettop(script) != 1) {
-		DgLog(DG_LOG_ERROR, "Invalid usage of enable_physics().");
-		return 0;
-	}
-	
-	bool enable = lua_toboolean(script, 1);
-	
-	physics_enabled(&(supervisor(NULL)->physics), enable);
-	
-	return 0;
-}
-
-static int scripted_PhysicsSyncGraph(lua_State *script) {
-	if (lua_gettop(script) != 0) {
-		DgLog(DG_LOG_ERROR, "Invalid usage of physics_sync_graph().");
-		return 0;
-	}
-	
-	physics_sync_graph(&(supervisor(NULL)->physics), &(supervisor(NULL)->graph));
-	
-	return 0;
-}
-
-static int scripted_CreateAABB(lua_State *script) {
-	if (lua_gettop(script) != 1) {
-		DgLog(DG_LOG_ERROR, "Invalid usage of create_aabb().");
-		return 0;
-	}
-	
-	lua_pushinteger(script, physics_create_aabb(&(supervisor(NULL)->physics), lua_tointeger(script, 1)));
-	
-	return 1;
-}
-
-static int scripted_SetAABB(lua_State *script) {
-	if (lua_gettop(script) != 4) {
-		DgLog(DG_LOG_ERROR, "Invalid usage of set_aabb().");
-		return 0;
-	}
-	
-	physics_set_aabb(&(supervisor(NULL)->physics), lua_tointeger(script, 1), (DgVec3) {lua_tonumber(script, 2), lua_tonumber(script, 3), lua_tonumber(script, 4)});
-	
-	return 0;
 }
 
 /**
@@ -658,22 +532,7 @@ void regiser_default_script_functions(DgScript *script) {
 	lua_register(script->state, "set_camera_fov", &scripted_SetCameraFov);
 	
 	lua_register(script->state, "create_mesh", &scripted_CreateMesh);
-	lua_register(script->state, "push_obj_mesh", &scripted_PushOBJMesh);
 	lua_register(script->state, "push_patch", &scripted_PushPatch);
-	
-	register_meshwisk_functions(script);
-	
-	// Physics
-	lua_register(script->state, "create_physics_object", &scripted_CreatePhysicsObject);
-	lua_register(script->state, "clear_physics_object", &scripted_ClearPhysicsObject);
-	lua_register(script->state, "set_accel", &scripted_SetAccel);
-	lua_register(script->state, "set_physics_flags", &scripted_SetPhysicsFlags);
-	lua_register(script->state, "enable_physics", &scripted_EnablePhysics);
-	lua_register(script->state, "physics_sync_graph", &scripted_PhysicsSyncGraph);
-	lua_register(script->state, "add_force", &scripted_AddForce);
-	lua_register(script->state, "move_object", &scripted_DirectMove);
-	lua_register(script->state, "create_aabb", &scripted_CreateAABB);
-	lua_register(script->state, "set_aabb", &scripted_SetAABB);
 	
 	// Input
 	lua_register(script->state, "get_key", &scripted_GetKey);

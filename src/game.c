@@ -15,7 +15,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "game/gamescript.h"
+#include "game/scriptman.h"
 #include "game/scripting.h"
 #include "global/supervisor.h"
 #include "graphics/graphics.h"
@@ -26,7 +26,6 @@
 #include "util/log.h"
 #include "util/args.h"
 #include "util/rand.h"
-#include "physics/physics.h"
 #include "types.h"
 
 DgArgs args;
@@ -40,60 +39,16 @@ static void print_info(void) {
 	DgLog(DG_LOG_INFO, "Engine compiled on %s at %s.", __DATE__, __TIME__);
 }
 
-static void *physics_loop(void *args_) {
-	/**
-	 * The loop that updates the physics system.
-	 */
-	
-	GameLoopArgs *args = (GameLoopArgs *) args_;
-	Supervisor *sup = args->systems;
-	
-	double accumulate = 0.0f;
-	double show_time = 0.0f;
-	
-	while (sup->running) {
-		double frame_time = DgTime();
-		
-		if (accumulate >= g_physicsDelta) {
-			float time = DgTime();
-			
-			physics_update(&sup->physics, &sup->graph, g_physicsDelta);
-			
-			time = DgTime() - time;
-			
-			if (show_time > 1.0f) {
-				DgLog(DG_LOG_VERBOSE, "Physics frame time: %fms", time);
-				show_time = 0.0f;
-			}
-			
-			accumulate = 0.0f;
-		}
-		
-#if defined(__GNUC__) && defined(__x86_64__)
+static void trPause(void) {
+	#if defined(__GNUC__) && defined(__x86_64__)
 		__asm__ ( "pause;" );
-#endif
-		
-		frame_time = DgTime() - frame_time;
-		
-		accumulate += frame_time;
-		show_time += frame_time;
-	}
+	#endif
 }
 
-static int game_loop(Supervisor *sys) {
+static int update_loop(Supervisor *sys) {
 	/** 
 	 * The main loop.
 	 */
-	
-	float show_fps = 0.0f;
-	
-	// Physics thread
-	GameLoopArgs loopargs;
-	loopargs.systems = sys;
-	
-	DgThread t_physics;
-	
-	DgThreadNew(&t_physics, &physics_loop, &loopargs);
 	
 	while (sys->running) {
 		double frame_time = DgTime();
@@ -103,24 +58,13 @@ static int game_loop(Supervisor *sys) {
 		sys->running = get_should_keep_open(&sys->graphics);
 		
 		// Update subsystems
-		graphics_update(&sys->graphics, &sys->graph);
-		input_update(&sys->input);
+		//graphics_update(&sys->graphics, &sys->graph);
+		input_update(&sys->input); /// @todo This should be called from a script (?)
 		scriptman_update(&sys->scriptman, g_deltaTime);
 		
 		// Update frame time
 		frame_time = DgTime() - frame_time;
-		
-		// Update global delta time
-		g_deltaTime = frame_time;
-		
-		show_fps = show_fps + frame_time;
-		if (show_fps > 1.0f) {
-			DgLog(DG_LOG_VERBOSE, "Frame Time: %fms", frame_time * 1000.0f, 1.0f / frame_time);
-			show_fps = 0.0f;
-		}
 	} // while (sys->running)
-	
-	DgThreadJoin(&t_physics);
 	
 	return 0;
 }
@@ -171,7 +115,7 @@ int game_main(int argc, char* argv[]) {
 	
 	// Main loop
 	DgLog(DG_LOG_INFO, "Start main loop");
-	game_loop(&systems);
+	update_loop(&systems);
 	
 	/**
 	 * 

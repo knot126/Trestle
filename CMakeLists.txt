@@ -84,7 +84,6 @@ set(MELON_FILES
 	"src/util/bitmap.c"
 	"src/util/fs.c"
 	"src/util/log.c"
-	"src/util/obj.c"
 	"src/util/script.c"
 	"src/util/stream.c"
 	"src/util/surface_implementation.c"
@@ -108,7 +107,6 @@ set(EXEC_FILES
 	${MELON_FILES}
 	
 	"src/game/box.c"
-	"src/game/gamescript.c"
 	"src/game/rect.c"
 	"src/game/scripting.c"
 	"src/game/scriptman.c"
@@ -116,19 +114,14 @@ set(EXEC_FILES
 	"src/global/supervisor.c"
 	"src/graph/graph.c"
 	"src/graphics/extern/glad.c"
-	"src/graphics/font.c"
 	"src/graphics/mesh.c"
-	"src/graphics/meshwisk.c"
 	"src/graphics/graphics.c"
 	"src/graphics/texture.c"
 	"src/graphics/image.c"
 	"src/graphics/window.c"
 	"src/input/input.c"
 	"src/input/glfwi.c"
-	"src/physics/physics.c"
-	"src/resman/resman.c"
 	"src/game.c"
-	"src/test.c"
 	"src/types.c"
 )
 
