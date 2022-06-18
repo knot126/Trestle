@@ -52,6 +52,8 @@ static int update_loop(Supervisor *sys) {
 	 * The main loop.
 	 */
 	
+	double last_frame_time = 0.0f;
+	
 	while (sys->running) {
 		double frame_time = DgTime();
 		
@@ -62,10 +64,13 @@ static int update_loop(Supervisor *sys) {
 		// Update subsystems
 		//graphics_update(&sys->graphics, &sys->graph);
 		input_update(&sys->input); /// @todo This should be called from a script (?)
-		scriptman_update(&sys->scriptman, g_deltaTime);
+		scriptman_update(&sys->scriptman, last_frame_time);
 		
 		// Update frame time
 		frame_time = DgTime() - frame_time;
+		
+		// Set delta time
+		last_frame_time = frame_time;
 	} // while (sys->running)
 	
 	return 0;
