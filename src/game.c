@@ -92,7 +92,10 @@ int game_main(int argc, char* argv[]) {
 	if (DgArgGetFlag(&args, "help")) {
 		DgLog(DG_LOG_INFO, "Trestle Engine (run as %s)", argv[0]);
 		DgLog(DG_LOG_INFO, "");
-		DgLog(DG_LOG_INFO, "\t--assets=<path>         Specify a custom assets filesystem (Dir/ZIP).");
+		DgLog(DG_LOG_INFO, "Game data");
+		DgLog(DG_LOG_INFO, "\t--assets <path>         Specify a custom assets filesystem (Dir/ZIP).");
+		DgLog(DG_LOG_INFO, "\t                        Note: ZIP files do not work yet.\n");
+		DgLog(DG_LOG_INFO, "Help and usage");
 		DgLog(DG_LOG_INFO, "\t--help                  Print this help message.");
 		DgLog(DG_LOG_INFO, "");
 		DgLog(DG_LOG_VERBOSE, "Will not clean up resources because we are just exiting to OS next.");
@@ -104,7 +107,7 @@ int game_main(int argc, char* argv[]) {
 	
 	// File system module init
 	DgLog(DG_LOG_INFO, "Initialising file system paths...");
-	DgInitPaths2(DgArgGetValue2(&args, "assets", "/home/user/Development/personal/TR_QuickRun/assets"));
+	DgInitPaths2(DgArgGetValue2(&args, "assets", "../test_project/"));
 	
 	// Load systems state
 	// The active supervisor must be set first so the script manager can init

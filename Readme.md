@@ -1,3 +1,5 @@
+<img src="docs/trestle.svg" alt="Trestle Engine Logo" style="width: 100%; height: auto; align: center"/>
+
 # Trestle Engine
 
 **Trestle Engine** is a game and simulation engine. It <s>is</s> *will* be designed to support more per-game physics simulations, procedurally generated content and tighter integration between heterogeneous compute and scripting.
