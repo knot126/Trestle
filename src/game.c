@@ -90,7 +90,7 @@ int game_main(int argc, char* argv[]) {
 	
 	// Print help
 	if (DgArgGetFlag(&args, "help")) {
-		DgLog(DG_LOG_INFO, "Quick Run (run as %s)", argv[0]);
+		DgLog(DG_LOG_INFO, "Trestle Engine (run as %s)", argv[0]);
 		DgLog(DG_LOG_INFO, "");
 		DgLog(DG_LOG_INFO, "\t--assets=<path>         Specify a custom assets filesystem (Dir/ZIP).");
 		DgLog(DG_LOG_INFO, "\t--help                  Print this help message.");

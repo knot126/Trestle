@@ -111,7 +111,7 @@ void graphics_init(GraphicsSystem * restrict gl) {
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 	
 	// Create window
-	char *w_title = DgStrcad("Main", " ― Quick Run");
+	char *w_title = DgStrdup("Main Window"); /// @todo free
 	int w_width = 1280;
 	int w_height = 720;
 	
