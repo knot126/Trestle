@@ -1,0 +1,20 @@
+{
+	"default": {
+		"compiler": "clang",
+		"include": ["./src"],
+		"link": [
+			"m",
+			"glfw"
+		]
+	},
+	"windows-arm64": {
+		"prebuild": [
+			"rd src\\util /s /q",
+			"xcopy ..\\Melon\\src src\\util /e /i"
+		],
+		"compiler": "C:/Users/User/bin/llvm-mingw-20220323-ucrt-aarch64/llvm-mingw-20220323-ucrt-aarch64/bin/clang.exe",
+		"include": ["src"],
+		"link": [
+		]
+	}
+}
