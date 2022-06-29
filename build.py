@@ -3,8 +3,18 @@
 import sys
 import os
 import shutil
+import json
 
-def listFilesInDir(d):
+def load_build_config(profile = "default"):
+	"""
+	Load a build config file (controls linking, includes and may include
+	compiler location information)
+	"""
+	
+	with open("build.json", "r") as f:
+		return json.load(f)[profile]
+
+def list_files_in_folder(d, ending = ".c"):
 	"""
 	List files in a folder
 	"""
@@ -16,25 +26,78 @@ def listFilesInDir(d):
 		root = str(root)
 		
 		for f in files:
-			lst.append(root + "/" + str(f))
+			f = str(f)
+			
+			if (not f.endswith(ending)):
+				continue
+			
+			lst.append(root + "/" + f)
 		
 		for d in dirs:
 			outline.append("src/" + str(d))
 	
 	return (lst, outline)
 
-def main():
-	files, outline = listFilesInDir("src")
+def create_folder(d, mode = 0o755):
+	"""
+	Create a directory
+	"""
 	
+	try:
+		os.mkdir(d, mode = mode)
+	except FileExistsError:
+		print(f"\033[33mWarning: Tried to created file \"{d}\" when it already exsists.\033[0m")
+
+def main():
+	if (os.name == "nt"):
+		os.system("cls")
+	
+	files, outline = list_files_in_folder("src")
+	
+	# Set up the profile
+	profile = sys.argv[1] if len(sys.argv) > 1 else "default"
+	config = load_build_config(profile)
+	
+	print(f"\033[35m[Using build profile {profile}]\033[0m")
+	
+	# Run prebuild commands
+	for cmd in config["prebuild"]:
+		print(f"\033[35m[Run command: {cmd}]\033[m")
+		os.system(cmd)
+	
+	# Create some dirs
 	shutil.rmtree("temp", ignore_errors = True)
-	os.mkdir("temp", mode = 0o755)
-	os.mkdir("temp/src", mode = 0o755)
+	create_folder("temp", mode = 0o755)
+	create_folder("temp/src", mode = 0o755)
 	
 	for dir in outline:
-		os.mkdir("temp/" + dir, mode = 0o755)
+		create_folder("temp/" + dir, mode = 0o755)
+	
+	# Set up include dirs
+	include = ""
+	
+	for incl in config["include"]:
+		print(f"\033[36m[Adding include dir {incl}]\033[0m")
+		include += f"-I\"{incl}\""
+	
+	print(f"\033[35m[Include dirs: {include}]\033[0m")
+	
+	# Build files
+	compiler = config["compiler"]
 	
 	for f in files:
-		os.system(f"clang -c -o temp/{f}.output -Wall -Wextra {f}")
+		print(f"\033[36m[Building item: \"{f}\"]\033[0m")
+		status = os.system(f"{compiler} -c -o temp/{f}.output -Wall -Wextra {f} {include}")
+		
+		if (status):
+			print(f"\033[31m[Failed to build \"{f}\"]\033[0m")
+	
+	# Set up linker
+	include = ""
+	
+	for incl in config["link"]:
+		print(f"\033[36m[Adding linked library {incl}]\033[0m")
+		include += f"-l{incl} "
 
 if (__name__ == "__main__"):
 	main()
