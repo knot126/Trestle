@@ -13,7 +13,10 @@
 			"xcopy ..\\Melon\\src src\\util /e /i"
 		],
 		"compiler": "C:/Users/User/bin/llvm-mingw-20220323-ucrt-aarch64/llvm-mingw-20220323-ucrt-aarch64/bin/clang.exe",
-		"include": ["src"],
+		"include": ["src", "lib/lua/src", "lib/glfw/include"],
+		"defines": [
+			"DG_NO_SDL"
+		],
 		"link": [
 		]
 	}

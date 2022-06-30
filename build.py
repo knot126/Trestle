@@ -77,17 +77,24 @@ def main():
 	include = ""
 	
 	for incl in config["include"]:
-		print(f"\033[36m[Adding include dir {incl}]\033[0m")
-		include += f"-I\"{incl}\""
+		include += f"-I\"{incl}\" "
 	
 	print(f"\033[35m[Include dirs: {include}]\033[0m")
+	
+	# Set up defines
+	defines = ""
+	
+	for incl in config["defines"]:
+		defines += f"-D{incl} "
+	
+	print(f"\033[35m[Defines: {defines}]\033[0m")
 	
 	# Build files
 	compiler = config["compiler"]
 	
 	for f in files:
 		print(f"\033[36m[Building item: \"{f}\"]\033[0m")
-		status = os.system(f"{compiler} -c -o temp/{f}.output -Wall -Wextra {f} {include}")
+		status = os.system(f"{compiler} -c {defines} -o temp/{f}.output -Wall -Wextra {f} {include}")
 		
 		if (status):
 			print(f"\033[31m[Failed to build \"{f}\"]\033[0m")
@@ -98,6 +105,20 @@ def main():
 	for incl in config["link"]:
 		print(f"\033[36m[Adding linked library {incl}]\033[0m")
 		include += f"-l{incl} "
+	
+	# output files
+	output_files = ""
+	
+	for f in files:
+		output_files += f"temp/{f}.output "
+	
+	# Link!
+	print(f"\033[32m[Linking binary]\033[0m")
+	
+	status = os.system(f"{compiler} -o testle.exe {output_files} {include}")
+	
+	if (status):
+		print(f"\033[31m[Failed to link binary]\033[0m")
 
 if (__name__ == "__main__"):
 	main()
