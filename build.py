@@ -34,7 +34,7 @@ def list_files_in_folder(d, ending = ".c"):
 			lst.append(root + "/" + f)
 		
 		for d in dirs:
-			outline.append("src/" + str(d))
+			outline.append(root + "/" + str(d))
 	
 	return (lst, outline)
 
