@@ -1,8 +1,9 @@
 {
 	"default": {
 		"compiler": "clang",
-		"include": ["./src"],
-		"link": [
+		"folders": ["src", "lib/lua/src"],
+		"includes": ["./src"],
+		"links": [
 			"m",
 			"glfw"
 		]
@@ -13,11 +14,12 @@
 			"xcopy ..\\Melon\\src src\\util /e /i"
 		],
 		"compiler": "C:/Users/User/bin/llvm-mingw-20220323-ucrt-aarch64/llvm-mingw-20220323-ucrt-aarch64/bin/clang.exe",
-		"include": ["src", "lib/lua/src", "lib/glfw/include"],
+		"folders": ["src", "lib/lua/src"],
+		"includes": ["src", "lib/lua/src", "lib/glfw/include"],
 		"defines": [
 			"DG_NO_SDL"
 		],
-		"link": [
+		"links": [
 		]
 	}
 }

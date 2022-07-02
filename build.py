@@ -52,8 +52,6 @@ def main():
 	if (os.name == "nt"):
 		os.system("cls")
 	
-	files, outline = list_files_in_folder("src")
-	
 	# Set up the profile
 	profile = sys.argv[1] if len(sys.argv) > 1 else "default"
 	config = load_build_config(profile)
@@ -68,7 +66,19 @@ def main():
 	# Create some dirs
 	shutil.rmtree("temp", ignore_errors = True)
 	create_folder("temp", mode = 0o755)
+	
+	# Enumerate files to build
+	files, outline = [], []
+	
+	for folder in config.get("folders", ["src"]):
+		create_folder("temp/" + )
+		files_a, outline_a = list_files_in_folder(folder)
+		files += files_a
+		outline += outline_a
+	
 	create_folder("temp/src", mode = 0o755)
+	create_folder("temp/lib", mode = 0o755)
+	create_folder("temp/lib/lua", mode = 0o755)
 	
 	for dir in outline:
 		create_folder("temp/" + dir, mode = 0o755)
@@ -76,7 +86,7 @@ def main():
 	# Set up include dirs
 	include = ""
 	
-	for incl in config["include"]:
+	for incl in config["includes"]:
 		include += f"-I\"{incl}\" "
 	
 	print(f"\033[35m[Include dirs: {include}]\033[0m")
@@ -84,13 +94,13 @@ def main():
 	# Set up defines
 	defines = ""
 	
-	for incl in config["defines"]:
+	for incl in config.get("defines", []):
 		defines += f"-D{incl} "
 	
 	print(f"\033[35m[Defines: {defines}]\033[0m")
 	
 	# Build files
-	compiler = config["compiler"]
+	compiler = config.get("compiler", "cc")
 	
 	for f in files:
 		print(f"\033[36m[Building item: \"{f}\"]\033[0m")
@@ -102,7 +112,7 @@ def main():
 	# Set up linker
 	include = ""
 	
-	for incl in config["link"]:
+	for incl in config["links"]:
 		print(f"\033[36m[Adding linked library {incl}]\033[0m")
 		include += f"-l{incl} "
 	
@@ -115,7 +125,7 @@ def main():
 	# Link!
 	print(f"\033[32m[Linking binary]\033[0m")
 	
-	status = os.system(f"{compiler} -o testle.exe {output_files} {include}")
+	status = os.system(f"{compiler} -o testle.exe -std=c2x {output_files} {include}")
 	
 	if (status):
 		print(f"\033[31m[Failed to link binary]\033[0m")
