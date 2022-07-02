@@ -1,11 +1,23 @@
 {
-	"default": {
+	"linux": {
+		"prebuild": [
+			"rm -r ./src/util",
+			"cp -r ../Melon/src ./src/util"
+		],
 		"compiler": "clang",
 		"folders": ["src", "lib/lua/src"],
-		"includes": ["./src"],
+		"includes": ["src", "lib/lua/src", "lib/glfw/include"],
+		"defines": [
+			"DG_NO_SDL"
+		],
 		"links": [
 			"m",
-			"glfw"
+			"GL",
+			"dl",
+			"glfw",
+			"pthread",
+			"pulse",
+			"pulse-simple"
 		]
 	},
 	"windows-arm64": {

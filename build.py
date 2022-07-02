@@ -12,7 +12,7 @@ def load_build_config(profile = "default"):
 	"""
 	
 	with open("build.json", "r") as f:
-		return json.load(f)[profile]
+		return json.load(f).get(profile, None)
 
 def list_files_in_folder(d, ending = ".c"):
 	"""
@@ -44,7 +44,7 @@ def create_folder(d, mode = 0o755):
 	"""
 	
 	try:
-		os.mkdir(d, mode = mode)
+		os.makedirs(d, mode = mode)
 	except FileExistsError:
 		print(f"\033[33mWarning: Tried to created file \"{d}\" when it already exsists.\033[0m")
 
@@ -56,10 +56,14 @@ def main():
 	profile = sys.argv[1] if len(sys.argv) > 1 else "default"
 	config = load_build_config(profile)
 	
+	if (config == None):
+		print(f"\033[31m[No such build profile: {profile}]\033[0m")
+		return 1
+	
 	print(f"\033[35m[Using build profile {profile}]\033[0m")
 	
 	# Run prebuild commands
-	for cmd in config["prebuild"]:
+	for cmd in config.get("prebuild", []):
 		print(f"\033[35m[Run command: {cmd}]\033[m")
 		os.system(cmd)
 	
@@ -71,17 +75,13 @@ def main():
 	files, outline = [], []
 	
 	for folder in config.get("folders", ["src"]):
-		create_folder("temp/" + )
+		create_folder("temp/" + folder)
 		files_a, outline_a = list_files_in_folder(folder)
 		files += files_a
 		outline += outline_a
 	
-	create_folder("temp/src", mode = 0o755)
-	create_folder("temp/lib", mode = 0o755)
-	create_folder("temp/lib/lua", mode = 0o755)
-	
-	for dir in outline:
-		create_folder("temp/" + dir, mode = 0o755)
+	for folder in outline:
+		create_folder("temp/" + folder, mode = 0o755)
 	
 	# Set up include dirs
 	include = ""
@@ -129,6 +129,8 @@ def main():
 	
 	if (status):
 		print(f"\033[31m[Failed to link binary]\033[0m")
+	
+	return 0
 
 if (__name__ == "__main__"):
 	main()
