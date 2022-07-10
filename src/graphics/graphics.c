@@ -1,8 +1,11 @@
-/*
+/**
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
  * Graphics System
+ * 
+ * @reviewed 2022-07-10T18:00:00+00:00:00
+ * @deprecated Old
  */
 
 /**
@@ -44,13 +47,9 @@
 #include "graphics.h"
 
 #define GL_ERROR_CHECK() gl_error_check(__FILE__, __LINE__)
-#define ARRAY2_COL(ARRAY, ROW_WIDTH, X, Y) ARRAY[(ROW_WIDTH * Y) + X]
-#define ARRAY2X_COL(ARRAY, ROW_WIDTH, PER_ITEM, X, Y, OFFSET) ARRAY[(ROW_WIDTH * Y * PER_ITEM) + (X * PER_ITEM) + OFFSET]
-#define ARRAY2XX_COL(ARRAY, START, ROW_WIDTH, PER_ITEM, X, Y, OFFSET) ARRAY[START + ((ROW_WIDTH * Y * PER_ITEM) + (X * PER_ITEM) + OFFSET)]
 
 enum {
-	QR_DEBUG_MESH = 0,
-	QR_SURFACE_MAX_SAMPLES = 20,
+	QR_SURFACE_MAX_SAMPLES = 420,
 };
 
 // Yes, it's odd, but I really rather not include the header files in this file.
@@ -205,7 +204,7 @@ void graphics_init(GraphicsSystem * restrict gl) {
 	GL_ERROR_CHECK();
 	
 	// Set default curve render quality
-	graphics_set_curve_render_quality(gl, 10.0f);
+	graphics_set_curve_render_quality(gl, 3.0f);
 	
 	// Set the default FoV
 	graphics_set_fov(gl, 0.125f);
@@ -1381,6 +1380,3 @@ size_t graphics_get_mesh2d_counts(GraphicsSystem * restrict gl, size_t *allocsz)
 }
 
 #undef GL_ERROR_CHECK
-#undef ARRAY2_COL
-#undef ARRAY2X_COL
-#undef ARRAY2XX_COL
