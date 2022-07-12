@@ -1,38 +1,36 @@
-**Note**: These instructions are likely to become out of date once a new custom build system is completely implemented.
-
 # Building Trestle
 
 This document contains instructions for building the Trestle engine.
 
-## Arch-based Linux
+## Windows
+
+**Note**: The build for windows does not work right now, and currently is only planned for ARM64-based systems.
+
+## Linux
 
 ### Get Dependncies
 
-Firstly, install the following dependncies:
+Firstly, install the following dependncies if they are not installed:
 
   * Basic development tools
-  * Cmake
   * GLFW
   * PulseAudio
 
-For example, on Arch based distrobutions of linux with a desktop, run:
+For example, on Arch-based distros of linux with a desktop, run:
 
 ```zsh
-sudo pacman -Syu base-devel glfw cmake
+sudo pacman -Syu base-devel glfw
 ```
 
-This is assuming that basic development tools and standard desktop things like PulseAudio are already installed, like on most arch based and Manjaro linux.
+### Build the Engine
 
-### Build the Game
-
-Then, in a folder outside of the build directory, run:
+Then, in the root engine folder, run:
 
 ```zsh
-cmake ../Trestle
-make -j4
+python ./build.py linux
 ```
 
-After that, there will be a binary called `quickrun` and a library called `libmelon.so`.
+The build system will output a file named `trestle-linux-native.elf` in the `temp` folder.
 
 ## Appendix A: Specific Libraries Required
 
