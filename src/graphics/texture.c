@@ -16,7 +16,6 @@
 #include "util/bitmap.h"
 
 #include "gl_incl.h"
-#include "image.h"
 
 #include "texture.h"
 
@@ -49,6 +48,8 @@ void gltexture_free(OpenGLTextureManager *resman) {
 uint32_t gltexture_load_file(OpenGLTextureManager *resman, const char * const name, char *path) {
 	/**
 	 * Load a texture from a file 
+	 * 
+	 * @note This now only loads a white 128x128 image.
 	 */
 	
 	uint32_t texture_id;
@@ -67,27 +68,18 @@ uint32_t gltexture_load_file(OpenGLTextureManager *resman, const char * const na
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	
-	DgImageInfo image = DgLoadImage(path);
+	DgBitmap image;
 	
-	if (!image.data) {
-		DgLog(DG_LOG_ERROR, "Failed to load texture at '%s'.\n", path);
+	if (DgBitmapInit(&image, 128, 128, 3)) {
 		return 0;
 	}
 	
-	GLenum channels;
+	DgBitmapFill(&image, (DgColour) {1.0f, 1.0f, 1.0f, 1.0f});
 	
-	switch (image.channels) {
-		case 1: channels = GL_RED; break;
-		case 2: channels = GL_RG; break;
-		case 3: channels = GL_RGB; break;
-		case 4: channels = GL_RGBA; break;
-		default: DgLog(DG_LOG_ERROR, "Could not determine feilds in bitmap!!"); break;
-	}
-	
-	glTexImage2D(GL_TEXTURE_2D, 0, channels, image.width, image.height, 0, channels, GL_UNSIGNED_BYTE, image.data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 128, 128, 0, GL_RGB, GL_UNSIGNED_BYTE, image.src);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	
-	DgFreeImage(&image);
+	DgBitmapFree(&image);
 	
 	// store the texture ID
 	resman->count++;

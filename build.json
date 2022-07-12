@@ -18,7 +18,8 @@
 			"pthread",
 			"pulse",
 			"pulse-simple"
-		]
+		],
+		"output": "temp/trestle-linux-native.elf"
 	},
 	"windows-arm64": {
 		"prebuild": [
@@ -32,6 +33,7 @@
 			"DG_NO_SDL"
 		],
 		"links": [
-		]
+		],
+		"output": "temp/testle-windows-arm64.exe"
 	}
 }

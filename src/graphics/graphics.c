@@ -41,7 +41,6 @@
 
 #include "graph/graph.h"
 
-#include "image.h"
 #include "texture.h"
 
 #include "graphics.h"
@@ -137,21 +136,6 @@ void graphics_init(GraphicsSystem * restrict gl) {
 	
 	// Regiser window resize callback
 	glfwSetFramebufferSizeCallback(gl->window, &graphics_set_window_size);
-	
-	// Set window icon
-	DgImageInfo icon = DgLoadImage("assets://icon.png");
-	if (icon.data) {
-		GLFWimage icons[1];
-		icons[0].pixels = (unsigned char *) icon.data;
-		icons[0].width = icon.width;
-		icons[0].height = icon.height;
-		glfwSetWindowIcon(gl->window, sizeof(icons) / sizeof(GLFWimage), icons);
-		
-		DgFreeImage(&icon);
-	}
-	else {
-		DgLog(DG_LOG_ERROR, "Failed to load window icon from static path assets://icon.png.");
-	}
 	
 	if (graphics_load_default_shaders(gl) < 0) {
 		return;

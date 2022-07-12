@@ -108,6 +108,7 @@ def main():
 		
 		if (status):
 			print(f"\033[31m[Failed to build \"{f}\"]\033[0m")
+			sys.exit(status)
 	
 	# Set up linker
 	include = ""
@@ -125,12 +126,13 @@ def main():
 	# Link!
 	print(f"\033[32m[Linking binary]\033[0m")
 	
-	status = os.system(f"{compiler} -o testle.exe -std=c2x {output_files} {include}")
+	output = config.get("output", "application")
+	status = os.system(f"{compiler} -o {output} -std=c2x {output_files} {include}")
 	
 	if (status):
 		print(f"\033[31m[Failed to link binary]\033[0m")
 	
-	return 0
+	return status
 
 if (__name__ == "__main__"):
 	main()
