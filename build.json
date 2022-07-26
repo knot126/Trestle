@@ -6,7 +6,7 @@
 		],
 		"compiler": "clang",
 		"folders": ["src", "lib/lua/src"],
-		"includes": ["src", "lib/lua/src", "lib/glfw/include"],
+		"includes": ["src", "lib/lua/src"],
 		"defines": [
 			"DG_NO_SDL"
 		],

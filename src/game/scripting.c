@@ -469,7 +469,11 @@ static int scripted_GetKey(lua_State *script) {
 	
 	int code = lua_tointeger(script, 1);
 	
-	lua_pushboolean(script, getKeyPressed(code));
+	bool pressed = getKeyPressed(code);
+	
+	//DgLog(DG_LOG_VERBOSE, "Key %d is pressed? %d", code, pressed);
+	
+	lua_pushboolean(script, pressed);
 	
 	return 1;
 }

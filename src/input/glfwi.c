@@ -1,8 +1,10 @@
-/*
+/**
  * Copyright (C) 2021 Decent Games
  * ===============================
  * 
  * Input System (GLFW Backend)
+ * 
+ * @deprecated This should be replaced by something else.
  */
 
 #include <stdbool.h>
@@ -10,19 +12,21 @@
 
 #include "graphics/gl_incl.h"
 #include "graphics/opengl.h"
+#include "util/log.h"
 
 #include "glfwi.h"
 
-char DG_glfwi_presses[GLFW_KEY_LAST];
 DgVec2 lastMousePos;
 DgVec2 mousePos;
 DgVec2 mouseDelta;
 
-static void glfwi_callback_keypress(GLFWwindow *context, int key, int scancode, int action, int flags) {
-	DG_glfwi_presses[key] = action;
-}
+GraphicsSystem *input_system_context;
 
 static void glfwi_callback_mouse(GLFWwindow *context, double x, double y) {
+	/**
+	 * Mouse update callback
+	 */
+	
 	lastMousePos = mousePos;
 	
 	mousePos.x = x;
@@ -32,18 +36,38 @@ static void glfwi_callback_mouse(GLFWwindow *context, double x, double y) {
 }
 
 bool glfwi_get_key(int key, int mode) {
-	return !!DG_glfwi_presses[key];
+	/**
+	 * Get key function
+	 */
+	
+	int state = glfwGetKey(input_system_context->window, key);
+	
+	//DgLog(DG_LOG_VERBOSE, "Keypress check: [glfwGetKey(%d) = %d] == %d: %d", key, state, mode, state==mode);
+	
+	return state == mode;
 }
 
 DgVec2 glfwi_get_mouse_pos(void) {
+	/**
+	 * Mouse pos function
+	 */
+	
 	return mousePos;
 }
 
 DgVec2 glfwi_get_mouse_delta(void) {
+	/**
+	 * Mouse delta function
+	 */
+	
 	return mouseDelta;
 }
 
 void glfwi_init(GraphicsSystem *context) {
-	glfwSetKeyCallback(context->window, &glfwi_callback_keypress);
+	/**
+	 * Init backend
+	 */
+	
 	glfwSetCursorPosCallback(context->window, &glfwi_callback_mouse);
+	input_system_context = context;
 }

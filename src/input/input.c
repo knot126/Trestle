@@ -29,7 +29,7 @@ void input_update(InputSystem *input) {
 	 * Update the input keypresses.
 	 */
 	
-	gl_handle_input(input->graphics);
+	
 }
 
 bool getKeyPressed(int key) {
@@ -37,7 +37,7 @@ bool getKeyPressed(int key) {
 	 * Return true if a key is considered pressed or held down, false otherwise.
 	 */
 	
-	glfwi_get_key(key, GLFW_PRESS);
+	return glfwi_get_key(key, GLFW_PRESS);
 }
 
 DgVec2 getMousePos(void) {

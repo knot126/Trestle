@@ -837,16 +837,6 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 	GL_ERROR_CHECK();
 }
 
-void gl_handle_input(GraphicsSystem* gl) {
-	/*
-	 * Handles most game input, for example keyboard input
-	 */
-	
-	if (glfwGetKey(gl->window, GLFW_KEY_ESCAPE)) {
-		glfwSetWindowShouldClose(gl->window, GL_TRUE);
-	}
-}
-
 void graphics_free(GraphicsSystem* gl) {
 	/**
 	 * Free the graphics subsystem.
