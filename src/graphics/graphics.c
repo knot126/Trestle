@@ -571,7 +571,8 @@ void graphics_update(GraphicsSystem * restrict gl, SceneGraph * restrict graph) 
 							p10 = samples[(y * samp_x) + x + 1],
 							p11 = samples[((y + 1) * samp_x) + x + 1];
 						
-						DgVec3 c = (DgVec3) {0.91f, DgRandFloat(), 0.97f};
+						float r = 0.7f + 0.2f * DgRandFloat();
+						DgVec3 c = DgVec3Scale(r, (DgVec3) {gl->clearColour.r, gl->clearColour.g, gl->clearColour.b});
 						
 						surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 0] = (QRVertex3D) {p00.x, p00.y, p00.z, 0.0f, 0.0f, c.x, c.y, c.z};
 						surface->cache.vertex[(y * samp_x * 4) + (x * 4) + 1] = (QRVertex3D) {p01.x, p01.y, p01.z, 0.0f, 0.0f, c.x, c.y, c.z};

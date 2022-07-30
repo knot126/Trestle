@@ -12,15 +12,12 @@
 #include "lualib.h"
 #include "lauxlib.h"
 
-#include "game/box.h"
-#include "game/rect.h"
 #include "global/reg.h"
 #include "global/supervisor.h"
 #include "graphics/mesh.h"
 #include "util/log.h"
 #include "util/script.h"
 #include "input/input.h"
-#include "game/box.h"
 #include "game/scriptman.h"
 #include "types.h"
 
@@ -357,78 +354,6 @@ static int scripted_PushPatch(lua_State *script) {
 
 /**
  * =============================================================================
- * Higher-level entites
- * =============================================================================
- */
-
-static int scripted_MakeBox(lua_State *script) {
-	int top = lua_gettop(script);
-	
-	DgVec3 pos = {0.0f, 0.0f, 0.0f}, size = {1.0f, 1.0f, 1.0f}, col = {0.75f, 0.75f, 0.75f};
-	const char * texture = NULL;
-	
-	if (top >= 3) {
-		pos.x = lua_tonumber(script, 1);
-		pos.y = lua_tonumber(script, 2);
-		pos.z = lua_tonumber(script, 3);
-	}
-	
-	if (top >= 6) {
-		size.x = lua_tonumber(script, 4);
-		size.y = lua_tonumber(script, 5);
-		size.z = lua_tonumber(script, 6);
-	}
-	
-	if (top >= 9) {
-		col.x = lua_tonumber(script, 7);
-		col.y = lua_tonumber(script, 8);
-		col.z = lua_tonumber(script, 9);
-	}
-	
-	if (top >= 10) {
-		texture = lua_tostring(script, 10);
-	}
-	
-	lua_pushinteger(script, make_box(supervisor(NULL), pos, size, col, texture));
-	
-	return 1;
-}
-
-static int scripted_MakeRect(lua_State *script) {
-	int top = lua_gettop(script);
-	
-	DgVec2 pos = {0.0f, 0.0f}, size = {1.0f, 1.0f};
-	DgVec4 col = {0.75f, 0.75f, 0.75f, 1.0f};
-	const char * texture = NULL;
-	
-	if (top >= 2) {
-		pos.x = lua_tonumber(script, 1);
-		pos.y = lua_tonumber(script, 2);
-	}
-	
-	if (top >= 4) {
-		size.x = lua_tonumber(script, 3);
-		size.y = lua_tonumber(script, 4);
-	}
-	
-	if (top >= 8) {
-		col.r = lua_tonumber(script, 5);
-		col.g = lua_tonumber(script, 6);
-		col.b = lua_tonumber(script, 7);
-		col.a = lua_tonumber(script, 8);
-	}
-	
-	if (top >= 9) {
-		texture = lua_tostring(script, 9);
-	}
-	
-	lua_pushinteger(script, make_rect(supervisor(NULL), pos, size, col, texture));
-	
-	return 1;
-}
-
-/**
- * =============================================================================
  * Registry
  * =============================================================================
  */
@@ -546,8 +471,4 @@ void regiser_default_script_functions(DgScript *script) {
 	// Registry
 	lua_register(script->state, "reg_get", &scripted_RegGet);
 	lua_register(script->state, "reg_set", &scripted_RegSet);
-	
-	// Objects
-	lua_register(script->state, "make_box", &scripted_MakeBox);
-	lua_register(script->state, "make_rect", &scripted_MakeRect);
 }

@@ -25,15 +25,17 @@
 
 #include "scriptman.h"
 
-void scriptman_init(ScriptManager *this) {
+int32_t trScriptManagerInit(ScriptManager *this) {
 	/**
 	 * Create a new game script object.
 	 */
 	
 	memset(this, 0, sizeof *this);
+	
+	return 0;
 }
 
-void scriptman_free(ScriptManager *this) {
+void trScriptManagerFree(ScriptManager *this) {
 	/**
 	 * Free a game script's allocated resources.
 	 */
@@ -48,17 +50,21 @@ void scriptman_free(ScriptManager *this) {
 	DgFree(this->script_allocated);
 }
 
-static DgScript * const scriptman_get(ScriptManager *this, GameScriptHandle handle) {
+DgScript *trScriptManagerGetScript(ScriptManager *this, GameScriptHandle handle) {
 	/**
 	 * Get the reference to a script's state.
+	 * 
+	 * @todo But what if the script isn't allocated?
 	 */
 	
 	return &this->script[handle - 1];
 }
 
-GameScriptHandle scriptman_create(ScriptManager *this) {
+GameScriptHandle trScriptManagerAddScript(ScriptManager *this) {
 	/**
 	 * Create a script object and initialise it.
+	 * 
+	 * @todo Fix this, it's probably bad code
 	 */
 	
 	// Reallocate scripts if needed
@@ -95,25 +101,31 @@ GameScriptHandle scriptman_create(ScriptManager *this) {
 	return this->script_count;
 }
 
-void scriptman_destroy(ScriptManager *this, GameScriptHandle handle) {
+int32_t trScriptManagerRemoveScript(ScriptManager *this, GameScriptHandle handle) {
 	/**
 	 * Destroy a script and call its free function.
 	 */
 	
-	DgScript * const script = scriptman_get(this, handle);
+	DgScript * const script = trScriptManagerGetScript(this, handle);
+	
+	if (script == 0) {
+		return 1;
+	}
 	
 	DgScriptCall(script, "free");
 	
 	DgScriptFree(script);
 	this->script_allocated[handle - 1] = false;
+	
+	return 0;
 }
 
-uint32_t scriptman_load(ScriptManager * restrict this, GameScriptHandle handle, char * const restrict path) {
+int32_t trScriptManagerLoadCode(ScriptManager * restrict this, GameScriptHandle handle, char * const restrict path) {
 	/**
 	 * Load a script file into a given script object.
 	 */
 	
-	DgScript *script = scriptman_get(this, handle);
+	DgScript *script = trScriptManagerGetScript(this, handle);
 	
 	if (!script) {
 		return 1;
@@ -124,25 +136,25 @@ uint32_t scriptman_load(ScriptManager * restrict this, GameScriptHandle handle, 
 	return 0;
 }
 
-GameScriptHandle scriptman_open(ScriptManager * restrict this, char * const restrict path) {
+GameScriptHandle trScriptManagerLoadScript(ScriptManager * restrict this, char * const restrict path) {
 	/**
 	 * Create a new script state object and load a script file into it, also
 	 * calling that script's init function if it exists.
 	 */
 	
-	GameScriptHandle handle = scriptman_create(this);
+	GameScriptHandle handle = trScriptManagerAddScript(this);
 	
 	if (!handle) {
 		return 0;
 	}
 	
-	uint32_t failure = scriptman_load(this, handle, path);
+	uint32_t failure = trScriptManagerLoadCode(this, handle, path);
 	
 	if (failure) {
 		return 0;
 	}
 	
-	DgScript *script = scriptman_get(this, handle);
+	DgScript *script = trScriptManagerGetScript(this, handle);
 	
 	if (!script) {
 		return 0;
@@ -153,7 +165,7 @@ GameScriptHandle scriptman_open(ScriptManager * restrict this, char * const rest
 	return handle;
 }
 
-void scriptman_update(ScriptManager *this, float delta) {
+int32_t trScriptManagerTick(ScriptManager *this, float delta) {
 	/**
 	 * Update all of the running scripts, passing the given delta time.
 	 */
@@ -165,4 +177,6 @@ void scriptman_update(ScriptManager *this, float delta) {
 			DgScriptCallArgs(&this->script[i], "tick", types, 1, delta);
 		}
 	}
+	
+	return 0;
 }

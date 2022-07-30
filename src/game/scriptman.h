@@ -14,22 +14,33 @@
 
 #include "util/script.h"
 
-typedef uint32_t GameScriptHandle;
+typedef int32_t GameScriptHandle;
 
-typedef struct ScriptManager {
+typedef struct trScriptManager {
 	// List of scripts currently loaded
 	bool     *script_allocated;
 	DgScript *script;
 	size_t    script_count;
 	size_t    script_alloc;
-} ScriptManager;
+} trScriptManager;
 
-void scriptman_init(ScriptManager *this);
-void scriptman_free(ScriptManager *this);
+typedef trScriptManager ScriptManager;
 
-GameScriptHandle scriptman_create(ScriptManager *this);
-void scriptman_destroy(ScriptManager *this, GameScriptHandle handle);
-uint32_t scriptman_load(ScriptManager * restrict this, GameScriptHandle handle, char * const restrict path);
-GameScriptHandle scriptman_open(ScriptManager * restrict this, char * const restrict path);
+int32_t trScriptManagerInit(ScriptManager *this);
+void trScriptManagerFree(ScriptManager *this);
 
-void scriptman_update(ScriptManager *this, float delta);
+DgScript *trScriptManagerGetScript(ScriptManager *this, GameScriptHandle handle);
+GameScriptHandle trScriptManagerAddScript(ScriptManager *this);
+int32_t trScriptManagerRemoveScript(ScriptManager *this, GameScriptHandle handle);
+int32_t trScriptManagerLoadCode(ScriptManager * restrict this, GameScriptHandle handle, char * const restrict path);
+GameScriptHandle trScriptManagerLoadScript(ScriptManager * restrict this, char * const restrict path);
+
+int32_t trScriptManagerTick(ScriptManager *this, float delta);
+
+#define scriptman_init trScriptManagerInit
+#define scriptman_free trScriptManagerFree
+#define scriptman_create trScriptManagerAddScript
+#define scriptman_destroy trScriptManagerRemoveScript
+#define scriptman_load trScriptManagerLoadCode
+#define scriptman_open trScriptManagerLoadScript
+#define scriptman_update trScriptManagerTick
