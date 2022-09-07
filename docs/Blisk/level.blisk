@@ -1,0 +1,42 @@
+/**
+ * Very basic level example
+ */
+
+@prefer cpu
+ 
+@main_resource
+@scene
+Scene main() {
+	Scene *scene = Scene();
+	RasterImage *image = LoadResource("assets://example.blisk");
+	
+	using (scene -> this, image) {
+		Plane *bottom = this->AddPlane();
+		bottom->Pos(vec3(0.0, 0.0, 0.0));
+		bottom->Size(vec2(10.0, 10.0));
+		bottom->Texture(image);
+		bottom->Colour(vec4(1.0, 0.0, 0.0, 1.0), Image.BlendMode.Multiply);
+		
+		end bottom; // Can no longer reference bottom
+		
+		Circle *walls = this->AddCircle();
+		walls->Pos(vec3(0.0, 0.0, 0.0));
+		walls->Radius(1.0);
+		walls->Solid(true);
+		walls->Scale(vec3(10.0, 1.0, 6.0));
+		walls->Extrude(12.0, Maths.Axis.Y);
+		walls->Colour(vec4(0.5, 0.5, 0.7, 1.0));
+		
+		end walls; // Can no longer reference walls
+		
+		Plane *top = this->AddPlane();
+		top->Pos(vec3(0.0, 12.0, 0.0));
+		top->Size(vec2(10.0, 10.0));
+		top->Texture(image);
+		top->Colour(vec4(0.0, 1.0, 0.0, 1.0), Image.BlendMode.Multiply);
+		
+		end top; // Can no longer reference top
+	}
+	
+	return scene;
+}

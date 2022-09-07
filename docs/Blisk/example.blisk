@@ -1,0 +1,38 @@
+/**
+ * This is an example of Blisk, a WIP language for PCG-based game engines. In
+ * this demo, I will make some noise!
+ */
+
+// Set a preferred device for this to run on. This is per-file
+@prefer gpu
+
+vec4 random_colour() {
+	/**
+	 * Generate a random colour
+	 */
+	
+	return vec4(RandomFloat32() + 0.15, RandomFloat32() + 0.15, RandomFloat32() + 0.15, 1.0);
+}
+
+// Declare that this is a main resource for this file and a texture
+@main_resource
+@texture("noise_normalised")
+RasterImage noise_normalised(ivec2 size) {
+	/**
+	 * Create some basic noise, with very nice colours :)
+	 * 
+	 * @param size The size of the noise image.
+	 */
+	
+	RasterImage *image = RasterImage();
+	
+	image->SetSize(image, size);
+	
+	for (int y = 0; y < size.y; y++) {
+		for (int x = 0; x < size.x; x++) {
+			image->SetPixel(ivec2(x, y), normalise(random_colour()));
+		}
+	}
+	
+	return image;
+}
