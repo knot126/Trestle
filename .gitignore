@@ -1,4 +1,6 @@
 build/
-src/util
+source/util
 temp/
 tmp/
+*.o
+*.output
