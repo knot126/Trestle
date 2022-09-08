@@ -1,39 +1,25 @@
 {
 	"linux": {
 		"prebuild": [
-			"rm -r ./src/util",
-			"cp -r ../Melon/src ./src/util"
+			"rm -r ./source/util",
+			"cp -r ../Melon/src ./source/util"
 		],
 		"compiler": "clang",
-		"folders": ["src", "lib/lua/src"],
-		"includes": ["src", "lib/lua/src"],
-		"defines": [
-			"DG_NO_SDL"
-		],
-		"links": [
-			"m",
-			"GL",
-			"dl",
-			"glfw",
-			"pthread",
-			"pulse",
-			"pulse-simple"
-		],
+		"folders": ["source"],
+		"includes": ["source"],
+		"links": ["m", "pthread", "SDL2"],
+		"defines": ["DG_NO_LUA"],
 		"output": "temp/trestle-linux-native.elf"
 	},
 	"windows-arm64": {
 		"prebuild": [
-			"rd src\\util /s /q",
-			"xcopy ..\\Melon\\src src\\util /e /i"
+			"rd source\\util /s /q",
+			"xcopy ..\\Melon\\src source\\util /e /i"
 		],
 		"compiler": "C:/Users/User/bin/llvm-mingw-20220323-ucrt-aarch64/llvm-mingw-20220323-ucrt-aarch64/bin/clang.exe",
-		"folders": ["src", "lib/lua/src"],
-		"includes": ["src", "lib/lua/src", "lib/glfw/include"],
-		"defines": [
-			"DG_NO_SDL"
-		],
-		"links": [
-		],
+		"folders": ["source"],
+		"includes": ["source"],
+		"links": [],
 		"output": "temp/testle-windows-arm64.exe"
 	}
 }
