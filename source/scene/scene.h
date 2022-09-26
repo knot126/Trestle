@@ -2,18 +2,13 @@
  * Copyright (C) 2022 Knot126
  * ==========================
  * 
- * Main functions
+ * Scene support data structures and algorithms
  */
 
 #pragma once
 
 #include "includes.h"
 
-#include "scene/scene.h"
-#include "graphics/graphics.h"
-
 typedef struct {
-	TrScene scene;
-	
-	TrGraphics graphics;
-} TrEngine;
+	int32_t running; // TEMP
+} TrScene;

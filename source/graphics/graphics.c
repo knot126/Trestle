@@ -3,21 +3,25 @@
  * ==========================
  * 
  * Graphics handling
+ * 
+ * @todo Everything should return DgError
+ * @todo Once TrScene is ready, this should use the actual scene type
  */
+
+#include "includes.h"
 
 #include "util/log.h"
 #include "util/bitmap.h"
 #include "util/window.h"
 #include "util/rand.h" // TEMP
 
+#include "scene/scene.h"
+
 #include "graphics.h"
 
-void TrGraphicsInit(TrGraphics *this, void *scene) {
+void TrGraphicsInit(TrGraphics *this, TrScene *scene) {
 	/**
 	 * Initialise the graphics and windowing subsystem
-	 * 
-	 * @todo This should return DgError
-	 * @todo Once TrScene is ready, this should use the actual scene type
 	 * 
 	 * @param this Graphics subsystem object
 	 * @param scene Scene to apply to (holds all context-specific state)
@@ -37,31 +41,32 @@ void TrGraphicsInit(TrGraphics *this, void *scene) {
 	DgBitmapFill(&this->bitmap, (DgColour) {0.0f, 0.0f, 0.0f, 1.0f});
 }
 
-void TrGraphicsUpdate(TrGraphics *this, void *scene) {
+void TrGraphicsUpdate(TrGraphics *this, TrScene *scene) {
 	/**
 	 * Update the window with any new graphics
-	 * 
-	 * @todo This should return DgError
-	 * @todo Once TrScene is ready, this should use the actual scene type
 	 * 
 	 * @param this Graphics subsystem object
 	 * @param scene Scene to apply to (holds all context-specific state)
 	 */
 	
-	if (DgWindowUpdate(&this->window, &this->bitmap) < 0) {
+	uint32_t status = DgWindowUpdate(&this->window, &this->bitmap);
+	
+	if (status < 0) {
 		DgLog(DG_LOG_ERROR, "Failed to update window.");
 		return;
+	}
+	else {
+		// TEMP
+		scene->running = !status;
 	}
 	
 	// TEMP for hello world
 	DgBitmapDrawLine(&this->bitmap, (DgVec2) {DgRandFloat(), DgRandFloat()}, (DgVec2) {DgRandFloat(), DgRandFloat()}, &(DgColour) {DgRandFloat(), DgRandFloat(), DgRandFloat(), 1.0f});
 }
 
-void TrGraphicsFree(TrGraphics *this, void *scene) {
+void TrGraphicsFree(TrGraphics *this, TrScene *scene) {
 	/**
 	 * Release all reosurces assocaited with the graphics system
-	 * 
-	 * @todo Everything from above should also apply here
 	 * 
 	 * @param this Graphics system object
 	 * @param scene Scene to apply to (holds all context-specific data)

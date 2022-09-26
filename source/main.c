@@ -5,8 +5,11 @@
  * Main functions
  */
 
+#include "includes.h"
+
 #include "util/log.h"
 
+#include "scene/scene.h"
 #include "graphics/graphics.h"
 
 #include "main.h"
@@ -18,7 +21,7 @@ void TrEngineInit(TrEngine *engine) {
 	 * @param engine The game engine context
 	 */
 	
-	TrGraphicsInit(&engine->graphics, NULL);
+	TrGraphicsInit(&engine->graphics, &engine->scene);
 }
 
 void TrEngineTick(TrEngine *engine) {
@@ -28,7 +31,7 @@ void TrEngineTick(TrEngine *engine) {
 	 * @param engine The game engine context
 	 */
 	
-	TrGraphicsUpdate(&engine->graphics, NULL);
+	TrGraphicsUpdate(&engine->graphics, &engine->scene);
 }
 
 void TrEngineFree(TrEngine *engine) {
@@ -38,7 +41,18 @@ void TrEngineFree(TrEngine *engine) {
 	 * @param engine The game engine context
 	 */
 	
-	TrGraphicsFree(&engine->graphics, NULL);
+	TrGraphicsFree(&engine->graphics, &engine->scene);
+}
+
+int32_t TrEngineIsRunning(TrEngine *engine) {
+	/**
+	 * Return if the engine should keep running or exit
+	 * 
+	 * @param engine The game engine context
+	 * @return 1 if the engine is still running, zero if not
+	 */
+	
+	return engine->scene.running;
 }
 
 int main(const int argc, const char *argv[]) {
@@ -57,6 +71,10 @@ int main(const int argc, const char *argv[]) {
 	// TEMP run for 10 000 ticks
 	for (size_t i = 0; i < 10000; i++) {
 		TrEngineTick(&engine);
+		
+		if (!TrEngineIsRunning(&engine)) {
+			break;
+		}
 	}
 	
 	TrEngineFree(&engine);

@@ -7,14 +7,18 @@
 
 #pragma once
 
+#include "includes.h"
+
 #include "util/bitmap.h"
 #include "util/window.h"
+
+#include "scene/scene.h"
 
 typedef struct {
 	DgWindow window;
 	DgBitmap bitmap;
 } TrGraphics;
 
-void TrGraphicsInit(TrGraphics *this, void *scene);
-void TrGraphicsUpdate(TrGraphics *this, void *scene);
-void TrGraphicsFree(TrGraphics *this, void *scene);
+void TrGraphicsInit(TrGraphics *this, TrScene *scene);
+void TrGraphicsUpdate(TrGraphics *this, TrScene *scene);
+void TrGraphicsFree(TrGraphics *this, TrScene *scene);
