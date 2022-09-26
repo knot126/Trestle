@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="210mm"
+   viewBox="0 0 210 210"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14, custom)"
+   sodipodi:docname="trestle-architecture-with-cre.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="1.0104563"
+     inkscape:cx="396.35557"
+     inkscape:cy="396.85039"
+     inkscape:window-width="1920"
+     inkscape:window-height="1011"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="fill:#dbe3e2;stroke:#6f8a91;stroke-width:0.529167;stroke-linejoin:round;paint-order:stroke fill markers"
+       id="path789"
+       d="m 107.65345,172.94956 c 0,1.31816 0,2.63632 0,3.95448 -0.0125,1.08914 0.0268,2.17939 -0.0234,3.26767 -0.0297,0.50873 -0.0649,1.01709 -0.0972,1.52566 -0.0897,1.41137 1.90633,1.53815 1.99598,0.12678 v 0 c 0.0331,-0.52138 0.0694,-1.04254 0.0993,-1.56412 0.0476,-1.11797 0.0168,-2.23722 0.0253,-3.35599 0,-1.31816 0,-2.63632 0,-3.95448 0,-1.41421 -2,-1.41421 -2,0 z" />
+    <path
+       style="fill:#dbe3e2;stroke:#6f8a91;stroke-width:0.529167;stroke-linejoin:round;paint-order:stroke fill markers"
+       id="path791"
+       d="m 172.66036,173.19344 c 0,1.79792 0,3.59583 0,5.39374 0,1.2063 0,2.41261 0,3.61891 0,1.41421 2,1.41421 2,0 v 0 c 0,-1.2063 0,-2.41261 0,-3.61891 0,-1.79791 0,-3.59582 0,-5.39374 0,-1.41421 -2,-1.41421 -2,0 z" />
+    <path
+       style="fill:#dbe3e2;stroke:#6f918a;stroke-width:0.529167;stroke-linejoin:round;paint-order:stroke fill markers"
+       id="path355"
+       d="m 104.33725,119.03399 c 0,1.85174 0,3.70348 0,5.55523 0,0.93323 0,1.86647 0,2.79971 0,1.41421 2,1.41421 2,0 v 0 c 0,-0.93324 0,-1.86648 0,-2.79971 0,-1.85175 0,-3.70349 0,-5.55523 0,-1.41422 -2,-1.41422 -2,0 z" />
+    <path
+       style="fill:#dbe3e2;stroke:#6f918a;stroke-width:0.529167;stroke-linejoin:round;paint-order:stroke fill markers"
+       id="path405"
+       d="m 44.347608,145.89989 c 0,2.24587 0,4.49175 0,6.73762 0,1.39912 0,2.79825 0,4.19737 0,1.41422 2.000002,1.41422 2.000002,0 v 0 c 0,-1.39912 0,-2.79825 0,-4.19737 0,-2.24587 0,-4.49175 0,-6.73762 0,-1.41421 -2.000002,-1.41421 -2.000002,0 z" />
+    <path
+       style="fill:#dbe3e2;stroke:#6f918a;stroke-width:0.529167;stroke-linejoin:round;paint-order:stroke fill markers"
+       id="path409"
+       d="m 106.93245,146.06254 c 0,2.60383 0,5.20766 0,7.81149 0,0.7373 0,1.47459 0,2.21189 0,1.41422 2,1.41422 2,0 v 0 c 0,-0.7373 0,-1.47459 0,-2.21189 0,-2.60383 0,-5.20766 0,-7.81149 0,-1.41421 -2,-1.41421 -2,0 z" />
+    <path
+       style="fill:#dbe3e2;stroke:#6f918a;stroke-width:0.529167;stroke-linejoin:round;paint-order:stroke fill markers"
+       id="path413"
+       d="m 171.09765,145.28722 c 0,2.11575 0,4.23149 0,6.34724 0,1.82534 0,3.65068 0,5.47602 0,1.41422 2,1.41422 2,0 v 0 c 0,-1.82534 0,-3.65068 0,-5.47602 0,-2.11575 0,-4.23149 0,-6.34724 0,-1.41421 -2,-1.41421 -2,0 z" />
+    <path
+       style="fill:#dbe3e2;stroke:#6f918a;stroke-width:0.529167;stroke-linejoin:round;paint-order:stroke fill markers"
+       id="path341"
+       d="m 61.991459,81.215162 c 0,1.523233 0,3.046468 0,4.569701 0,1.230204 0,2.460408 0,3.690612 0,1.414211 1.999998,1.414211 1.999998,0 v 0 c 0,-1.230204 0,-2.460408 0,-3.690612 0,-1.523233 0,-3.046468 0,-4.569701 0,-1.414214 -1.999998,-1.414214 -1.999998,0 z" />
+    <path
+       style="fill:#dbe3e2;stroke:#6f918a;stroke-width:0.529167;stroke-linejoin:round;paint-order:stroke fill markers"
+       id="path345"
+       d="m 154.70414,82.550408 c 0,1.589416 0,3.178829 0,4.768244 0,0.618924 0,1.237846 0,1.856769 0,1.414214 2,1.414214 2,0 v 0 c 0,-0.618923 0,-1.237845 0,-1.856769 0,-1.589415 0,-3.178828 0,-4.768244 0,-1.414213 -2,-1.414213 -2,0 z" />
+    <text
+       xml:space="preserve"
+       style="font-size:11.2889px;line-height:1.25;font-family:Figtree;-inkscape-font-specification:Figtree;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="105.24529"
+       y="19.645323"
+       id="text113"><tspan
+         sodipodi:role="line"
+         id="tspan111"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.2889px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="105.24529"
+         y="19.645323">Exprimental Engine Architecture</tspan></text>
+    <rect
+       style="fill:#f4d7d7;stroke:#c83737;stroke-width:0.529167;stroke-linejoin:round;paint-order:stroke fill markers"
+       id="rect325"
+       width="189.64133"
+       height="32.198059"
+       x="10.179337"
+       y="88.626297"
+       ry="3" />
+    <text
+       xml:space="preserve"
+       style="font-size:4.23333px;line-height:1.25;font-family:Figtree;-inkscape-font-specification:Figtree;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="105.09198"
+       y="96.020454"
+       id="text329"><tspan
+         sodipodi:role="line"
+         id="tspan327"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="105.09198"
+         y="96.020454">Core Runtime Environment</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:4.23333px;line-height:1.25;font-family:Figtree;-inkscape-font-specification:Figtree;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="105.09198"
+       y="103.95795"
+       id="text333"><tspan
+         sodipodi:role="line"
+         id="tspan331"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="105.09198"
+         y="103.95795">Contains low level functions for graphics, input and anything that cannot be done in a HLE;</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="105.09198"
+         y="109.37923"
+         id="tspan470">provides interfaces for system tools and libraries and a low-level, C-like language for LC/PC.</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="105.09198"
+         y="114.8005"
+         id="tspan1204">As minimal and fast a layer as possible.</tspan></text>
+    <rect
+       style="fill:#d7d7f4;stroke:#2c2ca0;stroke-width:0.529167;stroke-linejoin:round;paint-order:stroke fill markers"
+       id="rect325-2"
+       width="92.174751"
+       height="21.071152"
+       x="10.179337"
+       y="61.734329"
+       ry="3" />
+    <text
+       xml:space="preserve"
+       style="font-size:4.23333px;line-height:1.25;font-family:Figtree;-inkscape-font-specification:Figtree;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="56.161293"
+       y="69.128494"
+       id="text329-6"><tspan
+         sodipodi:role="line"
+         id="tspan327-1"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="56.161293"
+         y="69.128494">Linear Compute (CPU)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:4.23333px;line-height:1.25;font-family:Figtree;-inkscape-font-specification:Figtree;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="56.448612"
+       y="77.065987"
+       id="text333-0"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="56.448608"
+         y="77.065987"
+         id="tspan470-1">Anything that does linear processing well</tspan></text>
+    <rect
+       style="fill:#e3f4d7;stroke:#5aa02c;stroke-width:0.529167;stroke-linejoin:round;paint-order:stroke fill markers"
+       id="rect325-2-5"
+       width="92.174751"
+       height="21.071152"
+       x="107.87044"
+       y="61.734325"
+       ry="3" />
+    <text
+       xml:space="preserve"
+       style="font-size:4.23333px;line-height:1.25;font-family:Figtree;-inkscape-font-specification:Figtree;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="153.8524"
+       y="69.128494"
+       id="text329-6-9"><tspan
+         sodipodi:role="line"
+         id="tspan327-1-4"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="153.8524"
+         y="69.128494">Parallel Compute (GPGPU)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:4.23333px;line-height:1.25;font-family:Figtree;-inkscape-font-specification:Figtree;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="154.13972"
+       y="77.065987"
+       id="text333-0-9"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="154.13972"
+         y="77.065987"
+         id="tspan470-1-0">Anything that does parallel processing well</tspan></text>
+    <rect
+       style="fill:#f4eed7;stroke:#c8ab37;stroke-width:0.529167;stroke-linejoin:round;paint-order:stroke fill markers"
+       id="rect387"
+       width="60"
+       height="41.743881"
+       x="10.179337"
+       y="153.53732"
+       ry="3" />
+    <text
+       xml:space="preserve"
+       style="font-size:4.23333px;line-height:1.25;font-family:Figtree;-inkscape-font-specification:Figtree;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="40.240314"
+       y="160.93149"
+       id="text391"><tspan
+         sodipodi:role="line"
+         id="tspan389"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="40.240314"
+         y="160.93149">Scripting</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:4.23333px;line-height:1.25;font-family:Figtree;-inkscape-font-specification:Figtree;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="40.166935"
+       y="168.86903"
+       id="text395"><tspan
+         sodipodi:role="line"
+         id="tspan393"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="40.166935"
+         y="168.86903">behaviour and content</tspan></text>
+    <rect
+       style="fill:#f4d7ee;stroke:#c837ab;stroke-width:0.529167;stroke-linejoin:round;paint-order:stroke fill markers"
+       id="rect387-95"
+       width="52.969929"
+       height="21.071259"
+       x="147.11531"
+       y="153.53732"
+       ry="3" />
+    <text
+       xml:space="preserve"
+       style="font-size:4.23333px;line-height:1.25;font-family:Figtree;-inkscape-font-specification:Figtree;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="171.5903"
+       y="160.93152"
+       id="text391-0"><tspan
+         sodipodi:role="line"
+         id="tspan389-4"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="171.5903"
+         y="160.93152">Physics</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:4.23333px;line-height:1.25;font-family:Figtree;-inkscape-font-specification:Figtree;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="171.51692"
+       y="168.86906"
+       id="text395-8"><tspan
+         sodipodi:role="line"
+         id="tspan393-7"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="171.51692"
+         y="168.86906">objects, scenes, rules</tspan></text>
+    <rect
+       style="fill:#d7eef4;stroke:#37abc8;stroke-width:0.529167;stroke-linejoin:round;paint-order:stroke fill markers"
+       id="rect387-9"
+       width="65"
+       height="21.071259"
+       x="76.000168"
+       y="153.53732"
+       ry="3" />
+    <text
+       xml:space="preserve"
+       style="font-size:4.23333px;line-height:1.25;font-family:Figtree;-inkscape-font-specification:Figtree;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="108.45779"
+       y="160.93149"
+       id="text391-2"><tspan
+         sodipodi:role="line"
+         id="tspan389-6"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="108.45779"
+         y="160.93149">Graphics</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:4.23333px;line-height:1.25;font-family:Figtree;-inkscape-font-specification:Figtree;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="108.4919"
+       y="168.86903"
+       id="text395-6"><tspan
+         sodipodi:role="line"
+         id="tspan393-4"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="108.4919"
+         y="168.86903">display and user interface</tspan></text>
+    <rect
+       style="fill:#dbe3e2;stroke:#6f918a;stroke-width:0.529167;stroke-linejoin:round;paint-order:stroke fill markers"
+       id="rect460"
+       width="189.64133"
+       height="21.071259"
+       x="10.179337"
+       y="126.6452"
+       ry="3" />
+    <text
+       xml:space="preserve"
+       style="font-size:4.23333px;line-height:1.25;font-family:Figtree;-inkscape-font-specification:Figtree;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="105.09198"
+       y="134.03934"
+       id="text464"><tspan
+         sodipodi:role="line"
+         id="tspan462"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="105.09198"
+         y="134.03934">Engine Code</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:4.23333px;line-height:1.25;font-family:Figtree;-inkscape-font-specification:Figtree;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="105.09198"
+       y="141.97685"
+       id="text468"><tspan
+         sodipodi:role="line"
+         id="tspan466"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="105.09198"
+         y="141.97685">Main code for the game engine</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:4.23333px;line-height:1.25;font-family:Figtree;-inkscape-font-specification:Figtree;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="105.09198"
+       y="48.924633"
+       id="text1212"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="105.09198"
+         y="48.924633"
+         id="tspan1210">This is one possible architecture for the testle engine.</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="105.09198"
+         y="54.345909"
+         id="tspan997">THIS IS NOT THE ARCHITECTURE THAT WILL BE USED FOR TRESTLE ATM!!!</tspan></text>
+    <rect
+       style="fill:#f4eed7;stroke:#c8ab37;stroke-width:0.529167;stroke-linejoin:round;paint-order:stroke fill markers"
+       id="rect585-3"
+       width="189.9059"
+       height="15.23697"
+       x="10.179337"
+       y="180.04424"
+       ry="3" />
+    <rect
+       style="fill:#f4eed7;stroke:none;stroke-width:0.529167;stroke-linejoin:round;paint-order:stroke fill markers"
+       id="rect671"
+       width="60"
+       height="22.40102"
+       x="10.179337"
+       y="172.88019"
+       ry="3" />
+    <text
+       xml:space="preserve"
+       style="font-size:4.23333px;line-height:1.25;font-family:Figtree;-inkscape-font-specification:Figtree;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="136.74483"
+       y="186.06313"
+       id="text395-67"><tspan
+         sodipodi:role="line"
+         id="tspan393-5"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="136.74483"
+         y="186.06313">scripts may also handle the main loop and therefore graphics</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="136.74483"
+         y="191.48441"
+         id="tspan937">and physics systems</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:4.23333px;line-height:1.25;font-family:Figtree;-inkscape-font-specification:Figtree;text-align:center;text-anchor:middle;stroke-width:0.264583"
+       x="105.09198"
+       y="37.282963"
+       id="text223"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle;stroke-width:0.264583"
+         x="105.09198"
+         y="37.282963"
+         id="tspan221">Codename Nectarine</tspan></text>
+  </g>
+</svg>
