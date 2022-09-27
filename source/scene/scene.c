@@ -9,3 +9,6 @@
 
 #include "scene.h"
 
+void TrSceneInit(TrScene *this) {
+	this->running = true; // TEMP
+}

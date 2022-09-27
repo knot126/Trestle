@@ -10,5 +10,7 @@
 #include "includes.h"
 
 typedef struct {
-	int32_t running; // TEMP
+	bool running; // TEMP
 } TrScene;
+
+void TrSceneInit(TrScene *this);

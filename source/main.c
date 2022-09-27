@@ -8,6 +8,7 @@
 #include "includes.h"
 
 #include "util/log.h"
+#include "util/time.h"
 
 #include "scene/scene.h"
 #include "graphics/graphics.h"
@@ -21,6 +22,10 @@ void TrEngineInit(TrEngine *engine) {
 	 * @param engine The game engine context
 	 */
 	
+	DgLog(DG_LOG_VERBOSE, "TrSceneInit");
+	TrSceneInit(&engine->scene);
+	
+	DgLog(DG_LOG_VERBOSE, "TrGraphicsInit");
 	TrGraphicsInit(&engine->graphics, &engine->scene);
 }
 
@@ -31,6 +36,7 @@ void TrEngineTick(TrEngine *engine) {
 	 * @param engine The game engine context
 	 */
 	
+	DgLog(DG_LOG_VERBOSE, "TrGraphicsUpdate");
 	TrGraphicsUpdate(&engine->graphics, &engine->scene);
 }
 
@@ -41,10 +47,11 @@ void TrEngineFree(TrEngine *engine) {
 	 * @param engine The game engine context
 	 */
 	
+	DgLog(DG_LOG_VERBOSE, "TrGraphicsFree");
 	TrGraphicsFree(&engine->graphics, &engine->scene);
 }
 
-int32_t TrEngineIsRunning(TrEngine *engine) {
+bool TrEngineIsRunning(TrEngine *engine) {
 	/**
 	 * Return if the engine should keep running or exit
 	 * 
@@ -52,7 +59,15 @@ int32_t TrEngineIsRunning(TrEngine *engine) {
 	 * @return 1 if the engine is still running, zero if not
 	 */
 	
-	return engine->scene.running;
+	return engine->scene.running; // TEMP
+}
+
+void TrInitGlobals(void) {
+	/**
+	 * Initialise global state for Melon
+	 */
+	
+	DgInitTime();
 }
 
 int main(const int argc, const char *argv[]) {
@@ -64,19 +79,29 @@ int main(const int argc, const char *argv[]) {
 	 * @return Exit code
 	 */
 	
+	// Initialise melon library
+	TrInitGlobals();
+	
+	// Main engine init
 	TrEngine engine;
 	
+	DgLog(DG_LOG_VERBOSE, "TrEngineInit");
 	TrEngineInit(&engine);
 	
-	// TEMP run for 10 000 ticks
-	for (size_t i = 0; i < 10000; i++) {
+	// Main loop
+	while (TrEngineIsRunning(&engine)) {
+		double start = DgTime();
+		
+		DgLog(DG_LOG_VERBOSE, "TrEngineTick");
 		TrEngineTick(&engine);
 		
-		if (!TrEngineIsRunning(&engine)) {
-			break;
-		}
+		double delta = DgTime() - start;
+		
+		DgLog(DG_LOG_INFO, ":: Frame time %.4fms (%.2f fps) ::", delta * 1000.0f, 1.0f / delta);
 	}
 	
+	// Free the engine
+	DgLog(DG_LOG_VERBOSE, "TrEngineFree");
 	TrEngineFree(&engine);
 	
 	return 0;
