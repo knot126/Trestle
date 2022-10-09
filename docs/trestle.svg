@@ -7,11 +7,11 @@
    viewBox="0 0 40.833332 13.333334"
    version="1.1"
    id="svg5"
-   inkscape:version="1.2 (dc2aedaf03, 2022-05-15)"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14, custom)"
    sodipodi:docname="trestle.svg"
    inkscape:export-filename="icon.png"
-   inkscape:export-xdpi="400"
-   inkscape:export-ydpi="400"
+   inkscape:export-xdpi="200"
+   inkscape:export-ydpi="200"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -29,10 +29,10 @@
      inkscape:document-units="px"
      showgrid="false"
      inkscape:zoom="3.6510204"
-     inkscape:cx="245"
+     inkscape:cx="245.2739"
      inkscape:cy="79.977641"
      inkscape:window-width="1920"
-     inkscape:window-height="1007"
+     inkscape:window-height="1011"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -42,27 +42,27 @@
      id="defs2">
     <linearGradient
        inkscape:collect="always"
-       id="linearGradient612">
+       id="linearGradient246">
       <stop
-         style="stop-color:#a05a2c;stop-opacity:1"
+         style="stop-color:#c87137;stop-opacity:1"
          offset="0"
-         id="stop608" />
+         id="stop242" />
       <stop
          style="stop-color:#784421;stop-opacity:1"
          offset="1"
-         id="stop610" />
+         id="stop244" />
     </linearGradient>
     <linearGradient
        inkscape:collect="always"
-       id="linearGradient4203">
+       id="linearGradient612">
       <stop
-         style="stop-color:#483737;stop-opacity:1;"
+         style="stop-color:#784421;stop-opacity:1"
          offset="0"
-         id="stop4199" />
+         id="stop608" />
       <stop
-         style="stop-color:#552200;stop-opacity:1"
+         style="stop-color:#c87137;stop-opacity:1"
          offset="1"
-         id="stop4201" />
+         id="stop610" />
     </linearGradient>
     <linearGradient
        inkscape:collect="always"
@@ -80,11 +80,11 @@
        inkscape:collect="always"
        id="linearGradient4174">
       <stop
-         style="stop-color:#916f6f;stop-opacity:1"
+         style="stop-color:#c87137;stop-opacity:1"
          offset="0"
          id="stop4170" />
       <stop
-         style="stop-color:#483737;stop-opacity:1"
+         style="stop-color:#784421;stop-opacity:1"
          offset="1"
          id="stop4172" />
     </linearGradient>
@@ -96,34 +96,18 @@
        y1="4.2757545"
        x2="6.2631311"
        y2="1.2674656"
-       gradientUnits="userSpaceOnUse" />
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(0,-0.273484)" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient4195"
-       id="linearGradient4197"
-       x1="2.5711939"
-       y1="3.6487136"
-       x2="2.5711939"
-       y2="11.979503"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient4203"
-       id="linearGradient4205"
-       x1="5.7461944"
-       y1="1.5320468"
-       x2="5.7461944"
-       y2="9.8628349"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient4174"
+       xlink:href="#linearGradient246"
        id="linearGradient4486"
        x1="4.9113426"
        y1="4.2757545"
        x2="6.3596487"
        y2="1.2674656"
-       gradientUnits="userSpaceOnUse" />
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(0,-0.273484)" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient612"
@@ -147,26 +131,22 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
-    <g
-       id="g678"
-       transform="translate(0,-0.273484)">
-      <path
-         id="path4131"
-         style="fill:none;stroke:url(#linearGradient4205);stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
-         d="M 5.7461943,8.1363602 8.0863431,2.1590879 10.426492,9.5982515 M 5.7461942,8.1363602 V 1.5320468 l 4.6802978,1.2540821 v 6.8121224" />
-      <path
-         id="path4129"
-         style="fill:none;stroke:url(#linearGradient4197);stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
-         d="M 2.571194,10.253027 4.9113428,4.2757546 7.2514917,11.714919 M 2.571194,10.253027 V 3.6487136 l 4.6802977,1.2540821 v 6.8121233" />
-      <path
-         style="fill:none;stroke:url(#linearGradient4176);stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
-         d="M 2.571194,3.6487135 5.7461943,1.5320468 10.426492,2.786129 7.2514917,4.9027957 Z"
-         id="path4141" />
-      <path
-         style="fill:url(#linearGradient4486);stroke:none;stroke-width:0.264583px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
-         d="M 2.571194,3.6487135 5.7461943,1.5320468 10.426492,2.786129 7.2514917,4.9027957 Z"
-         id="path4366" />
-    </g>
+    <path
+       id="path4131"
+       style="fill:none;stroke:#784421;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 5.7461943,7.8628762 8.0863431,1.8856039 10.426492,9.3247675 M 5.7461942,7.8628762 V 1.2585628 l 4.6802978,1.2540821 v 6.8121224" />
+    <path
+       id="path4129"
+       style="fill:none;stroke:#c87137;stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 2.571194,9.979543 4.9113428,4.0022706 7.2514917,11.441435 M 2.571194,9.979543 V 3.3752296 l 4.6802977,1.2540821 v 6.8121233" />
+    <path
+       style="fill:none;stroke:url(#linearGradient4176);stroke-width:0.529167;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 2.571194,3.3752295 5.7461943,1.2585628 10.426492,2.512645 7.2514917,4.6293117 Z"
+       id="path4141" />
+    <path
+       style="fill:url(#linearGradient4486);stroke:none;stroke-width:0.264583px;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+       d="M 2.571194,3.3752295 5.7461943,1.2585628 10.426492,2.512645 7.2514917,4.6293117 Z"
+       id="path4366" />
     <text
        xml:space="preserve"
        style="font-size:8.33735px;line-height:1.25;font-family:'CMU Sans Serif';-inkscape-font-specification:'CMU Sans Serif';fill:url(#linearGradient534);stroke-width:0.208434"
@@ -180,14 +160,15 @@
          y="7.6327829">Trestle</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:2.82222px;line-height:1.25;font-family:'CMU Sans Serif';-inkscape-font-specification:'CMU Sans Serif';fill:#b3b3b3;stroke-width:0.208434"
-       x="13.00032"
+       style="font-size:2.82222px;line-height:1.25;font-family:'CMU Sans Serif';-inkscape-font-specification:'CMU Sans Serif';letter-spacing:0.309167px;fill:#a05a2c;stroke-width:0.208434;opacity:0.4"
+       x="17.122797"
        y="10.888715"
        id="text289"><tspan
          sodipodi:role="line"
          id="tspan287"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.82222px;font-family:'Barlow Medium';-inkscape-font-specification:'Barlow Medium, ';fill:#b3b3b3;stroke-width:0.208434"
-         x="13.00032"
-         y="10.888715">Simulation Engine</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.82222px;font-family:'Barlow Medium';-inkscape-font-specification:'Barlow Medium, ';fill:#a05a2c;stroke-width:0.208434"
+         x="17.122797"
+         y="10.888715"
+         dx="0">Technology</tspan></text>
   </g>
 </svg>
