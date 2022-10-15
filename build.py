@@ -104,7 +104,7 @@ def main():
 	
 	for f in files:
 		print(f"\033[36m[Building item: \"{f}\"]\033[0m")
-		status = os.system(f"{compiler} -c {defines} -o temp/{f}.output -Wall -Wextra {f} {include}")
+		status = os.system(f"{compiler} -c {defines} -o temp/{f}.output -Wall -Wextra -Wno-missing-braces -Wno-unused-parameter {f} {include}")
 		
 		if (status):
 			print(f"\033[31m[Failed to build \"{f}\"]\033[0m")

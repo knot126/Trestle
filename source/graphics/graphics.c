@@ -33,10 +33,12 @@ void TrGraphicsInit(TrGraphics *this, TrScene *scene) {
 	}
 	
 	// Temp bitmap for testing
-	if (DgBitmapInit(&this->bitmap, 1280, 720, 3)) {
+	if (DgBitmapInit(&this->bitmap, 1, 1, 1)) {
 		DgLog(DG_LOG_ERROR, "Failed to create bitmap for window.");
 		return;
 	}
+	
+	DgWindowAssocaiteBitmap(&this->window, &this->bitmap);
 	
 	DgBitmapFill(&this->bitmap, (DgColour) {0.0f, 0.0f, 0.0f, 1.0f});
 }
@@ -49,7 +51,7 @@ void TrGraphicsUpdate(TrGraphics *this, TrScene *scene) {
 	 * @param scene Scene to apply to (holds all context-specific state)
 	 */
 	
-	uint32_t status = DgWindowUpdate(&this->window, &this->bitmap);
+	uint32_t status = DgWindowUpdate(&this->window, NULL);
 	
 	if (status < 0) {
 		DgLog(DG_LOG_ERROR, "Failed to update window.");
