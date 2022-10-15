@@ -2,7 +2,8 @@
 	"linux": {
 		"prebuild": [
 			"rm -r ./source/util",
-			"cp -r ../Melon/src ./source/util"
+			"cp -r ../Melon/src ./source/util",
+			"python tools/generate_version_headers.py ./source"
 		],
 		"compiler": "clang",
 		"folders": ["source"],

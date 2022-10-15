@@ -79,6 +79,9 @@ int main(const int argc, const char *argv[]) {
 	 * @return Exit code
 	 */
 	
+	// Print out engine version
+	DgLog(DG_LOG_INFO, "Trestle Engine %d.%d.%d build %d", TR_VERSION_MAJOR, TR_VERSION_MINOR, TR_VERSION_PATCH, TR_VERSION_BUILD);
+	
 	// Initialise melon library
 	TrInitGlobals();
 	
