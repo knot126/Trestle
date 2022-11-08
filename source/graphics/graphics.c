@@ -38,6 +38,8 @@ void TrGraphicsInit(TrGraphics *this, TrScene *scene) {
 		return;
 	}
 	
+	DgBitmapSetFlags(&this->bitmap, DG_BITMAP_DRAWING_ALPHA);
+	
 	DgWindowAssocaiteBitmap(&this->window, &this->bitmap);
 	
 	DgBitmapFill(&this->bitmap, (DgColour) {0.0f, 0.0f, 0.0f, 1.0f});
@@ -63,7 +65,9 @@ void TrGraphicsUpdate(TrGraphics *this, TrScene *scene) {
 	}
 	
 	// TEMP for hello world
-	DgBitmapDrawLine(&this->bitmap, (DgVec2) {DgRandFloat(), DgRandFloat()}, (DgVec2) {DgRandFloat(), DgRandFloat()}, &(DgColour) {DgRandFloat(), DgRandFloat(), DgRandFloat(), 1.0f});
+	if (DgRandFloat() < 0.01f) {
+		DgBitmapDrawLine(&this->bitmap, (DgVec2) {DgRandFloat(), DgRandFloat()}, (DgVec2) {DgRandFloat(), DgRandFloat()}, &(DgColour) {DgRandFloat(), DgRandFloat(), DgRandFloat(), 1.0f});
+	}
 }
 
 void TrGraphicsFree(TrGraphics *this, TrScene *scene) {

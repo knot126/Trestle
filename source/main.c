@@ -36,7 +36,6 @@ void TrEngineTick(TrEngine *engine) {
 	 * @param engine The game engine context
 	 */
 	
-	DgLog(DG_LOG_VERBOSE, "TrGraphicsUpdate");
 	TrGraphicsUpdate(&engine->graphics, &engine->scene);
 }
 
@@ -95,12 +94,13 @@ int main(const int argc, const char *argv[]) {
 	while (TrEngineIsRunning(&engine)) {
 		double start = DgTime();
 		
-		DgLog(DG_LOG_VERBOSE, "TrEngineTick");
 		TrEngineTick(&engine);
 		
 		double delta = DgTime() - start;
 		
+#if defined(TR_ENABLE_FRAME_TIME_LOG)
 		DgLog(DG_LOG_INFO, ":: Frame time %.4fms (%.2f fps) ::", delta * 1000.0f, 1.0f / delta);
+#endif
 	}
 	
 	// Free the engine
