@@ -4,4 +4,4 @@
 
 ## Legacy version
 
-If you want to see pre-September 2022 trestle engine, see [this commit](https://github.com/knot126/Trestle/tree/8f85bad8520ee02478646330aab503bf942e9694).
+If you want to see pre-September 2022 trestle engine (also called the Quick Run Engine), see [this commit](https://github.com/knot126/Trestle/tree/8f85bad8520ee02478646330aab503bf942e9694).
