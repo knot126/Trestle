@@ -21,6 +21,7 @@
 		"folders": ["source"],
 		"includes": ["source"],
 		"links": [],
+		"defines": ["DG_NO_LUA", "DG_NO_SDL"],
 		"output": "temp/testle-windows-arm64.exe"
 	}
 }
