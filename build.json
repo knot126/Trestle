@@ -20,8 +20,8 @@
 		"compiler": "C:/Users/User/bin/llvm-mingw-20220323-ucrt-aarch64/llvm-mingw-20220323-ucrt-aarch64/bin/clang.exe",
 		"folders": ["source"],
 		"includes": ["source"],
-		"links": [],
-		"defines": ["DG_NO_LUA", "DG_NO_SDL"],
+		"links": ["gdi32"],
+		"defines": ["DG_NO_LUA", "DG_NO_SDL", "DG_USE_WINDOWS_API"],
 		"output": "temp/testle-windows-arm64.exe"
 	}
 }

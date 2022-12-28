@@ -33,7 +33,7 @@ void TrGraphicsInit(TrGraphics *this, TrScene *scene) {
 	}
 	
 	// Temp bitmap for testing
-	if (DgBitmapInit(&this->bitmap, 1, 1, 1)) {
+	if (DgBitmapInit(&this->bitmap, 1280, 720, 3)) {
 		DgLog(DG_LOG_ERROR, "Failed to create bitmap for window.");
 		return;
 	}
@@ -53,6 +53,8 @@ void TrGraphicsUpdate(TrGraphics *this, TrScene *scene) {
 	 * @param scene Scene to apply to (holds all context-specific state)
 	 */
 	
+	DgBitmapDrawLine(&this->bitmap, (DgVec2) {DgRandFloat(), DgRandFloat()}, (DgVec2) {DgRandFloat(), DgRandFloat()}, &(DgColour) {DgRandFloat(), DgRandFloat(), DgRandFloat(), 1.0f});
+	
 	uint32_t status = DgWindowUpdate(&this->window, NULL);
 	
 	if (status < 0) {
@@ -62,11 +64,6 @@ void TrGraphicsUpdate(TrGraphics *this, TrScene *scene) {
 	else {
 		// TEMP
 		scene->running = !status;
-	}
-	
-	// TEMP for hello world
-	if (DgRandFloat() < 0.01f) {
-		DgBitmapDrawLine(&this->bitmap, (DgVec2) {DgRandFloat(), DgRandFloat()}, (DgVec2) {DgRandFloat(), DgRandFloat()}, &(DgColour) {DgRandFloat(), DgRandFloat(), DgRandFloat(), 1.0f});
 	}
 }
 
