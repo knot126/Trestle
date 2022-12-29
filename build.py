@@ -48,6 +48,20 @@ def create_folder(d, mode = 0o755):
 	except FileExistsError:
 		print(f"\033[33mWarning: Tried to created file \"{d}\" when it already exsists.\033[0m")
 
+def align_string(base, count = 8):
+	"""
+	Create an aligned string
+	
+	"7/12", count = 10 -> "7/12      " 
+	"""
+	
+	string = [" "] * count
+	
+	for i in range(len(base)):
+		string[i] = base[i]
+	
+	return "".join(string)
+
 def main():
 	if (os.name == "nt"):
 		os.system("cls")
@@ -101,14 +115,18 @@ def main():
 	
 	# Build files
 	compiler = config.get("compiler", "cc")
+	item = 1
 	
 	for f in files:
-		print(f"\033[36m[Building item: \"{f}\"]\033[0m")
+		progress = align_string(f"{item}/{len(files)}", count = 2 * len(str(len(files))) + 1)
+		print(f"\033[36m[{progress} Building item: \"{f}\"]\033[0m")
 		status = os.system(f"{compiler} -c {defines} -o temp/{f}.output -Wall -Wextra -Wno-missing-braces -Wno-unused-parameter {f} {include}")
 		
 		if (status):
 			print(f"\033[31m[Failed to build \"{f}\"]\033[0m")
 			sys.exit(status)
+		
+		item += 1
 	
 	# Set up linker
 	include = ""
