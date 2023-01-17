@@ -2,8 +2,7 @@
 	"linux": {
 		"prebuild": [
 			"rm -r ./source/util",
-			"cp -r ../Melon/src ./source/util",
-			"python tools/generate_version_headers.py ./source"
+			"cp -r ../Melon/src ./source/util"
 		],
 		"compiler": "clang",
 		"folders": ["source"],
@@ -22,6 +21,6 @@
 		"includes": ["source"],
 		"links": ["gdi32"],
 		"defines": ["DG_NO_LUA", "DG_NO_SDL", "DG_USE_WINDOWS_API"],
-		"output": "temp/testle-windows-arm64.exe"
+		"output": "temp/trestle-windows-arm64.exe"
 	}
 }
