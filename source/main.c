@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2022 Knot126
- * ==========================
+ * Copyright (C) 2022 - 2023 Knot126
+ * =================================
  * 
  * Main functions
  */
@@ -10,8 +10,8 @@
 #include "util/log.h"
 #include "util/time.h"
 
-#include "scene/scene.h"
-#include "graphics/graphics.h"
+#include "scene.h"
+#include "graphics.h"
 
 #include "main.h"
 
@@ -22,8 +22,14 @@ void TrEngineInit(TrEngine *engine) {
 	 * @param engine The game engine context
 	 */
 	
+	DgError status;
+	
 	DgLog(DG_LOG_VERBOSE, "TrSceneInit");
-	TrSceneInit(&engine->scene);
+	status = TrSceneInit(&engine->scene);
+	
+	if (status) {
+		DgLog(DG_LOG_ERROR, "Failed to initialise scene (status = %d)", status);
+	}
 	
 	DgLog(DG_LOG_VERBOSE, "TrGraphicsInit");
 	TrGraphicsInit(&engine->graphics, &engine->scene);
@@ -58,7 +64,12 @@ bool TrEngineIsRunning(TrEngine *engine) {
 	 * @return 1 if the engine is still running, zero if not
 	 */
 	
-	return engine->scene.running; // TEMP
+	DgValue key; DgValueStaticString(&key, "running");
+	DgValue value;
+	
+	DgTableGet(&engine->scene.info, &key, &value);
+	
+	return value.data.asBool;
 }
 
 void TrInitGlobals(void) {
@@ -79,7 +90,7 @@ int main(const int argc, const char *argv[]) {
 	 */
 	
 	// Print out engine version
-	DgLog(DG_LOG_INFO, "Trestle Engine %d.%d.%d build %d", TR_VERSION_MAJOR, TR_VERSION_MINOR, TR_VERSION_PATCH, TR_VERSION_BUILD);
+	DgLog(DG_LOG_INFO, "Trestle Engine %d.%d.%d", TR_VERSION_MAJOR, TR_VERSION_MINOR, TR_VERSION_PATCH);
 	
 	// Initialise melon library
 	TrInitGlobals();

@@ -12,7 +12,7 @@
 #include "util/bitmap.h"
 #include "util/window.h"
 
-#include "scene/scene.h"
+#include "scene.h"
 
 typedef struct {
 	DgWindow window;

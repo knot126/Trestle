@@ -15,7 +15,7 @@
 #include "util/window.h"
 #include "util/rand.h" // TEMP
 
-#include "scene/scene.h"
+#include "scene.h"
 
 #include "graphics.h"
 
@@ -61,9 +61,19 @@ void TrGraphicsUpdate(TrGraphics *this, TrScene *scene) {
 		DgLog(DG_LOG_ERROR, "Failed to update window.");
 		return;
 	}
-	else {
-		// TEMP
-		scene->running = !status;
+	
+	bool running = (status == 0);
+	
+	// Update if the game engine is running
+	if (!running) {
+		DgValue key; DgValueStaticString(&key, "running");
+		DgValue value; DgValueBool(&value, running);
+		
+		DgError status = DgTableSet(&scene->info, &key, &value);
+		
+		if (status) {
+			DgLog(DG_LOG_WARNING, "TrGraphicsUpdate [%d]: %d", __LINE__, status);
+		}
 	}
 }
 

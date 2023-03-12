@@ -9,8 +9,8 @@
 
 #include "includes.h"
 
-#include "scene/scene.h"
-#include "graphics/graphics.h"
+#include "scene.h"
+#include "graphics.h"
 
 typedef struct {
 	TrScene scene;
