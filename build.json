@@ -19,7 +19,7 @@
 		"compiler": "C:/Users/User/bin/llvm-mingw-20220323-ucrt-aarch64/llvm-mingw-20220323-ucrt-aarch64/bin/clang.exe",
 		"folders": ["source"],
 		"includes": ["source"],
-		"links": ["gdi32"],
+		"links": ["gdi32", "Ws2_32"],
 		"defines": ["DG_NO_LUA", "DG_NO_SDL", "DG_USE_WINDOWS_API"],
 		"output": "temp/trestle-windows-arm64.exe"
 	}
