@@ -31,18 +31,24 @@ void TrEngineInit(TrEngine *engine) {
 		DgLog(DG_LOG_ERROR, "Failed to initialise scene (status = %d)", status);
 	}
 	
-	TrObject *object;
+	char name[] = "object0";
 	
-	if (status = TrSceneCreateObject(&engine->scene, "first", &object)) {
-		DgLog(DG_LOG_ERROR, "Errur, Fail to create objet!!! %d", status);
-	}
-	
-	if (status = TrObjectSetShape(object, & (TrAABBShape) {
-		.position = (DgVec2) {300.0f, 300.0f},
-		.size = (DgVec2) {75.0f, 75.0f},
-		.colour = (DgVec4) {0.5f, 0.2f, 0.7f, 1.0f}
-	})) {
-		DgLog(DG_LOG_ERROR, "Fail to set shape!!! %s", DgErrorString(status));
+	for (size_t i = 0; i < 9; i++) {
+		TrObject *object;
+		
+		if ((status = TrSceneCreateObject(&engine->scene, name, &object))) {
+			DgLog(DG_LOG_ERROR, "Errur, Fail to create objet!!! %d", status);
+		}
+		
+		name[6]++;
+		
+		if ((status = TrObjectSetShape(object, & (TrAABBShape) {
+			.position = (DgVec2) {0.5f, 0.5f},
+			.size = (DgVec2) {0.1f + (0.05f * i), 0.1f + (0.05f * i)},
+			.colour = (DgVec4) {1.0f - (0.08f * i), 1.0f, 1.0f - (0.08f * i), 1.0f}
+		}))) {
+			DgLog(DG_LOG_ERROR, "Fail to set shape!!! %s", DgErrorString(status));
+		}
 	}
 	
 	DgLog(DG_LOG_VERBOSE, "TrGraphicsInit");

@@ -46,7 +46,7 @@ void TrGraphicsInit(TrGraphics *this, TrScene *scene) {
 static void TrGraphicsUpdate_DrawObject(TrGraphics *this, TrScene *scene, TrObject *object) {
 	DgVec2 position = object->shape.position;
 	DgVec2 size = object->shape.size;
-	DgVec4 colour = object->shape.colour;
+	DgVec4 *colour = &object->shape.colour;
 	
 	DgVec2 p1, p2, p3, p4;
 	
@@ -61,10 +61,13 @@ static void TrGraphicsUpdate_DrawObject(TrGraphics *this, TrScene *scene, TrObje
 	p4.y = position.y + size.y;
 	
 	// Draw the box!
-	DgBitmapDrawLine(&this->bitmap, p1, p2, &colour);
-	DgBitmapDrawLine(&this->bitmap, p2, p3, &colour);
-	DgBitmapDrawLine(&this->bitmap, p3, p4, &colour);
-	DgBitmapDrawLine(&this->bitmap, p4, p1, &colour);
+	DgBitmapDrawLine(&this->bitmap, p1, p2, colour);
+	DgBitmapDrawLine(&this->bitmap, p2, p3, colour);
+	DgBitmapDrawLine(&this->bitmap, p3, p4, colour);
+	DgBitmapDrawLine(&this->bitmap, p4, p1, colour);
+	
+	DgBitmapDrawLine(&this->bitmap, p1, p3, colour);
+	DgBitmapDrawLine(&this->bitmap, p2, p4, colour);
 }
 
 static void TrGraphicsUpdate_DrawWorld(TrGraphics *this, TrScene *scene) {
@@ -77,7 +80,7 @@ static void TrGraphicsUpdate_DrawWorld(TrGraphics *this, TrScene *scene) {
 	while (true) {
 		TrObject *object;
 		
-		if (status = TrSceneAtObject(scene, index, &object)) {
+		if ((status = TrSceneAtObject(scene, index, &object))) {
 			break;
 		}
 		
@@ -86,7 +89,7 @@ static void TrGraphicsUpdate_DrawWorld(TrGraphics *this, TrScene *scene) {
 		index++;
 	}
 	
-	DgLog(DG_LOG_INFO, "Done drawing %d objects. (status = %s)", index, DgErrorString(status));
+	//DgLog(DG_LOG_INFO, "Done drawing %d objects. (status = %s)", index, DgErrorString(status));
 }
 
 static void TrGraphicsUpdate_WindowStatus(TrScene *scene, int32_t status) {
