@@ -7,6 +7,7 @@
 
 #include "util/table.h"
 #include "util/log.h"
+#include "util/alloc.h"
 
 #include "object.h"
 
@@ -17,6 +18,9 @@
 DgError TrSceneInit(TrScene *this) {
 	/**
 	 * Initialise a new scene
+	 * 
+	 * @param this Scene object
+	 * @return Error code
 	 */
 	
 	memset(this, 0, sizeof *this);
@@ -50,6 +54,9 @@ DgError TrSceneInit(TrScene *this) {
 DgError TrSceneFree(TrScene *this) {
 	/**
 	 * Free the scene data
+	 * 
+	 * @param this Scene object
+	 * @return Error code
 	 */
 	
 	DgTableFree(&this->info);
@@ -60,6 +67,11 @@ DgError TrSceneFree(TrScene *this) {
 DgError TrSceneSetObject(TrScene *this, const char *name, TrObject *object) {
 	/**
 	 * Add an object to the scene
+	 * 
+	 * @param this Scene object
+	 * @param name Name of the object to set
+	 * @param object The object to set to
+	 * @return Error code
 	 */
 	
 	// Find and remove old object if it exists
@@ -82,9 +94,40 @@ DgError TrSceneSetObject(TrScene *this, const char *name, TrObject *object) {
 	return status;
 }
 
+DgError TrSceneCreateObject(TrScene *this, const char *name, TrObject **object) {
+	/**
+	 * Create an object given its name. Unlike "set" this will allocate memory
+	 * for the object automatically.
+	 * 
+	 * @param this Scene object
+	 * @param name Name of the object to create
+	 * @param object The returned object memory
+	 * @return Error code
+	 */
+	
+	object[0] = DgMemoryAllocate(sizeof **object);
+	
+	if (!object[0]) {
+		return DG_ERROR_ALLOCATION_FAILED;
+	}
+	
+	DgError status = TrObjectInit(object[0]);
+	
+	if (status) {
+		return status;
+	}
+	
+	return TrSceneSetObject(this, name, object[0]);
+}
+
 DgError TrSceneGetObject(TrScene *this, const char *name, TrObject **output) {
 	/**
 	 * Add an object to the scene
+	 * 
+	 * @param this Scene object
+	 * @param name Name of the object to get
+	 * @param object Where to put the pointer to the object
+	 * @return Error code
 	 */
 	
 	DgValue searchkey; DgValueStaticString(&searchkey, name);
@@ -102,9 +145,49 @@ DgError TrSceneGetObject(TrScene *this, const char *name, TrObject **output) {
 DgError TrSceneRemoveObject(TrScene *this, const char *name) {
 	/**
 	 * Add an object to the scene
+	 * 
+	 * @param this Scene object
+	 * @param name Name of the object to remove
+	 * @return Error code
 	 */
 	
 	DgValue key; DgValueStaticString(&key, name);
+	DgValue value;
+	
+	DgError status = DgTableGet(&this->objects, &key, &value);
+	
+	if (status) {
+		return status;
+	}
+	
+	DgFree(value.data.asPointer);
+	
+	DgValueStaticString(&key, name);
 	
 	return DgTableRemove(&this->objects, &key);
+}
+
+DgError TrSceneAtObject(TrScene *this, size_t index, TrObject **object) {
+	/**
+	 * Get the object at the given index
+	 * 
+	 * @note Error is DG_ERROR_NOT_FOUND if beyond the array
+	 * 
+	 * @param this Scene object
+	 * @param index Index of the object
+	 * @param object Where to put the object
+	 * @return Error code
+	 */
+	
+	DgValue value;
+	
+	DgError status = DgTableAt(&this->objects, index, NULL, &value);
+	
+	if (status) {
+		return status;
+	}
+	
+	object[0] = value.data.asPointer;
+	
+	return DG_ERROR_SUCCESS;
 }

@@ -14,11 +14,16 @@
 #include "includes.h"
 
 typedef struct TrAABBShape {
-	DgVec2 base;
-	DgVec2 b;
+	DgVec2 position;
+	DgVec2 size;
 	DgVec4 colour;
 } TrAABBShape;
 
 typedef struct TrObject {
 	TrAABBShape shape;
 } TrObject;
+
+DgError TrObjectInit(TrObject *this);
+DgError TrObjectFree(TrObject *this);
+DgError TrObjectSetShape(TrObject *this, TrAABBShape *shape);
+DgError TrObjectGetShape(TrObject *this, TrAABBShape **shape);

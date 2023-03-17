@@ -24,5 +24,7 @@ DgError TrSceneInit(TrScene *this);
 DgError TrSceneFree(TrScene *this);
 
 DgError TrSceneSetObject(TrScene *this, const char *name, TrObject *object);
+DgError TrSceneCreateObject(TrScene *this, const char *name, TrObject **object);
 DgError TrSceneGetObject(TrScene *this, const char *name, TrObject **output);
 DgError TrSceneRemoveObject(TrScene *this, const char *name);
+DgError TrSceneAtObject(TrScene *this, size_t index, TrObject **object);

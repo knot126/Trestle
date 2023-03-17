@@ -18,7 +18,7 @@ DgError TrObjectInit(TrObject *this) {
 	
 	memset(this, 0, sizeof *this);
 	
-	return DG_ERROR_NOT_IMPLEMENTED;
+	return DG_ERROR_SUCCESSFUL;
 }
 
 DgError TrObjectFree(TrObject *this) {
@@ -26,7 +26,25 @@ DgError TrObjectFree(TrObject *this) {
 	 * Free a game object
 	 */
 	
-	memset(this, 0, sizeof *this);
+	return DG_ERROR_SUCCESSFUL;
+}
+
+DgError TrObjectSetShape(TrObject *this, TrAABBShape *shape) {
+	/**
+	 * Set the shape for the given object
+	 */
 	
-	return DG_ERROR_NOT_IMPLEMENTED;
+	this->shape = *shape;
+	
+	return DG_ERROR_SUCCESSFUL;
+}
+
+DgError TrObjectGetShape(TrObject *this, TrAABBShape **shape) {
+	/**
+	 * Get the shape for this object
+	 */
+	
+	shape[0] = &this->shape;
+	
+	return DG_ERROR_SUCCESSFUL;
 }
