@@ -14,6 +14,7 @@
 #include "util/bitmap.h"
 #include "util/window.h"
 #include "util/rand.h" // TEMP
+#include "util/maths.h"
 
 #include "scene.h"
 
@@ -66,8 +67,8 @@ static void TrGraphicsUpdate_DrawObject(TrGraphics *this, TrScene *scene, TrObje
 	DgBitmapDrawLine(&this->bitmap, p3, p4, colour);
 	DgBitmapDrawLine(&this->bitmap, p4, p1, colour);
 	
-	DgBitmapDrawLine(&this->bitmap, p1, p3, colour);
-	DgBitmapDrawLine(&this->bitmap, p2, p4, colour);
+	DgBitmapDrawLine(&this->bitmap, DgVec2Subtract(position, (DgVec2) {0.0f, -0.03f}), DgVec2Subtract(position, (DgVec2) {0.0f, 0.03f}), colour);
+	DgBitmapDrawLine(&this->bitmap, DgVec2Subtract(position, (DgVec2) {-0.03f, 0.0f}), DgVec2Subtract(position, (DgVec2) {0.03f, 0.0f}), colour);
 }
 
 static void TrGraphicsUpdate_DrawWorld(TrGraphics *this, TrScene *scene) {
