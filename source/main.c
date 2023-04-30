@@ -43,8 +43,8 @@ void TrEngineInit(TrEngine *engine) {
 		name[6]++;
 		
 		if ((status = TrObjectSetShape(object, & (TrAABBShape) {
-			.position = (DgVec2) {0.5f, 0.5f},
-			.size = (DgVec2) {0.1f + (0.05f * i), 0.1f + (0.05f * i)},
+			.position = (DgVec3) {0.5f, 0.5f, 1.0f},
+			.size = (DgVec3) {0.1f + (0.05f * i), 0.1f + (0.05f * i), 0.1f + (0.05f * i)},
 			.colour = (DgVec4) {1.0f - (0.08f * i), 1.0f, 1.0f - (0.08f * i), 1.0f}
 		}))) {
 			DgLog(DG_LOG_ERROR, "Fail to set shape!!! %s", DgErrorString(status));

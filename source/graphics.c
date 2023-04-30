@@ -45,21 +45,32 @@ void TrGraphicsInit(TrGraphics *this, TrScene *scene) {
 }
 
 static void TrGraphicsUpdate_DrawObject(TrGraphics *this, TrScene *scene, TrObject *object) {
-	DgVec2 position = object->shape.position;
-	DgVec2 size = object->shape.size;
+	DgVec3 position = object->shape.position;
+	DgVec3 size = object->shape.size;
 	DgVec4 *colour = &object->shape.colour;
 	
-	DgVec2 p1, p2, p3, p4;
+	DgVec3 q1, q2, q3, q4, q5, q6, q7, q8;
+	DgVec2 p1, p2, p3, p4, p5, p6, p7, p8;
 	
-	// Find the coords of the square
-	p1.x = position.x - size.x;
-	p1.y = position.y + size.y;
-	p2.x = position.x - size.x;
-	p2.y = position.y - size.y;
-	p3.x = position.x + size.x;
-	p3.y = position.y - size.y;
-	p4.x = position.x + size.x;
-	p4.y = position.y + size.y;
+	// Find the coords of the square in 3D
+	q1 = (DgVec3) {size.x + position.x, size.y + position.y, size.z + position.z};
+	q2 = (DgVec3) {size.x - position.x, size.y + position.y, size.z + position.z};
+	q3 = (DgVec3) {size.x + position.x, size.y + position.y, size.z - position.z};
+	q4 = (DgVec3) {size.x - position.x, size.y + position.y, size.z - position.z};
+	q5 = (DgVec3) {size.x + position.x, size.y - position.y, size.z + position.z};
+	q6 = (DgVec3) {size.x - position.x, size.y - position.y, size.z + position.z};
+	q7 = (DgVec3) {size.x + position.x, size.y - position.y, size.z - position.z};
+	q8 = (DgVec3) {size.x - position.x, size.y - position.y, size.z - position.z};
+	
+	// Convert to screen space (or whatever the fuck it is)
+	p1 = (DgVec2) {q1.x / q1.z, q1.y / q1.z};
+	p2 = (DgVec2) {q2.x / q2.z, q2.y / q2.z};
+	p3 = (DgVec2) {q3.x / q3.z, q3.y / q3.z};
+	p4 = (DgVec2) {q4.x / q4.z, q4.y / q4.z};
+	p5 = (DgVec2) {q5.x / q5.z, q5.y / q5.z};
+	p6 = (DgVec2) {q6.x / q6.z, q6.y / q6.z};
+	p7 = (DgVec2) {q7.x / q7.z, q7.y / q7.z};
+	p8 = (DgVec2) {q8.x / q8.z, q8.y / q8.z};
 	
 	// Draw the box!
 	DgBitmapDrawLine(&this->bitmap, p1, p2, colour);
@@ -67,8 +78,8 @@ static void TrGraphicsUpdate_DrawObject(TrGraphics *this, TrScene *scene, TrObje
 	DgBitmapDrawLine(&this->bitmap, p3, p4, colour);
 	DgBitmapDrawLine(&this->bitmap, p4, p1, colour);
 	
-	DgBitmapDrawLine(&this->bitmap, DgVec2Subtract(position, (DgVec2) {0.0f, -0.03f}), DgVec2Subtract(position, (DgVec2) {0.0f, 0.03f}), colour);
-	DgBitmapDrawLine(&this->bitmap, DgVec2Subtract(position, (DgVec2) {-0.03f, 0.0f}), DgVec2Subtract(position, (DgVec2) {0.03f, 0.0f}), colour);
+	//DgBitmapDrawLine(&this->bitmap, DgVec2Subtract(position, (DgVec2) {0.0f, -0.03f}), DgVec2Subtract(position, (DgVec2) {0.0f, 0.03f}), colour);
+	//DgBitmapDrawLine(&this->bitmap, DgVec2Subtract(position, (DgVec2) {-0.03f, 0.0f}), DgVec2Subtract(position, (DgVec2) {0.03f, 0.0f}), colour);
 }
 
 static void TrGraphicsUpdate_DrawWorld(TrGraphics *this, TrScene *scene) {

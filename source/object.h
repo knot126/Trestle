@@ -14,8 +14,8 @@
 #include "includes.h"
 
 typedef struct TrAABBShape {
-	DgVec2 position;
-	DgVec2 size;
+	DgVec3 position;
+	DgVec3 size;
 	DgVec4 colour;
 } TrAABBShape;
 
