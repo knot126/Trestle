@@ -28,7 +28,7 @@ Statements end with a newline.
 
 ```php
 () {
-    return 0;
+    return 0
 }
 ```
 
@@ -39,9 +39,9 @@ Returns are followed by a value.
 ### Expressions
 
 ```php
-"test1"; // string value
-2 + 3; // int value
-2.4 * 6.0; // float value
+"test1" // string value
+2 + 3 // int value
+2.4 * 6.0 // float value
 ```
 
 Expressions are basically anything that returns a value.
@@ -83,17 +83,17 @@ Supported operators:
 ### Variables
 
 ```php
-test_var = "test1";
+test_var = "test1"
 
 (() {
-    test_var = "test2";
+    test_var = "test2"
 })()
 
 (() {
-    local test_var = "test3";
+    local test_var = "test3"
 })()
 
-print(test_var); // "test2"
+print(test_var) // "test2"
 ```
 
 Vars are global by default regardless of their scope, like lua.
@@ -113,5 +113,25 @@ for (int i = 0; cond; i++) {
     // do something
 }
 
-(cond) ? a : b;
+(cond) ? a : b
+```
+
+### Arrays
+
+```php
+myArray = ["some", "elements", "of", "this", "array", 1, 2, 3, 4];
+print(myArray.joined(" | "));
+```
+
+## Example programme
+
+```php
+randomise = (a, b, c, d) {
+    a ^= d; b <<<= 13; b ^= c;
+    c ^= b; d <<<= 17; a ^= b;
+    
+    return [a, b, c, d];
+}
+
+randomise(1000, 10000, 100000, 1000000)
 ```
