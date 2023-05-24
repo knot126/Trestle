@@ -86,20 +86,20 @@ static void TrGraphicsUpdate_DrawObject(TrGraphics *this, TrScene *scene, TrObje
 #undef PROPERALIGN
 	
 	// Draw the box!
-	DgBitmapDrawPoint2(&this->bitmap, p1, 0.01f, &(DgColour) {1.0f, 0.0f, 0.0f, 1.0f});
-	DgBitmapDrawPoint2(&this->bitmap, p2, 0.01f, &(DgColour) {0.0f, 1.0f, 0.0f, 1.0f});
-	DgBitmapDrawPoint2(&this->bitmap, p3, 0.01f, &(DgColour) {0.0f, 0.0f, 1.0f, 1.0f});
-	DgBitmapDrawPoint2(&this->bitmap, p4, 0.01f, &(DgColour) {1.0f, 1.0f, 0.0f, 1.0f});
-	DgBitmapDrawPoint2(&this->bitmap, p5, 0.01f, &(DgColour) {0.0f, 1.0f, 1.0f, 1.0f});
-	DgBitmapDrawPoint2(&this->bitmap, p6, 0.01f, &(DgColour) {1.0f, 0.0f, 1.0f, 1.0f});
-	DgBitmapDrawPoint2(&this->bitmap, p7, 0.01f, &(DgColour) {1.0f, 1.0f, 1.0f, 1.0f});
-	DgBitmapDrawPoint2(&this->bitmap, p8, 0.01f, &(DgColour) {0.5f, 0.5f, 1.0f, 1.0f});
+	DgBitmapDrawPoint2(&this->bitmap, p1, 0.01f, &(DgColour) {1.0f, 0.0f, 0.0f, 1.0f}); // r
+	DgBitmapDrawPoint2(&this->bitmap, p2, 0.01f, &(DgColour) {0.0f, 1.0f, 0.0f, 1.0f}); // g
+	DgBitmapDrawPoint2(&this->bitmap, p3, 0.01f, &(DgColour) {0.0f, 0.0f, 1.0f, 1.0f}); // b
+	DgBitmapDrawPoint2(&this->bitmap, p4, 0.01f, &(DgColour) {1.0f, 1.0f, 0.0f, 1.0f}); // t
+	DgBitmapDrawPoint2(&this->bitmap, p5, 0.01f, &(DgColour) {0.0f, 1.0f, 1.0f, 1.0f}); // y
+	DgBitmapDrawPoint2(&this->bitmap, p6, 0.01f, &(DgColour) {1.0f, 0.0f, 1.0f, 1.0f}); // p
+	DgBitmapDrawPoint2(&this->bitmap, p7, 0.01f, &(DgColour) {1.0f, 1.0f, 1.0f, 1.0f}); // w
+	DgBitmapDrawPoint2(&this->bitmap, p8, 0.01f, &(DgColour) {0.5f, 0.5f, 1.0f, 1.0f}); // o
 	
 	// Top part
 	DgBitmapDrawLine(&this->bitmap, p1, p3, colour);
-	DgBitmapDrawLine(&this->bitmap, p3, p2, colour);
-	DgBitmapDrawLine(&this->bitmap, p2, p5, colour);
-	DgBitmapDrawLine(&this->bitmap, p5, p1, colour);
+	DgBitmapDrawLine(&this->bitmap, p1, p2, colour);
+	DgBitmapDrawLine(&this->bitmap, p2, p4, colour);
+	DgBitmapDrawLine(&this->bitmap, p4, p1, colour);
 }
 
 static void TrGraphicsUpdate_DrawWorld(TrGraphics *this, TrScene *scene) {
