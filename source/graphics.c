@@ -53,14 +53,14 @@ static void TrGraphicsUpdate_DrawObject(TrGraphics *this, TrScene *scene, TrObje
 	DgVec2 p1, p2, p3, p4, p5, p6, p7, p8;
 	
 	// Find the coords of the square in 3D
-	q1 = (DgVec3) {size.x + position.x, size.y + position.y, size.z + position.z};
-	q2 = (DgVec3) {size.x - position.x, size.y + position.y, size.z + position.z};
-	q3 = (DgVec3) {size.x + position.x, size.y + position.y, size.z - position.z};
-	q4 = (DgVec3) {size.x - position.x, size.y + position.y, size.z - position.z};
-	q5 = (DgVec3) {size.x + position.x, size.y - position.y, size.z + position.z};
-	q6 = (DgVec3) {size.x - position.x, size.y - position.y, size.z + position.z};
-	q7 = (DgVec3) {size.x + position.x, size.y - position.y, size.z - position.z};
-	q8 = (DgVec3) {size.x - position.x, size.y - position.y, size.z - position.z};
+	q1 = (DgVec3) {position.x + size.x, position.y + size.y, position.z + size.z};
+	q2 = (DgVec3) {position.x - size.x, position.y + size.y, position.z + size.z};
+	q3 = (DgVec3) {position.x + size.x, position.y + size.y, position.z - size.z};
+	q4 = (DgVec3) {position.x - size.x, position.y + size.y, position.z - size.z};
+	q5 = (DgVec3) {position.x + size.x, position.y - size.y, position.z + size.z};
+	q6 = (DgVec3) {position.x - size.x, position.y - size.y, position.z + size.z};
+	q7 = (DgVec3) {position.x + size.x, position.y - size.y, position.z - size.z};
+	q8 = (DgVec3) {position.x - size.x, position.y - size.y, position.z - size.z};
 	
 	// Convert to screen space (or whatever the fuck it is)
 	p1 = (DgVec2) {q1.x / q1.z, q1.y / q1.z};
@@ -72,14 +72,28 @@ static void TrGraphicsUpdate_DrawObject(TrGraphics *this, TrScene *scene, TrObje
 	p7 = (DgVec2) {q7.x / q7.z, q7.y / q7.z};
 	p8 = (DgVec2) {q8.x / q8.z, q8.y / q8.z};
 	
-	// Draw the box!
-	DgBitmapDrawLine(&this->bitmap, p1, p2, colour);
-	DgBitmapDrawLine(&this->bitmap, p2, p3, colour);
-	DgBitmapDrawLine(&this->bitmap, p3, p4, colour);
-	DgBitmapDrawLine(&this->bitmap, p4, p1, colour);
+	// Align the things properly since DgBitmap doesn't use negative numbers
+	// for screen space
+#define PROPERALIGN(POINT) POINT = (DgVec2) {0.5f + 0.5f * POINT.x, 0.5f + 0.5f * POINT.y};
+	PROPERALIGN(p1);
+	PROPERALIGN(p2);
+	PROPERALIGN(p3);
+	PROPERALIGN(p4);
+	PROPERALIGN(p5);
+	PROPERALIGN(p6);
+	PROPERALIGN(p7);
+	PROPERALIGN(p8);
+#undef PROPERALIGN
 	
-	//DgBitmapDrawLine(&this->bitmap, DgVec2Subtract(position, (DgVec2) {0.0f, -0.03f}), DgVec2Subtract(position, (DgVec2) {0.0f, 0.03f}), colour);
-	//DgBitmapDrawLine(&this->bitmap, DgVec2Subtract(position, (DgVec2) {-0.03f, 0.0f}), DgVec2Subtract(position, (DgVec2) {0.03f, 0.0f}), colour);
+	// Draw the box!
+	DgBitmapDrawPoint2(&this->bitmap, p1, 0.01f, &(DgColour) {1.0f, 0.0f, 0.0f, 1.0f});
+	DgBitmapDrawPoint2(&this->bitmap, p2, 0.01f, &(DgColour) {0.0f, 1.0f, 0.0f, 1.0f});
+	DgBitmapDrawPoint2(&this->bitmap, p3, 0.01f, &(DgColour) {0.0f, 0.0f, 1.0f, 1.0f});
+	DgBitmapDrawPoint2(&this->bitmap, p4, 0.01f, &(DgColour) {1.0f, 1.0f, 0.0f, 1.0f});
+	DgBitmapDrawPoint2(&this->bitmap, p5, 0.01f, &(DgColour) {0.0f, 1.0f, 1.0f, 1.0f});
+	DgBitmapDrawPoint2(&this->bitmap, p6, 0.01f, &(DgColour) {1.0f, 0.0f, 1.0f, 1.0f});
+	DgBitmapDrawPoint2(&this->bitmap, p7, 0.01f, &(DgColour) {1.0f, 1.0f, 1.0f, 1.0f});
+	DgBitmapDrawPoint2(&this->bitmap, p8, 0.01f, &(DgColour) {0.5f, 0.5f, 1.0f, 1.0f});
 }
 
 static void TrGraphicsUpdate_DrawWorld(TrGraphics *this, TrScene *scene) {
