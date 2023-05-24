@@ -94,6 +94,12 @@ static void TrGraphicsUpdate_DrawObject(TrGraphics *this, TrScene *scene, TrObje
 	DgBitmapDrawPoint2(&this->bitmap, p6, 0.01f, &(DgColour) {1.0f, 0.0f, 1.0f, 1.0f});
 	DgBitmapDrawPoint2(&this->bitmap, p7, 0.01f, &(DgColour) {1.0f, 1.0f, 1.0f, 1.0f});
 	DgBitmapDrawPoint2(&this->bitmap, p8, 0.01f, &(DgColour) {0.5f, 0.5f, 1.0f, 1.0f});
+	
+	// Top part
+	DgBitmapDrawLine(&this->bitmap, p1, p3, colour);
+	DgBitmapDrawLine(&this->bitmap, p3, p2, colour);
+	DgBitmapDrawLine(&this->bitmap, p2, p5, colour);
+	DgBitmapDrawLine(&this->bitmap, p5, p1, colour);
 }
 
 static void TrGraphicsUpdate_DrawWorld(TrGraphics *this, TrScene *scene) {
