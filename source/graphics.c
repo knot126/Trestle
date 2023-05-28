@@ -72,6 +72,18 @@ static void TrGraphicsUpdate_DrawObject(TrGraphics *this, TrScene *scene, TrObje
 	p7 = (DgVec2) {q7.x / q7.z, q7.y / q7.z};
 	p8 = (DgVec2) {q8.x / q8.z, q8.y / q8.z};
 	
+	// Make it work with the aspect ratio
+#define MULASPECTRATIO(POINT) POINT.x *= (9.0f / 16.0f);
+	MULASPECTRATIO(p1);
+	MULASPECTRATIO(p2);
+	MULASPECTRATIO(p3);
+	MULASPECTRATIO(p4);
+	MULASPECTRATIO(p5);
+	MULASPECTRATIO(p6);
+	MULASPECTRATIO(p7);
+	MULASPECTRATIO(p8);
+#undef MULASPECTRATIO
+	
 	// Align the things properly since DgBitmap doesn't use negative numbers
 	// for screen space
 #define PROPERALIGN(POINT) POINT = (DgVec2) {0.5f + 0.5f * POINT.x, 0.5f + 0.5f * POINT.y};
@@ -85,6 +97,7 @@ static void TrGraphicsUpdate_DrawObject(TrGraphics *this, TrScene *scene, TrObje
 	PROPERALIGN(p8);
 #undef PROPERALIGN
 	
+#if 0
 	// Draw the box!
 	DgBitmapDrawPoint2(&this->bitmap, p1, 0.01f, &(DgColour) {1.0f, 0.0f, 0.0f, 1.0f});
 	DgBitmapDrawPoint2(&this->bitmap, p2, 0.01f, &(DgColour) {0.0f, 1.0f, 0.0f, 1.0f});
@@ -94,6 +107,7 @@ static void TrGraphicsUpdate_DrawObject(TrGraphics *this, TrScene *scene, TrObje
 	DgBitmapDrawPoint2(&this->bitmap, p6, 0.01f, &(DgColour) {1.0f, 0.0f, 1.0f, 1.0f});
 	DgBitmapDrawPoint2(&this->bitmap, p7, 0.01f, &(DgColour) {1.0f, 1.0f, 1.0f, 1.0f});
 	DgBitmapDrawPoint2(&this->bitmap, p8, 0.01f, &(DgColour) {0.5f, 0.5f, 1.0f, 1.0f});
+#endif
 	
 	// Top part
 	DgBitmapDrawLine(&this->bitmap, p1, p3, colour);
