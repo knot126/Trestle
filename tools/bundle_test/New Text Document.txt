@@ -1,0 +1,2 @@
+This document contains some text which should be packed into
+a bundle!

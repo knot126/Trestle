@@ -15,6 +15,8 @@
 
 #include "main.h"
 
+#define __TRESTLE_STRING_BOYKISSER_TOTEM "BOYKISSERTOTEM"
+
 void TrEngineInit(TrEngine *engine) {
 	/**
 	 * Starts the engine
