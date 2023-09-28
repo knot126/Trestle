@@ -1,9 +1,11 @@
 #!/usr/bin/python
 
 import sys
-import os
+import os, os.path
 import shutil
 import json
+import hashlib
+import pathlib
 
 def load_build_config(profile = "default"):
 	"""
@@ -48,6 +50,94 @@ def create_folder(d, mode = 0o755):
 	except FileExistsError:
 		print(f"\033[33mWarning: Tried to created file \"{d}\" when it already exsists.\033[0m")
 
+def hash_data(data):
+	"""
+	Find the hash of the given data using a good hashing function
+	"""
+	
+	if (type(data) == str):
+		data = data.encode('utf-8')
+	
+	return hashlib.shake_256(data).hexdigest(20)
+
+def preprocess_file(filename, includes, seen = None):
+	"""
+	Preprocess file and return text
+	"""
+	
+	if (not seen):
+		seen = set()
+	
+	filename = filename.replace("\\", "/")
+	
+	# Has seen?
+	if (filename in seen):
+		# print(f"file already seen: {filename}")
+		return ""
+	
+	# Exists?
+	if (not os.path.exists(filename)):
+		# print(f"no such file: {filename}")
+		return ""
+	
+	# We should assert our own path too
+	awuwuueu = "/".join(filename.split("/")[:-1])
+	if (awuwuueu not in includes):
+		includes.append(awuwuueu)
+	
+	data = ""
+	
+	f = open(filename, "r")
+	
+	while (True):
+		line = f.readline()
+		
+		if (not line):
+			break
+		
+		s = line.split()
+		
+		match (s[0] if len(s) >= 1 else "\n"):
+			case "#include":
+				basepath = s[1][1:-1]
+				
+				# print(f"process include: {basepath}")
+				
+				for cand in includes:
+					got = preprocess_file(cand + "/" + basepath, includes, seen)
+					data += got
+					if (got):
+						# print(f"got include: {basepath}")
+						break
+			
+			case "#pragma":
+				if (s[1] == "once"):
+					seen.add(filename)
+			
+			case _:
+				data += line
+	
+	return data
+
+def hash_preprocessed_file(filename, includes):
+	"""
+	hash of a preprocessed file
+	"""
+	
+	return hash_data(preprocess_file(filename, includes))
+
+def hash_command_output(cmd):
+	"""
+	Use os.popen to read the output of a command and then hash it
+	"""
+	
+	s = os.popen(cmd)
+	d = s.read()
+	h = hash_data(d)
+	s.close()
+	
+	return h
+
 def align_string(base, count = 8):
 	"""
 	Create an aligned string
@@ -81,21 +171,13 @@ def main():
 		print(f"\033[35m[Run command: {cmd}]\033[m")
 		os.system(cmd)
 	
-	# Create some dirs
-	shutil.rmtree("temp", ignore_errors = True)
+	# Create the dirs we need if they don't exist
 	create_folder("temp", mode = 0o755)
+	create_folder("temp/outputs", mode = 0o755)
+	create_folder("temp/runes", mode = 0o755)
 	
-	# Enumerate files to build
-	files, outline = [], []
-	
-	for folder in config.get("folders", ["src"]):
-		create_folder("temp/" + folder)
-		files_a, outline_a = list_files_in_folder(folder)
-		files += files_a
-		outline += outline_a
-	
-	for folder in outline:
-		create_folder("temp/" + folder, mode = 0o755)
+	# I don't know where else to put this stuff (includes and defines) so im
+	# just putting them here.
 	
 	# Set up include dirs
 	include = ""
@@ -103,7 +185,7 @@ def main():
 	for incl in config["includes"]:
 		include += f"-I\"{incl}\" "
 	
-	print(f"\033[35m[Include dirs: {include}]\033[0m")
+	print(f"\033[35m[Includes: {include}]\033[0m")
 	
 	# Set up defines
 	defines = ""
@@ -113,18 +195,62 @@ def main():
 	
 	print(f"\033[35m[Defines: {defines}]\033[0m")
 	
-	# Build files
+	# Get compiler info (TODO: hope we can make this somewhat automatic soon)
 	compiler = config.get("compiler", "cc")
+	
+	# Enumerate files to build
+	print(f"\033[36m[Enumerate and hash files]\033[m")
+	
+	files = []
+	
+	for folder in config.get("folders", ["src"]):
+		filenames, outline = list_files_in_folder(folder)
+		files += filenames
+	
+	# Enumerate the hashes of those files
+	# ===================================
+	# A clever trick we can use to make sure we don't have to deal with "what if
+	# the header file changes" crap: just preprocess the file *before* taking the
+	# hash. If the header changes, that will be reflected by a different file
+	# hash!
+	hashes = {}
+	
+	if (os.name != "nt"):
+		for filename in files:
+			print(f"\033[36m[Process file: \"{filename}\"]\033[m")
+			hashes[filename] = hash_command_output(f"{compiler} -E {filename} {defines} {include}")
+	else:
+		# NT has show Popen so fuck that
+		for filename in files:
+			print(f"\033[36m[Process file: \"{filename}\"]\033[m")
+			hashes[filename] = hash_preprocessed_file(filename, config["includes"])
+	
+	# Build changed files
+	print(f"\033[36m[Build items]\033[m")
+	
 	item = 1
 	
-	for f in files:
-		progress = align_string(f"{item}/{len(files)}", count = 2 * len(str(len(files))) + 1)
-		print(f"\033[36m[{progress} Building item: \"{f}\"]\033[0m")
-		status = os.system(f"{compiler} -c {defines} -o temp/{f}.output -Wall -Wextra -Wno-missing-braces -Wno-unused-parameter {f} {include}")
+	for k in hashes:
+		progress = align_string(
+			f"{item}/{len(hashes)}",
+			count = 2 * len(str(len(hashes))) + 1
+		)
 		
-		if (status):
-			print(f"\033[31m[Failed to build \"{f}\"]\033[0m")
-			sys.exit(status)
+		infile = k
+		outfile = f"temp/outputs/{hashes[k]}.out"
+		
+		# If the output is already built, then we skip it
+		if (os.path.exists(outfile)):
+			print(f"\033[36m[{progress} Skipping item: \"{infile}\"]\033[0m")
+		# Otherwise, we need to build it!
+		else:
+			print(f"\033[36m[{progress} Building item: \"{infile}\"]\033[0m")
+			
+			status = os.system(f"{compiler} -c {defines} -o {outfile} -Wall -Wextra -Wno-missing-braces -Wno-unused-parameter {infile} {include}")
+			
+			if (status):
+				print(f"\033[31m[Failed to build \"{infile}\"]\033[0m")
+				sys.exit(status)
 		
 		item += 1
 	
@@ -136,19 +262,28 @@ def main():
 		include += f"-l{incl} "
 	
 	# output files
-	output_files = ""
+	object_files = ""
 	
-	for f in files:
-		output_files += f"temp/{f}.output "
+	for k in hashes:
+		object_files += f"temp/outputs/{hashes[k]}.out "
+	
+	# Final binary name
+	executable_ext = {"posix": ".bin", "nt": ".exe"}.get(os.name, ".executable")
+	executable_name = config.get("output", "app")
 	
 	# Link!
 	print(f"\033[32m[Linking binary]\033[0m")
 	
-	output = config.get("output", "application")
-	status = os.system(f"{compiler} -o {output} -std=c2x {output_files} {include}")
+	link_cmd = f"{compiler} -o temp/{executable_name}{executable_ext} -std=c23 {object_files} {include}"
+	status = os.system(link_cmd)
 	
 	if (status):
 		print(f"\033[31m[Failed to link binary]\033[0m")
+	
+	# Save to rune files
+	# Disabled since it doesn't work right now
+	# rune_count = len(list_files_in_folder("temp/runes")[0])
+	# pathlib.Path(f"temp/runes/{executable_name}{rune_count}.rune").write_text(link_cmd)
 	
 	return status
 

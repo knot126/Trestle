@@ -13,7 +13,6 @@
 #include "util/log.h"
 #include "util/bitmap.h"
 #include "util/window.h"
-#include "util/rand.h" // TEMP
 #include "util/maths.h"
 
 #include "scene.h"

@@ -2,25 +2,25 @@
 	"linux": {
 		"prebuild": [
 			"rm -r ./source/util",
-			"cp -r ../Melon/src ./source/util"
+			"cp -r ../Melon/source ./source/util"
 		],
 		"compiler": "clang",
 		"folders": ["source"],
 		"includes": ["source"],
 		"links": ["m", "pthread", "SDL2"],
 		"defines": ["DG_NO_LUA"],
-		"output": "temp/trestle-linux-native.elf"
+		"output": "trestle-linux"
 	},
-	"windows-arm64": {
+	"windows-clang": {
 		"prebuild": [
 			"rd source\\util /s /q",
-			"xcopy ..\\Melon\\src source\\util /e /i"
+			"xcopy ..\\Melon\\source source\\util /e /i"
 		],
-		"compiler": "..\\llvm-mingw-20230320-ucrt-aarch64\\bin\\aarch64-w64-mingw32-clang.exe",
+		"compiler": "clang",
 		"folders": ["source"],
 		"includes": ["source"],
-		"links": ["gdi32", "Ws2_32"],
+		"links": ["user32", "gdi32", "Ws2_32", "bcrypt"],
 		"defines": ["DG_NO_LUA", "DG_NO_SDL", "DG_USE_WINDOWS_API"],
-		"output": "temp/trestle-windows-arm64.exe"
+		"output": "trestle-windows"
 	}
 }
